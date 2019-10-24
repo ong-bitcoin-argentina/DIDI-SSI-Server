@@ -1,0 +1,19 @@
+version: "3.7"
+
+version: "2"
+services:
+  app_mongo:
+    container_name: app_mongo
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo:4.2.1
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
