@@ -17,6 +17,22 @@ router.get("/users", function(_, res) {
 	);
 });
 
+router.post("/user/login", function(req, res) {
+	const name = req.body.user.name;
+	const pass = req.body.user.pass;
+
+	return UserService.login(
+		name,
+		pass,
+		data => {
+			return ResponseHandler.sendRes(res, data);
+		},
+		err => {
+			return ResponseHandler.sendErr(res, err);
+		}
+	);
+});
+
 router.get("/user/:userId", function(req, res) {
 	const userId = req.params.userId;
 
@@ -33,9 +49,11 @@ router.get("/user/:userId", function(req, res) {
 
 router.post("/user", function(req, res) {
 	const name = req.body.user.name;
+	const pass = req.body.user.pass;
 
 	return UserService.create(
 		name,
+		pass,
 		data => {
 			return ResponseHandler.sendRes(res, data);
 		},

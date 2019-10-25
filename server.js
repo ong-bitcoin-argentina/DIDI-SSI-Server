@@ -20,6 +20,7 @@ console.log(Messages.INDEX.MSG.CONNECTING + Constants.MONGO_URL);
 
 mongoose
 	.connect(Constants.MONGO_URL, {
+		useCreateIndex: true,
 		useFindAndModify: false,
 		useUnifiedTopology: true,
 		useNewUrlParser: true

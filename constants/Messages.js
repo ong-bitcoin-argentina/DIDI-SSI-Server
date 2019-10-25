@@ -14,6 +14,7 @@ module.exports = {
 	},
 	USER: {
 		ERR: {
+			GET: "Couldn't get the user",
 			CREATE: "Couldn't create the user.",
 			EDIT: "Couldn't edit the user.",
 			DELETE: "Couldn't delete the user."

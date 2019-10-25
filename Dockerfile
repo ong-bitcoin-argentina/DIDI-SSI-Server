@@ -4,4 +4,5 @@ COPY ["package.json","./"]
 RUN npm install --no-optional
 COPY . .
 EXPOSE 3000
-CMD sleep 10 && MONGO_DIR="mongo" node server.js
+
+CMD MONGO_DIR="mongo" node server.js

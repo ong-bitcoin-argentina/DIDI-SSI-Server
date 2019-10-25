@@ -1,19 +1,28 @@
 version: "3.7"
 
-version: "2"
 services:
   app_mongo:
     container_name: app_mongo
     restart: always
     build: .
+    environment:
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DB: ${MONGO_INITDB_DATABASE}
     ports:
       - "3000:3000"
     links:
       - mongo
+
   mongo:
     container_name: mongo
     image: mongo:4.2.1
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./data:/data/db
     ports:
       - "27017:27017"
