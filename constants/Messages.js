@@ -12,6 +12,27 @@ module.exports = {
 			RUNNING_ON: "Running Api on port "
 		}
 	},
+	EMAIL: {
+		ERR: {
+			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "Error sending email" }
+		},
+		VALIDATION: {
+			FROM: "Excited User <me@samples.mailgun.org>",
+			SUBJECT: "DIDI validation code",
+			MESSAGE: code => {
+				return (
+					"Hi there,\n" +
+					"We recieved a request to recover your DIDI password using this email\n\n" +
+					"CODE: " +
+					code +
+					"\n" +
+					"If did not make such request, please contact DIDI support immediately at didi@mailgun.com" +
+					"\n\n With love," +
+					"\nThe DIDI Team"
+				);
+			}
+		}
+	},
 	VALIDATION: {
 		DOES_NOT_EXIST: function(type) {
 			return { code: "MISSING_PARAMETER", message: "missing parameter: " + type };

@@ -22,5 +22,8 @@ module.exports = {
 		IS_BASE_64: "isBase64",
 		IS_STRING: "isString",
 		IS_DATE_TIME: "isDateTime"
-	}
+	},
+
+	MAILGUN_API_KEY: '***REMOVED***',
+	MAILGUN_DOMAIN: '***REMOVED***'
 };
