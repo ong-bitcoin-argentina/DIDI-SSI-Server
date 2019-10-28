@@ -1,24 +1,37 @@
-var User = require("../models/User");
-var Messages = require("../constants/Messages");
+// const User = require("../models/User");
+const Messages = require("../constants/Messages");
 
 class UserService {
+	/*
 	static login(name, pass, cb, errCb) {
 		return User.getByName(
 			name,
 			function(user) {
 				return user.comparePassword(pass, function(err, res) {
-					if (err) return errCb(err);
+					if (err) {
+						console.log(err);
+						return errCb(Messages.USER.ERR.LOGIN);
+					}
 					return cb(res);
 				});
 			},
-			errCb
+			function(err) {
+				console.log(err);
+				errCb(Messages.USER.ERR.LOGIN);
+			}
 		);
 	}
 
 	static getAll(cb, errCb) {
-		return User.getAll(function(users) {
-			return cb(users);
-		}, errCb);
+		return User.getAll(
+			function(users) {
+				return cb(users);
+			},
+			function(err) {
+				console.log(err);
+				errCb(Messages.USER.ERR.GET_ALL);
+			}
+		);
 	}
 
 	static get(userId, cb, errCb) {
@@ -27,7 +40,10 @@ class UserService {
 			function(user) {
 				return cb(user);
 			},
-			errCb
+			function(err) {
+				console.log(err);
+				errCb(Messages.USER.ERR.GET_ALL);
+			}
 		);
 	}
 
@@ -39,7 +55,10 @@ class UserService {
 				if (!user) return errCb(Messages.USER.ERR.CREATE);
 				return cb(user);
 			},
-			errCb
+			function(err) {
+				console.log(err);
+				errCb(Messages.USER.ERR.CREATE);
+			}
 		);
 	}
 
@@ -55,10 +74,16 @@ class UserService {
 						if (!user) return errCb(Messages.USER.ERR.EDIT);
 						return cb(user);
 					},
-					errCb
+					function(err) {
+						console.log(err);
+						errCb(Messages.USER.ERR.EDIT);
+					}
 				);
 			},
-			errCb
+			function(err) {
+				console.log(err);
+				errCb(Messages.USER.ERR.GET);
+			}
 		);
 	}
 
@@ -74,12 +99,19 @@ class UserService {
 						if (!user) return errCb(Messages.USER.ERR.DELETE);
 						return cb(user);
 					},
-					errCb
+					function(err) {
+						console.log(err);
+						errCb(Messages.USER.ERR.DELETE);
+					}
 				);
 			},
-			errCb
+			function(err) {
+				console.log(err);
+				errCb(Messages.USER.ERR.GET);
+			}
 		);
 	}
+	*/
 }
 
 module.exports = UserService;

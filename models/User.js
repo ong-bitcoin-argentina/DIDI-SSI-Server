@@ -1,10 +1,11 @@
-var mongoose = require("mongoose");
-var ObjectId = mongoose.Types.ObjectId;
+/*
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
-var bcrypt = require("bcrypt");
-var SALT_WORK_FACTOR = 10;
+const bcrypt = require("bcrypt");
+const SALT_WORK_FACTOR = 10;
 
-var UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true
@@ -68,7 +69,7 @@ UserSchema.methods.getPublicData = function() {
 	};
 };
 
-var User = mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
 User.getAll = function(cb, errCb) {
@@ -118,3 +119,4 @@ User.edit = function(userId, data, cb, errCb) {
 		return cb(user);
 	});
 };
+*/
