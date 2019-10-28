@@ -1,13 +1,15 @@
-let express = require("express");
-let bodyParser = require("body-parser");
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
+const express = require("express");
+const bodyParser = require("body-parser");
 
-let Constants = require("./constants/Constants");
-let Messages = require("./constants/Messages");
+const Constants = require("./constants/Constants");
+const Messages = require("./constants/Messages");
 
-let UserRoutes = require("./routes/UserRoutes");
+const UserRoutes = require("./routes/UserRoutes");
+const SmsRoutes = require("./routes/SmsRoutes");
+const MailRoutes = require("./routes/MailRoutes");
 
-let app = express();
+const app = express();
 
 app.use(
 	bodyParser.urlencoded({
@@ -16,7 +18,7 @@ app.use(
 );
 app.use(bodyParser.json());
 
-console.log(Messages.INDEX.MSG.CONNECTING + Constants.MONGO_URL);
+if (Constants.DEBUGG) console.log(Messages.INDEX.MSG.CONNECTING + Constants.MONGO_URL);
 
 mongoose
 	.connect(Constants.MONGO_URL, {
@@ -36,12 +38,16 @@ else console.log(Messages.INDEX.MSG.DB_CONNECTED);
 
 app.get("/", (_, res) => res.send(Messages.INDEX.MSG.HELLO_WORLD));
 
+app.use(bodyParser.json());
+
 // log calls
 app.use(function(req, _, next) {
-	console.log(req.method + " " + req.originalUrl);
-	process.stdout.write("body: ");
-	console.log(req.body);
-	console.log();
+	if (Constants.DEBUGG) {
+		console.log(req.method + " " + req.originalUrl);
+		process.stdout.write("body: ");
+		console.log(req.body);
+		console.log();
+	}
 	next();
 });
 
@@ -51,7 +57,14 @@ app.use(function(error, _, _, next) {
 	next();
 });
 
-app.use("/api", UserRoutes);
+const route = "/api/" + Constants.API_VERSION + "/didi";
+if (Constants.DEBUGG) {
+	console.log("route: " + route);
+}
+
+app.use(route, UserRoutes);
+app.use(route, SmsRoutes);
+app.use(route, MailRoutes);
 
 app.listen(Constants.PORT, function() {
 	console.log(Messages.INDEX.MSG.RUNNING_ON + Constants.PORT);
