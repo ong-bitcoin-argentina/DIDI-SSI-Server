@@ -21,7 +21,7 @@ class MailService {
 		});
 	}
 
-	static create(email, code, did, timeStamp, cb, errCb) {
+	static create(email, code, did, cb, errCb) {
 		Mail.generate(
 			email,
 			code,
@@ -37,7 +37,7 @@ class MailService {
 		);
 	}
 
-	static validateMail(email, code, timeStamp, cb, errCb) {
+	static validateMail(email, code, cb, errCb) {
 		Mail.get(
 			email,
 			function(mail) {
