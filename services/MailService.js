@@ -37,9 +37,9 @@ class MailService {
 		);
 	}
 
-	static validateMail(email, code, cb, errCb) {
+	static validateMail(did, code, cb, errCb) {
 		Mail.get(
-			email,
+			did,
 			function(mail) {
 				if (!mail) return errCb(Messages.EMAIL.ERR.GET);
 
@@ -62,25 +62,12 @@ class MailService {
 		);
 	}
 
-	static isValidated(email, did, cb, errCb) {
-		Mail.getByEmail(
-			email,
+	static isValidated(did, cb, errCb) {
+		Mail.getValidated(
+			did,
 			function(mail) {
 				if (!mail) return errCb(Messages.EMAIL.ERR.GET);
-
-				mail.compareDID(
-					did,
-					function(match) {
-						if(!match) {
-							errCb(Messages.EMAIL.ERR.INVALID_DID);
-						}
-						return cb(mail.validated);
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
-					}
-				);
+				return cb(mail.validated);
 			},
 			function(err) {
 				console.log(err);

@@ -60,18 +60,15 @@ router.post(
 	"/verifySmsCode",
 	Validator.validateBody([
 		{ name: "validationCode", validate: [Constants.VALIDATION_TYPES.IS_STRING], length: { min: 6, max: 6 } },
-		{
-			name: "cellPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
-		}
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	function(req, res) {
 		const validationCode = req.body.validationCode;
-		const phoneNumber = req.body.cellPhoneNumber;
+		const did = req.body.did;
 
 		SmsService.validatePhone(
-			phoneNumber,
+			did,
 			validationCode,
 			function(_) {
 				return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED);
@@ -86,19 +83,13 @@ router.post(
 router.post(
 	"/isVerifiedSms",
 	Validator.validateBody([
-		{
-			name: "cellPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
-		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	function(req, res) {
 		const did = req.body.did;
-		const cellPhoneNumber = req.body.cellPhoneNumber;
 
 		SmsService.isValidated(
-			cellPhoneNumber,
 			did,
 			function(validated) {
 				return ResponseHandler.sendRes(

@@ -36,7 +36,6 @@ module.exports = {
 		ERR: {
 			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
 			NO_SMSCODE_MATCH: { code: "NO_SMSCODE_MATCH", message: "El código de validacion es incorrecto." },
-			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese telefono." },
 			CREATE: { code: "PHONE_CREATE", message: "No pudo guardarse el telefono." },
 			GET: { code: "PHONE_GET", message: "No se encontro el telefono." }
 		}

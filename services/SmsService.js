@@ -30,9 +30,9 @@ class SmsService {
 		);
 	}
 
-	static validatePhone(phoneNumber, code, cb, errCb) {
+	static validatePhone(did, code, cb, errCb) {
 		Phone.get(
-			phoneNumber,
+			did,
 			function(phone) {
 				if (!phone) return errCb(Messages.SMS.ERR.GET);
 
@@ -55,25 +55,12 @@ class SmsService {
 		);
 	}
 
-	static isValidated(phoneNumber, did, cb, errCb) {
-		Phone.getByPhoneNumber(
-			phoneNumber,
+	static isValidated(did, cb, errCb) {
+		Phone.getValidated(
+			did,
 			function(phone) {
 				if (!phone) return errCb(Messages.SMS.ERR.GET);
-
-				phone.compareDID(
-					did,
-					function(match) {
-						if (!match) {
-							errCb(Messages.SMS.ERR.INVALID_DID);
-						}
-						return cb(phone.validated);
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.SMS.ERR.COMMUNICATION_ERROR);
-					}
-				);
+				return cb(phone.validated);
 			},
 			function(err) {
 				console.log(err);

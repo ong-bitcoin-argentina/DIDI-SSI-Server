@@ -30,13 +30,13 @@ const PhoneSchema = new mongoose.Schema({
 });
 
 PhoneSchema.index(
-	{ phone: 1, validated: 1 },
+	{ did: 1, validated: 1 },
 	{
 		unique: true
 	}
 );
 
-// encrypt code & did
+// encrypt code
 PhoneSchema.pre("save", function(next) {
 	var phone = this;
 
@@ -48,12 +48,7 @@ PhoneSchema.pre("save", function(next) {
 				if (err) return next(err);
 
 				phone.code = hashCode;
-				bcrypt.hash(phone.did, salt, function(err, hashDid) {
-					if (err) return next(err);
-
-					phone.did = hashDid;
-					next();
-				});
+				next();
 			});
 		});
 	}
@@ -61,13 +56,6 @@ PhoneSchema.pre("save", function(next) {
 
 PhoneSchema.methods.compareCode = function(candidateCode, cb, errCb) {
 	bcrypt.compare(candidateCode, this.code, function(err, isMatch) {
-		if (err) return errCb(err);
-		cb(isMatch);
-	});
-};
-
-PhoneSchema.methods.compareDID = function(candidateCode, cb, errCb) {
-	bcrypt.compare(candidateCode, this.did, function(err, isMatch) {
 		if (err) return errCb(err);
 		cb(isMatch);
 	});
@@ -94,7 +82,7 @@ module.exports = Phone;
 
 Phone.generate = function(phoneNumber, code, did, cb, errCb) {
 	return Phone.get(
-		phoneNumber,
+		did,
 		function(phone) {
 			if (!phone) {
 				phone = new Phone();
@@ -120,16 +108,16 @@ Phone.generate = function(phoneNumber, code, did, cb, errCb) {
 	);
 };
 
-Phone.get = function(phoneNumber, cb, errCb) {
-	return Phone.findOne({ phoneNumber: phoneNumber, validated: false }, function(err, phone) {
+Phone.get = function(did, cb, errCb) {
+	return Phone.findOne({ did: did, validated: false }, function(err, phone) {
 		if (err) return errCb(err);
 		if (!phone || phone.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(phone);
 	});
 };
 
-Phone.getByPhoneNumber = function(phoneNumber, cb, errCb) {
-	return Phone.findOne({ phoneNumber: phoneNumber }, function(err, phone) {
+Phone.getValidated = function(did, cb, errCb) {
+	return Phone.findOne({ did: did, validated: true }, function(err, phone) {
 		if (err) return errCb(err);
 		if (!phone || phone.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(phone);

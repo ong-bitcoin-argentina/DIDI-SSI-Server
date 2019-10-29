@@ -30,32 +30,24 @@ const MailSchema = new mongoose.Schema({
 });
 
 MailSchema.index(
-	{ email: 1, validated: 1 },
+	{ did: 1, validated: 1 },
 	{
 		unique: true
 	}
 );
 
-
-// encrypt code & did
+// encrypt code
 MailSchema.pre("save", function(next) {
 	var mail = this;
 
 	if (mail.isModified("code") || mail.isModified("did")) {
-
 		bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
 			if (err) return next(err);
 
 			bcrypt.hash(mail.code, salt, function(err, hashCode) {
 				if (err) return next(err);
-
 				mail.code = hashCode;
-				bcrypt.hash(mail.did, salt, function(err, hashDid) {
-					if (err) return next(err);
-
-					mail.did = hashDid;
-					next();
-				});
+				next();
 			});
 		});
 	}
@@ -63,13 +55,6 @@ MailSchema.pre("save", function(next) {
 
 MailSchema.methods.compareCode = function(candidateCode, cb, errCb) {
 	bcrypt.compare(candidateCode, this.code, function(err, isMatch) {
-		if (err) return errCb(err);
-		cb(isMatch);
-	});
-};
-
-MailSchema.methods.compareDID = function(candidateCode, cb, errCb) {
-	bcrypt.compare(candidateCode, this.did, function(err, isMatch) {
 		if (err) return errCb(err);
 		cb(isMatch);
 	});
@@ -96,7 +81,7 @@ module.exports = Mail;
 
 Mail.generate = function(email, code, did, cb, errCb) {
 	return Mail.get(
-		email,
+		did,
 		function(mail) {
 			if (!mail) {
 				mail = new Mail();
@@ -122,16 +107,16 @@ Mail.generate = function(email, code, did, cb, errCb) {
 	);
 };
 
-Mail.get = function(email, cb, errCb) {
-	return Mail.findOne({ email: email, validated: false }, function(err, mail) {
+Mail.get = function(did, cb, errCb) {
+	return Mail.findOne({ did: did, validated: false }, function(err, mail) {
 		if (err) return errCb(err);
 		if (!mail || mail.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(mail);
 	});
 };
 
-Mail.getByEmail = function(email, cb, errCb) {
-	return Mail.findOne({ email: email }, function(err, mail) {
+Mail.getValidated = function(did, cb, errCb) {
+	return Mail.findOne({ did: did, validated: true }, function(err, mail) {
 		if (err) return errCb(err);
 		if (!mail || mail.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(mail);
