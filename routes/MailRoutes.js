@@ -83,4 +83,31 @@ router.post(
 	}
 );
 
+router.post(
+	"/isVerifiedMail",
+	Validator.validateBody([
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	function(req, res) {
+		const did = req.body.did;
+		const eMail = req.body.eMail;
+
+		MailService.isValidated(
+			eMail,
+			did,
+			function(validated) {
+				return ResponseHandler.sendRes(
+					res,
+					validated ? Messages.EMAIL.SUCCESS.VALIDATED : Messages.EMAIL.SUCCESS.NOT_VALIDATED
+				);
+			},
+			function(err) {
+				return ResponseHandler.sendErr(res, err);
+			}
+		);
+	}
+);
+
 module.exports = router;

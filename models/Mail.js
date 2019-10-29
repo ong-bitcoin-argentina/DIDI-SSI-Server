@@ -70,6 +70,13 @@ MailSchema.methods.compareCode = function(candidateCode, cb, errCb) {
 	});
 };
 
+MailSchema.methods.compareDID = function(candidateCode, cb, errCb) {
+	bcrypt.compare(candidateCode, this.did, function(err, isMatch) {
+		if (err) return errCb(err);
+		cb(isMatch);
+	});
+};
+
 MailSchema.methods.validateMail = function(code, cb, errCb) {
 	let self = this;
 	return self.compareCode(
@@ -120,6 +127,14 @@ Mail.generate = function(email, code, did, cb, errCb) {
 
 Mail.get = function(email, cb, errCb) {
 	return Mail.findOne({ email: email, validated: false }, function(err, mail) {
+		if (err) return errCb(err);
+		if (!mail || mail.expiresOn.getTime() < new Date().getTime()) return cb(null);
+		return cb(mail);
+	});
+};
+
+Mail.getByEmail = function(email, cb, errCb) {
+	return Mail.findOne({ email: email }, function(err, mail) {
 		if (err) return errCb(err);
 		if (!mail || mail.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(mail);
