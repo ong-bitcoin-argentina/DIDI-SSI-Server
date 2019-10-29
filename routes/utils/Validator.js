@@ -1,7 +1,7 @@
 const Messages = require("../../constants/Messages");
 const Constants = require("../../constants/Constants");
 const ResponseHandler = require("../utils/ResponseHandler");
-const { body, check, validationResult } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 
 class Validator {
 	static checkValidationResult(req, res, next) {

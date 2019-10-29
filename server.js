@@ -32,10 +32,6 @@ mongoose
 		console.log(Messages.INDEX.ERR.CONNECTION + err.message);
 	});
 
-var db = mongoose.connection;
-if (!db) console.log(Messages.INDEX.ERR.DB_CONNECTION);
-else console.log(Messages.INDEX.MSG.DB_CONNECTED);
-
 app.get("/", (_, res) => res.send(Messages.INDEX.MSG.HELLO_WORLD));
 
 app.use(bodyParser.json());

@@ -22,10 +22,13 @@ router.post(
 	function(req, res) {
 		const phone = req.body.cellPhoneNumber;
 		const did = req.body.did;
-
+		
 		return ResponseHandler.sendRes(res, "TODO");
-		// "SUCCESS"
-		// "COMMUNICATION_ERROR"
+
+		/*
+		return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.SENT);
+		return ResponseHandler.sendErr(res, Messages.SMS.ERR.COMMUNICATION_ERROR);
+		*/
 	}
 );
 
@@ -46,8 +49,12 @@ router.post(
 		const did = req.body.did;
 
 		return ResponseHandler.sendRes(res, "TODO");
-		// "SMSCODE_MATCH"
-		// "COMMUNICATION_ERROR" / "NO_SMSCODE_MATCH"
+
+		/*
+		return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED);
+		return ResponseHandler.sendErr(res, Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
+		*/
 	}
 );
 
