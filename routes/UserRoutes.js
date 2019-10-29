@@ -40,8 +40,12 @@ router.post(
 		const timeStamp = req.body.timeStamp;
 
 		return ResponseHandler.sendRes(res, "TODO");
-		// "SUCCESS"
-		// "COMMUNICATION_ERROR" / "USER_ALREADY_EXIST"
+
+		/*
+		return ResponseHandler.sendRes(res,  Messages.USER.SUCCESS.REGISTERED);
+		return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
+		return ResponseHandler.sendErr(res, Messages.USER.ERR.USER_ALREADY_EXIST);
+		*/
 	}
 );
 
@@ -64,8 +68,11 @@ router.post(
 		const pubKey = req.body.pubKey;
 
 		return ResponseHandler.sendRes(res, "TODO");
-		// "SUCCESS"
-		// "COMMUNICATION_ERROR" / "INVALID_USER" / "NOMATCH_USER_DID"
+
+		/*
+		return ResponseHandler.sendRes(res,  Messages.USER.SUCCESS.RECOVERED);
+		return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
+		*/
 	}
 );
 
@@ -84,8 +91,12 @@ router.post(
 		const userPass = req.body.userPass;
 
 		return ResponseHandler.sendRes(res, "TODO");
-		// "SUCCESS" { userDID, pubKey, privKey, Credntials } {encriptedCredential, timeStamp, credentialTemplate} ?
-		//
+		/*
+		return ResponseHandler.sendRes(res,  { userDID, pubKey, privKey, Credntials , encriptedCredential, timeStamp, credentialTemplate} );
+		return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
+		return ResponseHandler.sendErr(res, Messages.USER.ERR.INVALID_USER);
+		return ResponseHandler.sendErr(res, Messages.USER.ERR.NOMATCH_USER_DID);
+		*/
 	}
 );
 

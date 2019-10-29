@@ -1,111 +1,139 @@
 module.exports = {
 	INDEX: {
 		ERR: {
-			CONNECTION: "DB Connection Error: ",
-			DB_CONNECTION: "Error connecting db."
+			CONNECTION: "Error de conexion en la base de datos: "
 		},
 		MSG: {
-			CONNECTING: "connecting to: ",
-			CONNECTED: "DB Connected.",
-			DB_CONNECTED: "Db connected successfully.",
-			HELLO_WORLD: "Hello DIDI!",
-			RUNNING_ON: "Running Api on port "
+			CONNECTING: "conectandose a: ",
+			CONNECTED: "Base de datos conectada.",
+			HELLO_WORLD: "Hola DIDI!",
+			RUNNING_ON: "Ejecutandose en puerto "
+		}
+	},
+	SMS: {
+		SUCCESS: {
+			SENT: "SUCCESS",
+			MATCHED: "SMSCODE_MATCH"
+		},
+		ERR: {
+			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
+			NO_SMSCODE_MATCH: { code: "NO_SMSCODE_MATCH", message: "El código de validacion es incorrecto." }
 		}
 	},
 	EMAIL: {
+		SUCCESS: {
+			SENT: "SUCCESS",
+			MATCHED: "EMAILCODE_MATCH"
+		},
 		ERR: {
-			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "Error sending email" }
+			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
+			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
+			CREATE: { code: "EMAIL_CREATE", message: "No pudo crearse el mail." },
+			GET: { code: "EMAIL_GET", message: "No se encontro el mail." }
 		},
 		VALIDATION: {
 			FROM: "Excited User <me@samples.mailgun.org>",
 			SUBJECT: "DIDI validation code",
 			MESSAGE: code => {
 				return (
-					"Hi there,\n" +
-					"We recieved a request to recover your DIDI password using this email\n\n" +
+					"Hola,\n" +
+					"Este es tu código de validacion para validar tu cuenta de DIDI\n\n" +
 					"CODE: " +
 					code +
 					"\n" +
-					"If did not make such request, please contact DIDI support immediately at didi@mailgun.com" +
-					"\n\n With love," +
-					"\nThe DIDI Team"
+					"Si no realizaste el pedido de dicho código por favor comunicate inmediatamente con nuestro servicio al cliente en didi@mailgun.com" +
+					"\n\n Saludos," +
+					"\nEl equipo de DIDI"
 				);
 			}
 		}
 	},
-	VALIDATION: {
-		DOES_NOT_EXIST: function(type) {
-			return { code: "MISSING_PARAMETER", message: "missing parameter: " + type };
-		},
-		MOVILE_PHONE_FORMAT_INVALID: function(field) {
-			return {
-				code: "INVALID_PHONE_FORMAT",
-				message: "the field " + field + " was invalid, expected a mobile phone number"
-			};
-		},
-		EMAIL_FORMAT_INVALID: function(field) {
-			return {
-				code: "INVALID_EMAIL_FORMAT",
-				message: "the field " + field + " was invalid, expected an email"
-			};
-		},
-		STRING_FORMAT_INVALID: function(field) {
-			return {
-				code: "INVALID_STRING_FORMAT",
-				message: "the field " + field + " was invalid, expected a string"
-			};
-		},
-		BASE64_FORMAT_INVALID: function(field) {
-			return {
-				code: "INVALID_BASE64_FORMAT",
-				message: "the field " + field + " was invalid, expected a base64 encoded string"
-			};
-		},
-		DATE_FORMAT_INVALID: function(field) {
-			return {
-				code: "INVALID_DATE_FORMAT",
-				message: "the field " + field + " was invalid, expected date-time: 'yyyy-mm-ddThh:mm:ssZ.' "
-			};
-		},
-		LENGTH_INVALID: function(field, min, max) {
-			const code = "INVALID_LENGTH";
-			const msgStart = "the field " + field + " was supposed to";
-
-			if (min && !max) {
-				return {
-					code: code,
-					message: msgStart + " have more than " + min + " characters"
-				};
-			}
-
-			if (!min && max) {
-				return {
-					code: code,
-					message: msgStart + " have less than " + max + " characters"
-				};
-			}
-
-			if (min == max) {
-				return {
-					code: code,
-					message: msgStart + " have " + max + " characters"
-				};
-			} else {
-				return {
-					code: code,
-					message: msgStart + " be between " + min + " and " + max + " characters long"
-				};
-			}
-		}
-	},
 	USER: {
+		SUCCESS: {
+			REGISTERED: "SUCCESS",
+			RECOVERED: "SUCCESS"
+		},
 		ERR: {
+			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
+			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
+			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden" },
+			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "" }
+			/*
 			LOGIN: { code: "USER_LOGIN", message: "Couldn't login" },
 			GET_ALL: { code: "USER_GET_ALL", message: "Couldn't get users" },
 			GET: { code: "USER_GET", message: "Couldn't get the user" },
 			CREATE: { code: "USER_CREATE", message: "Couldn't create the user." },
 			EDIT: { code: "USER_EDIT", message: "Couldn't edit the user." },
 			DELETE: { code: "USER_DELETE", message: "Couldn't delete the user." }
+			*/
+		}
+	},
+	VALIDATION: {
+		DOES_NOT_EXIST: function(type) {
+			return { code: "MISSING_PARAMETER", message: "falta el campo: " + type };
+		},
+		MOVILE_PHONE_FORMAT_INVALID: function(field) {
+			return {
+				code: "INVALID_PHONE_FORMAT",
+				message: "el campo " + field + " es incorrecto, se esperaba un número telefónico"
+			};
+		},
+		EMAIL_FORMAT_INVALID: function(field) {
+			return {
+				code: "INVALID_EMAIL_FORMAT",
+				message: "el campo " + field + " es incorrecto, se esperaba un mail"
+			};
+		},
+		STRING_FORMAT_INVALID: function(field) {
+			return {
+				code: "INVALID_STRING_FORMAT",
+				message: "el campo " + field + " es incorrecto, se esperaba un texto"
+			};
+		},
+		BASE64_FORMAT_INVALID: function(field) {
+			return {
+				code: "INVALID_BASE64_FORMAT",
+				message: "el campo " + field + " es incorrecto, se esperaba un texto en base 64"
+			};
+		},
+		DATE_FORMAT_INVALID: function(field) {
+			return {
+				code: "INVALID_DATE_FORMAT",
+				message:
+					"el campo " +
+					field +
+					" es incorrecto, se esperaba una fecha con el siguiente formato: 'aaaa-mm-ddThh:mm:ssZ.' "
+			};
+		},
+		LENGTH_INVALID: function(field, min, max) {
+			const code = "INVALID_LENGTH";
+			const msgStart = "el campo " + field + " tendria que tener ";
+
+			if (min && !max) {
+				return {
+					code: code,
+					message: msgStart + " mas que " + min + " caracteres"
+				};
+			}
+
+			if (!min && max) {
+				return {
+					code: code,
+					message: msgStart + " menos que " + max + " caracteres"
+				};
+			}
+
+			if (min == max) {
+				return {
+					code: code,
+					message: msgStart + " exactamete " + max + " caracteres"
+				};
+			} else {
+				return {
+					code: code,
+					message: msgStart + " entre " + min + " y " + max + " caracteres"
+				};
+			}
 		}
 	}
 };

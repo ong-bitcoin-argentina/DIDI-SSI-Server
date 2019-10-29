@@ -1,11 +1,10 @@
 const router = require("express").Router();
 
+const MailService = require("../services/MailService");
 const ResponseHandler = require("./utils/ResponseHandler");
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
-
-var mailgun = require("mailgun-js")({ apiKey: Constants.MAILGUN_API_KEY, domain: Constants.MAILGUN_DOMAIN });
 
 /*
 	Validación del email. El usuario debe envia su mail personal para poder
@@ -16,30 +15,39 @@ router.post(
 	"/sendMailValidator",
 	Validator.validateBody([
 		{ name: "timeStamp", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_DATE_TIME] },
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	function(req, res) {
 		const timeStamp = req.body.timeStamp;
 		const eMail = req.body.eMail;
+		const did = req.body.did;
 
-		const data = {
-			from: Messages.EMAIL.VALIDATION.FROM,
-			to: eMail,
-			subject: Messages.EMAIL.VALIDATION.SUBJECT,
-			text: Messages.EMAIL.VALIDATION.MESSAGE("123456")
-		};
+		// TODO obtener codigo
+		const code = "123456";
 
-		mailgun.messages().send(data, (error, body) => {
-			if (error) {
-				console.log(error);
-				return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+		MailService.create(
+			eMail,
+			code,
+			did,
+			timeStamp,
+			function(_) {
+				MailService.sendValidationCode(
+					eMail,
+					code,
+					function(_) {
+						return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.SENT);
+					},
+					function(err) {
+						return ResponseHandler.sendErr(res, err);
+					}
+				);
+			},
+			function(err) {
+				return ResponseHandler.sendErr(res, err);
 			}
-			return ResponseHandler.sendRes(res, "");
-		});
-
-		// "SUCCESS"
-		// "COMMUNICATION_ERROR"
+		);
 	}
 );
 
@@ -52,16 +60,26 @@ router.post(
 	"/verifyMailCode",
 	Validator.validateBody([
 		{ name: "validationCode", validate: [Constants.VALIDATION_TYPES.IS_STRING], length: { min: 6, max: 6 } },
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{ name: "timeStamp", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_DATE_TIME] }
 	]),
 	Validator.checkValidationResult,
 	function(req, res) {
+		const timeStamp = req.body.timeStamp;
 		const validationCode = req.body.validationCode;
-		const did = req.body.did;
+		const eMail = req.body.eMail;
 
-		return ResponseHandler.sendRes(res, "TODO");
-		// "EMAILCODE_MATCH"
-		// "COMMUNICATION_ERROR" / "NO_EMAILCODE_MATCH"
+		MailService.validateMail(
+			eMail,
+			validationCode,
+			timeStamp,
+			function(_) {
+				return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED);
+			},
+			function(err) {
+				return ResponseHandler.sendErr(res, err);
+			}
+		);
 	}
 );
 
