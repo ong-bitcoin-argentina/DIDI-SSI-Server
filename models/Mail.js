@@ -36,26 +36,24 @@ MailSchema.index(
 	}
 );
 
-// MailSchema.index({ createdOn: 1 }, { expireAfterSeconds: 3600 });
 
+// encrypt code & did
 MailSchema.pre("save", function(next) {
-	var user = this;
+	var mail = this;
 
-	// only hash the password if it has been modified (or is new)
-	if (user.isModified("code") || user.isModified("did")) {
-		// generate a salt
+	if (mail.isModified("code") || mail.isModified("did")) {
+
 		bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
 			if (err) return next(err);
 
-			// hash the password using our new salt
-			bcrypt.hash(user.code, salt, function(err, hashCode) {
+			bcrypt.hash(mail.code, salt, function(err, hashCode) {
 				if (err) return next(err);
 
-				user.code = hashCode;
-				bcrypt.hash(user.did, salt, function(err, hashDid) {
+				mail.code = hashCode;
+				bcrypt.hash(mail.did, salt, function(err, hashDid) {
 					if (err) return next(err);
 
-					user.did = hashDid;
+					mail.did = hashDid;
 					next();
 				});
 			});
@@ -83,7 +81,6 @@ MailSchema.methods.validateMail = function(code, cb, errCb) {
 		code,
 		function(isMatch) {
 			if (!isMatch) return cb(null);
-			console.log(self._id);
 			return Mail.findOneAndUpdate({ _id: self._id }, { $set: { validated: true } }, function(err, _) {
 				if (err) return errCb(err);
 				self.validated = true;

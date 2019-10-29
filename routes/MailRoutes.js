@@ -1,7 +1,8 @@
 const router = require("express").Router();
+const ResponseHandler = require("./utils/ResponseHandler");
 
 const MailService = require("../services/MailService");
-const ResponseHandler = require("./utils/ResponseHandler");
+
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
@@ -14,13 +15,11 @@ const Constants = require("../constants/Constants");
 router.post(
 	"/sendMailValidator",
 	Validator.validateBody([
-		{ name: "timeStamp", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_DATE_TIME] },
 		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	function(req, res) {
-		const timeStamp = req.body.timeStamp;
 		const eMail = req.body.eMail;
 		const did = req.body.did;
 
@@ -31,7 +30,6 @@ router.post(
 			eMail,
 			code,
 			did,
-			timeStamp,
 			function(_) {
 				MailService.sendValidationCode(
 					eMail,
@@ -60,19 +58,16 @@ router.post(
 	"/verifyMailCode",
 	Validator.validateBody([
 		{ name: "validationCode", validate: [Constants.VALIDATION_TYPES.IS_STRING], length: { min: 6, max: 6 } },
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{ name: "timeStamp", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_DATE_TIME] }
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
 	]),
 	Validator.checkValidationResult,
 	function(req, res) {
-		const timeStamp = req.body.timeStamp;
 		const validationCode = req.body.validationCode;
 		const eMail = req.body.eMail;
 
 		MailService.validateMail(
 			eMail,
 			validationCode,
-			timeStamp,
 			function(_) {
 				return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED);
 			},
