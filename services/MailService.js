@@ -61,6 +61,33 @@ class MailService {
 			}
 		);
 	}
+
+	static isValidated(email, did, cb, errCb) {
+		Mail.getByEmail(
+			email,
+			function(mail) {
+				if (!mail) return errCb(Messages.EMAIL.ERR.GET);
+
+				mail.compareDID(
+					did,
+					function(match) {
+						if(!match) {
+							errCb(Messages.EMAIL.ERR.INVALID_DID);
+						}
+						return cb(mail.validated);
+					},
+					function(err) {
+						console.log(err);
+						return errCb(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+					}
+				);
+			},
+			function(err) {
+				console.log(err);
+				return errCb(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+			}
+		);
+	}
 }
 
 module.exports = MailService;

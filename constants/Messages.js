@@ -22,12 +22,15 @@ module.exports = {
 	},
 	EMAIL: {
 		SUCCESS: {
+			VALIDATED: "VALIDATED",
+			NOT_VALIDATED: "NOT VALIDATED",
 			SENT: "SUCCESS",
 			MATCHED: "EMAILCODE_MATCH"
 		},
 		ERR: {
 			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
 			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
+			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail" },
 			CREATE: { code: "EMAIL_CREATE", message: "No pudo crearse el mail." },
 			GET: { code: "EMAIL_GET", message: "No se encontro el mail." }
 		},
@@ -40,10 +43,10 @@ module.exports = {
 					"Este es tu código de validacion para validar tu cuenta de DIDI\n\n" +
 					"CODE: " +
 					code +
-					"\n" +
-					"Si no realizaste el pedido de dicho código por favor comunicate inmediatamente con nuestro servicio al cliente en didi@mailgun.com" +
-					"\n\n Saludos," +
-					"\nEl equipo de DIDI"
+					"\n\n" +
+					"Si no realizaste el pedido de dicho código por favor comunicate inmediatamente con nuestro servicio al cliente en didi@mailgun.com\n\n" +
+					"Saludos,\n" +
+					"El equipo de DIDI"
 				);
 			}
 		}
