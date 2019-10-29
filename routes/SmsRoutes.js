@@ -25,10 +25,10 @@ router.post(
 		const phoneNumber = req.body.cellPhoneNumber;
 		const did = req.body.did;
 
-		// TODO obtener codigo
-		const code = "123456";
+		const code = (Math.random() + 1).toString(36).substring(Constants.RECOVERY_CODE_LENGTH);
+		if (Constants.DEBUGG) console.log(code);
 
-		SmsService.create(
+		return SmsService.create(
 			phoneNumber,
 			code,
 			did,
@@ -59,7 +59,11 @@ router.post(
 router.post(
 	"/verifySmsCode",
 	Validator.validateBody([
-		{ name: "validationCode", validate: [Constants.VALIDATION_TYPES.IS_STRING], length: { min: 6, max: 6 } },
+		{
+			name: "validationCode",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
@@ -67,7 +71,7 @@ router.post(
 		const validationCode = req.body.validationCode;
 		const did = req.body.did;
 
-		SmsService.validatePhone(
+		return SmsService.validatePhone(
 			did,
 			validationCode,
 			function(_) {
@@ -80,6 +84,7 @@ router.post(
 	}
 );
 
+/*
 router.post(
 	"/isVerifiedSms",
 	Validator.validateBody([
@@ -89,7 +94,7 @@ router.post(
 	function(req, res) {
 		const did = req.body.did;
 
-		SmsService.isValidated(
+		return SmsService.isValidated(
 			did,
 			function(validated) {
 				return ResponseHandler.sendRes(
@@ -103,5 +108,6 @@ router.post(
 		);
 	}
 );
+*/
 
 module.exports = router;

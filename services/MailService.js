@@ -62,6 +62,7 @@ class MailService {
 		);
 	}
 
+	/*
 	static isValidated(did, cb, errCb) {
 		Mail.getValidated(
 			did,
@@ -75,6 +76,7 @@ class MailService {
 			}
 		);
 	}
+	*/
 }
 
 module.exports = MailService;

@@ -23,10 +23,10 @@ router.post(
 		const eMail = req.body.eMail;
 		const did = req.body.did;
 
-		// TODO obtener codigo
-		const code = "123456";
+		const code = (Math.random() + 1).toString(36).substring(Constants.RECOVERY_CODE_LENGTH);
+		if (Constants.DEBUGG) console.log(code);
 
-		MailService.create(
+		return MailService.create(
 			eMail,
 			code,
 			did,
@@ -57,7 +57,11 @@ router.post(
 router.post(
 	"/verifyMailCode",
 	Validator.validateBody([
-		{ name: "validationCode", validate: [Constants.VALIDATION_TYPES.IS_STRING], length: { min: 6, max: 6 } },
+		{
+			name: "validationCode",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
@@ -65,7 +69,7 @@ router.post(
 		const validationCode = req.body.validationCode;
 		const did = req.body.did;
 
-		MailService.validateMail(
+		return MailService.validateMail(
 			did,
 			validationCode,
 			function(_) {
@@ -78,6 +82,7 @@ router.post(
 	}
 );
 
+/*
 router.post(
 	"/isVerifiedMail",
 	Validator.validateBody([
@@ -87,7 +92,7 @@ router.post(
 	function(req, res) {
 		const did = req.body.did;
 
-		MailService.isValidated(
+		return MailService.isValidated(
 			did,
 			function(validated) {
 				return ResponseHandler.sendRes(
@@ -101,5 +106,6 @@ router.post(
 		);
 	}
 );
+*/
 
 module.exports = router;

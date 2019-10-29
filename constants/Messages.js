@@ -73,22 +73,17 @@ module.exports = {
 	},
 	USER: {
 		SUCCESS: {
+			LOGGED_IN: "SUCCESS",
 			REGISTERED: "SUCCESS",
-			RECOVERED: "SUCCESS"
 		},
 		ERR: {
 			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden" },
-			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "" }
-			/*
-			LOGIN: { code: "USER_LOGIN", message: "Couldn't login" },
-			GET_ALL: { code: "USER_GET_ALL", message: "Couldn't get users" },
-			GET: { code: "USER_GET", message: "Couldn't get the user" },
-			CREATE: { code: "USER_CREATE", message: "Couldn't create the user." },
-			EDIT: { code: "USER_EDIT", message: "Couldn't edit the user." },
-			DELETE: { code: "USER_DELETE", message: "Couldn't delete the user." }
-			*/
+			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontro ningun usuario con ese did y mail" },
+			NOMATCH_USER_EMAIL: { code: "NOMATCH_USER_EMAIL", message: "No se encontro ningun usuario con ese mail y contraseña" },
+			CREATE: { code: "USER_CREATE", message: "No pudo guardarse el usuario." },
+			GET: { code: "USER_GET", message: "No se encontro el usuario." }
 		}
 	},
 	VALIDATION: {

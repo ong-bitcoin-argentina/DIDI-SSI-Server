@@ -55,6 +55,7 @@ class SmsService {
 		);
 	}
 
+	/*
 	static isValidated(did, cb, errCb) {
 		Phone.getValidated(
 			did,
@@ -68,6 +69,7 @@ class SmsService {
 			}
 		);
 	}
+	*/
 }
 
 module.exports = SmsService;

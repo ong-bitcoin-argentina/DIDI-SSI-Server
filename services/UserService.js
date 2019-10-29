@@ -1,117 +1,84 @@
-// const User = require("../models/User");
+const User = require("../models/User");
 const Messages = require("../constants/Messages");
 
 class UserService {
-	/*
-	static login(name, pass, cb, errCb) {
-		return User.getByName(
-			name,
+	static create(did, privateKeySeed, userMail, phoneNumber, userPass, cb, errCb) {
+		User.getByDID(
+			did,
 			function(user) {
-				return user.comparePassword(pass, function(err, res) {
-					if (err) {
-						console.log(err);
-						return errCb(Messages.USER.ERR.LOGIN);
-					}
-					return cb(res);
-				});
-			},
-			function(err) {
-				console.log(err);
-				errCb(Messages.USER.ERR.LOGIN);
-			}
-		);
-	}
-
-	static getAll(cb, errCb) {
-		return User.getAll(
-			function(users) {
-				return cb(users);
-			},
-			function(err) {
-				console.log(err);
-				errCb(Messages.USER.ERR.GET_ALL);
-			}
-		);
-	}
-
-	static get(userId, cb, errCb) {
-		return User.getById(
-			userId,
-			function(user) {
-				return cb(user);
-			},
-			function(err) {
-				console.log(err);
-				errCb(Messages.USER.ERR.GET_ALL);
-			}
-		);
-	}
-
-	static create(name, pass, cb, errCb) {
-		User.generate(
-			name,
-			pass,
-			function(user) {
-				if (!user) return errCb(Messages.USER.ERR.CREATE);
-				return cb(user);
-			},
-			function(err) {
-				console.log(err);
-				errCb(Messages.USER.ERR.CREATE);
-			}
-		);
-	}
-
-	static edit(userId, name, cb, errCb) {
-		return User.getById(
-			userId,
-			function(user) {
-				if (!user) return errCb(Messages.USER.ERR.GET);
-				User.edit(
-					user._id,
-					{ name: name },
+				if (user) return errCb(Messages.USER.ERR.USER_ALREADY_EXIST);
+				User.generate(
+					did,
+					privateKeySeed,
+					userMail,
+					phoneNumber,
+					userPass,
 					function(user) {
-						if (!user) return errCb(Messages.USER.ERR.EDIT);
+						if (!user) return errCb(Messages.USER.ERR.CREATE);
 						return cb(user);
 					},
 					function(err) {
 						console.log(err);
-						errCb(Messages.USER.ERR.EDIT);
+						errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
 					}
 				);
 			},
 			function(err) {
 				console.log(err);
-				errCb(Messages.USER.ERR.GET);
+				errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
 			}
 		);
 	}
 
-	static delete(userId, cb, errCb) {
-		return User.getById(
-			userId,
+	static login(did, email, pass, cb, errCb) {
+		return User.getByDIDAndEmail(
+			did,
+			email,
 			function(user) {
-				if (!user) return errCb(Messages.USER.ERR.GET);
-				User.edit(
-					user._id,
-					{ deleted: true },
-					function(user) {
-						if (!user) return errCb(Messages.USER.ERR.DELETE);
-						return cb(user);
+				if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
+				return user.comparePassword(
+					pass,
+					function(isMatch) {
+						if (!isMatch) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
+						return cb();
 					},
 					function(err) {
 						console.log(err);
-						errCb(Messages.USER.ERR.DELETE);
+						return errCb(Messages.USER.ERR.INVALID_USER);
 					}
 				);
 			},
 			function(err) {
 				console.log(err);
-				errCb(Messages.USER.ERR.GET);
+				return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
 			}
 		);
 	}
-	*/
+
+	static recoverAccount(mail, pass, cb, errCb) {
+		return User.getByEmail(
+			mail,
+			function(user) {
+				if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_EMAIL);
+				return user.comparePassword(
+					pass,
+					function(isMatch) {
+						if (!isMatch) return errCb(Messages.USER.ERR.INVALID_USER);
+						return cb(user.seed);
+					},
+					function(err) {
+						console.log(err);
+						return errCb(Messages.USER.ERR.INVALID_USER);
+					}
+				);
+			},
+			function(err) {
+				console.log(err);
+				return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
+			}
+		);
+	}
+
 }
 
 module.exports = UserService;
