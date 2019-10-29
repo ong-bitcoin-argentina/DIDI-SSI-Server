@@ -1,4 +1,3 @@
-/*
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -6,11 +5,23 @@ const bcrypt = require("bcrypt");
 const SALT_WORK_FACTOR = 10;
 
 const UserSchema = new mongoose.Schema({
-	name: {
+	mail: {
+		type: String,
+		required: true
+	},
+	phoneNumber: {
+		type: String,
+		required: true
+	},
+	did: {
 		type: String,
 		required: true
 	},
 	password: {
+		type: String,
+		required: true
+	},
+	seed: {
 		type: String,
 		required: true
 	},
@@ -29,7 +40,14 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.index(
-	{ name: 1 },
+	{ did: 1 },
+	{
+		unique: true
+	}
+);
+
+UserSchema.index(
+	{ mail: 1 },
 	{
 		unique: true
 	}
@@ -38,65 +56,37 @@ UserSchema.index(
 UserSchema.pre("save", function(next) {
 	var user = this;
 
-	// only hash the password if it has been modified (or is new)
 	if (!user.isModified("password")) return next();
 
-	// generate a salt
 	bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
 		if (err) return next(err);
 
-		// hash the password using our new salt
 		bcrypt.hash(user.password, salt, function(err, hash) {
 			if (err) return next(err);
 
-			// override the cleartext password with the hashed one
 			user.password = hash;
 			next();
 		});
 	});
 });
 
-UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+UserSchema.methods.comparePassword = function(candidatePassword, cb, errCb) {
 	bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-		if (err) return cb(err);
-		cb(null, isMatch);
+		if (err) return errCb(err);
+		cb(isMatch);
 	});
-};
-
-UserSchema.methods.getPublicData = function() {
-	return {
-		name: this.name
-	};
 };
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
-User.getAll = function(cb, errCb) {
-	return User.find({ deleted: false }, function(err, users) {
-		if (err) return errCb(err);
-		return cb(users.map(user => user));
-	});
-};
-
-User.getById = function(id, cb, errCb) {
-	return User.findOne({ _id: ObjectId(id), deleted: false }, function(err, user) {
-		if (err) return errCb(err);
-		return cb(user);
-	});
-};
-
-User.getByName = function(name, cb, errCb) {
-	return User.findOne({ name: name, deleted: false }, function(err, user) {
-		if (err) return errCb(err);
-		return cb(user);
-	});
-};
-
-User.generate = function(name, pass, cb, errCb) {
+User.generate = function(did, seed, mail, phoneNumber, pass, cb, errCb) {
 	var user = new User();
 
-	user.name = name;
+	user.mail = mail;
+	user.phoneNumber = phoneNumber;
+	user.did = did;
+	user.seed = seed;
 	user.createdOn = new Date();
 	user.modifiedOn = new Date();
 	user.password = pass;
@@ -108,15 +98,23 @@ User.generate = function(name, pass, cb, errCb) {
 	});
 };
 
-User.edit = function(userId, data, cb, errCb) {
-	return User.findOneAndUpdate({ _id: ObjectId(userId) }, { $set: data }, function(err, user) {
+User.getByDID = function(did, cb, errCb) {
+	return User.findOne({ did: did, deleted: false }, function(err, user) {
 		if (err) return errCb(err);
-
-		for (let key in Object.keys(data)) {
-			user[key] = data[key];
-		}
-
 		return cb(user);
 	});
 };
-*/
+
+User.getByDIDAndEmail = function(did, email, cb, errCb) {
+	return User.findOne({ did: did, mail: email, deleted: false }, function(err, user) {
+		if (err) return errCb(err);
+		return cb(user);
+	});
+};
+
+User.getByEmail = function(email, cb, errCb) {
+	return User.findOne({ mail: email, deleted: false }, function(err, user) {
+		if (err) return errCb(err);
+		return cb(user);
+	});
+};

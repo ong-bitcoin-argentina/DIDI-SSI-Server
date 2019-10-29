@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+const Constants = require("../constants/Constants");
 const bcrypt = require("bcrypt");
 const SALT_WORK_FACTOR = 10;
 
@@ -93,7 +94,7 @@ Mail.generate = function(email, code, did, cb, errCb) {
 			mail.createdOn = new Date();
 
 			let date = new Date();
-			date.setHours(date.getHours() + 1);
+			date.setHours(date.getHours() + Constants.HOURS_BEFORE_CODE_EXPIRES);
 			mail.expiresOn = date;
 
 			mail.validated = false;
