@@ -209,4 +209,81 @@ router.post(
 	}
 );
 
+/*
+
+*/
+router.post(
+	"/changePhoneNumber",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "password",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{
+			name: "newPhoneNumber",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+		}
+	]),
+	Validator.checkValidationResult,
+	function(req, res) {
+		const did = req.body.did;
+		const eMail = req.body.eMail;
+		const password = req.body.password;
+		const newPhoneNumber = req.body.newPhoneNumber;
+
+		return UserService.changePhoneNumber(
+			did,
+			password,
+			eMail,
+			newPhoneNumber,
+			function(_) {
+				return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
+			},
+			function(err) {
+				return ResponseHandler.sendErr(res, err);
+			}
+		);
+	}
+);
+
+/*
+
+*/
+router.post(
+	"/changeEmail",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "password",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "newEMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
+	]),
+	Validator.checkValidationResult,
+	function(req, res) {
+		const did = req.body.did;
+		const eMail = req.body.eMail;
+		const password = req.body.password;
+		const newEMail = req.body.newEMail;
+
+		return UserService.changeEmail(
+			did,
+			password,
+			eMail,
+			newEMail,
+			function(_) {
+				return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL);
+			},
+			function(err) {
+				return ResponseHandler.sendErr(res, err);
+			}
+		);
+	}
+);
+
 module.exports = router;

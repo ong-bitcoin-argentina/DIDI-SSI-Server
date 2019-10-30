@@ -31,7 +31,7 @@ const MailSchema = new mongoose.Schema({
 });
 
 MailSchema.index(
-	{ did: 1, validated: 1 },
+	{ did: 1 },
 	{
 		unique: true
 	}
@@ -81,9 +81,12 @@ const Mail = mongoose.model("Mail", MailSchema);
 module.exports = Mail;
 
 Mail.generate = function(email, code, did, cb, errCb) {
-	return Mail.get(
-		did,
-		function(mail) {
+	return Mail.findOne(
+		{ did: did },
+		{},
+		function(err, mail) {
+			if (err) return errCb(err);
+
 			if (!mail) {
 				mail = new Mail();
 			}
@@ -109,7 +112,7 @@ Mail.generate = function(email, code, did, cb, errCb) {
 };
 
 Mail.get = function(did, cb, errCb) {
-	return Mail.findOne({ did: did, validated: false }, function(err, mail) {
+	return Mail.findOne({ did: did, validated: false }, {}, function(err, mail) {
 		if (err) return errCb(err);
 		if (!mail || mail.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(mail);
@@ -117,7 +120,7 @@ Mail.get = function(did, cb, errCb) {
 };
 
 Mail.getValidated = function(did, cb, errCb) {
-	return Mail.findOne({ did: did, validated: true }, function(err, mail) {
+	return Mail.findOne({ did: did, validated: true }, {}, function(err, mail) {
 		if (err) return errCb(err);
 		if (!mail || mail.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(mail);
