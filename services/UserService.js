@@ -112,6 +112,30 @@ class UserService {
 			}
 		);
 	}
+
+	static recoverPassword(did, email, newPass, cb, errCb) {
+		return User.getByDIDAndEmail(
+			did,
+			email,
+			function(user) {
+				if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
+				return user.updatePassword(
+					newPass,
+					function(user) {
+						return cb(user);
+					},
+					function(err) {
+						console.log(err);
+						return errCb(Messages.USER.ERR.UPDATE);
+					}
+				);
+			},
+			function(err) {
+				console.log(err);
+				return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
+			}
+		);
+	}
 }
 
 module.exports = UserService;
