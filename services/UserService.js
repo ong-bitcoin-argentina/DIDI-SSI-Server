@@ -1,10 +1,36 @@
 const User = require("../models/User");
 const Messages = require("../constants/Messages");
 
+let _getAndValidate = function(did, email, pass, cb, errCb) {
+	return User.getByDIDAndEmail(
+		did,
+		email,
+		function(user) {
+			if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
+			return user.comparePassword(
+				pass,
+				function(isMatch) {
+					if (!isMatch) return errCb(Messages.USER.ERR.INVALID_USER);
+					return cb(user);
+				},
+				function(err) {
+					console.log(err);
+					return errCb(Messages.USER.ERR.INVALID_USER);
+				}
+			);
+		},
+		function(err) {
+			console.log(err);
+			return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
+		}
+	);
+};
+
 class UserService {
 	static create(did, privateKeySeed, userMail, phoneNumber, userPass, cb, errCb) {
-		User.getByDID(
+		User.getByDIDAndEmail(
 			did,
+			userMail,
 			function(user) {
 				if (user) return errCb(Messages.USER.ERR.USER_ALREADY_EXIST);
 				User.generate(
@@ -31,28 +57,7 @@ class UserService {
 	}
 
 	static login(did, email, pass, cb, errCb) {
-		return User.getByDIDAndEmail(
-			did,
-			email,
-			function(user) {
-				if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
-				return user.comparePassword(
-					pass,
-					function(isMatch) {
-						if (!isMatch) return errCb(Messages.USER.ERR.INVALID_USER);
-						return cb();
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.USER.ERR.INVALID_USER);
-					}
-				);
-			},
-			function(err) {
-				console.log(err);
-				return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
-			}
-		);
+		return _getAndValidate(did, email, pass, cb, errCb);
 	}
 
 	static recoverAccount(mail, pass, cb, errCb) {
@@ -79,37 +84,66 @@ class UserService {
 		);
 	}
 
-	static changePassword(did, email, oldPass, newPass, cb, errCb) {
-		return User.getByDIDAndEmail(
+	static changeEmail(did, password, email, newMail, cb, errCb) {
+		return _getAndValidate(
 			did,
 			email,
+			password,
 			function(user) {
-				if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
-				return user.comparePassword(
-					oldPass,
-					function(isMatch) {
-						if (!isMatch) return errCb(Messages.USER.ERR.INVALID_USER);
-						return user.updatePassword(
-							newPass,
-							function(user) {
-								return cb(user);
-							},
-							function(err) {
-								console.log(err);
-								return errCb(Messages.USER.ERR.UPDATE);
-							}
-						);
+				return user.updateEmail(
+					newMail,
+					function(user) {
+						return cb(user);
 					},
 					function(err) {
 						console.log(err);
-						return errCb(Messages.USER.ERR.INVALID_USER);
+						return errCb(Messages.USER.ERR.UPDATE);
 					}
 				);
 			},
-			function(err) {
-				console.log(err);
-				return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
-			}
+			errCb
+		);
+	}
+
+	static changePhoneNumber(did, password, email, newPhoneNumber, cb, errCb) {
+		return _getAndValidate(
+			did,
+			email,
+			password,
+			function(user) {
+				return user.updatePhoneNumber(
+					newPhoneNumber,
+					function(user) {
+						return cb(user);
+					},
+					function(err) {
+						console.log(err);
+						return errCb(Messages.USER.ERR.UPDATE);
+					}
+				);
+			},
+			errCb
+		);
+	}
+
+	static changePassword(did, email, oldPass, newPass, cb, errCb) {
+		return _getAndValidate(
+			did,
+			email,
+			oldPass,
+			function(user) {
+				return user.updatePassword(
+					newPass,
+					function(user) {
+						return cb(user);
+					},
+					function(err) {
+						console.log(err);
+						return errCb(Messages.USER.ERR.UPDATE);
+					}
+				);
+			},
+			errCb
 		);
 	}
 

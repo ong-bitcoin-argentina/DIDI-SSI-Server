@@ -30,7 +30,7 @@ const PhoneSchema = new mongoose.Schema({
 });
 
 PhoneSchema.index(
-	{ did: 1, validated: 1 },
+	{ did: 1 },
 	{
 		unique: true
 	}
@@ -81,9 +81,12 @@ const Phone = mongoose.model("Phone", PhoneSchema);
 module.exports = Phone;
 
 Phone.generate = function(phoneNumber, code, did, cb, errCb) {
-	return Phone.get(
-		did,
-		function(phone) {
+	return Phone.findOne(
+		{ did: did },
+		{},
+		function(err, phone) {
+			if (err) return errCb(err);
+
 			if (!phone) {
 				phone = new Phone();
 			}
@@ -109,7 +112,7 @@ Phone.generate = function(phoneNumber, code, did, cb, errCb) {
 };
 
 Phone.get = function(did, cb, errCb) {
-	return Phone.findOne({ did: did, validated: false }, function(err, phone) {
+	return Phone.findOne({ did: did, validated: false }, {}, function(err, phone) {
 		if (err) return errCb(err);
 		if (!phone || phone.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(phone);
@@ -117,7 +120,7 @@ Phone.get = function(did, cb, errCb) {
 };
 
 Phone.getValidated = function(did, cb, errCb) {
-	return Phone.findOne({ did: did, validated: true }, function(err, phone) {
+	return Phone.findOne({ did: did, validated: true }, {}, function(err, phone) {
 		if (err) return errCb(err);
 		if (!phone || phone.expiresOn.getTime() < new Date().getTime()) return cb(null);
 		return cb(phone);
