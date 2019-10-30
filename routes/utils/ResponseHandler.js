@@ -1,3 +1,5 @@
+const Constants = require("../../constants/Constants");
+
 class ResponseHandler {
 	static sendHtml(res, data) {
 		res.type("text/html; charset=UTF-8");
@@ -14,6 +16,8 @@ class ResponseHandler {
 	}
 
 	static sendErr(res, err) {
+		if (Constants.DEBUGG) console.log(err);
+
 		res.type("application/json; charset=UTF-8");
 		return res.json({
 			status: "error",
