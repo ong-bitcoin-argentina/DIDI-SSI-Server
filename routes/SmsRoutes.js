@@ -25,7 +25,11 @@ router.post(
 		const phoneNumber = req.body.cellPhoneNumber;
 		const did = req.body.did;
 
-		const code = (Math.random() + 1).toString(36).substring(Constants.RECOVERY_CODE_LENGTH);
+		let code;
+		do {
+			code = (Math.random() + 1).toString(36).substring(Constants.RECOVERY_CODE_LENGTH);
+		} while (code.length > Constants.RECOVERY_CODE_LENGTH);
+
 		if (Constants.DEBUGG) console.log(code);
 
 		return SmsService.create(
