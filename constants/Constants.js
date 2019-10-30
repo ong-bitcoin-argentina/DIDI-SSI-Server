@@ -21,12 +21,16 @@ module.exports = {
 		IS_EMAIL: "isEmail",
 		IS_BASE_64: "isBase64",
 		IS_STRING: "isString",
-		IS_DATE_TIME: "isDateTime"
+		IS_DATE_TIME: "isDateTime",
+		IS_PASSWORD: "isPassword"
 	},
 
-	MAILGUN_API_KEY: '***REMOVED***',
-	MAILGUN_DOMAIN: '***REMOVED***',
+	MAILGUN_API_KEY: "***REMOVED***",
+	MAILGUN_DOMAIN: "***REMOVED***",
 
 	RECOVERY_CODE_LENGTH: 6,
-	HOURS_BEFORE_CODE_EXPIRES: 1
+	HOURS_BEFORE_CODE_EXPIRES: 1,
+
+	PASSWORD_MIN_LENGTH: 6,
+	COMMON_PASSWORDS: ["123456", "contraseña", "password"]
 };

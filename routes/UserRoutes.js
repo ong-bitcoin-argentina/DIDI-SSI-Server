@@ -13,7 +13,11 @@ router.post(
 	"/registerUser",
 	Validator.validateBody([
 		{ name: "userMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{ name: "userPass", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "userPass",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
 		{
 			name: "phoneNumber",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
@@ -55,7 +59,11 @@ router.post(
 	"/userLogin",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "userPass", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "userPass",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
 		{ name: "userEmail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
 	]),
 	Validator.checkValidationResult,
@@ -85,7 +93,11 @@ router.post(
 	"/recoverAccount",
 	Validator.validateBody([
 		{ name: "userMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{ name: "userPass", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{
+			name: "userPass",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		}
 	]),
 	Validator.checkValidationResult,
 	function(req, res) {
@@ -97,6 +109,47 @@ router.post(
 			userPass,
 			function(seed) {
 				return ResponseHandler.sendRes(res, { privateKeySeed: seed });
+			},
+			function(err) {
+				return ResponseHandler.sendErr(res, err);
+			}
+		);
+	}
+);
+
+/*
+
+*/
+router.post(
+	"/changePassword",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "userMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{
+			name: "oldPass",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
+		{
+			name: "newPass",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		}
+	]),
+	Validator.checkValidationResult,
+	function(req, res) {
+		const did = req.body.did;
+		const userMail = req.body.userMail;
+		const oldPass = req.body.oldPass;
+		const newPass = req.body.newPass;
+
+		return UserService.changePassword(
+			did,
+			userMail,
+			oldPass,
+			newPass,
+			function(_) {
+				return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 			},
 			function(err) {
 				return ResponseHandler.sendErr(res, err);
