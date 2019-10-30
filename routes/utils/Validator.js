@@ -28,6 +28,12 @@ class Validator {
 			if (param.validate && param.validate.length) {
 				param.validate.forEach(validationType => {
 					switch (validationType) {
+						case Constants.VALIDATION_TYPES.IS_PASSWORD:
+							validation
+								.not()
+								.isIn(Constants.COMMON_PASSWORDS)
+								.withMessage(Messages.VALIDATION.COMMON_PASSWORD);
+							break;
 						case Constants.VALIDATION_TYPES.IS_MOBILE_PHONE:
 							validation.isMobilePhone("any").withMessage(Messages.VALIDATION.MOVILE_PHONE_FORMAT_INVALID(param.name));
 							break;

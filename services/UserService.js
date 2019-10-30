@@ -39,7 +39,7 @@ class UserService {
 				return user.comparePassword(
 					pass,
 					function(isMatch) {
-						if (!isMatch) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
+						if (!isMatch) return errCb(Messages.USER.ERR.INVALID_USER);
 						return cb();
 					},
 					function(err) {
@@ -79,6 +79,39 @@ class UserService {
 		);
 	}
 
+	static changePassword(did, email, oldPass, newPass, cb, errCb) {
+		return User.getByDIDAndEmail(
+			did,
+			email,
+			function(user) {
+				if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
+				return user.comparePassword(
+					oldPass,
+					function(isMatch) {
+						if (!isMatch) return errCb(Messages.USER.ERR.INVALID_USER);
+						return user.updatePassword(
+							newPass,
+							function(user) {
+								return cb(user);
+							},
+							function(err) {
+								console.log(err);
+								return errCb(Messages.USER.ERR.UPDATE);
+							}
+						);
+					},
+					function(err) {
+						console.log(err);
+						return errCb(Messages.USER.ERR.INVALID_USER);
+					}
+				);
+			},
+			function(err) {
+				console.log(err);
+				return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
+			}
+		);
+	}
 }
 
 module.exports = UserService;

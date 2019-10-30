@@ -77,6 +77,15 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb, errCb) {
 	});
 };
 
+UserSchema.methods.updatePassword = function(password, cb, errCb) {
+	var user = this;
+	user.password = password;
+	return user.save(function(err, user) {
+		if (err) return errCb(err);
+		return cb(user);
+	});
+};
+
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
 

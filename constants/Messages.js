@@ -55,7 +55,7 @@ module.exports = {
 			GET: { code: "EMAIL_GET", message: "No se encontro el mail." }
 		},
 		VALIDATION: {
-			FROM: "Excited User <me@samples.mailgun.org>",
+			FROM: "Didi admin <me@samples.mailgun.org>",
 			SUBJECT: "DIDI validation code",
 			MESSAGE: code => {
 				return (
@@ -75,18 +75,24 @@ module.exports = {
 		SUCCESS: {
 			LOGGED_IN: "SUCCESS",
 			REGISTERED: "SUCCESS",
+			CHANGED_PASS: "SUCCESS"
 		},
 		ERR: {
 			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden" },
 			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontro ningun usuario con ese did y mail" },
-			NOMATCH_USER_EMAIL: { code: "NOMATCH_USER_EMAIL", message: "No se encontro ningun usuario con ese mail y contraseña" },
+			NOMATCH_USER_EMAIL: {
+				code: "NOMATCH_USER_EMAIL",
+				message: "No se encontro ningun usuario con ese mail y contraseña"
+			},
 			CREATE: { code: "USER_CREATE", message: "No pudo guardarse el usuario." },
-			GET: { code: "USER_GET", message: "No se encontro el usuario." }
+			GET: { code: "USER_GET", message: "No se encontro el usuario." },
+			UPDATE: { code: "USER_UPDATE", message: "No se pudo actualizar el usuario." }
 		}
 	},
 	VALIDATION: {
+		COMMON_PASSWORD: { code: "COMMON_PASSWORD", message: "La contraseña ingresada es de uso común, por favor ingrese una mas segura." },
 		DOES_NOT_EXIST: function(type) {
 			return { code: "MISSING_PARAMETER", message: "falta el campo: " + type };
 		},
@@ -125,7 +131,7 @@ module.exports = {
 		},
 		LENGTH_INVALID: function(field, min, max) {
 			const code = "INVALID_LENGTH";
-			const msgStart = "el campo " + field + " tendria que tener ";
+			const msgStart = "el campo " + field + " tendria que tener";
 
 			if (min && !max) {
 				return {
