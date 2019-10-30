@@ -1,3 +1,5 @@
+const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." };
+
 module.exports = {
 	INDEX: {
 		ERR: {
@@ -34,10 +36,10 @@ module.exports = {
 			MATCHED: "SMSCODE_MATCH"
 		},
 		ERR: {
-			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
+			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			NO_SMSCODE_MATCH: { code: "NO_SMSCODE_MATCH", message: "El código de validacion es incorrecto." },
-			CREATE: { code: "PHONE_CREATE", message: "No pudo guardarse el telefono." },
-			GET: { code: "PHONE_GET", message: "No se encontro el telefono." }
+			CREATE: COMMUNICATION_ERROR,
+			GET: COMMUNICATION_ERROR
 		}
 	},
 	EMAIL: {
@@ -48,11 +50,11 @@ module.exports = {
 			MATCHED: "EMAILCODE_MATCH"
 		},
 		ERR: {
-			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
+			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
 			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail" },
-			CREATE: { code: "EMAIL_CREATE", message: "No pudo guardarse el mail." },
-			GET: { code: "EMAIL_GET", message: "No se encontro el mail." }
+			CREATE: COMMUNICATION_ERROR,
+			GET: COMMUNICATION_ERROR
 		},
 		VALIDATION: {
 			FROM: "Didi admin <me@samples.mailgun.org>",
@@ -78,51 +80,54 @@ module.exports = {
 			CHANGED_PASS: "SUCCESS"
 		},
 		ERR: {
-			COMMUNICATION_ERROR: { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." },
+			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden" },
-			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontro ningun usuario con ese did y mail" },
+			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontró ningún usuario con ese did y mail" },
 			NOMATCH_USER_EMAIL: {
 				code: "NOMATCH_USER_EMAIL",
-				message: "No se encontro ningun usuario con ese mail y contraseña"
+				message: "No se encontró ningún usuario con ese mail y contraseña"
 			},
-			CREATE: { code: "USER_CREATE", message: "No pudo guardarse el usuario." },
-			GET: { code: "USER_GET", message: "No se encontro el usuario." },
-			UPDATE: { code: "USER_UPDATE", message: "No se pudo actualizar el usuario." }
+			CREATE: COMMUNICATION_ERROR,
+			GET: COMMUNICATION_ERROR,
+			UPDATE: COMMUNICATION_ERROR
 		}
 	},
 	VALIDATION: {
-		COMMON_PASSWORD: { code: "COMMON_PASSWORD", message: "La contraseña ingresada es de uso común, por favor ingrese una mas segura." },
+		COMMON_PASSWORD: {
+			code: "PARAMETER_TYPE_ERROR",
+			message: "La contraseña ingresada es de uso común, por favor ingrese una mas segura."
+		},
 		DOES_NOT_EXIST: function(type) {
-			return { code: "MISSING_PARAMETER", message: "falta el campo: " + type };
+			return { code: "PARAMETER_MISSING", message: "falta el campo: " + type };
 		},
 		MOVILE_PHONE_FORMAT_INVALID: function(field) {
 			return {
-				code: "INVALID_PHONE_FORMAT",
+				code: "PARAMETER_TYPE_ERROR",
 				message: "el campo " + field + " es incorrecto, se esperaba un número telefónico"
 			};
 		},
 		EMAIL_FORMAT_INVALID: function(field) {
 			return {
-				code: "INVALID_EMAIL_FORMAT",
+				code: "PARAMETER_TYPE_ERROR",
 				message: "el campo " + field + " es incorrecto, se esperaba un mail"
 			};
 		},
 		STRING_FORMAT_INVALID: function(field) {
 			return {
-				code: "INVALID_STRING_FORMAT",
+				code: "PARAMETER_TYPE_ERROR",
 				message: "el campo " + field + " es incorrecto, se esperaba un texto"
 			};
 		},
 		BASE64_FORMAT_INVALID: function(field) {
 			return {
-				code: "INVALID_BASE64_FORMAT",
+				code: "PARAMETER_TYPE_ERROR",
 				message: "el campo " + field + " es incorrecto, se esperaba un texto en base 64"
 			};
 		},
 		DATE_FORMAT_INVALID: function(field) {
 			return {
-				code: "INVALID_DATE_FORMAT",
+				code: "PARAMETER_TYPE_ERROR",
 				message:
 					"el campo " +
 					field +
@@ -130,7 +135,7 @@ module.exports = {
 			};
 		},
 		LENGTH_INVALID: function(field, min, max) {
-			const code = "INVALID_LENGTH";
+			const code = "PARAMETER_TYPE_ERROR";
 			const msgStart = "el campo " + field + " tendria que tener";
 
 			if (min && !max) {
