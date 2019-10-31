@@ -36,6 +36,7 @@ module.exports = {
 	RECOVERY_CODE_LENGTH: 6,
 	HOURS_BEFORE_CODE_EXPIRES: 1,
 
+	SALT_WORK_FACTOR: 16,
 	PASSWORD_MIN_LENGTH: 6,
 	COMMON_PASSWORDS: ["123456", "contraseña", "password"]
 };

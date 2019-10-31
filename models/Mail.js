@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
-
 const Constants = require("../constants/Constants");
-const bcrypt = require("bcrypt");
-const SALT_WORK_FACTOR = 10;
+const Hashing = require("./utils/Hashing");
 
 const MailSchema = new mongoose.Schema({
 	email: {
@@ -14,8 +12,14 @@ const MailSchema = new mongoose.Schema({
 		required: true
 	},
 	code: {
-		type: String,
-		required: true
+		salt: {
+			type: String,
+			required: true
+		},
+		hash: {
+			type: String,
+			required: true
+		}
 	},
 	validated: {
 		type: Boolean,
@@ -37,28 +41,14 @@ MailSchema.index(
 	}
 );
 
-// encrypt code
-MailSchema.pre("save", function(next) {
-	var mail = this;
-
-	if (mail.isModified("code") || mail.isModified("did")) {
-		bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-			if (err) return next(err);
-
-			bcrypt.hash(mail.code, salt, function(err, hashCode) {
-				if (err) return next(err);
-				mail.code = hashCode;
-				next();
-			});
-		});
-	}
-});
-
 MailSchema.methods.compareCode = function(candidateCode, cb, errCb) {
-	bcrypt.compare(candidateCode, this.code, function(err, isMatch) {
-		if (err) return errCb(err);
-		cb(isMatch);
-	});
+	try {
+		const result = Hashing.validateHash(candidateCode, this.code);
+		return cb(result);
+	} catch (err) {
+		console.log(err);
+		return errCb(err);
+	}
 };
 
 MailSchema.methods.validateMail = function(code, cb, errCb) {
@@ -92,7 +82,6 @@ Mail.generate = function(email, code, did, cb, errCb) {
 			}
 
 			mail.email = email;
-			mail.code = code;
 			mail.did = did;
 			mail.createdOn = new Date();
 
@@ -101,6 +90,12 @@ Mail.generate = function(email, code, did, cb, errCb) {
 			mail.expiresOn = date;
 
 			mail.validated = false;
+
+			try {
+				mail.code = Hashing.hash(code);
+			} catch (err) {
+				return errCb(err);
+			}
 
 			return mail.save(function(err, mail) {
 				if (err) return errCb(err);

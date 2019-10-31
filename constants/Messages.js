@@ -23,10 +23,10 @@ module.exports = {
 			}
 		},
 		SUCCESS: {
-			VALIDATED: { message: "VALIDATED" },
-			NOT_VALIDATED: { message: "NOT VALIDATED" },
-			SENT: { message: "SUCCESS" },
-			MATCHED: { message: "SMSCODE_MATCH" }
+			// VALIDATED: { message: "VALIDATED" },
+			// NOT_VALIDATED: { message: "NOT VALIDATED" },
+			SENT: {},
+			MATCHED: {}
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -38,10 +38,10 @@ module.exports = {
 	EMAIL: {
 		SENT: "Email sent",
 		SUCCESS: {
-			VALIDATED: { message: "VALIDATED" },
-			NOT_VALIDATED: { message: "NOT VALIDATED" },
-			SENT: { message: "SUCCESS" },
-			MATCHED: { message: "EMAILCODE_MATCH" }
+			// VALIDATED: { message: "VALIDATED" },
+			// NOT_VALIDATED: { message: "NOT VALIDATED" },
+			SENT: {},
+			MATCHED: {}
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -69,11 +69,11 @@ module.exports = {
 	},
 	USER: {
 		SUCCESS: {
-			LOGGED_IN: { message: "SUCCESS" },
-			REGISTERED: { message: "SUCCESS" },
-			CHANGED_PASS: { message: "SUCCESS" },
-			CHANGED_PHONE: { message: "SUCCESS" },
-			CHANGED_EMAIL: { message: "SUCCESS" }
+			LOGGED_IN: {},
+			REGISTERED: {},
+			CHANGED_PASS: {},
+			CHANGED_PHONE: {},
+			CHANGED_EMAIL: {}
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
