@@ -1,5 +1,5 @@
 const DEBUGG = process.env.DEBUGG || true;
-const MONGO_DIR = process.env.MONGO_DIR || "127.0.0.1"; // "mongo" on docker
+const MONGO_DIR = process.env.MONGO_DIR || "127.0.0.1"; 
 const MONGO_PORT = process.env.MONGO_PORT || "27017";
 const MONGO_USER = process.env.MONGO_USERNAME;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
