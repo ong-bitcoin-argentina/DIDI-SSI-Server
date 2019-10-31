@@ -2,13 +2,15 @@
 
 ## Variables de entorno
 
+DEBUGG
 MONGO_DIR
 MONGO_PORT
 MONGO_USER
 MONGO_PASSWORD
 MONGO_DB
-
 PORT
+SERVER_DID
+SERVER_PRIVATE_KEY
 
 ## Db config (.env && init-mongo.js)
 
@@ -18,7 +20,7 @@ MONGO_INITDB_DATABASE
 MONGO_USERNAME
 MONGO_PASSWORD
 
-## Ejecutar local
+## Ejecutar local usando valores por defecto
 
 ```
 mongod
