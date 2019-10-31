@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
-
-const bcrypt = require("bcrypt");
-const SALT_WORK_FACTOR = 10;
+const Hashing = require("./utils/Hashing");
 
 const PhoneSchema = new mongoose.Schema({
 	phoneNumber: {
@@ -13,8 +11,14 @@ const PhoneSchema = new mongoose.Schema({
 		required: true
 	},
 	code: {
-		type: String,
-		required: true
+		salt: {
+			type: String,
+			required: true
+		},
+		hash: {
+			type: String,
+			required: true
+		}
 	},
 	validated: {
 		type: Boolean,
@@ -36,29 +40,14 @@ PhoneSchema.index(
 	}
 );
 
-// encrypt code
-PhoneSchema.pre("save", function(next) {
-	var phone = this;
-
-	if (phone.isModified("code") || phone.isModified("did")) {
-		bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-			if (err) return next(err);
-
-			bcrypt.hash(phone.code, salt, function(err, hashCode) {
-				if (err) return next(err);
-
-				phone.code = hashCode;
-				next();
-			});
-		});
-	}
-});
-
 PhoneSchema.methods.compareCode = function(candidateCode, cb, errCb) {
-	bcrypt.compare(candidateCode, this.code, function(err, isMatch) {
-		if (err) return errCb(err);
-		cb(isMatch);
-	});
+	try {
+		const result = Hashing.validateHash(candidateCode, this.code);
+		return cb(result);
+	} catch (err) {
+		console.log(err);
+		return errCb(err);
+	}
 };
 
 PhoneSchema.methods.validatePhone = function(code, cb, errCb) {
@@ -92,7 +81,6 @@ Phone.generate = function(phoneNumber, code, did, cb, errCb) {
 			}
 
 			phone.phoneNumber = phoneNumber;
-			phone.code = code;
 			phone.did = did;
 			phone.createdOn = new Date();
 
@@ -101,6 +89,12 @@ Phone.generate = function(phoneNumber, code, did, cb, errCb) {
 			phone.expiresOn = date;
 
 			phone.validated = false;
+
+			try {
+				phone.code = Hashing.hash(code);
+			} catch (err) {
+				return errCb(err);
+			}
 
 			return phone.save(function(err, phone) {
 				if (err) return errCb(err);

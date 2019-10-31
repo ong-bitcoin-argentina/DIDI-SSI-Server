@@ -1,8 +1,5 @@
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
-
-const bcrypt = require("bcrypt");
-const SALT_WORK_FACTOR = 10;
+const Hashing = require("./utils/Hashing");
 
 const UserSchema = new mongoose.Schema({
 	mail: {
@@ -28,8 +25,14 @@ const UserSchema = new mongoose.Schema({
 		required: true
 	},
 	password: {
-		type: String,
-		required: true
+		salt: {
+			type: String,
+			required: true
+		},
+		hash: {
+			type: String,
+			required: true
+		}
 	},
 	seed: {
 		type: String,
@@ -63,35 +66,23 @@ UserSchema.index(
 	}
 );
 
-UserSchema.pre("save", function(next) {
-	var user = this;
-
-	if (!user.isModified("password")) return next();
-
-	bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-		if (err) return next(err);
-
-		bcrypt.hash(user.password, salt, function(err, hash) {
-			if (err) return next(err);
-
-			user.password = hash;
-			next();
-		});
-	});
-});
-
 UserSchema.methods.comparePassword = function(candidatePassword, cb, errCb) {
-	bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-		if (err) return errCb(err);
-		cb(isMatch);
-	});
+	try {
+		const result = Hashing.validateHash(candidatePassword, this.password);
+		return cb(result);
+	} catch (err) {
+		console.log(err);
+		return errCb(err);
+	}
 };
 
 UserSchema.methods.updatePassword = function(password, cb, errCb) {
 	var user = this;
-	user.password = password;
-	return user.save(function(err, user) {
+	const hashData = Hashing.hash(password);
+
+	return User.findOneAndUpdate({ _id: user._id }, { $set: { password: hashData } }, function(err, _) {
 		if (err) return errCb(err);
+		user.password = hashData;
 		return cb(user);
 	});
 };
@@ -150,8 +141,13 @@ User.generate = function(did, seed, mail, phoneNumber, pass, cb, errCb) {
 			user.seed = seed;
 			user.createdOn = new Date();
 			user.modifiedOn = new Date();
-			user.password = pass;
 			user.deleted = false;
+
+			try {
+				user.password = Hashing.hash(pass);
+			} catch (err) {
+				return errCb(err);
+			}
 
 			return user.save(function(err, user) {
 				if (err) return errCb(err);
