@@ -13,6 +13,8 @@ class MailService {
 		};
 
 		mailgun.messages().send(data, (error, res) => {
+			if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
+
 			if (error) {
 				console.log(error);
 				return errCb(error);

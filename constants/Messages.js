@@ -13,27 +13,20 @@ module.exports = {
 		}
 	},
 	SMS: {
+		SENT: "Message sent",
+		SENDING: function(number) {
+			return "Enviando sms a " + number;
+		},
 		VALIDATION: {
-			FROM: "DIDI",
-			SUBJECT: "DIDI validation code",
 			MESSAGE: code => {
-				return (
-					"Hola,\n" +
-					"Este es tu código de validacion para validar tu cuenta de DIDI\n\n" +
-					"CODE: " +
-					code +
-					"\n\n" +
-					"Si no realizaste el pedido de dicho código por favor comunicate inmediatamente con nuestro servicio al cliente en didi@mailgun.com\n\n" +
-					"Saludos,\n" +
-					"El equipo de DIDI"
-				);
+				return "Este es tu código de validacion para validar tu cuenta de DIDI: " + code;
 			}
 		},
 		SUCCESS: {
-			VALIDATED: "VALIDATED",
-			NOT_VALIDATED: "NOT VALIDATED",
-			SENT: "SUCCESS",
-			MATCHED: "SMSCODE_MATCH"
+			VALIDATED: { message: "VALIDATED" },
+			NOT_VALIDATED: { message: "NOT VALIDATED" },
+			SENT: { message: "SUCCESS" },
+			MATCHED: { message: "SMSCODE_MATCH" }
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -43,11 +36,12 @@ module.exports = {
 		}
 	},
 	EMAIL: {
+		SENT: "Email sent",
 		SUCCESS: {
-			VALIDATED: "VALIDATED",
-			NOT_VALIDATED: "NOT VALIDATED",
-			SENT: "SUCCESS",
-			MATCHED: "EMAILCODE_MATCH"
+			VALIDATED: { message: "VALIDATED" },
+			NOT_VALIDATED: { message: "NOT VALIDATED" },
+			SENT: { message: "SUCCESS" },
+			MATCHED: { message: "EMAILCODE_MATCH" }
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -75,11 +69,11 @@ module.exports = {
 	},
 	USER: {
 		SUCCESS: {
-			LOGGED_IN: {},
-			REGISTERED: {},
-			CHANGED_PASS: {},
-			CHANGED_PHONE: {},
-			CHANGED_EMAIL: {}
+			LOGGED_IN: { message: "SUCCESS" },
+			REGISTERED: { message: "SUCCESS" },
+			CHANGED_PASS: { message: "SUCCESS" },
+			CHANGED_PHONE: { message: "SUCCESS" },
+			CHANGED_EMAIL: { message: "SUCCESS" }
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
