@@ -63,22 +63,6 @@ class MailService {
 			}
 		);
 	}
-
-	/*
-	static isValidated(did, cb, errCb) {
-		Mail.getValidated(
-			did,
-			function(mail) {
-				if (!mail) return errCb(Messages.EMAIL.ERR.GET);
-				return cb(mail.validated);
-			},
-			function(err) {
-				console.log(err);
-				return errCb(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
-			}
-		);
-	}
-	*/
 }
 
 module.exports = MailService;

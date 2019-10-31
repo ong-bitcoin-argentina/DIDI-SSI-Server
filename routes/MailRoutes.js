@@ -2,6 +2,7 @@ const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
 const MailService = require("../services/MailService");
+const CertificateService = require("../services/CertificateService");
 
 const Validator = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
@@ -73,32 +74,21 @@ router.post(
 		return MailService.validateMail(
 			did,
 			validationCode,
-			function(_) {
-				return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
-	}
-);
-
-/*
-router.post(
-	"/isVerifiedMail",
-	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
-	]),
-	Validator.checkValidationResult,
-	function(req, res) {
-		const did = req.body.did;
-
-		return MailService.isValidated(
-			did,
-			function(validated) {
-				return ResponseHandler.sendRes(
-					res,
-					validated ? Messages.EMAIL.SUCCESS.VALIDATED : Messages.EMAIL.SUCCESS.NOT_VALIDATED
+			function(mail) {
+				const subject = {
+					emailCredential: {
+						email: mail.email
+					}
+				};
+				CertificateService.createCertificate(
+					did,
+					subject,
+					function(certificate) {
+						return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(certificate));
+					},
+					function(err) {
+						return ResponseHandler.sendErr(res, err);
+					}
 				);
 			},
 			function(err) {
@@ -107,6 +97,5 @@ router.post(
 		);
 	}
 );
-*/
 
 module.exports = router;

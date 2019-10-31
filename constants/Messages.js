@@ -23,10 +23,10 @@ module.exports = {
 			}
 		},
 		SUCCESS: {
-			// VALIDATED: { message: "VALIDATED" },
-			// NOT_VALIDATED: { message: "NOT VALIDATED" },
 			SENT: {},
-			MATCHED: {}
+			MATCHED: function(cert) {
+				return { certificate: cert };
+			}
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -38,10 +38,10 @@ module.exports = {
 	EMAIL: {
 		SENT: "Email sent",
 		SUCCESS: {
-			// VALIDATED: { message: "VALIDATED" },
-			// NOT_VALIDATED: { message: "NOT VALIDATED" },
 			SENT: {},
-			MATCHED: {}
+			MATCHED: function(cert) {
+				return { certificate: cert };
+			}
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,

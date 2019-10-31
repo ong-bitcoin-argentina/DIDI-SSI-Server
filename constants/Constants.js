@@ -6,6 +6,10 @@ const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 const MONGO_DB = process.env.MONGO_DB || "didi";
 const PORT = process.env.PORT || 3000;
 
+const SERVER_DID = process.env.SERVER_DID || "***REMOVED***";
+const SERVER_PRIVATE_KEY =
+	process.env.SERVER_PRIVATE_KEY || "***REMOVED***";
+
 const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
 const MONGO_URL =
 	MONGO_USER && MONGO_PASSWORD ? "mongodb://" + MONGO_USER + ":" + MONGO_PASSWORD + "@" + URL : "mongodb://" + URL;
@@ -15,6 +19,16 @@ module.exports = {
 	DEBUGG: DEBUGG,
 	MONGO_URL: MONGO_URL,
 	PORT: PORT,
+
+	SERVER_DID: SERVER_DID,
+	SERVER_PRIVATE_KEY: SERVER_PRIVATE_KEY,
+	NOT_BACK_FROM: 1562950282,
+	CREDENTIALS: {
+		TYPES: {
+			VERIFIABLE: "VerifiableCredential"
+		},
+		CONTEXT: "https://www.w3.org/2018/credentials/v1"
+	},
 
 	VALIDATION_TYPES: {
 		IS_MOBILE_PHONE: "isMobilePhone",
