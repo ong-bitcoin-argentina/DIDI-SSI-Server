@@ -62,22 +62,6 @@ class SmsService {
 			}
 		);
 	}
-
-	/*
-	static isValidated(did, cb, errCb) {
-		Phone.getValidated(
-			did,
-			function(phone) {
-				if (!phone) return errCb(Messages.SMS.ERR.GET);
-				return cb(phone.validated);
-			},
-			function(err) {
-				console.log(err);
-				return errCb(Messages.SMS.ERR.COMMUNICATION_ERROR);
-			}
-		);
-	}
-	*/
 }
 
 module.exports = SmsService;
