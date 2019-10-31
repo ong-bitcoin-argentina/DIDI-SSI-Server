@@ -4,6 +4,7 @@ const ResponseHandler = require("./utils/ResponseHandler");
 const SmsService = require("../services/SmsService");
 
 const Validator = require("./utils/Validator");
+const CodeGenerator = require("./utils/CodeGenerator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
@@ -25,11 +26,7 @@ router.post(
 		const phoneNumber = req.body.cellPhoneNumber;
 		const did = req.body.did;
 
-		let code;
-		do {
-			code = (Math.random() + 1).toString(36).substring(Constants.RECOVERY_CODE_LENGTH);
-		} while (code.length > Constants.RECOVERY_CODE_LENGTH);
-
+		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
 		if (Constants.DEBUGG) console.log(code);
 
 		return SmsService.create(
