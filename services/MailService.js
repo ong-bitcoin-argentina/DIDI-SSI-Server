@@ -43,7 +43,7 @@ class MailService {
 		Mail.get(
 			did,
 			function(mail) {
-				if (!mail) return errCb(Messages.EMAIL.ERR.GET);
+				if (!mail) return errCb(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
 
 				mail.validateMail(
 					code,
