@@ -112,11 +112,3 @@ Phone.get = function(did, cb, errCb) {
 		return cb(phone);
 	});
 };
-
-Phone.getValidated = function(did, cb, errCb) {
-	return Phone.findOne({ did: did, validated: true }, {}, function(err, phone) {
-		if (err) return errCb(err);
-		if (!phone || phone.expiresOn.getTime() < new Date().getTime()) return cb(null);
-		return cb(phone);
-	});
-};

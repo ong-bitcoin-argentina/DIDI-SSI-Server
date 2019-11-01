@@ -113,11 +113,3 @@ Mail.get = function(did, cb, errCb) {
 		return cb(mail);
 	});
 };
-
-Mail.getValidated = function(did, cb, errCb) {
-	return Mail.findOne({ did: did, validated: true }, {}, function(err, mail) {
-		if (err) return errCb(err);
-		if (!mail || mail.expiresOn.getTime() < new Date().getTime()) return cb(null);
-		return cb(mail);
-	});
-};
