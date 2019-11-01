@@ -12,12 +12,14 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 		from: Constants.TWILIO_PHONE_NUMBER
 	};
 
-	var client = twilio(Constants.TWILIO_SID, Constants.TWILIO_TOKEN);
+	//var client = twilio(Constants.TWILIO_SID, Constants.TWILIO_TOKEN);
 	if (Constants.DEBUGG) console.log(Messages.SMS.SENDING(data.to));
+	/*
 	client.messages.create(data, function(err, _) {
 		if (err) return Promise.reject(err);
 		if (Constants.DEBUGG) console.log(Messages.SMS.SENT);
 	});
+	*/
 };
 
 module.exports.create = async function(phoneNumber, code, did) {
@@ -46,6 +48,16 @@ module.exports.validatePhone = async function(did, code) {
 		phone = await phone.validatePhone(code);
 		if (!phone) return Promise.reject(Messages.SMS.ERR.NO_SMSCODE_MATCH);
 		return Promise.resolve(phone);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+	}
+};
+
+module.exports.isValidated = async function(did, phoneNumber) {
+	try {
+		let isValidated = await Phone.isValidated(did, phoneNumber);
+		return Promise.resolve(isValidated);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);

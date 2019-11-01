@@ -61,7 +61,8 @@ router.post(
 		let mail;
 		try {
 			mail = await MailService.validateMail(did, validationCode);
-		} catch(err) {
+			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
+		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
 
@@ -74,7 +75,7 @@ router.post(
 		try {
 			let cert = await CertificateService.createCertificate(did, subject);
 			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(cert));
-		} catch(err) {
+		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
 	}

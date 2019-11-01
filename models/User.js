@@ -53,7 +53,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.index(
-	{ did: 1, mail: 1, deleted: 1 },
+	{ did: 1, deleted: 1 },
 	{
 		unique: true
 	}
@@ -178,9 +178,9 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 	}
 };
 
-User.getByDIDAndEmail = async function(did, email) {
+User.getByDID = async function(did) {
 	try {
-		const query = { did: did, mail: email, deleted: false };
+		const query = { did: did, deleted: false };
 		let user = await User.findOne(query);
 		return Promise.resolve(user);
 	} catch (err) {

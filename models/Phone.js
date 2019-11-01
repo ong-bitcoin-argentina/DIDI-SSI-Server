@@ -47,7 +47,7 @@ PhoneSchema.methods.expired = function() {
 PhoneSchema.methods.validatePhone = async function(code) {
 	try {
 		const isMatch = Hashing.validateHash(code, this.code);
-		if (!isMatch) return Promise.resolve(this);
+		if (!isMatch) return Promise.resolve(null);
 
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true } };
@@ -107,6 +107,18 @@ Phone.get = async function(did) {
 		const query = { did: did, validated: false };
 		let phone = await Phone.findOne(query);
 		return Promise.resolve(phone);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+Phone.isValidated = async function(did, phoneNumber) {
+	try {
+		const query = { did: did, phoneNumber: phoneNumber };
+		let phone = await Phone.findOne(query);
+		if (!phone) return Promise.resolve(false);
+		return Promise.resolve(phone.validated);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
