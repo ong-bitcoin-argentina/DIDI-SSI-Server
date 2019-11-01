@@ -80,7 +80,10 @@ UserSchema.methods.updatePassword = function(password, cb, errCb) {
 	var user = this;
 	const hashData = Hashing.hash(password);
 
-	return User.findOneAndUpdate({ _id: user._id }, { $set: { password: hashData } }, function(err, _) {
+	return User.findOneAndUpdate({ _id: user._id }, { $set: { password: hashData, modifiedOn: new Date() } }, function(
+		err,
+		_
+	) {
 		if (err) return errCb(err);
 		user.password = hashData;
 		return cb(user);
@@ -91,7 +94,7 @@ UserSchema.methods.updatePhoneNumber = function(newPhoneNumber, cb, errCb) {
 	var user = this;
 
 	const updateQuery = {
-		$set: { phoneNumber: newPhoneNumber },
+		$set: { phoneNumber: newPhoneNumber, modifiedOn: new Date() },
 		$push: { oldPhoneNumbers: user.phoneNumber }
 	};
 
@@ -107,7 +110,7 @@ UserSchema.methods.updateEmail = function(newEmail, cb, errCb) {
 	var user = this;
 
 	const updateQuery = {
-		$set: { mail: newEmail },
+		$set: { mail: newEmail, modifiedOn: new Date() },
 		$push: { oldEmails: user.mail }
 	};
 
