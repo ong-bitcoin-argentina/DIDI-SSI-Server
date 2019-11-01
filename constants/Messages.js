@@ -30,6 +30,10 @@ module.exports = {
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+			NO_VALIDATIONS_FOR_NUMBER: {
+				code: "NO_SMSCODE_MATCH",
+				message: "No se encontraron pedidos de validacion para ese número."
+			},
 			NO_SMSCODE_MATCH: { code: "NO_SMSCODE_MATCH", message: "El código de validacion es incorrecto." },
 			CREATE: COMMUNICATION_ERROR,
 			GET: COMMUNICATION_ERROR
@@ -46,6 +50,10 @@ module.exports = {
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
+			NO_VALIDATIONS_FOR_EMAIL: {
+				code: "NO_EMAILCODE_MATCH",
+				message: "No se encontraron pedidos de validacion para ese mail."
+			},
 			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail" },
 			CREATE: COMMUNICATION_ERROR,
 			GET: COMMUNICATION_ERROR

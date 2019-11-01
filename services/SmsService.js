@@ -42,7 +42,7 @@ class SmsService {
 		Phone.get(
 			did,
 			function(phone) {
-				if (!phone) return errCb(Messages.SMS.ERR.GET);
+				if (!phone) return errCb(Messages.SMS.ERR.NO_VALIDATIONS_FOR_NUMBER);
 
 				phone.validatePhone(
 					code,
