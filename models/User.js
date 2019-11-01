@@ -66,111 +66,136 @@ UserSchema.index(
 	}
 );
 
-UserSchema.methods.comparePassword = function(candidatePassword, cb, errCb) {
+UserSchema.methods.comparePassword = async function(candidatePassword) {
 	try {
 		const result = Hashing.validateHash(candidatePassword, this.password);
-		return cb(result);
+		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
-		return errCb(err);
+		return Promise.reject(err);
 	}
 };
 
-UserSchema.methods.updatePassword = function(password, cb, errCb) {
-	var user = this;
+UserSchema.methods.updatePassword = async function(password) {
 	const hashData = Hashing.hash(password);
 
-	return User.findOneAndUpdate({ _id: user._id }, { $set: { password: hashData, modifiedOn: new Date() } }, function(
-		err,
-		_
-	) {
-		if (err) return errCb(err);
-		user.password = hashData;
-		return cb(user);
-	});
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { password: hashData, modifiedOn: new Date() }
+	};
+
+	try {
+		await User.findOneAndUpdate(updateQuery, updateAction);
+		this.password = hashData;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
 };
 
-UserSchema.methods.updatePhoneNumber = function(newPhoneNumber, cb, errCb) {
-	var user = this;
+UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
+	if (this.phoneNumber == newPhoneNumber) {
+		return Promise.resolve(this);
+	}
 
-	const updateQuery = {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
 		$set: { phoneNumber: newPhoneNumber, modifiedOn: new Date() },
-		$push: { oldPhoneNumbers: user.phoneNumber }
+		$push: { oldPhoneNumbers: this.phoneNumber }
 	};
 
-	return User.findOneAndUpdate({ _id: user._id }, updateQuery, function(err, _) {
-		if (err) return errCb(err);
-		user.oldPhoneNumbers.push(user.phoneNumber);
-		user.phoneNumber = newPhoneNumber;
-		return cb(user);
-	});
+	try {
+		await User.findOneAndUpdate(updateQuery, updateAction);
+		this.oldPhoneNumbers.push(this.phoneNumber);
+		this.phoneNumber = newPhoneNumber;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
 };
 
-UserSchema.methods.updateEmail = function(newEmail, cb, errCb) {
-	var user = this;
+UserSchema.methods.updateEmail = async function(newEmail) {
+	if (this.mail == newEmail) {
+		return Promise.resolve(this);
+	}
 
-	const updateQuery = {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
 		$set: { mail: newEmail, modifiedOn: new Date() },
-		$push: { oldEmails: user.mail }
+		$push: { oldEmails: this.mail }
 	};
 
-	return User.findOneAndUpdate({ _id: user._id }, updateQuery, function(err, _) {
-		if (err) return errCb(err);
-		user.oldEmails.push(user.mail);
-		user.mail = newEmail;
-		return cb(user);
-	});
+	try {
+		await User.findOneAndUpdate(updateQuery, updateAction);
+		this.oldEmails.push(this.mail);
+		this.mail = newEmail;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
 };
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
-User.generate = function(did, seed, mail, phoneNumber, pass, cb, errCb) {
-	return User.findOne(
-		{ did: did, email: mail, deleted: false },
-		{},
-		function(err, user) {
-			if (err) return errCb(err);
+User.generate = async function(did, seed, mail, phoneNumber, pass) {
+	let user;
+	try {
+		const query = { did: did, email: mail, deleted: false };
+		user = await User.findOne(query);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 
-			if (!user) {
-				user = new User();
-			}
+	if (!user) {
+		user = new User();
+	}
 
-			user.mail = mail;
-			user.oldEmails = [];
-			user.phoneNumber = phoneNumber;
-			user.oldPhoneNumbers = [];
-			user.did = did;
-			user.seed = seed;
-			user.createdOn = new Date();
-			user.modifiedOn = new Date();
-			user.deleted = false;
+	user.mail = mail;
+	user.oldEmails = [];
+	user.phoneNumber = phoneNumber;
+	user.oldPhoneNumbers = [];
+	user.did = did;
+	user.seed = seed;
+	user.createdOn = new Date();
+	user.modifiedOn = new Date();
+	user.deleted = false;
 
-			try {
-				user.password = Hashing.hash(pass);
-			} catch (err) {
-				return errCb(err);
-			}
+	try {
+		user.password = Hashing.hash(pass);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 
-			return user.save(function(err, user) {
-				if (err) return errCb(err);
-				return cb(user);
-			});
-		},
-		errCb
-	);
+	try {
+		user = await user.save();
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };
 
-User.getByDIDAndEmail = function(did, email, cb, errCb) {
-	return User.findOne({ did: did, mail: email, deleted: false }, {}, function(err, user) {
-		if (err) return errCb(err);
-		return cb(user);
-	});
+User.getByDIDAndEmail = async function(did, email) {
+	try {
+		const query = { did: did, mail: email, deleted: false };
+		let user = await User.findOne(query);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };
 
-User.getByEmail = function(email, cb, errCb) {
-	return User.findOne({ mail: email, deleted: false }, {}, function(err, user) {
-		if (err) return errCb(err);
-		return cb(user);
-	});
+User.getByEmail = async function(email) {
+	try {
+		const query = { mail: email, deleted: false };
+		let user = await User.findOne(query);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };

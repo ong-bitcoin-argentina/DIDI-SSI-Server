@@ -3,66 +3,50 @@ const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const mailgun = require("mailgun-js")({ apiKey: Constants.MAILGUN_API_KEY, domain: Constants.MAILGUN_DOMAIN });
 
-class MailService {
-	static sendValidationCode(eMail, code, cb, errCb) {
-		const data = {
-			from: Messages.EMAIL.VALIDATION.FROM,
-			to: eMail,
-			subject: Messages.EMAIL.VALIDATION.SUBJECT,
-			text: Messages.EMAIL.VALIDATION.MESSAGE(code)
-		};
+module.exports.sendValidationCode = function(eMail, code) {
+	const data = {
+		from: Messages.EMAIL.VALIDATION.FROM,
+		to: eMail,
+		subject: Messages.EMAIL.VALIDATION.SUBJECT,
+		text: Messages.EMAIL.VALIDATION.MESSAGE(code)
+	};
 
-		mailgun.messages().send(data, (error, res) => {
-			if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
+	mailgun.messages().send(data, (error, _) => {
+		if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
+		if (error) {
+			console.log(error);
+		}
+	});
+};
 
-			if (error) {
-				console.log(error);
-				return errCb(error);
-			}
-			return cb(res);
-		});
+module.exports.create = async function(email, code, did) {
+	try {
+		let mail = await Mail.generate(email, code, did);
+		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
+		return Promise.resolve(mail);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+	}
+};
+
+module.exports.validateMail = async function(did, code) {
+	let mail;
+	try {
+		mail = await Mail.get(did);
+		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
+		if (mail.expired()) return Promise.reject(Messages.EMAIL.ERR.VALIDATION_EXPIRED);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
 	}
 
-	static create(email, code, did, cb, errCb) {
-		Mail.generate(
-			email,
-			code,
-			did,
-			function(mail) {
-				if (!mail) return errCb(Messages.EMAIL.ERR.CREATE);
-				return cb(mail);
-			},
-			function(err) {
-				console.log(err);
-				return errCb(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
-			}
-		);
+	try {
+		mail = await mail.validateMail(code);
+		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
+		return Promise.resolve(mail);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
 	}
-
-	static validateMail(did, code, cb, errCb) {
-		Mail.get(
-			did,
-			function(mail) {
-				if (!mail) return errCb(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
-
-				mail.validateMail(
-					code,
-					function(mail) {
-						if (!mail) return errCb(Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
-						return cb(mail);
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
-					}
-				);
-			},
-			function(err) {
-				console.log(err);
-				return errCb(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
-			}
-		);
-	}
-}
-
-module.exports = MailService;
+};

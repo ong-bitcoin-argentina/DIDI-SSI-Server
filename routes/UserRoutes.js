@@ -29,7 +29,7 @@ router.post(
 		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const eMail = req.body.eMail;
 		const password = req.body.password;
 		const phoneNumber = req.body.phoneNumber;
@@ -37,20 +37,13 @@ router.post(
 		const did = req.body.did;
 		const privateKeySeed = req.body.privateKeySeed;
 
-		return UserService.create(
-			did,
-			privateKeySeed,
-			eMail,
-			phoneNumber,
-			password,
-			function(user) {
-				if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.USER_ALREADY_EXIST);
-				return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
-			}
-		);
+		try {
+			let user = await UserService.create(did, privateKeySeed, eMail, phoneNumber, password);
+			if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.USER_ALREADY_EXIST);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
+		}
 	}
 );
 
@@ -69,22 +62,17 @@ router.post(
 		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const did = req.body.did;
 		const userEmail = req.body.eMail;
 		const password = req.body.password;
 
-		return UserService.login(
-			did,
-			userEmail,
-			password,
-			function(result) {
-				return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.LOGGED_IN);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
+		try {
+			await UserService.login(did, userEmail, password);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.LOGGED_IN);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
@@ -102,20 +90,16 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const eMail = req.body.eMail;
 		const password = req.body.password;
 
-		return UserService.recoverAccount(
-			eMail,
-			password,
-			function(seed) {
-				return ResponseHandler.sendRes(res, { privateKeySeed: seed });
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
+		try {
+			const seed = await UserService.recoverAccount(eMail, password);
+			return ResponseHandler.sendRes(res, { privateKeySeed: seed });
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
@@ -139,24 +123,18 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const did = req.body.did;
 		const eMail = req.body.eMail;
 		const oldPass = req.body.oldPass;
 		const newPass = req.body.newPass;
 
-		return UserService.changePassword(
-			did,
-			eMail,
-			oldPass,
-			newPass,
-			function(_) {
-				return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
+		try {
+			await UserService.changePassword(did, eMail, oldPass, newPass);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
@@ -180,32 +158,24 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const did = req.body.did;
 		const eMail = req.body.eMail;
 		const eMailValidationCode = req.body.eMailValidationCode;
 		const newPass = req.body.newPass;
 
-		return MailService.validateMail(
-			did,
-			eMailValidationCode,
-			function(_) {
-				return UserService.recoverPassword(
-					did,
-					eMail,
-					newPass,
-					function(_) {
-						return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
-					},
-					function(err) {
-						return ResponseHandler.sendErr(res, err);
-					}
-				);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
+		try {
+			await MailService.validateMail(did, eMailValidationCode);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+
+		try {
+			await UserService.recoverPassword(did, eMail, newPass);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
@@ -228,24 +198,18 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const did = req.body.did;
 		const eMail = req.body.eMail;
 		const password = req.body.password;
 		const newPhoneNumber = req.body.newPhoneNumber;
 
-		return UserService.changePhoneNumber(
-			did,
-			password,
-			eMail,
-			newPhoneNumber,
-			function(_) {
-				return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
+		try {
+			await UserService.changePhoneNumber(did, password, eMail, newPhoneNumber);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
@@ -265,24 +229,18 @@ router.post(
 		{ name: "newEMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const did = req.body.did;
 		const eMail = req.body.eMail;
 		const password = req.body.password;
 		const newEMail = req.body.newEMail;
 
-		return UserService.changeEmail(
-			did,
-			password,
-			eMail,
-			newEMail,
-			function(_) {
-				return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
+		try {
+			await UserService.changeEmail(did, password, eMail, newEMail);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 

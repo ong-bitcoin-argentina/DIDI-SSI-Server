@@ -1,30 +1,26 @@
 const Constants = require("../../constants/Constants");
 
-class ResponseHandler {
-	static sendHtml(res, data) {
-		res.type("text/html; charset=UTF-8");
-		res.write(data);
-		return res.end();
-	}
+module.exports.sendHtml = function(res, data) {
+	res.type("text/html; charset=UTF-8");
+	res.write(data);
+	return res.end();
+};
 
-	static sendRes(res, data) {
-		res.type("application/json; charset=UTF-8");
-		return res.json({
-			status: "success",
-			data: data
-		});
-	}
+module.exports.sendRes = function(res, data) {
+	res.type("application/json; charset=UTF-8");
+	return res.json({
+		status: "success",
+		data: data
+	});
+};
 
-	static sendErr(res, err) {
-		if (Constants.DEBUGG) console.log(err);
+module.exports.sendErr = function(res, err) {
+	if (Constants.DEBUGG) console.log(err);
 
-		res.type("application/json; charset=UTF-8");
-		return res.json({
-			status: "error",
-			errorCode: err.code,
-			message: err.message
-		});
-	}
-}
-
-module.exports = ResponseHandler;
+	res.type("application/json; charset=UTF-8");
+	return res.json({
+		status: "error",
+		errorCode: err.code,
+		message: err.message
+	});
+};

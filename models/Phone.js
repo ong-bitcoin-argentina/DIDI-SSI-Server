@@ -40,75 +40,75 @@ PhoneSchema.index(
 	}
 );
 
-PhoneSchema.methods.compareCode = function(candidateCode, cb, errCb) {
-	try {
-		const result = Hashing.validateHash(candidateCode, this.code);
-		return cb(result);
-	} catch (err) {
-		console.log(err);
-		return errCb(err);
-	}
+PhoneSchema.methods.expired = function() {
+	return this.expiresOn.getTime() < new Date().getTime();
 };
 
-PhoneSchema.methods.validatePhone = function(code, cb, errCb) {
-	let self = this;
-	return self.compareCode(
-		code,
-		function(isMatch) {
-			if (!isMatch) return cb(null);
-			return Phone.findOneAndUpdate({ _id: self._id }, { $set: { validated: true } }, function(err, _) {
-				if (err) return errCb(err);
-				self.validated = true;
-				return cb(self);
-			});
-		},
-		errCb
-	);
+PhoneSchema.methods.validatePhone = async function(code) {
+	try {
+		const isMatch = Hashing.validateHash(code, this.code);
+		if (!isMatch) return Promise.resolve(this);
+
+		let quiery = { _id: this._id };
+		let action = { $set: { validated: true } };
+		await Phone.findOneAndUpdate(quiery, action);
+
+		this.validated = true;
+		return Promise.resolve(this);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };
 
 const Phone = mongoose.model("Phone", PhoneSchema);
 module.exports = Phone;
 
-Phone.generate = function(phoneNumber, code, did, cb, errCb) {
-	return Phone.findOne(
-		{ did: did },
-		{},
-		function(err, phone) {
-			if (err) return errCb(err);
+Phone.generate = async function(phoneNumber, code, did) {
+	let phone;
+	try {
+		const query = { did: did };
+		phone = await Phone.findOne(query);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 
-			if (!phone) {
-				phone = new Phone();
-			}
+	if (!phone) {
+		phone = new Phone();
+	}
 
-			phone.phoneNumber = phoneNumber;
-			phone.did = did;
-			phone.createdOn = new Date();
+	phone.phoneNumber = phoneNumber;
+	phone.did = did;
+	phone.createdOn = new Date();
+	phone.validated = false;
 
-			let date = new Date();
-			date.setHours(date.getHours() + 1);
-			phone.expiresOn = date;
+	let date = new Date();
+	date.setHours(date.getHours() + 1);
+	phone.expiresOn = date;
 
-			phone.validated = false;
+	try {
+		phone.code = Hashing.hash(code);
+	} catch (err) {
+		return Promise.reject(err);
+	}
 
-			try {
-				phone.code = Hashing.hash(code);
-			} catch (err) {
-				return errCb(err);
-			}
-
-			return phone.save(function(err, phone) {
-				if (err) return errCb(err);
-				return cb(phone);
-			});
-		},
-		errCb
-	);
+	try {
+		phone = await phone.save();
+		return Promise.resolve(phone);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };
 
-Phone.get = function(did, cb, errCb) {
-	return Phone.findOne({ did: did, validated: false }, {}, function(err, phone) {
-		if (err) return errCb(err);
-		if (!phone || phone.expiresOn.getTime() < new Date().getTime()) return cb(null);
-		return cb(phone);
-	});
+Phone.get = async function(did) {
+	try {
+		const query = { did: did, validated: false };
+		let phone = await Phone.findOne(query);
+		return Promise.resolve(phone);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };

@@ -21,33 +21,20 @@ router.post(
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const eMail = req.body.eMail;
 		const did = req.body.did;
 
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
 		if (Constants.DEBUGG) console.log(code);
 
-		return MailService.create(
-			eMail,
-			code,
-			did,
-			function(_) {
-				MailService.sendValidationCode(
-					eMail,
-					code,
-					function(_) {
-						return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.SENT);
-					},
-					function(err) {
-						return ResponseHandler.sendErr(res, err);
-					}
-				);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
+		try {
+			await MailService.create(eMail, code, did);
+			MailService.sendValidationCode(eMail, code);
+			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.SENT);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
@@ -67,34 +54,29 @@ router.post(
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const validationCode = req.body.validationCode;
 		const did = req.body.did;
 
-		return MailService.validateMail(
-			did,
-			validationCode,
-			function(mail) {
-				const subject = {
-					emailCredential: {
-						email: mail.email
-					}
-				};
-				CertificateService.createCertificate(
-					did,
-					subject,
-					function(certificate) {
-						return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(certificate));
-					},
-					function(err) {
-						return ResponseHandler.sendErr(res, err);
-					}
-				);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
+		let mail;
+		try {
+			mail = await MailService.validateMail(did, validationCode);
+		} catch(err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+
+		const subject = {
+			emailCredential: {
+				email: mail.email
 			}
-		);
+		};
+
+		try {
+			let cert = await CertificateService.createCertificate(did, subject);
+			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(cert));
+		} catch(err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
