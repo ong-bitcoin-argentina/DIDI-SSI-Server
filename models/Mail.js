@@ -41,75 +41,76 @@ MailSchema.index(
 	}
 );
 
-MailSchema.methods.compareCode = function(candidateCode, cb, errCb) {
-	try {
-		const result = Hashing.validateHash(candidateCode, this.code);
-		return cb(result);
-	} catch (err) {
-		console.log(err);
-		return errCb(err);
-	}
+MailSchema.methods.expired = function() {
+	return this.expiresOn.getTime() < new Date().getTime();
 };
 
-MailSchema.methods.validateMail = function(code, cb, errCb) {
-	let self = this;
-	return self.compareCode(
-		code,
-		function(isMatch) {
-			if (!isMatch) return cb(null);
-			return Mail.findOneAndUpdate({ _id: self._id }, { $set: { validated: true } }, function(err, _) {
-				if (err) return errCb(err);
-				self.validated = true;
-				return cb(self);
-			});
-		},
-		errCb
-	);
+MailSchema.methods.validateMail = async function(code) {
+	try {
+		const isMatch = Hashing.validateHash(code, this.code);
+		if (!isMatch) return Promise.resolve(this);
+
+		let quiery = { _id: this._id };
+		let action = { $set: { validated: true } };
+		await Mail.findOneAndUpdate(quiery, action);
+
+		this.validated = true;
+		return Promise.resolve(this);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };
 
 const Mail = mongoose.model("Mail", MailSchema);
 module.exports = Mail;
 
-Mail.generate = function(email, code, did, cb, errCb) {
-	return Mail.findOne(
-		{ did: did },
-		{},
-		function(err, mail) {
-			if (err) return errCb(err);
+Mail.generate = async function(email, code, did) {
+	let mail;
+	try {
+		const query = { did: did };
+		mail = await Mail.findOne(query);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 
-			if (!mail) {
-				mail = new Mail();
-			}
+	if (!mail) {
+		mail = new Mail();
+	}
 
-			mail.email = email;
-			mail.did = did;
-			mail.createdOn = new Date();
+	mail.email = email;
+	mail.did = did;
+	mail.validated = false;
+	mail.createdOn = new Date();
 
-			let date = new Date();
-			date.setHours(date.getHours() + Constants.HOURS_BEFORE_CODE_EXPIRES);
-			mail.expiresOn = date;
+	let date = new Date();
+	date.setHours(date.getHours() + Constants.HOURS_BEFORE_CODE_EXPIRES);
+	mail.expiresOn = date;
 
-			mail.validated = false;
+	try {
+		mail.code = Hashing.hash(code);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 
-			try {
-				mail.code = Hashing.hash(code);
-			} catch (err) {
-				return errCb(err);
-			}
-
-			return mail.save(function(err, mail) {
-				if (err) return errCb(err);
-				return cb(mail);
-			});
-		},
-		errCb
-	);
+	try {
+		mail = await mail.save();
+		return Promise.resolve(mail);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };
 
-Mail.get = function(did, cb, errCb) {
-	return Mail.findOne({ did: did, validated: false }, {}, function(err, mail) {
-		if (err) return errCb(err);
-		if (!mail || mail.expiresOn.getTime() < new Date().getTime()) return cb(null);
-		return cb(mail);
-	});
+Mail.get = async function(did) {
+	try {
+		const query = { did: did, validated: false };
+		let mail = await Mail.findOne(query);
+		return Promise.resolve(mail);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };

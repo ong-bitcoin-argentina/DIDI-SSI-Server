@@ -1,175 +1,146 @@
 const User = require("../models/User");
 const Messages = require("../constants/Messages");
 
-let _getAndValidate = function(did, email, pass, cb, errCb) {
-	return User.getByDIDAndEmail(
-		did,
-		email,
-		function(user) {
-			if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
-			return user.comparePassword(
-				pass,
-				function(isMatch) {
-					if (!isMatch) return errCb(Messages.USER.ERR.INVALID_USER);
-					return cb(user);
-				},
-				function(err) {
-					console.log(err);
-					return errCb(Messages.USER.ERR.INVALID_USER);
-				}
-			);
-		},
-		function(err) {
-			console.log(err);
-			return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
-		}
-	);
+let _getAndValidate = async function(did, email, pass) {
+	let user;
+	try {
+		user = await User.getByDIDAndEmail(did, email);
+		if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_DID);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+	}
+
+	try {
+		let match = await user.comparePassword(pass);
+		if (!match) return Promise.reject(Messages.USER.ERR.INVALID_USER);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.INVALID_USER);
+	}
 };
 
-class UserService {
-	static create(did, privateKeySeed, userMail, phoneNumber, userPass, cb, errCb) {
-		User.getByDIDAndEmail(
-			did,
-			userMail,
-			function(user) {
-				if (user) return errCb(Messages.USER.ERR.USER_ALREADY_EXIST);
-				User.generate(
-					did,
-					privateKeySeed,
-					userMail,
-					phoneNumber,
-					userPass,
-					function(user) {
-						if (!user) return errCb(Messages.USER.ERR.CREATE);
-						return cb(user);
-					},
-					function(err) {
-						console.log(err);
-						errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
-					}
-				);
-			},
-			function(err) {
-				console.log(err);
-				errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
-			}
-		);
+module.exports.create = async function(did, privateKeySeed, userMail, phoneNumber, userPass) {
+	try {
+		let user = await User.getByDIDAndEmail(did, userMail);
+		if (user) return Promise.reject(Messages.USER.ERR.USER_ALREADY_EXIST);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
 	}
 
-	static login(did, email, pass, cb, errCb) {
-		return _getAndValidate(did, email, pass, cb, errCb);
+	try {
+		let user = await User.generate(did, privateKeySeed, userMail, phoneNumber, userPass);
+		if (!user) return Promise.reject(Messages.USER.ERR.CREATE);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+	}
+};
+
+module.exports.login = async function(did, email, pass) {
+	let user;
+	try {
+		user = await _getAndValidate(did, email, pass);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+module.exports.recoverAccount = async function(mail, pass) {
+	let user;
+	try {
+		user = await User.getByEmail(mail);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
 	}
 
-	static recoverAccount(mail, pass, cb, errCb) {
-		return User.getByEmail(
-			mail,
-			function(user) {
-				if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_EMAIL);
-				return user.comparePassword(
-					pass,
-					function(isMatch) {
-						if (!isMatch) return errCb(Messages.USER.ERR.INVALID_USER);
-						return cb(user.seed);
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.USER.ERR.INVALID_USER);
-					}
-				);
-			},
-			function(err) {
-				console.log(err);
-				return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
-			}
-		);
+	if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_EMAIL);
+
+	try {
+		const isMatch = await user.comparePassword(pass);
+		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
+		return Promise.resolve(user.seed);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.INVALID_USER);
+	}
+};
+
+module.exports.changeEmail = async function(did, password, email, newMail) {
+	let user;
+	try {
+		user = await _getAndValidate(did, email, password);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
 	}
 
-	static changeEmail(did, password, email, newMail, cb, errCb) {
-		return _getAndValidate(
-			did,
-			email,
-			password,
-			function(user) {
-				return user.updateEmail(
-					newMail,
-					function(user) {
-						return cb(user);
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.USER.ERR.UPDATE);
-					}
-				);
-			},
-			errCb
-		);
+	try {
+		user = await user.updateEmail(newMail);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.UPDATE);
+	}
+};
+
+module.exports.changePhoneNumber = async function(did, password, email, newPhoneNumber) {
+	let user;
+	try {
+		user = await _getAndValidate(did, email, password);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
 	}
 
-	static changePhoneNumber(did, password, email, newPhoneNumber, cb, errCb) {
-		return _getAndValidate(
-			did,
-			email,
-			password,
-			function(user) {
-				return user.updatePhoneNumber(
-					newPhoneNumber,
-					function(user) {
-						return cb(user);
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.USER.ERR.UPDATE);
-					}
-				);
-			},
-			errCb
-		);
+	try {
+		user = await user.updatePhoneNumber(newPhoneNumber);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.UPDATE);
+	}
+};
+
+module.exports.changePassword = async function(did, email, oldPass, newPass) {
+	let user;
+	try {
+		user = await _getAndValidate(did, email, oldPass);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
 	}
 
-	static changePassword(did, email, oldPass, newPass, cb, errCb) {
-		return _getAndValidate(
-			did,
-			email,
-			oldPass,
-			function(user) {
-				return user.updatePassword(
-					newPass,
-					function(user) {
-						return cb(user);
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.USER.ERR.UPDATE);
-					}
-				);
-			},
-			errCb
-		);
+	try {
+		user = await user.updatePassword(newPass);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.UPDATE);
+	}
+};
+
+module.exports.recoverPassword = async function(did, email, newPass) {
+	let user;
+	try {
+		user = await User.getByDIDAndEmail(did, email);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
 	}
 
-	static recoverPassword(did, email, newPass, cb, errCb) {
-		return User.getByDIDAndEmail(
-			did,
-			email,
-			function(user) {
-				if (!user) return errCb(Messages.USER.ERR.NOMATCH_USER_DID);
-				return user.updatePassword(
-					newPass,
-					function(user) {
-						return cb(user);
-					},
-					function(err) {
-						console.log(err);
-						return errCb(Messages.USER.ERR.UPDATE);
-					}
-				);
-			},
-			function(err) {
-				console.log(err);
-				return errCb(Messages.USER.ERR.COMMUNICATION_ERROR);
-			}
-		);
-	}
-}
+	if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_DID);
 
-module.exports = UserService;
+	try {
+		user = await user.updatePassword(newPass);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.UPDATE);
+	}
+};

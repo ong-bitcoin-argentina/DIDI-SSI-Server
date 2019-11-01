@@ -30,6 +30,7 @@ module.exports = {
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+			VALIDATION_EXPIRED: { code: "VALIDATION_EXPIRED", message: "El pedido de validacion para ese número ha expirado" },
 			NO_VALIDATIONS_FOR_NUMBER: {
 				code: "NO_SMSCODE_MATCH",
 				message: "No se encontraron pedidos de validacion para ese número."
@@ -54,6 +55,7 @@ module.exports = {
 				code: "NO_EMAILCODE_MATCH",
 				message: "No se encontraron pedidos de validacion para ese mail."
 			},
+			VALIDATION_EXPIRED: { code: "VALIDATION_EXPIRED", message: "El pedido de validacion para ese mail ha expirado" },
 			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail" },
 			CREATE: COMMUNICATION_ERROR,
 			GET: COMMUNICATION_ERROR

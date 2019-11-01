@@ -23,33 +23,20 @@ router.post(
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const phoneNumber = req.body.cellPhoneNumber;
 		const did = req.body.did;
 
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
 		if (Constants.DEBUGG) console.log(code);
 
-		return SmsService.create(
-			phoneNumber,
-			code,
-			did,
-			function(_) {
-				SmsService.sendValidationCode(
-					phoneNumber,
-					code,
-					function(_) {
-						return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.SENT);
-					},
-					function(err) {
-						return ResponseHandler.sendErr(res, err);
-					}
-				);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
-			}
-		);
+		try {
+			await SmsService.create(phoneNumber, code, did);
+			SmsService.sendValidationCode(phoneNumber, code);
+			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.SENT);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
@@ -69,34 +56,29 @@ router.post(
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	function(req, res) {
+	async function(req, res) {
 		const validationCode = req.body.validationCode;
 		const did = req.body.did;
 
-		return SmsService.validatePhone(
-			did,
-			validationCode,
-			function(phone) {
-				const subject = {
-					phoneCredential: {
-						phoneNumber: phone.phoneNumber
-					}
-				};
-				CertificateService.createCertificate(
-					did,
-					subject,
-					function(certificate) {
-						return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED(certificate));
-					},
-					function(err) {
-						return ResponseHandler.sendErr(res, err);
-					}
-				);
-			},
-			function(err) {
-				return ResponseHandler.sendErr(res, err);
+		let phone;
+		try {
+			phone = await SmsService.validatePhone(did, validationCode);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+
+		const subject = {
+			phoneCredential: {
+				phoneNumber: phone.phoneNumber
 			}
-		);
+		};
+
+		try {
+			let cert = await CertificateService.createCertificate(did, subject);
+			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED(cert));
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 	}
 );
 
