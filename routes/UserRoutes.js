@@ -3,6 +3,7 @@ const ResponseHandler = require("./utils/ResponseHandler");
 
 const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
+const SmsService = require("../services/SmsService");
 
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
@@ -38,6 +39,20 @@ router.post(
 		const privateKeySeed = req.body.privateKeySeed;
 
 		try {
+			let mailValidated = await MailService.isValidated(did, eMail);
+			if (!mailValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.MAIL_NOT_VALIDATED);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
+		}
+
+		try {
+			let phoneValidated = await SmsService.isValidated(did, phoneNumber);
+			if (!phoneValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.PHONE_NOT_VALIDATED);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
+		}
+
+		try {
 			let user = await UserService.create(did, privateKeySeed, eMail, phoneNumber, password);
 			if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.USER_ALREADY_EXIST);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
@@ -58,17 +73,15 @@ router.post(
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
-		},
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
+		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const userEmail = req.body.eMail;
 		const password = req.body.password;
 
 		try {
-			await UserService.login(did, userEmail, password);
+			await UserService.login(did, password);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.LOGGED_IN);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -110,7 +123,6 @@ router.post(
 	"/changePassword",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{
 			name: "oldPass",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
@@ -125,12 +137,11 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const eMail = req.body.eMail;
 		const oldPass = req.body.oldPass;
 		const newPass = req.body.newPass;
 
 		try {
-			await UserService.changePassword(did, eMail, oldPass, newPass);
+			await UserService.changePassword(did, oldPass, newPass);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -145,7 +156,6 @@ router.post(
 	"/recoverPassword",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{
 			name: "eMailValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
@@ -160,18 +170,18 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const eMail = req.body.eMail;
 		const eMailValidationCode = req.body.eMailValidationCode;
 		const newPass = req.body.newPass;
 
 		try {
-			await MailService.validateMail(did, eMailValidationCode);
+			const mail = await MailService.validateMail(did, eMailValidationCode);
+			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
 
 		try {
-			await UserService.recoverPassword(did, eMail, newPass);
+			await UserService.recoverPassword(did, newPass);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -191,7 +201,11 @@ router.post(
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{
+			name: "phoneValidationCode",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+		},
 		{
 			name: "newPhoneNumber",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
@@ -200,12 +214,19 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const eMail = req.body.eMail;
 		const password = req.body.password;
+		const phoneValidationCode = req.body.phoneValidationCode;
 		const newPhoneNumber = req.body.newPhoneNumber;
 
 		try {
-			await UserService.changePhoneNumber(did, password, eMail, newPhoneNumber);
+			const phone = await SmsService.validatePhone(did, phoneValidationCode);
+			if (!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+
+		try {
+			await UserService.changePhoneNumber(did, password, newPhoneNumber);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -225,18 +246,29 @@ router.post(
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{
+			name: "eMailValidationCode",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+		},
 		{ name: "newEMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const eMail = req.body.eMail;
 		const password = req.body.password;
+		const eMailValidationCode = req.body.eMailValidationCode;
 		const newEMail = req.body.newEMail;
 
 		try {
-			await UserService.changeEmail(did, password, eMail, newEMail);
+			const mail = await MailService.validateMail(did, eMailValidationCode);
+			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+
+		try {
+			await UserService.changeEmail(did, password, newEMail);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

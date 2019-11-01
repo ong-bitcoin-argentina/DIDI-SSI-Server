@@ -63,6 +63,7 @@ router.post(
 		let phone;
 		try {
 			phone = await SmsService.validatePhone(did, validationCode);
+			if(!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}

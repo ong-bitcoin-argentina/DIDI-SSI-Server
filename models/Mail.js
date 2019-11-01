@@ -48,7 +48,7 @@ MailSchema.methods.expired = function() {
 MailSchema.methods.validateMail = async function(code) {
 	try {
 		const isMatch = Hashing.validateHash(code, this.code);
-		if (!isMatch) return Promise.resolve(this);
+		if (!isMatch) return Promise.resolve(null);
 
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true } };
@@ -109,6 +109,17 @@ Mail.get = async function(did) {
 		const query = { did: did, validated: false };
 		let mail = await Mail.findOne(query);
 		return Promise.resolve(mail);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+Mail.isValidated = async function(did, email) {
+	try {
+		const query = { did: did, email: email };
+		let mail = await Mail.findOne(query);
+		return Promise.resolve(mail.validated);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);

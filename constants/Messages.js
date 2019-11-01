@@ -30,7 +30,10 @@ module.exports = {
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
-			VALIDATION_EXPIRED: { code: "VALIDATION_EXPIRED", message: "El pedido de validacion para ese número ha expirado" },
+			VALIDATION_EXPIRED: {
+				code: "VALIDATION_EXPIRED",
+				message: "El pedido de validacion para ese número ha expirado"
+			},
 			NO_VALIDATIONS_FOR_NUMBER: {
 				code: "NO_SMSCODE_MATCH",
 				message: "No se encontraron pedidos de validacion para ese número."
@@ -89,11 +92,13 @@ module.exports = {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden" },
-			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontró ningún usuario con ese did y mail" },
+			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontró ningún usuario con ese did" },
 			NOMATCH_USER_EMAIL: {
 				code: "NOMATCH_USER_EMAIL",
 				message: "No se encontró ningún usuario con ese mail y contraseña"
 			},
+			MAIL_NOT_VALIDATED: { code: "MAIL_NOT_VALIDATED", message: "Ese mail no fue validado" },
+			PHONE_NOT_VALIDATED: { code: "PHONE_NOT_VALIDATED", message: "Ese teléfono no fue validado" },
 			CREATE: COMMUNICATION_ERROR,
 			GET: COMMUNICATION_ERROR,
 			UPDATE: COMMUNICATION_ERROR

@@ -11,12 +11,14 @@ module.exports.sendValidationCode = function(eMail, code) {
 		text: Messages.EMAIL.VALIDATION.MESSAGE(code)
 	};
 
+	/*
 	mailgun.messages().send(data, (error, _) => {
 		if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
 		if (error) {
 			console.log(error);
 		}
 	});
+	*/
 };
 
 module.exports.create = async function(email, code, did) {
@@ -48,5 +50,15 @@ module.exports.validateMail = async function(did, code) {
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+	}
+};
+
+module.exports.isValidated = async function(did, email) {
+	try {
+		let isValidated = await Mail.isValidated(did, email);
+		return Promise.resolve(isValidated);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
 	}
 };

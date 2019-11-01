@@ -1,10 +1,10 @@
 const User = require("../models/User");
 const Messages = require("../constants/Messages");
 
-let _getAndValidate = async function(did, email, pass) {
+let _getAndValidate = async function(did, pass) {
 	let user;
 	try {
-		user = await User.getByDIDAndEmail(did, email);
+		user = await User.getByDID(did);
 		if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_DID);
 	} catch (err) {
 		console.log(err);
@@ -23,7 +23,7 @@ let _getAndValidate = async function(did, email, pass) {
 
 module.exports.create = async function(did, privateKeySeed, userMail, phoneNumber, userPass) {
 	try {
-		let user = await User.getByDIDAndEmail(did, userMail);
+		let user = await User.getByDID(did);
 		if (user) return Promise.reject(Messages.USER.ERR.USER_ALREADY_EXIST);
 	} catch (err) {
 		console.log(err);
@@ -40,10 +40,10 @@ module.exports.create = async function(did, privateKeySeed, userMail, phoneNumbe
 	}
 };
 
-module.exports.login = async function(did, email, pass) {
+module.exports.login = async function(did, pass) {
 	let user;
 	try {
-		user = await _getAndValidate(did, email, pass);
+		user = await _getAndValidate(did, pass);
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
@@ -72,15 +72,15 @@ module.exports.recoverAccount = async function(mail, pass) {
 	}
 };
 
-module.exports.changeEmail = async function(did, password, email, newMail) {
+module.exports.changeEmail = async function(did, password, newMail) {
 	let user;
 	try {
-		user = await _getAndValidate(did, email, password);
+		user = await _getAndValidate(did, password);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
 	}
-
+	
 	try {
 		user = await user.updateEmail(newMail);
 		return Promise.resolve(user);
@@ -90,10 +90,10 @@ module.exports.changeEmail = async function(did, password, email, newMail) {
 	}
 };
 
-module.exports.changePhoneNumber = async function(did, password, email, newPhoneNumber) {
+module.exports.changePhoneNumber = async function(did, password, newPhoneNumber) {
 	let user;
 	try {
-		user = await _getAndValidate(did, email, password);
+		user = await _getAndValidate(did, password);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
@@ -108,10 +108,10 @@ module.exports.changePhoneNumber = async function(did, password, email, newPhone
 	}
 };
 
-module.exports.changePassword = async function(did, email, oldPass, newPass) {
+module.exports.changePassword = async function(did, oldPass, newPass) {
 	let user;
 	try {
-		user = await _getAndValidate(did, email, oldPass);
+		user = await _getAndValidate(did, oldPass);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
@@ -126,10 +126,10 @@ module.exports.changePassword = async function(did, email, oldPass, newPass) {
 	}
 };
 
-module.exports.recoverPassword = async function(did, email, newPass) {
+module.exports.recoverPassword = async function(did, newPass) {
 	let user;
 	try {
-		user = await User.getByDIDAndEmail(did, email);
+		user = await User.getByDID(did);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
