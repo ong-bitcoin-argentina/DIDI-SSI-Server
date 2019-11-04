@@ -53,6 +53,8 @@ module.exports = {
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms" },
+			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail" },
 			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
 			NO_VALIDATIONS_FOR_EMAIL: {
 				code: "NO_EMAILCODE_MATCH",

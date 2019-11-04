@@ -3,7 +3,7 @@ const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const mailgun = require("mailgun-js")({ apiKey: Constants.MAILGUN_API_KEY, domain: Constants.MAILGUN_DOMAIN });
 
-module.exports.sendValidationCode = function(eMail, code) {
+module.exports.sendValidationCode = async function(eMail, code) {
 	const data = {
 		from: Messages.EMAIL.VALIDATION.FROM,
 		to: eMail,
@@ -11,14 +11,13 @@ module.exports.sendValidationCode = function(eMail, code) {
 		text: Messages.EMAIL.VALIDATION.MESSAGE(code)
 	};
 
-	/*
-	mailgun.messages().send(data, (error, _) => {
+	try {
+		await mailgun.messages().send(data);
 		if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
-		if (error) {
-			console.log(error);
-		}
-	});
-	*/
+	} catch(err) {
+		console.log(err);
+		return Promise.reject(Messages.EMAIL.ERR.EMAIL_SEND_ERROR);
+	}
 };
 
 module.exports.create = async function(email, code, did) {

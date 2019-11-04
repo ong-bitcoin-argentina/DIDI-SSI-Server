@@ -30,7 +30,7 @@ router.post(
 
 		try {
 			await MailService.create(eMail, code, did);
-			MailService.sendValidationCode(eMail, code);
+			await MailService.sendValidationCode(eMail, code);
 			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.SENT);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
