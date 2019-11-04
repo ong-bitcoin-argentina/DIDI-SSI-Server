@@ -32,7 +32,7 @@ router.post(
 
 		try {
 			await SmsService.create(phoneNumber, code, did);
-			SmsService.sendValidationCode(phoneNumber, code);
+			await SmsService.sendValidationCode(phoneNumber, code);
 			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.SENT);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

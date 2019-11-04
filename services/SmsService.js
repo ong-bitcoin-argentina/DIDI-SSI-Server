@@ -12,14 +12,16 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 		from: Constants.TWILIO_PHONE_NUMBER
 	};
 
-	//var client = twilio(Constants.TWILIO_SID, Constants.TWILIO_TOKEN);
+	var client = twilio(Constants.TWILIO_SID, Constants.TWILIO_TOKEN);
 	if (Constants.DEBUGG) console.log(Messages.SMS.SENDING(data.to));
-	/*
-	client.messages.create(data, function(err, _) {
-		if (err) return Promise.reject(err);
+
+	try {
+		await client.messages.create(data);
 		if (Constants.DEBUGG) console.log(Messages.SMS.SENT);
-	});
-	*/
+	} catch(err) {
+		console.log(err);
+		return Promise.reject(Messages.EMAIL.ERR.SMS_SEND_ERROR);
+	}
 };
 
 module.exports.create = async function(phoneNumber, code, did) {
