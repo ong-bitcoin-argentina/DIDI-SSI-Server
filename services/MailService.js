@@ -11,13 +11,12 @@ module.exports.sendValidationCode = async function(eMail, code) {
 		text: Messages.EMAIL.VALIDATION.MESSAGE(code)
 	};
 
-	try {
-		await mailgun.messages().send(data);
+	mailgun.messages().send(data, (error, _) => {
 		if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
-	} catch(err) {
-		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.EMAIL_SEND_ERROR);
-	}
+		if (error) {
+			console.log(error);
+		}
+	});
 };
 
 module.exports.create = async function(email, code, did) {
