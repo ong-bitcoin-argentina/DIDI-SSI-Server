@@ -20,9 +20,10 @@ services:
       TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
       PHONE_REGION: ${PHONE_REGION}
       DEBUGG_MODE: ${PHONE_REGION}
+      MONGO_PORT: ${MONGO_PORT}
       PORT: ${PORT}
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}"
     links:
       - mongo
 
@@ -37,4 +38,4 @@ services:
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./data:/data/db
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT}:${MONGO_PORT}"
