@@ -74,6 +74,7 @@ router.post(
 
 		try {
 			let cert = await CertificateService.createCertificate(did, subject);
+			await CertificateService.saveCertificate(cert);
 			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

@@ -1,5 +1,5 @@
 const DEBUGG = process.env.DEBUGG || true;
-const MONGO_DIR = process.env.MONGO_DIR || "127.0.0.1"; 
+const MONGO_DIR = process.env.MONGO_DIR || "127.0.0.1";
 const MONGO_PORT = process.env.MONGO_PORT || "27017";
 const MONGO_USER = process.env.MONGO_USERNAME;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
@@ -9,6 +9,8 @@ const PORT = process.env.PORT || 3000;
 const SERVER_DID = process.env.SERVER_DID || "***REMOVED***";
 const SERVER_PRIVATE_KEY =
 	process.env.SERVER_PRIVATE_KEY || "***REMOVED***";
+
+const MOURO_URL = process.env.MOURO_URL || "http://192.168.2.137:3001/graphql";
 
 const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
 const MONGO_URL =
@@ -20,6 +22,7 @@ module.exports = {
 	MONGO_URL: MONGO_URL,
 	PORT: PORT,
 
+	MOURO_URL: MOURO_URL,
 	SERVER_DID: SERVER_DID,
 	SERVER_PRIVATE_KEY: SERVER_PRIVATE_KEY,
 	NOT_BACK_FROM: 1562950282,

@@ -63,7 +63,7 @@ router.post(
 		let phone;
 		try {
 			phone = await SmsService.validatePhone(did, validationCode);
-			if(!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
+			if (!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
@@ -76,6 +76,7 @@ router.post(
 
 		try {
 			let cert = await CertificateService.createCertificate(did, subject);
+			await CertificateService.saveCertificate(cert);
 			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

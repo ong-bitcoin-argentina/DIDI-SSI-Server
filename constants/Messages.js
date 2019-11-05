@@ -1,6 +1,7 @@
 const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." };
 
 module.exports = {
+	CERTIFICATE_SAVED: "Certificado guardado",
 	INDEX: {
 		ERR: {
 			CONNECTION: "Error de conexion en la base de datos: "
