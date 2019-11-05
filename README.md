@@ -1,18 +1,9 @@
 # didi-server
 
 ## Variables de entorno
-
-DEBUGG
-MONGO_DIR
-MONGO_PORT
-MONGO_USER
-MONGO_PASSWORD
-MONGO_DB
-PORT
-SERVER_DID
-SERVER_PRIVATE_KEY
-
-## Db config (.env && init-mongo.js)
+## importante:
+## - al correr en docker estas constantes se toman del archibo '.env',
+## - al correr de forma local, los que no se pasen por paràmetro se tomaràn del archibo de constantes (constants/Constants.js)
 
 MONGO_INITDB_ROOT_USERNAME
 MONGO_INITDB_ROOT_PASSWORD
@@ -20,7 +11,26 @@ MONGO_INITDB_DATABASE
 MONGO_USERNAME
 MONGO_PASSWORD
 
-## Ejecutar local usando valores por defecto
+MONGO_DIR
+SERVER_DID
+SERVER_PRIVATE_KEY
+
+MOURO_URL
+
+CREDENTIALS_CONTEXT
+
+MAILGUN_API_KEY
+MAILGUN_DOMAIN
+
+TWILIO_SID
+TWILIO_TOKEN
+TWILIO_PHONE_NUMBER
+PHONE_REGION
+
+DEBUGG_MODE
+PORT
+
+## Ejecutar local usando valores por defecto (es necesario tener mongo instalado)
 
 ```
 mongod
