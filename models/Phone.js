@@ -117,8 +117,7 @@ Phone.isValidated = async function(did, phoneNumber) {
 	try {
 		const query = { did: did, phoneNumber: phoneNumber };
 		let phone = await Phone.findOne(query);
-		if (!phone) return Promise.resolve(false);
-		return Promise.resolve(phone.validated);
+		return Promise.resolve(phone ? phone.validated : false);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);

@@ -119,7 +119,7 @@ Mail.isValidated = async function(did, email) {
 	try {
 		const query = { did: did, email: email };
 		let mail = await Mail.findOne(query);
-		return Promise.resolve(mail.validated);
+		return Promise.resolve(mail? mail.validated : false);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
