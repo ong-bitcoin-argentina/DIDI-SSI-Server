@@ -15,10 +15,12 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 	var client = twilio(Constants.TWILIO_SID, Constants.TWILIO_TOKEN);
 	if (Constants.DEBUGG) console.log(Messages.SMS.SENDING(data.to));
 
-	client.messages.create(data, function(err, _) {
-		if (err) return Promise.reject(err);
+	try {
+		await client.messages.create(data);
 		if (Constants.DEBUGG) console.log(Messages.SMS.SENT);
-	});
+	} catch(err) {
+		console.log(err);
+	}
 };
 
 module.exports.create = async function(phoneNumber, code, did) {
