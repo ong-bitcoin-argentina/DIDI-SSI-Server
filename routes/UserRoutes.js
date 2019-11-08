@@ -4,6 +4,7 @@ const ResponseHandler = require("./utils/ResponseHandler");
 const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
 const SmsService = require("../services/SmsService");
+const CertificateService = require("../services/CertificateService");
 
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
@@ -249,7 +250,7 @@ router.post(
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
 
-			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PHONE);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PHONE(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
@@ -301,7 +302,7 @@ router.post(
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
 
-			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
