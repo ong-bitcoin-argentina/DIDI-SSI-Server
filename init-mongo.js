@@ -3,12 +3,12 @@ const MONGO_USERNAME = "didi_admin";
 const MONGO_PASSWORD = "***REMOVED***";
 
 db.createUser({
-	user: MONGO_USERNAME,
-	pwd: MONGO_PASSWORD,
+	user: "didi_admin",
+	pwd: "***REMOVED***",
 	roles: [
 		{
 			role: "readWrite",
-			db: MONGO_INITDB_DATABASE
+			db: "didi"
 		}
 	]
 });

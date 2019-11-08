@@ -5,6 +5,7 @@ const Constants = require("../constants/Constants");
 
 const twilio = require("twilio");
 
+// realiza el envio de sms con el còdigo de validaciòn usando "Twillio"
 module.exports.sendValidationCode = async function(phoneNumber, code) {
 	const data = {
 		body: Messages.SMS.VALIDATION.MESSAGE(code),
@@ -14,12 +15,16 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 
 	var client = twilio(Constants.TWILIO_SID, Constants.TWILIO_TOKEN);
 	if (Constants.DEBUGG) console.log(Messages.SMS.SENDING(data.to));
-	client.messages.create(data, function(err, _) {
-		if (err) return Promise.reject(err);
+
+	try {
+		await client.messages.create(data);
 		if (Constants.DEBUGG) console.log(Messages.SMS.SENT);
-	});
+	} catch (err) {
+		console.log(err);
+	}
 };
 
+// crear y guardar pedido de validacion de tel
 module.exports.create = async function(phoneNumber, code, did) {
 	try {
 		let phone = await Phone.generate(phoneNumber, code, did);
@@ -34,6 +39,7 @@ module.exports.create = async function(phoneNumber, code, did) {
 module.exports.validatePhone = async function(did, code) {
 	let phone;
 	try {
+		// obtener pedido de validaciòn
 		phone = await Phone.get(did);
 		if (!phone) return Promise.reject(Messages.SMS.ERR.NO_VALIDATIONS_FOR_NUMBER);
 		if (phone.expired()) return Promise.reject(Messages.SMS.ERR.VALIDATION_EXPIRED);
@@ -43,6 +49,7 @@ module.exports.validatePhone = async function(did, code) {
 	}
 
 	try {
+		// validar tel
 		phone = await phone.validatePhone(code);
 		if (!phone) return Promise.reject(Messages.SMS.ERR.NO_SMSCODE_MATCH);
 		return Promise.resolve(phone);
@@ -52,6 +59,7 @@ module.exports.validatePhone = async function(did, code) {
 	}
 };
 
+// indica si el pedido de tel de mail fue validado
 module.exports.isValidated = async function(did, phoneNumber) {
 	try {
 		let isValidated = await Phone.isValidated(did, phoneNumber);

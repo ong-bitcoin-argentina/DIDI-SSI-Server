@@ -1,6 +1,7 @@
 const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." };
 
 module.exports = {
+	CERTIFICATE_SAVED: "Certificado guardado",
 	INDEX: {
 		ERR: {
 			CONNECTION: "Error de conexion en la base de datos: "
@@ -53,6 +54,8 @@ module.exports = {
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms" },
+			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail" },
 			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
 			NO_VALIDATIONS_FOR_EMAIL: {
 				code: "NO_EMAILCODE_MATCH",
@@ -85,8 +88,12 @@ module.exports = {
 			LOGGED_IN: {},
 			REGISTERED: {},
 			CHANGED_PASS: {},
-			CHANGED_PHONE: {},
-			CHANGED_EMAIL: {}
+			CHANGED_PHONE: function(cert) {
+				return { certificate: cert };
+			},
+			CHANGED_EMAIL: function(cert) {
+				return { certificate: cert };
+			}
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -105,6 +112,11 @@ module.exports = {
 		}
 	},
 	VALIDATION: {
+		PASSWORD_MISSING: {
+			code: "PASSWORD_MISSING",
+			message:
+				"Existe un usuario registrado con ese did, por lo que se require el campo 'password' para realizar esta llamada."
+		},
 		COMMON_PASSWORD: {
 			code: "PARAMETER_TYPE_ERROR",
 			message: "La contraseña ingresada es de uso común, por favor ingrese una mas segura."
