@@ -41,10 +41,12 @@ MailSchema.index(
 	}
 );
 
+// verificar si el pedido de validacion de telefono expirò
 MailSchema.methods.expired = function() {
 	return this.expiresOn.getTime() < new Date().getTime();
 };
 
+// comparar codigos de validacion y actualizar flag "validated"
 MailSchema.methods.validateMail = async function(code) {
 	try {
 		const isMatch = Hashing.validateHash(code, this.code);
@@ -65,6 +67,7 @@ MailSchema.methods.validateMail = async function(code) {
 const Mail = mongoose.model("Mail", MailSchema);
 module.exports = Mail;
 
+// crear nuevo pedido de validacion de mail, o pisar el anterior si hay otro con el mismo did
 Mail.generate = async function(email, code, did) {
 	let mail;
 	try {
@@ -104,6 +107,7 @@ Mail.generate = async function(email, code, did) {
 	}
 };
 
+// obtener por did
 Mail.get = async function(did) {
 	try {
 		const query = { did: did, validated: false };

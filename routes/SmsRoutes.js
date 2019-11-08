@@ -12,7 +12,8 @@ const Constants = require("../constants/Constants");
 
 /*
 	Validación de teléfono. El usuario debe envia su numero de celular para
-	poder generar una validación a través de SMS. retorna result = SUCCES S, en casi de ser.
+	poder generar una validación a través de SMS.
+	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
 */
 router.post(
 	"/sendSmsValidator",
@@ -37,8 +38,10 @@ router.post(
 
 		try {
 			if (password) {
+				// se ingresò contraseña, validarla
 				await UserService.getAndValidate(did, password);
 			} else {
+				// no se ingresò contraseña, validar que no hay un usuario con ese did
 				const user = await UserService.getByDID(did);
 				if (user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
 			}
@@ -46,12 +49,17 @@ router.post(
 			return ResponseHandler.sendErr(res, err);
 		}
 
+		// generar còdigo de validacion
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
 		if (Constants.DEBUGG) console.log(code);
 
 		try {
+			// crear y guardar pedido de validacion de tel
 			await SmsService.create(phoneNumber, code, did);
+
+			// mandar sms con còdigo de validacion
 			await SmsService.sendValidationCode(phoneNumber, code);
+
 			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.SENT);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -60,9 +68,8 @@ router.post(
 );
 
 /* 
-	Validación del código de 6 digitos enviado por SMS. El usuario debe envia
-	su el código de validacion. retorna result = SUCCESS en caso de una validación
-	correcta del código.
+	Validación del código de 6 digitos enviado por SMS.  El usuario debe ingresar
+	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendSmsValidator".
 */
 router.post(
 	"/verifySmsCode",
@@ -81,6 +88,7 @@ router.post(
 
 		let phone;
 		try {
+			// validar codigo y actualizar pedido de validacion de tel
 			phone = await SmsService.validatePhone(did, validationCode);
 			if (!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
 		} catch (err) {
@@ -94,8 +102,12 @@ router.post(
 		};
 
 		try {
+			// generar certificado validando que ese did le corresponde al dueño del telèfono
 			let cert = await CertificateService.createCertificate(did, subject);
+
+			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
+
 			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

@@ -138,6 +138,7 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
+// crear nuevo usuario
 User.generate = async function(did, seed, mail, phoneNumber, pass) {
 	let user = new User();
 	user.mail = mail;

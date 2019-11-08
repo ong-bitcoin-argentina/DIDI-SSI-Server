@@ -9,12 +9,14 @@ const ApolloClient = require("apollo-boost").default;
 const gql = require("graphql-tag");
 const fetch = require("node-fetch");
 
+// cliente para envio de certificados a mouro
 const client = new ApolloClient({
 	fetch: fetch,
 	uri: Constants.MOURO_URL,
 	cache: new InMemoryCache()
 });
 
+// recibe el caertificado y lo envia a mouro para ser guardado
 module.exports.saveCertificate = async function(cert) {
 	try {
 		let result = await client.mutate({
@@ -44,6 +46,7 @@ module.exports.saveCertificate = async function(cert) {
 	}
 };
 
+// genera un certificado asociando la informaciòn recibida en "subject" con el did
 module.exports.createCertificate = async function(did, subject) {
 	const vcissuer = new EthrDID({
 		address: Constants.SERVER_DID,
