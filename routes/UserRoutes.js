@@ -292,7 +292,7 @@ router.post(
 
 			const subject = {
 				emailCredential: {
-					email: mail.email
+					email: newEMail
 				}
 			};
 
