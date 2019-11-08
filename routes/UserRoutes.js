@@ -197,11 +197,6 @@ router.post(
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
-			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
-		},
-		{
 			name: "phoneValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
@@ -214,7 +209,6 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const password = req.body.password;
 		const phoneValidationCode = req.body.phoneValidationCode;
 		const newPhoneNumber = req.body.newPhoneNumber;
 
@@ -226,7 +220,7 @@ router.post(
 		}
 
 		try {
-			await UserService.changePhoneNumber(did, password, newPhoneNumber);
+			await UserService.changePhoneNumber(did, newPhoneNumber);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -242,11 +236,6 @@ router.post(
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
-			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
-		},
-		{
 			name: "eMailValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
@@ -256,7 +245,6 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const password = req.body.password;
 		const eMailValidationCode = req.body.eMailValidationCode;
 		const newEMail = req.body.newEMail;
 
@@ -268,7 +256,7 @@ router.post(
 		}
 
 		try {
-			await UserService.changeEmail(did, password, newEMail);
+			await UserService.changeEmail(did, newEMail);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

@@ -2,6 +2,7 @@ const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
 const SmsService = require("../services/SmsService");
+const UserService = require("../services/UserService");
 const CertificateService = require("../services/CertificateService");
 
 const Validator = require("./utils/Validator");
@@ -20,12 +21,30 @@ router.post(
 			name: "cellPhoneNumber",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
 		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "password",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			optional: true
+		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const phoneNumber = req.body.cellPhoneNumber;
 		const did = req.body.did;
+		const password = req.body.password;
+
+		try {
+			if (password) {
+				await UserService.getAndValidate(did, password);
+			} else {
+				const user = await UserService.getByDID(did);
+				if (user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
+			}
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
 		if (Constants.DEBUGG) console.log(code);

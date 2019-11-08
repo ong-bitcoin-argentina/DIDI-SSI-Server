@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
+const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
 const CertificateService = require("../services/CertificateService");
 
@@ -18,12 +19,30 @@ router.post(
 	"/sendMailValidator",
 	Validator.validateBody([
 		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "password",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			optional: true
+		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const eMail = req.body.eMail;
 		const did = req.body.did;
+		const password = req.body.password;
+
+		try {
+			if(password) {
+				await UserService.getAndValidate(did, password);
+			} else {
+				const user = await UserService.getByDID(did);
+				if(user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
+			}
+		} catch(err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
 		if (Constants.DEBUGG) console.log(code);

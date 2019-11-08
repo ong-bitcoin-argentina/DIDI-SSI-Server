@@ -108,6 +108,10 @@ module.exports = {
 		}
 	},
 	VALIDATION: {
+		PASSWORD_MISSING: {
+			code: "PASSWORD_MISSING",
+			message: "Existe un usuario registrado con ese did, por lo que se require el campo 'password' para realizar esta llamada."
+		},
 		COMMON_PASSWORD: {
 			code: "PARAMETER_TYPE_ERROR",
 			message: "La contraseña ingresada es de uso común, por favor ingrese una mas segura."
