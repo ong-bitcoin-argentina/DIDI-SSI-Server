@@ -236,7 +236,20 @@ router.post(
 		try {
 			// actualizar tel
 			await UserService.changePhoneNumber(did, newPhoneNumber);
-			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
+
+			const subject = {
+				phoneCredential: {
+					phoneNumber: newPhoneNumber
+				}
+			};
+
+			// generar certificado validando que ese did le corresponde al dueño del telèfono
+			let cert = await CertificateService.createCertificate(did, subject);
+
+			// mandar certificado a mouro
+			await CertificateService.saveCertificate(cert);
+
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PHONE);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
@@ -275,6 +288,19 @@ router.post(
 		try {
 			// actualizar mail
 			await UserService.changeEmail(did, newEMail);
+
+			const subject = {
+				emailCredential: {
+					email: mail.email
+				}
+			};
+
+			// generar certificado validando que ese did le corresponde al dueño del telèfono
+			let cert = await CertificateService.createCertificate(did, subject);
+
+			// mandar certificado a mouro
+			await CertificateService.saveCertificate(cert);
+
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
