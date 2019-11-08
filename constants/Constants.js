@@ -44,7 +44,6 @@ module.exports = {
 	VALIDATION_TYPES: {
 		IS_MOBILE_PHONE: "isMobilePhone",
 		IS_EMAIL: "isEmail",
-		IS_BASE_64: "isBase64",
 		IS_STRING: "isString",
 		IS_DATE_TIME: "isDateTime",
 		IS_PASSWORD: "isPassword"

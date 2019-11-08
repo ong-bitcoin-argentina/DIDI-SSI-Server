@@ -10,7 +10,8 @@ const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
 
 /*
-
+	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
+	tanto el mail como el telèfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
 */
 router.post(
 	"/registerUser",
@@ -39,6 +40,7 @@ router.post(
 		const privateKeySeed = req.body.privateKeySeed;
 
 		try {
+			// chequear que el mail haya sido validado
 			let mailValidated = await MailService.isValidated(did, eMail);
 			if (!mailValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.MAIL_NOT_VALIDATED);
 		} catch (err) {
@@ -46,6 +48,7 @@ router.post(
 		}
 
 		try {
+			// chequear que el tel haya sido validado
 			let phoneValidated = await SmsService.isValidated(did, phoneNumber);
 			if (!phoneValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.PHONE_NOT_VALIDATED);
 		} catch (err) {
@@ -53,8 +56,10 @@ router.post(
 		}
 
 		try {
+			// crear usuario
 			let user = await UserService.create(did, privateKeySeed, eMail, phoneNumber, password);
 			if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.USER_ALREADY_EXIST);
+
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
@@ -63,7 +68,8 @@ router.post(
 );
 
 /*
-
+	Valida que la contraseña se corresponda con la del usuario que tiene el did ingresado,
+	no genera ningùn token ni informaciòn ùtil.
 */
 router.post(
 	"/userLogin",
@@ -81,6 +87,7 @@ router.post(
 		const password = req.body.password;
 
 		try {
+			// validar la contraseña y retornar un boolean
 			await UserService.login(did, password);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.LOGGED_IN);
 		} catch (err) {
@@ -90,7 +97,7 @@ router.post(
 );
 
 /*
-
+	Retorna la clave privada que sirve para recuperar la cuenta de didi.
 */
 router.post(
 	"/recoverAccount",
@@ -108,6 +115,7 @@ router.post(
 		const password = req.body.password;
 
 		try {
+			// compara contraseña y retorna clave privada
 			const seed = await UserService.recoverAccount(eMail, password);
 			return ResponseHandler.sendRes(res, { privateKeySeed: seed });
 		} catch (err) {
@@ -117,7 +125,7 @@ router.post(
 );
 
 /*
-
+	Permite cambiar la contarseña del usuario en el caso que el usuario conoce el mail y contraseña anterior.
 */
 router.post(
 	"/changePassword",
@@ -141,6 +149,7 @@ router.post(
 		const newPass = req.body.newPass;
 
 		try {
+			// validar contraseña y actualizarla
 			await UserService.changePassword(did, oldPass, newPass);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
@@ -150,7 +159,8 @@ router.post(
 );
 
 /*
-
+	Permite cambiar la contraseña a partir de la cuènta de mail asociada al usuario (caso, me olvidè la contraseña),
+	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
 */
 router.post(
 	"/recoverPassword",
@@ -174,6 +184,7 @@ router.post(
 		const newPass = req.body.newPass;
 
 		try {
+			// validar codigo y actualizar pedido de validacion de mail
 			const mail = await MailService.validateMail(did, eMailValidationCode);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 		} catch (err) {
@@ -181,6 +192,7 @@ router.post(
 		}
 
 		try {
+			// actualizar contraseña
 			await UserService.recoverPassword(did, newPass);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
@@ -190,7 +202,8 @@ router.post(
 );
 
 /*
-
+	Permite cambiar el nùmero de tel asociado al usuario,
+	require que se haya mandado un còdigo de validaciòn con "/sendSmsValidator" antes de usarse.
 */
 router.post(
 	"/changePhoneNumber",
@@ -213,6 +226,7 @@ router.post(
 		const newPhoneNumber = req.body.newPhoneNumber;
 
 		try {
+			// validar codigo y actualizar pedido de validacion de tel
 			const phone = await SmsService.validatePhone(did, phoneValidationCode);
 			if (!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
 		} catch (err) {
@@ -220,6 +234,7 @@ router.post(
 		}
 
 		try {
+			// actualizar tel
 			await UserService.changePhoneNumber(did, newPhoneNumber);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
@@ -229,7 +244,8 @@ router.post(
 );
 
 /*
-
+	Permite cambiar el mail asociado al usuario,
+	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
 */
 router.post(
 	"/changeEmail",
@@ -249,6 +265,7 @@ router.post(
 		const newEMail = req.body.newEMail;
 
 		try {
+			// validar codigo y actualizar pedido de validacion de mail
 			const mail = await MailService.validateMail(did, eMailValidationCode);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 		} catch (err) {
@@ -256,6 +273,7 @@ router.post(
 		}
 
 		try {
+			// actualizar mail
 			await UserService.changeEmail(did, newEMail);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL);
 		} catch (err) {

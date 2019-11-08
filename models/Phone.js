@@ -40,10 +40,12 @@ PhoneSchema.index(
 	}
 );
 
+// verificar si el pedido de validacion de telefono expirò
 PhoneSchema.methods.expired = function() {
 	return this.expiresOn.getTime() < new Date().getTime();
 };
 
+// comparar codigos de validacion y actualizar flag "validated"
 PhoneSchema.methods.validatePhone = async function(code) {
 	try {
 		const isMatch = Hashing.validateHash(code, this.code);
@@ -64,6 +66,7 @@ PhoneSchema.methods.validatePhone = async function(code) {
 const Phone = mongoose.model("Phone", PhoneSchema);
 module.exports = Phone;
 
+// crear nuevo pedido de validacion de tel, o pisar el anterior si hay otro con el mismo did
 Phone.generate = async function(phoneNumber, code, did) {
 	let phone;
 	try {
@@ -102,6 +105,7 @@ Phone.generate = async function(phoneNumber, code, did) {
 	}
 };
 
+// obtener por did
 Phone.get = async function(did) {
 	try {
 		const query = { did: did, validated: false };
