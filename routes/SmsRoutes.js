@@ -42,7 +42,7 @@ router.post(
 				await UserService.getAndValidate(did, password);
 			} else {
 				// no se ingresò contraseña, validar que no hay un usuario con ese did o tel
-				const user = await UserService.getByDID(did);
+				let user = await UserService.getByDID(did);
 				if (user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
 
 				user = await UserService.getByTel(phoneNumber);
