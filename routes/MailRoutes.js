@@ -38,8 +38,11 @@ router.post(
 				// se ingresò contraseña, validarla
 				await UserService.getAndValidate(did, password);
 			} else {
-				// no se ingresò contraseña, validar que no hay un usuario con ese did
+				// no se ingresò contraseña, validar que no hay un usuario con ese did o mail
 				const user = await UserService.getByDID(did);
+				if(user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
+
+				const user = await UserService.getByEmail(eMail);
 				if(user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
 			}
 		} catch(err) {
