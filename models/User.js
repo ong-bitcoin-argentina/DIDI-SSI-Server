@@ -188,3 +188,14 @@ User.getByEmail = async function(email) {
 		return Promise.reject(err);
 	}
 };
+
+User.getByTel = async function(phoneNumber) {
+	try {
+		const query = { phoneNumber: phoneNumber, deleted: false };
+		let user = await User.findOne(query);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};

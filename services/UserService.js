@@ -13,6 +13,29 @@ let getByDID = async function(did) {
 };
 module.exports.getByDID = getByDID;
 
+// obtener usuario con ese mail
+module.exports.getByEmail = async function(email) {
+	try {
+		let user = await User.getByEmail(email);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+	}
+}
+
+// obtener usuario con ese tel
+module.exports.getByTel = async function(phoneNumber) {
+	try {
+		let user = await User.getByTel(phoneNumber);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+	}
+}
+
+
 // obtener usuario y validar contraseña
 let getAndValidate = async function(did, pass) {
 	try {
