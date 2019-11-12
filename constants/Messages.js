@@ -88,8 +88,12 @@ module.exports = {
 			LOGGED_IN: {},
 			REGISTERED: {},
 			CHANGED_PASS: {},
-			CHANGED_PHONE: {},
-			CHANGED_EMAIL: {}
+			CHANGED_PHONE: function(cert) {
+				return { certificate: cert };
+			},
+			CHANGED_EMAIL: function(cert) {
+				return { certificate: cert };
+			}
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -110,7 +114,8 @@ module.exports = {
 	VALIDATION: {
 		PASSWORD_MISSING: {
 			code: "PASSWORD_MISSING",
-			message: "Existe un usuario registrado con eos datos, por lo que se require el campo 'password' para realizar esta llamada."
+			message:
+				"Existe un usuario registrado con ese did, por lo que se require el campo 'password' para realizar esta llamada."
 		},
 		COMMON_PASSWORD: {
 			code: "PARAMETER_TYPE_ERROR",
