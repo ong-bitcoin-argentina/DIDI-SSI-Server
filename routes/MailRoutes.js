@@ -42,7 +42,7 @@ router.post(
 				const user = await UserService.getByDID(did);
 				if(user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
 
-				const user = await UserService.getByEmail(eMail);
+				user = await UserService.getByEmail(eMail);
 				if(user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
 			}
 		} catch(err) {
