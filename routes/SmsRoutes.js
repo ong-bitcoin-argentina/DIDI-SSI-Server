@@ -45,7 +45,7 @@ router.post(
 				const user = await UserService.getByDID(did);
 				if (user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
 
-				const user = await UserService.getByTel(phoneNumber);
+				user = await UserService.getByTel(phoneNumber);
 				if (user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
 			}
 		} catch (err) {
