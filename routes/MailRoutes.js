@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
-const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
 const CertificateService = require("../services/CertificateService");
 
@@ -18,36 +17,11 @@ const Constants = require("../constants/Constants");
 router.post(
 	"/sendMailValidator",
 	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{
-			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
-			optional: true
-		}
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const eMail = req.body.eMail;
-		const did = req.body.did;
-		const password = req.body.password;
-
-		try {
-			if(password) {
-				// se ingresò contraseña, validarla
-				await UserService.getAndValidate(did, password);
-			} else {
-				// no se ingresò contraseña, validar que no hay un usuario con ese did o mail
-				let user = await UserService.getByDID(did);
-				if(user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
-
-				user = await UserService.getByEmail(eMail);
-				if(user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
-			}
-		} catch(err) {
-			return ResponseHandler.sendErr(res, err);
-		}
 
 		// generar còdigo de validacion
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
@@ -55,7 +29,7 @@ router.post(
 
 		try {
 			// crear y guardar pedido de validacion de mail
-			await MailService.create(eMail, code, did);
+			await MailService.create(eMail, code, undefined);
 
 			// mandar mail con còdigo de validacion
 			await MailService.sendValidationCode(eMail, code);
@@ -79,17 +53,19 @@ router.post(
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const validationCode = req.body.validationCode;
+		const eMail = req.body.eMail;
 		const did = req.body.did;
 
 		let mail;
 		try {
 			// validar codigo y actualizar pedido de validacion de mail
-			mail = await MailService.validateMail(did, validationCode);
+			mail = await MailService.validateMail(eMail, validationCode, did);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

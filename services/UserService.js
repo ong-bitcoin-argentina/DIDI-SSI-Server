@@ -14,7 +14,7 @@ let getByDID = async function(did) {
 module.exports.getByDID = getByDID;
 
 // obtener usuario con ese mail
-module.exports.getByEmail = async function(email) {
+let getByEmail = async function(email) {
 	try {
 		let user = await User.getByEmail(email);
 		return Promise.resolve(user);
@@ -22,10 +22,11 @@ module.exports.getByEmail = async function(email) {
 		console.log(err);
 		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
 	}
-}
+};
+module.exports.getByEmail = getByEmail;
 
 // obtener usuario con ese tel
-module.exports.getByTel = async function(phoneNumber) {
+let getByTel = async function(phoneNumber) {
 	try {
 		let user = await User.getByTel(phoneNumber);
 		return Promise.resolve(user);
@@ -33,8 +34,8 @@ module.exports.getByTel = async function(phoneNumber) {
 		console.log(err);
 		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
 	}
-}
-
+};
+module.exports.getByTel = getByTel;
 
 // obtener usuario y validar contraseña
 let getAndValidate = async function(did, pass) {
@@ -110,11 +111,15 @@ module.exports.recoverAccount = async function(mail, pass) {
 };
 
 // obtener usuario y actualizar mail
-module.exports.changeEmail = async function(did, newMail) {
+module.exports.changeEmail = async function(email, newMail, password) {
 	try {
 		// obtener usuario
-		let user = await getByDID(did);
+		let user = await getByEmail(email);
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
+
+		// validar contraseña
+		const isMatch = await user.comparePassword(password);
+		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 
 		// actualizar mail
 		user = await user.updateEmail(newMail);
@@ -127,11 +132,15 @@ module.exports.changeEmail = async function(did, newMail) {
 };
 
 // obtener usuario y actualizar tel
-module.exports.changePhoneNumber = async function(did, newPhoneNumber) {
+module.exports.changePhoneNumber = async function(phoneNumber, newPhoneNumber, password) {
 	try {
 		// obtener usuario
-		let user = await getByDID(did);
+		let user = await getByTel(phoneNumber);
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
+
+		// validar contraseña
+		const isMatch = await user.comparePassword(password);
+		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 
 		// actualizar tel
 		user = await user.updatePhoneNumber(newPhoneNumber);

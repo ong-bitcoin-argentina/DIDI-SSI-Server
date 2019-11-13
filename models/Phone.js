@@ -8,7 +8,7 @@ const PhoneSchema = new mongoose.Schema({
 	},
 	did: {
 		type: String,
-		required: true
+		required: false
 	},
 	code: {
 		salt: {
@@ -34,7 +34,7 @@ const PhoneSchema = new mongoose.Schema({
 });
 
 PhoneSchema.index(
-	{ did: 1 },
+	{ phoneNumber: 1 },
 	{
 		unique: true
 	}
@@ -46,13 +46,13 @@ PhoneSchema.methods.expired = function() {
 };
 
 // comparar codigos de validacion y actualizar flag "validated"
-PhoneSchema.methods.validatePhone = async function(code) {
+PhoneSchema.methods.validatePhone = async function(code, did) {
 	try {
 		const isMatch = Hashing.validateHash(code, this.code);
 		if (!isMatch) return Promise.resolve(null);
 
 		let quiery = { _id: this._id };
-		let action = { $set: { validated: true } };
+		let action = { $set: { validated: true, did: did } };
 		await Phone.findOneAndUpdate(quiery, action);
 
 		this.validated = true;
@@ -70,7 +70,7 @@ module.exports = Phone;
 Phone.generate = async function(phoneNumber, code, did) {
 	let phone;
 	try {
-		const query = { did: did };
+		const query = { phoneNumber: phoneNumber };
 		phone = await Phone.findOne(query);
 	} catch (err) {
 		console.log(err);
@@ -105,10 +105,10 @@ Phone.generate = async function(phoneNumber, code, did) {
 	}
 };
 
-// obtener por did
-Phone.get = async function(did) {
+// obtener por tel
+Phone.getByPhoneNumber = async function(phoneNumber) {
 	try {
-		const query = { did: did, validated: false };
+		const query = { phoneNumber: phoneNumber, validated: false };
 		let phone = await Phone.findOne(query);
 		return Promise.resolve(phone);
 	} catch (err) {

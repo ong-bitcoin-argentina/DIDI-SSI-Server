@@ -2,7 +2,6 @@ const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
 const SmsService = require("../services/SmsService");
-const UserService = require("../services/UserService");
 const CertificateService = require("../services/CertificateService");
 
 const Validator = require("./utils/Validator");
@@ -21,36 +20,11 @@ router.post(
 		{
 			name: "cellPhoneNumber",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
-		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{
-			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
-			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const phoneNumber = req.body.cellPhoneNumber;
-		const did = req.body.did;
-		const password = req.body.password;
-
-		try {
-			if (password) {
-				// se ingresò contraseña, validarla
-				await UserService.getAndValidate(did, password);
-			} else {
-				// no se ingresò contraseña, validar que no hay un usuario con ese did o tel
-				let user = await UserService.getByDID(did);
-				if (user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
-
-				user = await UserService.getByTel(phoneNumber);
-				if (user) return ResponseHandler.sendErr(res, Messages.VALIDATION.PASSWORD_MISSING);
-			}
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
 
 		// generar còdigo de validacion
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
@@ -58,7 +32,7 @@ router.post(
 
 		try {
 			// crear y guardar pedido de validacion de tel
-			await SmsService.create(phoneNumber, code, did);
+			await SmsService.create(phoneNumber, code, undefined);
 
 			// mandar sms con còdigo de validacion
 			await SmsService.sendValidationCode(phoneNumber, code);
@@ -78,6 +52,10 @@ router.post(
 	"/verifySmsCode",
 	Validator.validateBody([
 		{
+			name: "cellPhoneNumber",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+		},		
+		{
 			name: "validationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
@@ -86,13 +64,14 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
+		const cellPhoneNumber = req.body.cellPhoneNumber;
 		const validationCode = req.body.validationCode;
 		const did = req.body.did;
 
 		let phone;
 		try {
 			// validar codigo y actualizar pedido de validacion de tel
-			phone = await SmsService.validatePhone(did, validationCode);
+			phone = await SmsService.validatePhone(cellPhoneNumber, validationCode, did);
 			if (!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

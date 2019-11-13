@@ -9,7 +9,7 @@ const MailSchema = new mongoose.Schema({
 	},
 	did: {
 		type: String,
-		required: true
+		required: false
 	},
 	code: {
 		salt: {
@@ -35,7 +35,7 @@ const MailSchema = new mongoose.Schema({
 });
 
 MailSchema.index(
-	{ did: 1 },
+	{ email: 1 },
 	{
 		unique: true
 	}
@@ -47,13 +47,13 @@ MailSchema.methods.expired = function() {
 };
 
 // comparar codigos de validacion y actualizar flag "validated"
-MailSchema.methods.validateMail = async function(code) {
+MailSchema.methods.validateMail = async function(code, did) {
 	try {
 		const isMatch = Hashing.validateHash(code, this.code);
 		if (!isMatch) return Promise.resolve(null);
 
 		let quiery = { _id: this._id };
-		let action = { $set: { validated: true } };
+		let action = { $set: { validated: true, did: did } };
 		await Mail.findOneAndUpdate(quiery, action);
 
 		this.validated = true;
@@ -71,7 +71,7 @@ module.exports = Mail;
 Mail.generate = async function(email, code, did) {
 	let mail;
 	try {
-		const query = { did: did };
+		const query = { email: email };
 		mail = await Mail.findOne(query);
 	} catch (err) {
 		console.log(err);
@@ -107,10 +107,10 @@ Mail.generate = async function(email, code, did) {
 	}
 };
 
-// obtener por did
-Mail.get = async function(did) {
+// obtener por mail
+Mail.getByEmail = async function(email) {
 	try {
-		const query = { did: did, validated: false };
+		const query = { email: email, validated: false };
 		let mail = await Mail.findOne(query);
 		return Promise.resolve(mail);
 	} catch (err) {
@@ -118,6 +118,7 @@ Mail.get = async function(did) {
 		return Promise.reject(err);
 	}
 };
+
 
 Mail.isValidated = async function(did, email) {
 	try {
