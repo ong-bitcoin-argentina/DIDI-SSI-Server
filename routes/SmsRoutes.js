@@ -20,11 +20,29 @@ router.post(
 		{
 			name: "cellPhoneNumber",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+		},
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
+		{
+			name: "password",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const phoneNumber = req.body.cellPhoneNumber;
+		const did = req.body.did;
+		const password = req.body.password;
+
+		try {
+			if (password && did) {
+				// se ingresò contraseña, validarla
+				await UserService.getAndValidate(did, password);
+			}
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 
 		// generar còdigo de validacion
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
@@ -54,7 +72,7 @@ router.post(
 		{
 			name: "cellPhoneNumber",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
-		},		
+		},
 		{
 			name: "validationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],

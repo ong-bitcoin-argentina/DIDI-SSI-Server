@@ -17,11 +17,29 @@ const Constants = require("../constants/Constants");
 router.post(
 	"/sendMailValidator",
 	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
+		{
+			name: "password",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			optional: true
+		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const eMail = req.body.eMail;
+		const did = req.body.did;
+		const password = req.body.password;
+
+		try {
+			if (did && password) {
+				// se ingresò contraseña, validarla
+				await UserService.getAndValidate(did, password);
+			}
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
 
 		// generar còdigo de validacion
 		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
