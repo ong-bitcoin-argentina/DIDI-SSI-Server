@@ -2,6 +2,7 @@ const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
 const SmsService = require("../services/SmsService");
+const UserService = require("../services/UserService");
 const CertificateService = require("../services/CertificateService");
 
 const Validator = require("./utils/Validator");
