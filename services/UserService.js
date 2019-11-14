@@ -132,7 +132,7 @@ module.exports.changeEmail = async function(email, newMail, password) {
 };
 
 // obtener usuario y actualizar tel
-module.exports.changePhoneNumber = async function(phoneNumber, newPhoneNumber, password) {
+module.exports.changePhoneNumber = async function(did, phoneNumber, newPhoneNumber, password) {
 	try {
 		// obtener usuario
 		let user = await getByTel(phoneNumber);
@@ -143,7 +143,7 @@ module.exports.changePhoneNumber = async function(phoneNumber, newPhoneNumber, p
 		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 
 		// actualizar tel
-		user = await user.updatePhoneNumber(newPhoneNumber);
+		user = await user.updatePhoneNumber(did, newPhoneNumber);
 
 		return Promise.resolve(user);
 	} catch (err) {

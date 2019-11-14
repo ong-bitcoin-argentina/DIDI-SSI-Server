@@ -93,14 +93,14 @@ UserSchema.methods.updatePassword = async function(password) {
 	}
 };
 
-UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
+UserSchema.methods.updatePhoneNumber = async function(did, newPhoneNumber) {
 	if (this.phoneNumber == newPhoneNumber) {
 		return Promise.resolve(this);
 	}
 
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { phoneNumber: newPhoneNumber, modifiedOn: new Date() },
+		$set: { did: did, phoneNumber: newPhoneNumber, modifiedOn: new Date() },
 		$push: { oldPhoneNumbers: this.phoneNumber }
 	};
 
