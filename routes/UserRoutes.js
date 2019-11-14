@@ -204,7 +204,7 @@ router.post(
 
 		try {
 			// actualizar tel
-			await UserService.changePhoneNumber(phoneNumber, newPhoneNumber, password);
+			await UserService.changePhoneNumber(did, honeNumber, newPhoneNumber, password);
 
 			const subject = {
 				phoneCredential: {
