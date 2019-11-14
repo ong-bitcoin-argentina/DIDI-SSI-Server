@@ -173,10 +173,6 @@ router.post(
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
 		{
-			name: "phoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
-		},
-		{
 			name: "newPhoneNumber",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
 		},
@@ -190,7 +186,6 @@ router.post(
 	async function(req, res) {
 		const did = req.body.did;
 		const phoneValidationCode = req.body.phoneValidationCode;
-		const phoneNumber = req.body.phoneNumber;
 		const newPhoneNumber = req.body.newPhoneNumber;
 		const password = req.body.password;
 
@@ -204,7 +199,7 @@ router.post(
 
 		try {
 			// actualizar tel
-			await UserService.changePhoneNumber(did, honeNumber, newPhoneNumber, password);
+			await UserService.changePhoneNumber(did, newPhoneNumber, password);
 
 			const subject = {
 				phoneCredential: {
@@ -233,7 +228,6 @@ router.post(
 	"/changeEmail",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{
 			name: "eMailValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
@@ -249,7 +243,6 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const eMail = req.body.eMail;
 		const eMailValidationCode = req.body.eMailValidationCode;
 		const newEMail = req.body.newEMail;
 		const password = req.body.password;
@@ -264,7 +257,7 @@ router.post(
 
 		try {
 			// actualizar mail
-			await UserService.changeEmail(eMail, newEMail, password);
+			await UserService.changeEmail(did, newEMail, password);
 
 			const subject = {
 				emailCredential: {

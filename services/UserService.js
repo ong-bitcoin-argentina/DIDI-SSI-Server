@@ -111,10 +111,10 @@ module.exports.recoverAccount = async function(mail, pass) {
 };
 
 // obtener usuario y actualizar mail
-module.exports.changeEmail = async function(email, newMail, password) {
+module.exports.changeEmail = async function(did, newMail, password) {
 	try {
 		// obtener usuario
-		let user = await getByEmail(email);
+		let user = await getByDID(did);
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
 
 		// validar contraseña
@@ -132,10 +132,10 @@ module.exports.changeEmail = async function(email, newMail, password) {
 };
 
 // obtener usuario y actualizar tel
-module.exports.changePhoneNumber = async function(did, phoneNumber, newPhoneNumber, password) {
+module.exports.changePhoneNumber = async function(did, newPhoneNumber, password) {
 	try {
 		// obtener usuario
-		let user = await getByTel(phoneNumber);
+		let user = await getByDID(did);
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
 
 		// validar contraseña
