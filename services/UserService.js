@@ -13,6 +13,30 @@ let getByDID = async function(did) {
 };
 module.exports.getByDID = getByDID;
 
+// obtener usuario con ese mail
+let getByEmail = async function(email) {
+	try {
+		let user = await User.getByEmail(email);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+	}
+};
+module.exports.getByEmail = getByEmail;
+
+// obtener usuario con ese tel
+let getByTel = async function(phoneNumber) {
+	try {
+		let user = await User.getByTel(phoneNumber);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+	}
+};
+module.exports.getByTel = getByTel;
+
 // obtener usuario y validar contraseña
 let getAndValidate = async function(did, pass) {
 	try {
@@ -49,10 +73,12 @@ module.exports.create = async function(did, privateKeySeed, userMail, phoneNumbe
 };
 
 // validar contraseña
-module.exports.login = async function(did, pass) {
+module.exports.login = async function(did, email, pass) {
 	let user;
 	try {
 		user = await getAndValidate(did, pass);
+		console.log(user);
+		if (user.mail != email) return Promise.reject(Messages.USER.ERR.INVALID_USER_EMAIL);
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
@@ -87,11 +113,15 @@ module.exports.recoverAccount = async function(mail, pass) {
 };
 
 // obtener usuario y actualizar mail
-module.exports.changeEmail = async function(did, newMail) {
+module.exports.changeEmail = async function(did, newMail, password) {
 	try {
 		// obtener usuario
 		let user = await getByDID(did);
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
+
+		// validar contraseña
+		const isMatch = await user.comparePassword(password);
+		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 
 		// actualizar mail
 		user = await user.updateEmail(newMail);
@@ -104,14 +134,18 @@ module.exports.changeEmail = async function(did, newMail) {
 };
 
 // obtener usuario y actualizar tel
-module.exports.changePhoneNumber = async function(did, newPhoneNumber) {
+module.exports.changePhoneNumber = async function(did, newPhoneNumber, password) {
 	try {
 		// obtener usuario
 		let user = await getByDID(did);
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
 
+		// validar contraseña
+		const isMatch = await user.comparePassword(password);
+		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
+
 		// actualizar tel
-		user = await user.updatePhoneNumber(newPhoneNumber);
+		user = await user.updatePhoneNumber(did, newPhoneNumber);
 
 		return Promise.resolve(user);
 	} catch (err) {
@@ -142,10 +176,10 @@ module.exports.changePassword = async function(did, oldPass, newPass) {
 };
 
 // cambiar contraseña
-module.exports.recoverPassword = async function(did, newPass) {
+module.exports.recoverPassword = async function(eMail, newPass) {
 	try {
 		// obtener usuario
-		let user = await getByDID(did);
+		let user = await getByEmail(eMail);
 		if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_DID);
 
 		// actualizar contaraseña
