@@ -20,7 +20,7 @@ module.exports.sendValidationCode = async function(eMail, code) {
 	}
 };
 
-// crear y guardar pedido de validacion de mail 
+// crear y guardar pedido de validacion de mail
 module.exports.create = async function(email, code, did) {
 	try {
 		let mail = await Mail.generate(email, code, did);
@@ -33,11 +33,11 @@ module.exports.create = async function(email, code, did) {
 };
 
 // validar codigo y actualizar pedido de validacion de mail
-module.exports.validateMail = async function(did, code) {
+module.exports.validateMail = async function(email, code, did) {
 	let mail;
 	try {
 		// obtener pedido de validaciòn
-		mail = await Mail.get(did);
+		mail = await Mail.getByEmail(email);
 		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
 		if (mail.expired()) return Promise.reject(Messages.EMAIL.ERR.VALIDATION_EXPIRED);
 	} catch (err) {
@@ -47,7 +47,7 @@ module.exports.validateMail = async function(did, code) {
 
 	try {
 		// validar mail
-		mail = await mail.validateMail(code);
+		mail = await mail.validateMail(code, did);
 		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 		return Promise.resolve(mail);
 	} catch (err) {

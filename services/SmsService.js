@@ -36,11 +36,10 @@ module.exports.create = async function(phoneNumber, code, did) {
 	}
 };
 
-module.exports.validatePhone = async function(did, code) {
+module.exports.validatePhone = async function(phoneNumber, code, did) {
 	let phone;
 	try {
-		// obtener pedido de validaciòn
-		phone = await Phone.get(did);
+		phone = await Phone.getByPhoneNumber(phoneNumber);
 		if (!phone) return Promise.reject(Messages.SMS.ERR.NO_VALIDATIONS_FOR_NUMBER);
 		if (phone.expired()) return Promise.reject(Messages.SMS.ERR.VALIDATION_EXPIRED);
 	} catch (err) {
@@ -50,7 +49,7 @@ module.exports.validatePhone = async function(did, code) {
 
 	try {
 		// validar tel
-		phone = await phone.validatePhone(code);
+		phone = await phone.validatePhone(code, did);
 		if (!phone) return Promise.reject(Messages.SMS.ERR.NO_SMSCODE_MATCH);
 		return Promise.resolve(phone);
 	} catch (err) {
