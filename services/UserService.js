@@ -73,10 +73,12 @@ module.exports.create = async function(did, privateKeySeed, userMail, phoneNumbe
 };
 
 // validar contraseña
-module.exports.login = async function(did, pass) {
+module.exports.login = async function(did, email, pass) {
 	let user;
 	try {
 		user = await getAndValidate(did, pass);
+		console.log(user);
+		if (user.mail != email) return Promise.reject(Messages.USER.ERR.INVALID_USER_EMAIL);
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
@@ -174,10 +176,10 @@ module.exports.changePassword = async function(did, oldPass, newPass) {
 };
 
 // cambiar contraseña
-module.exports.recoverPassword = async function(did, newPass) {
+module.exports.recoverPassword = async function(eMail, newPass) {
 	try {
 		// obtener usuario
-		let user = await getByDID(did);
+		let user = await getByEmail(eMail);
 		if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_DID);
 
 		// actualizar contaraseña

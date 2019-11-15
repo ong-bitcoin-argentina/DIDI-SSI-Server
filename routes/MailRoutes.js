@@ -90,6 +90,14 @@ router.post(
 			return ResponseHandler.sendErr(res, err);
 		}
 
+		try {
+			// validar que no existe un usuario con ese mail
+			const user = await UserService.getByEmail(eMail);
+			if (user) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.ALREADY_EXISTS);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+
 		const subject = {
 			emailCredential: {
 				email: mail.email
