@@ -87,6 +87,14 @@ router.post(
 		const validationCode = req.body.validationCode;
 		const did = req.body.did;
 
+		try {
+			// validar que no existe un usuario con ese mail
+			const user = await UserService.getByTel(cellPhoneNumber);
+			if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+
 		let phone;
 		try {
 			// validar codigo y actualizar pedido de validacion de tel

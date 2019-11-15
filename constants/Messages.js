@@ -31,6 +31,7 @@ module.exports = {
 		},
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese telefono ya se encuentra asociado a un usuario." },
 			VALIDATION_EXPIRED: {
 				code: "VALIDATION_EXPIRED",
 				message: "El pedido de validacion para ese número ha expirado"
@@ -61,6 +62,7 @@ module.exports = {
 				code: "NO_EMAILCODE_MATCH",
 				message: "No se encontraron pedidos de validacion para ese mail."
 			},
+			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese mail ya se encuentra asociado a un usuario." },
 			VALIDATION_EXPIRED: { code: "VALIDATION_EXPIRED", message: "El pedido de validacion para ese mail ha expirado" },
 			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail" },
 			CREATE: COMMUNICATION_ERROR,
@@ -99,6 +101,7 @@ module.exports = {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden" },
+			INVALID_USER_EMAIL: { code: "INVALID_USER_EMAIL", message: "El mail ingresado no corresponde a ese usuario." },
 			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontró ningún usuario con ese did" },
 			NOMATCH_USER_EMAIL: {
 				code: "NOMATCH_USER_EMAIL",
@@ -152,9 +155,7 @@ module.exports = {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
 				message:
-					"el campo " +
-					field +
-					" es incorrecto, se esperaba una fecha con el siguiente formato: 'aaaa-mm-ddThh:mm:ssZ.' "
+					"el campo " + field + " es incorrecto, se esperaba una fecha con el siguiente formato: 'aaaa-mm-ddThh:mm:ssZ.' "
 			};
 		},
 		LENGTH_INVALID: function(field, min, max) {

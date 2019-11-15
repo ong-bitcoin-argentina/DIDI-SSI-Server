@@ -108,16 +108,18 @@ router.post(
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
-		}
+		},
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
 		const password = req.body.password;
+		const eMail = req.body.eMail;
 
 		try {
 			// validar la contraseña y retornar un boolean
-			await UserService.login(did, password);
+			await UserService.login(did, eMail, password);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.LOGGED_IN);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -285,7 +287,6 @@ router.post(
 router.post(
 	"/recoverPassword",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{
 			name: "eMailValidationCode",
@@ -300,14 +301,13 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const did = req.body.did;
 		const eMail = req.body.eMail;
 		const eMailValidationCode = req.body.eMailValidationCode;
 		const newPass = req.body.newPass;
 
 		try {
 			// validar codigo y actualizar pedido de validacion de mail
-			const mail = await MailService.validateMail(eMail, eMailValidationCode, did);
+			const mail = await MailService.validateMail(eMail, eMailValidationCode);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -315,7 +315,7 @@ router.post(
 
 		try {
 			// actualizar contraseña
-			await UserService.recoverPassword(did, newPass);
+			await UserService.recoverPassword(eMail, newPass);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
