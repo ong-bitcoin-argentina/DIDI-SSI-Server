@@ -46,6 +46,36 @@ module.exports.saveCertificate = async function(cert) {
 	}
 };
 
+module.exports.createPhoneCertificate = async function(did, phoneNumber) {
+	const subject = {
+		Phone: {
+			preview: {
+				type: 0,
+				fields: ["phoneNumber"]
+			},
+			data: {
+				phoneNumber: phoneNumber
+			}
+		}
+	};
+	return module.exports.createCertificate(did, subject);
+};
+
+module.exports.createMailCertificate = async function(did, email) {
+	const subject = {
+		Email: {
+			preview: {
+				type: 0,
+				fields: ["email"]
+			},
+			data: {
+				email: email
+			}
+		}
+	};
+	return module.exports.createCertificate(did, subject);
+};
+
 // genera un certificado asociando la informaciòn recibida en "subject" con el did
 module.exports.createCertificate = async function(did, subject) {
 	const vcissuer = new EthrDID({

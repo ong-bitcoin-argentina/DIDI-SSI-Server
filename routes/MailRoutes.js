@@ -97,16 +97,10 @@ router.post(
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
-
-		const subject = {
-			emailCredential: {
-				email: mail.email
-			}
-		};
-
+		
 		try {
-			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await CertificateService.createCertificate(did, subject);
+			// generar certificado validando que ese did le corresponde al dueño del mail
+			let cert = await CertificateService.createMailCertificate(did, mail.email);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
