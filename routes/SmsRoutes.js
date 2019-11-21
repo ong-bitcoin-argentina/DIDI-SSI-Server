@@ -104,15 +104,9 @@ router.post(
 			return ResponseHandler.sendErr(res, err);
 		}
 
-		const subject = {
-			phoneCredential: {
-				phoneNumber: phone.phoneNumber
-			}
-		};
-
 		try {
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await CertificateService.createCertificate(did, subject);
+			let cert = await CertificateService.createPhoneCertificate(did, phone.phoneNumber);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);

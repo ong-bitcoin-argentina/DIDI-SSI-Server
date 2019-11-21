@@ -203,14 +203,8 @@ router.post(
 			// actualizar tel
 			await UserService.changePhoneNumber(did, newPhoneNumber, password);
 
-			const subject = {
-				phoneCredential: {
-					phoneNumber: newPhoneNumber
-				}
-			};
-
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await CertificateService.createCertificate(did, subject);
+			let cert = await CertificateService.createPhoneCertificate(did, newPhoneNumber);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
@@ -267,8 +261,8 @@ router.post(
 				}
 			};
 
-			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await CertificateService.createCertificate(did, subject);
+			// generar certificado validando que ese did le corresponde al dueño del mail
+			let cert = await CertificateService.createMailCertificate(did, newEMail);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
