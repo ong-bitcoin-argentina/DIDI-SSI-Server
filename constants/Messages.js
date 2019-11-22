@@ -1,7 +1,11 @@
 const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." };
 
 module.exports = {
-	CERTIFICATE_SAVED: "Certificado guardado",
+	CERTIFICATE: {
+		SAVED: "Certificado guardado",
+		CREATED: "Certificado creado",
+		VERIFIED: "Certificado validado"
+	},
 	INDEX: {
 		ERR: {
 			CONNECTION: "Error de conexion en la base de datos: "
@@ -155,7 +159,9 @@ module.exports = {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
 				message:
-					"el campo " + field + " es incorrecto, se esperaba una fecha con el siguiente formato: 'aaaa-mm-ddThh:mm:ssZ.' "
+					"el campo " +
+					field +
+					" es incorrecto, se esperaba una fecha con el siguiente formato: 'aaaa-mm-ddThh:mm:ssZ.' "
 			};
 		},
 		LENGTH_INVALID: function(field, min, max) {
