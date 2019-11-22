@@ -34,18 +34,24 @@ module.exports = {
 			}
 		},
 		ERR: {
+			CERT: {
+				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el número." },
+				VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
+				VERIFY: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." },
+			},
+			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms." },
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
-			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese telefono ya se encuentra asociado a un usuario." },
+			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese teléfono ya se encuentra asociado a un usuario." },
 			VALIDATION_EXPIRED: {
 				code: "VALIDATION_EXPIRED",
-				message: "El pedido de validacion para ese número ha expirado"
+				message: "El pedido de validacion para ese número ha expirado."
 			},
 			NO_VALIDATIONS_FOR_NUMBER: {
-				code: "NO_SMSCODE_MATCH",
-				message: "No se encontraron pedidos de validacion para ese número."
+				code: "NO_VALIDATIONS",
+				message: "No se encontraron pedidos de validación para ese número."
 			},
 			NO_SMSCODE_MATCH: { code: "NO_SMSCODE_MATCH", message: "El código de validacion es incorrecto." },
-			CREATE: COMMUNICATION_ERROR,
+			CREATE: { code: "VALIDATION_CREATE", message: "El pedido de validacion para ese número no pudo ser creado." },
 			GET: COMMUNICATION_ERROR
 		}
 	},
@@ -58,18 +64,21 @@ module.exports = {
 			}
 		},
 		ERR: {
+			CERT: {
+				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el mail." },
+				VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." }
+			},
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
-			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms" },
-			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail" },
+			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail." },
 			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
 			NO_VALIDATIONS_FOR_EMAIL: {
-				code: "NO_EMAILCODE_MATCH",
+				code: "NO_VALIDATIONS",
 				message: "No se encontraron pedidos de validacion para ese mail."
 			},
 			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese mail ya se encuentra asociado a un usuario." },
-			VALIDATION_EXPIRED: { code: "VALIDATION_EXPIRED", message: "El pedido de validacion para ese mail ha expirado" },
-			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail" },
-			CREATE: COMMUNICATION_ERROR,
+			VALIDATION_EXPIRED: { code: "VALIDATION_EXPIRED", message: "El pedido de validacion para ese mail ha expirado." },
+			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail." },
+			CREATE: { code: "VALIDATION_CREATE", message: "El pedido de validacion para ese mail no pudo ser creado." },
 			GET: COMMUNICATION_ERROR
 		},
 		VALIDATION: {
@@ -104,26 +113,21 @@ module.exports = {
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
-			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden" },
+			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
 			INVALID_USER_EMAIL: { code: "INVALID_USER_EMAIL", message: "El mail ingresado no corresponde a ese usuario." },
-			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontró ningún usuario con ese did" },
+			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontró ningún usuario con ese did." },
 			NOMATCH_USER_EMAIL: {
 				code: "NOMATCH_USER_EMAIL",
-				message: "No se encontró ningún usuario con ese mail y contraseña"
+				message: "No se encontró ningún usuario con ese mail y contraseña."
 			},
-			MAIL_NOT_VALIDATED: { code: "MAIL_NOT_VALIDATED", message: "Ese mail no fue validado" },
-			PHONE_NOT_VALIDATED: { code: "PHONE_NOT_VALIDATED", message: "Ese teléfono no fue validado" },
-			CREATE: COMMUNICATION_ERROR,
-			GET: COMMUNICATION_ERROR,
-			UPDATE: COMMUNICATION_ERROR
+			MAIL_NOT_VALIDATED: { code: "MAIL_NOT_VALIDATED", message: "Ese mail no fue validado." },
+			PHONE_NOT_VALIDATED: { code: "PHONE_NOT_VALIDATED", message: "Ese teléfono no fue validado." },
+			CREATE: { code: "USER_CREATE", message: "Hubo un error al durante la creación  del usuario." },
+			GET: { code: "USER_GET", message: "No se pudo obtener el usuario." },
+			UPDATE: { code: "USER_UPDATE", message: "No se pudo actualizar el usuario." },
 		}
 	},
 	VALIDATION: {
-		PASSWORD_MISSING: {
-			code: "PASSWORD_MISSING",
-			message:
-				"Existe un usuario registrado con ese did, por lo que se require el campo 'password' para realizar esta llamada."
-		},
 		COMMON_PASSWORD: {
 			code: "PARAMETER_TYPE_ERROR",
 			message: "La contraseña ingresada es de uso común, por favor ingrese una mas segura."
@@ -134,39 +138,39 @@ module.exports = {
 		MOVILE_PHONE_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
-				message: "el campo " + field + " es incorrecto, se esperaba un número telefónico"
+				message: "El campo " + field + " es incorrecto, se esperaba un número telefónico"
 			};
 		},
 		EMAIL_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
-				message: "el campo " + field + " es incorrecto, se esperaba un mail"
+				message: "El campo " + field + " es incorrecto, se esperaba un mail"
 			};
 		},
 		STRING_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
-				message: "el campo " + field + " es incorrecto, se esperaba un texto"
+				message: "El campo " + field + " es incorrecto, se esperaba un texto"
 			};
 		},
 		BASE64_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
-				message: "el campo " + field + " es incorrecto, se esperaba un texto en base 64"
+				message: "El campo " + field + " es incorrecto, se esperaba un texto en base 64"
 			};
 		},
 		DATE_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
 				message:
-					"el campo " +
+					"El campo " +
 					field +
 					" es incorrecto, se esperaba una fecha con el siguiente formato: 'aaaa-mm-ddThh:mm:ssZ.' "
 			};
 		},
 		LENGTH_INVALID: function(field, min, max) {
-			const code = "PARAMETER_TYPE_ERROR";
-			const msgStart = "el campo " + field + " tendria que tener";
+			const code = "PARAMETER_LENGTH_ERROR";
+			const msgStart = "El campo " + field + " tendría que tener";
 
 			if (min && !max) {
 				return {
