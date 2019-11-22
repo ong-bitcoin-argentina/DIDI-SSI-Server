@@ -107,6 +107,7 @@ router.post(
 		try {
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
 			let cert = await CertificateService.createPhoneCertificate(did, phone.phoneNumber);
+			await CertificateService.verifyCertificate(cert);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);

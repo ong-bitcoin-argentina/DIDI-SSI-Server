@@ -101,6 +101,7 @@ router.post(
 		try {
 			// generar certificado validando que ese did le corresponde al dueño del mail
 			let cert = await CertificateService.createMailCertificate(did, mail.email);
+			await CertificateService.verifyCertificate(cert);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
