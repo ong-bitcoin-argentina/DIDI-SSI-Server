@@ -128,6 +128,49 @@ router.post(
 );
 
 /*
+	Permite cambiar la contraseña a partir de la cuènta de mail asociada al usuario (caso, me olvidè la contraseña),
+	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
+*/
+router.post(
+	"/recoverPassword",
+	Validator.validateBody([
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{
+			name: "eMailValidationCode",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+		},
+		{
+			name: "newPass",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		}
+	]),
+	Validator.checkValidationResult,
+	async function(req, res) {
+		const eMail = req.body.eMail;
+		const eMailValidationCode = req.body.eMailValidationCode;
+		const newPass = req.body.newPass;
+
+		try {
+			// validar codigo y actualizar pedido de validacion de mail
+			const mail = await MailService.validateMail(eMail, eMailValidationCode);
+			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+
+		try {
+			// actualizar contraseña
+			await UserService.recoverPassword(eMail, newPass);
+			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/*
 	Permite cambiar la contarseña del usuario en el caso que el usuario conoce el mail y contraseña anterior.
 */
 router.post(
@@ -170,11 +213,6 @@ router.post(
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
-			name: "phoneValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
-		},
-		{
 			name: "newPhoneNumber",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
 		},
@@ -182,6 +220,11 @@ router.post(
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
+		{
+			name: "phoneValidationCode",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		}
 	]),
 	Validator.checkValidationResult,
@@ -205,7 +248,7 @@ router.post(
 
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
 			let cert = await CertificateService.createPhoneCertificate(did, newPhoneNumber);
-			await CertificateService.verifyCertificate(cert);
+			await CertificateService.verifyCertificatePhoneNumber(cert);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
@@ -225,16 +268,17 @@ router.post(
 	"/changeEmail",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{
-			name: "eMailValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
-		},
+
 		{ name: "newEMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
+		{
+			name: "eMailValidationCode",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		}
 	]),
 	Validator.checkValidationResult,
@@ -256,63 +300,14 @@ router.post(
 			// actualizar mail
 			await UserService.changeEmail(did, newEMail, password);
 
-			const subject = {
-				emailCredential: {
-					email: newEMail
-				}
-			};
-
 			// generar certificado validando que ese did le corresponde al dueño del mail
 			let cert = await CertificateService.createMailCertificate(did, newEMail);
-			await CertificateService.verifyCertificate(cert);
+			await CertificateService.verifyCertificateEmail(cert);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
 
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL(cert));
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-	}
-);
-
-/*
-	Permite cambiar la contraseña a partir de la cuènta de mail asociada al usuario (caso, me olvidè la contraseña),
-	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
-*/
-router.post(
-	"/recoverPassword",
-	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{
-			name: "eMailValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
-		},
-		{
-			name: "newPass",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
-		}
-	]),
-	Validator.checkValidationResult,
-	async function(req, res) {
-		const eMail = req.body.eMail;
-		const eMailValidationCode = req.body.eMailValidationCode;
-		const newPass = req.body.newPass;
-
-		try {
-			// validar codigo y actualizar pedido de validacion de mail
-			const mail = await MailService.validateMail(eMail, eMailValidationCode);
-			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-
-		try {
-			// actualizar contraseña
-			await UserService.recoverPassword(eMail, newPass);
-			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}

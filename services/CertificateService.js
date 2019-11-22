@@ -45,7 +45,7 @@ module.exports.saveCertificate = async function(cert) {
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		return Promise.reject(Messages.SMS.ERR.CERT.SAVE);
 	}
 };
 
@@ -61,7 +61,7 @@ module.exports.createPhoneCertificate = async function(did, phoneNumber) {
 			}
 		}
 	};
-	return module.exports.createCertificate(did, subject);
+	return module.exports.createCertificate(did, subject, Messages.SMS.ERR.CERT.CREATE);
 };
 
 module.exports.createMailCertificate = async function(did, email) {
@@ -76,11 +76,11 @@ module.exports.createMailCertificate = async function(did, email) {
 			}
 		}
 	};
-	return module.exports.createCertificate(did, subject);
+	return module.exports.createCertificate(did, subject, Messages.EMAIL.ERR.CERT.CREATE);
 };
 
 // genera un certificado asociando la informaciòn recibida en "subject" con el did
-module.exports.createCertificate = async function(did, subject) {
+module.exports.createCertificate = async function(did, subject, errMsg) {
 	const vcissuer = new EthrDID({
 		address: Constants.SERVER_DID,
 		privateKey: Constants.SERVER_PRIVATE_KEY
@@ -103,11 +103,19 @@ module.exports.createCertificate = async function(did, subject) {
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		return Promise.reject(errMsg);
 	}
 };
 
-module.exports.verifyCertificate = async function(jwt) {
+module.exports.verifyCertificateEmail = async function(jwt) {
+	return await module.exports.verifyCertificate(jwt, Messages.EMAIL.ERR.CERT.VERIFY);
+};
+
+module.exports.verifyCertificatePhoneNumber = async function(jwt) {
+	return await module.exports.verifyCertificate(jwt, Messages.SMS.ERR.CERT.VERIFY);
+};
+
+module.exports.verifyCertificate = async function(jwt, errMsg) {
 	const resolver = new Resolver(getResolver());
 
 	try {
@@ -116,6 +124,6 @@ module.exports.verifyCertificate = async function(jwt) {
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		return Promise.reject(errMsg);
 	}
 };

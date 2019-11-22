@@ -180,7 +180,7 @@ module.exports.recoverPassword = async function(eMail, newPass) {
 	try {
 		// obtener usuario
 		let user = await getByEmail(eMail);
-		if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_DID);
+		if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_EMAIL);
 
 		// actualizar contaraseña
 		user = await user.updatePassword(newPass);

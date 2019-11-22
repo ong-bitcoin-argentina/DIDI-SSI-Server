@@ -13,10 +13,12 @@ module.exports.sendValidationCode = async function(eMail, code) {
 	};
 
 	try {
-		await mailgun.messages().send(data);
+		const result = await mailgun.messages().send(data);
 		if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
+		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
+		return Promise.reject(Messages.EMAIL.ERR.EMAIL_SEND_ERROR);
 	}
 };
 
@@ -24,7 +26,7 @@ module.exports.sendValidationCode = async function(eMail, code) {
 module.exports.create = async function(email, code, did) {
 	try {
 		let mail = await Mail.generate(email, code, did);
-		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
+		if (!mail) return Promise.reject(Messages.EMAIL.ERR.CREATE);
 		return Promise.resolve(mail);
 	} catch (err) {
 		console.log(err);

@@ -17,10 +17,12 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 	if (Constants.DEBUGG) console.log(Messages.SMS.SENDING(data.to));
 
 	try {
-		await client.messages.create(data);
+		const result = await client.messages.create(data);
 		if (Constants.DEBUGG) console.log(Messages.SMS.SENT);
+		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
+		return Promise.reject(Messages.SMS.ERR.SMS_SEND_ERROR);
 	}
 };
 
