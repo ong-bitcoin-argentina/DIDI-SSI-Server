@@ -29,7 +29,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const eMail = req.body.eMail;
+		const eMail = req.body.eMail.toLowerCase();
 		const did = req.body.did;
 		const password = req.body.password;
 
@@ -78,7 +78,7 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const validationCode = req.body.validationCode;
-		const eMail = req.body.eMail;
+		const eMail = req.body.eMail.toLowerCase();
 		const did = req.body.did;
 
 		let mail;
