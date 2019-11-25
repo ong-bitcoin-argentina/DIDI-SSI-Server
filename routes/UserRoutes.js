@@ -33,7 +33,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const eMail = req.body.eMail;
+		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
 		const phoneNumber = req.body.phoneNumber;
 
@@ -83,7 +83,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const eMail = req.body.eMail;
+		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
 
 		try {
@@ -115,7 +115,7 @@ router.post(
 	async function(req, res) {
 		const did = req.body.did;
 		const password = req.body.password;
-		const eMail = req.body.eMail;
+		const eMail = req.body.eMail.toLowerCase();
 
 		try {
 			// validar la contraseña y retornar un boolean
@@ -148,7 +148,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const eMail = req.body.eMail;
+		const eMail = req.body.eMail.toLowerCase();
 		const eMailValidationCode = req.body.eMailValidationCode;
 		const newPass = req.body.newPass;
 
@@ -285,7 +285,7 @@ router.post(
 	async function(req, res) {
 		const did = req.body.did;
 		const eMailValidationCode = req.body.eMailValidationCode;
-		const newEMail = req.body.newEMail;
+		const newEMail = req.body.newEMail.toLowerCase();
 		const password = req.body.password;
 
 		try {
