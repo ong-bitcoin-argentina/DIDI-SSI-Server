@@ -90,7 +90,7 @@ router.post(
 			// compara contraseña y retorna clave privada
 			const seed = await UserService.recoverAccount(eMail, password);
 			return ResponseHandler.sendRes(res, { privateKeySeed: seed });
-		} catch (err) {
+		} catch (err) {    
 			return ResponseHandler.sendErr(res, err);
 		}
 	}
