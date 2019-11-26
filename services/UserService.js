@@ -38,11 +38,14 @@ let getByTel = async function(phoneNumber) {
 module.exports.getByTel = getByTel;
 
 // obtener usuario y validar contraseña
-let getAndValidate = async function(did, pass) {
+let getAndValidate = async function(did, pass, email) {
 	try {
 		// obtener usuario
 		let user = await getByDID(did);
-		if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_DID);
+		if (!user) {
+			if (email) user = await getByEmail(email);
+			if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_DID);
+		}
 
 		// validar contraseña
 		let match = await user.comparePassword(pass);
@@ -76,8 +79,9 @@ module.exports.create = async function(did, privateKeySeed, userMail, phoneNumbe
 module.exports.login = async function(did, email, pass) {
 	let user;
 	try {
-		user = await getAndValidate(did, pass);
+		user = await getAndValidate(did, pass, email);
 		console.log(user);
+		if (user.did != did) return Promise.reject(Messages.USER.ERR.INVALID_USER_DID);
 		if (user.mail != email) return Promise.reject(Messages.USER.ERR.INVALID_USER_EMAIL);
 		return Promise.resolve(user);
 	} catch (err) {
