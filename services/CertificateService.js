@@ -108,20 +108,25 @@ module.exports.createCertificate = async function(did, subject, errMsg) {
 };
 
 module.exports.verifyCertificateEmail = async function(jwt) {
-	return await module.exports.verifyCertificate(jwt, Messages.EMAIL.ERR.CERT.VERIFY);
+	return await module.exports.verifyCertificate(jwt, Constants.SERVER_DID, Messages.EMAIL.ERR.CERT.VERIFY);
 };
 
 module.exports.verifyCertificatePhoneNumber = async function(jwt) {
-	return await module.exports.verifyCertificate(jwt, Messages.SMS.ERR.CERT.VERIFY);
+	return await module.exports.verifyCertificate(jwt, Constants.SERVER_DID, Messages.SMS.ERR.CERT.VERIFY);
 };
 
-module.exports.verifyCertificate = async function(jwt, errMsg) {
+module.exports.verifyCertificate = async function(jwt, issuerDid, errMsg) {
 	const resolver = new Resolver(getResolver());
 
 	try {
 		let result = await verifyCredential(jwt, resolver);
-		console.log(Messages.CERTIFICATE.VERIFIED);
-		return Promise.resolve(result);
+
+		if (result.payload.iss === issuerDid) {
+			console.log(Messages.CERTIFICATE.VERIFIED);
+			return Promise.resolve(result);
+		}
+
+		return Promise.resolve(null);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(errMsg);

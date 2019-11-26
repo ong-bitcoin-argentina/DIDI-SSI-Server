@@ -35,9 +35,12 @@ module.exports = {
 		},
 		ERR: {
 			CERT: {
-				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el número." },
+				CREATE: {
+					code: "CERT_CREATE_ERROR",
+					message: "No pudo generarse la credencial vinculando el did y el número."
+				},
 				VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
-				VERIFY: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." },
+				VERIFY: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." }
 			},
 			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms." },
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -124,8 +127,25 @@ module.exports = {
 			PHONE_NOT_VALIDATED: { code: "PHONE_NOT_VALIDATED", message: "Ese teléfono no fue validado." },
 			CREATE: { code: "USER_CREATE", message: "Hubo un error al durante la creación  del usuario." },
 			GET: { code: "USER_GET", message: "No se pudo obtener el usuario." },
-			UPDATE: { code: "USER_UPDATE", message: "No se pudo actualizar el usuario." },
+			UPDATE: { code: "USER_UPDATE", message: "No se pudo actualizar el usuario." }
 		}
+	},
+	ISSUER: {
+		ERR: {
+			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+			CREATE: {
+				code: "ISSUER_CREATE",
+				message: "No se pudo autorizar al did para la emisión de certificados, ya estaba autorizado."
+			},
+			DELETE: { code: "ISSUER_DELETE", message: "No se pudo revocar la autorización para emisión de certificados." },
+			IS_INVALID: { code: "IS_INVALID", message: "El emisor no esta autorizado para emitir certificados." },
+			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." }
+		},
+		DELETED: "La autorizacion para emitir certificados fue revocada.",
+		CREATED: "El emisor fue autorizado a emitir certificados.",
+		CERT_SAVED: "El certificado fue guardado.",
+		IS_VALID: "El emisor esta autorizado para emitir certificados",
+		IS_INVALID: "El emisor no esta autorizado para emitir certificados."
 	},
 	VALIDATION: {
 		COMMON_PASSWORD: {
