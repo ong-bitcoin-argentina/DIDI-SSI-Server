@@ -18,11 +18,11 @@ router.post(
 		const jwt = req.body.jwt;
 
 		try {
-			const isValid = await IssuerService.isValid(did);
-			if (!isValid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+			const issuer = await IssuerService.getIssuer(did);
+			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
-			const verified = await CertificateService.verifyCertificate(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			if(!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			const verified = await CertificateService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
 			await CertificateService.saveCertificate(jwt);
 			return ResponseHandler.sendRes(res, Messages.ISSUER.CERT_SAVED);
@@ -33,14 +33,40 @@ router.post(
 );
 
 router.post(
+	"/issuer/verifyCertificate",
+	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	async function(req, res) {
+		const jwt = req.body.jwt;
+
+		try {
+			const result = await CertificateService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			if (!result) return ResponseHandler.sendRes(res, { cert: result, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
+
+			const issuer = await IssuerService.getIssuer(result.payload.iss);
+			if (!issuer) {
+				result.issuer = result.payload.iss;
+				return ResponseHandler.sendRes(res, { cert: result, err: Messages.ISSUER.ERR.IS_INVALID });
+			}
+
+			result.issuer = issuer.name;
+			return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.post(
 	"/issuer/",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
+		const name = req.body.name;
 
 		try {
-			await IssuerService.create(did);
+			await IssuerService.create(did, name);
 			return ResponseHandler.sendRes(res, Messages.ISSUER.CREATED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const IssuerSchema = new mongoose.Schema({
 	did: {
 		type: String,
-		required: false
+		required: true
+	},
+	name: {
+		type: String,
+		required: true
 	},
 	deleted: {
 		type: Boolean,
@@ -20,7 +24,7 @@ IssuerSchema.index({ did: 1 }, { deleted: true });
 const Issuer = mongoose.model("Issuer", IssuerSchema);
 module.exports = Issuer;
 
-Issuer.generate = async function(did) {
+Issuer.generate = async function(did, name) {
 	try {
 		const query = { did: did, deleted: false };
 		const issuer = await Issuer.findOne(query);
@@ -32,6 +36,7 @@ Issuer.generate = async function(did) {
 
 	let issuer = new Issuer();
 	issuer.did = did;
+	issuer.name = name;
 	issuer.deleted = false;
 	issuer.createdOn = new Date();
 
@@ -56,11 +61,11 @@ Issuer.delete = async function(did) {
 	}
 };
 
-Issuer.isValid = async function(did) {
+Issuer.getIssuer = async function(did) {
 	try {
 		const query = { did: did, deleted: false };
 		let issuer = await Issuer.findOne(query);
-		return Promise.resolve(issuer ? true : false);
+		return Promise.resolve(issuer);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
