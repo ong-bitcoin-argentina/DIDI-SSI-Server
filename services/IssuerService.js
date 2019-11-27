@@ -2,9 +2,9 @@ const Issuer = require("../models/Issuer");
 const Messages = require("../constants/Messages");
 
 // autoriza al did a emitir certificados
-module.exports.create = async function(did) {
+module.exports.create = async function(did, name) {
 	try {
-		let issuer = await Issuer.generate(did);
+		let issuer = await Issuer.generate(did, name);
 		if (!issuer) return Promise.reject(Messages.ISSUER.ERR.CREATE);
 		return Promise.resolve(issuer);
 	} catch (err) {
@@ -26,10 +26,10 @@ module.exports.delete = async function(did) {
 };
 
 // indica si el did esta o no autorizado a emitir certificados
-module.exports.isValid = async function(did) {
+module.exports.getIssuer = async function(did) {
 	try {
-		let isValid = await Issuer.isValid(did);
-		return Promise.resolve(isValid);
+		let issuer = await Issuer.getIssuer(did);
+		return Promise.resolve(issuer);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.ISSUER.ERR.COMMUNICATION_ERROR);
