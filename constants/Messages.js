@@ -119,7 +119,7 @@ module.exports = {
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
 			INVALID_USER_DID: {
 				code: "INVALID_USER_DID",
-				message: "El usuario fue generado desde otro teléfono, es necesario recuperar la cuenta para loguearse"
+				message: "El usuario fue generado desde otro teléfono, es necesario recuperar la cuenta para loguearse."
 			},
 			INVALID_USER_EMAIL: { code: "INVALID_USER_EMAIL", message: "El mail ingresado no corresponde a ese usuario." },
 			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontró ningún usuario con ese did." },
