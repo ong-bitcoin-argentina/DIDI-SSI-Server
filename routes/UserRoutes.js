@@ -25,8 +25,7 @@ router.post(
 		},
 		{
 			name: "phoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
-			optional: true
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
 		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
@@ -58,9 +57,7 @@ router.post(
 
 		try {
 			// crear usuario
-			let user = await UserService.create(did, privateKeySeed, eMail, phoneNumber, password);
-			if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.USER_ALREADY_EXIST);
-
+			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
@@ -90,7 +87,7 @@ router.post(
 			// compara contraseña y retorna clave privada
 			const seed = await UserService.recoverAccount(eMail, password);
 			return ResponseHandler.sendRes(res, { privateKeySeed: seed });
-		} catch (err) {    
+		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
 	}
