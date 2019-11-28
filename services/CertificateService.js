@@ -117,7 +117,7 @@ module.exports.verifyCertificatePhoneNumber = async function(jwt) {
 
 module.exports.verifyCertificateAndDid = async function(jwt, issuerDid, errMsg) {
 	try {
-		let result = await verifyCertificate(jwt, errMsg);
+		let result = await module.exports.verifyCertificate(jwt, errMsg);
 
 		if (result.payload.iss === issuerDid) {
 			console.log(Messages.CERTIFICATE.VERIFIED);
