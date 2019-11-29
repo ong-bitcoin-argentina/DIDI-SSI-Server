@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const Constants = require("./constants/Constants");
 const Messages = require("./constants/Messages");
 
+const IssuerRoutes = require("./routes/IssuerRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const SmsRoutes = require("./routes/SmsRoutes");
 const MailRoutes = require("./routes/MailRoutes");
@@ -58,6 +59,7 @@ if (Constants.DEBUGG) {
 	console.log("route: " + route);
 }
 
+app.use(route, IssuerRoutes);
 app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
 app.use(route, MailRoutes);

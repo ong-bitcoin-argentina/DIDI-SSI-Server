@@ -29,7 +29,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const eMail = req.body.eMail;
+		const eMail = req.body.eMail.toLowerCase();
 		const did = req.body.did;
 		const password = req.body.password;
 
@@ -78,7 +78,7 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const validationCode = req.body.validationCode;
-		const eMail = req.body.eMail;
+		const eMail = req.body.eMail.toLowerCase();
 		const did = req.body.did;
 
 		let mail;
@@ -97,16 +97,11 @@ router.post(
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
-
-		const subject = {
-			emailCredential: {
-				email: mail.email
-			}
-		};
-
+		
 		try {
-			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await CertificateService.createCertificate(did, subject);
+			// generar certificado validando que ese did le corresponde al dueño del mail
+			let cert = await CertificateService.createMailCertificate(did, mail.email);
+			await CertificateService.verifyCertificateEmail(cert);
 
 			// mandar certificado a mouro
 			await CertificateService.saveCertificate(cert);
