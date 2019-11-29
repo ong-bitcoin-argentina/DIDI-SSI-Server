@@ -11,6 +11,7 @@ const fetch = require("node-fetch");
 
 const { Resolver } = require("did-resolver");
 const { getResolver } = require("ethr-did-resolver");
+const resolver = new Resolver(getResolver());
 
 // cliente para envio de certificados a mouro
 const client = new ApolloClient({
@@ -116,10 +117,11 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 		privateKey: Constants.SERVER_PRIVATE_KEY
 	});
 
+	const date = (new Date(expDate).getTime() / 1000) | 0;
+
 	const vcPayload = {
 		sub: did,
-		nbf: Constants.NOT_BACK_FROM,
-		expirationDate: expDate,
+		exp: date,
 		vc: {
 			"@context": [Constants.CREDENTIALS.CONTEXT],
 			type: [Constants.CREDENTIALS.TYPES.VERIFIABLE],
@@ -163,15 +165,8 @@ module.exports.verifyCertificateAndDid = async function(jwt, issuerDid, errMsg) 
 };
 
 module.exports.verifyCertificate = async function(jwt, errMsg) {
-	const resolver = new Resolver(getResolver());
 	try {
 		let result = await verifyCredential(jwt, resolver);
-		const expDate = result.payload.expirationDate;
-		if (expDate && new Date(expDate) < new Date()) {
-			console.log(Messages.CERTIFICATE.EXPIRED);
-			return Promise.reject(Messages.CERTIFICATE.ERR.EXPIRED);
-		}
-
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
