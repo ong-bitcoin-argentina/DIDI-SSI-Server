@@ -45,7 +45,7 @@ module.exports.saveCertificate = async function(cert) {
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.CERT.SAVE);
+		return Promise.reject(Messages.CERTIFICATE.ERR.SAVE);
 	}
 };
 
@@ -61,7 +61,7 @@ module.exports.createPhoneCertificate = async function(did, phoneNumber) {
 			}
 		}
 	};
-	return module.exports.createCertificate(did, subject, Messages.SMS.ERR.CERT.CREATE);
+	return module.exports.createCertificate(did, subject, undefined, Messages.SMS.ERR.CERT.CREATE);
 };
 
 module.exports.createMailCertificate = async function(did, email) {
@@ -76,11 +76,11 @@ module.exports.createMailCertificate = async function(did, email) {
 			}
 		}
 	};
-	return module.exports.createCertificate(did, subject, Messages.EMAIL.ERR.CERT.CREATE);
+	return module.exports.createCertificate(did, subject, undefined, Messages.EMAIL.ERR.CERT.CREATE);
 };
 
 // genera un certificado asociando la informaciòn recibida en "subject" con el did
-module.exports.createCertificate = async function(did, subject, errMsg) {
+module.exports.createCertificate = async function(did, subject, expDate, errMsg) {
 	const vcissuer = new EthrDID({
 		address: Constants.SERVER_DID,
 		privateKey: Constants.SERVER_PRIVATE_KEY
@@ -89,6 +89,7 @@ module.exports.createCertificate = async function(did, subject, errMsg) {
 	const vcPayload = {
 		sub: did,
 		nbf: Constants.NOT_BACK_FROM,
+		expirationDate: expDate,
 		vc: {
 			"@context": [Constants.CREDENTIALS.CONTEXT],
 			type: [Constants.CREDENTIALS.TYPES.VERIFIABLE],
@@ -108,11 +109,11 @@ module.exports.createCertificate = async function(did, subject, errMsg) {
 };
 
 module.exports.verifyCertificateEmail = async function(jwt) {
-	return await module.exports.verifyCertificateAndDid(jwt, Constants.SERVER_DID, Messages.EMAIL.ERR.CERT.VERIFY);
+	return await module.exports.verifyCertificateAndDid(jwt, Constants.SERVER_DID, Messages.CERTIFICATE.ERR.VERIFY);
 };
 
 module.exports.verifyCertificatePhoneNumber = async function(jwt) {
-	return await module.exports.verifyCertificateAndDid(jwt, Constants.SERVER_DID, Messages.SMS.ERR.CERT.VERIFY);
+	return await module.exports.verifyCertificateAndDid(jwt, Constants.SERVER_DID, Messages.CERTIFICATE.ERR.VERIFY);
 };
 
 module.exports.verifyCertificateAndDid = async function(jwt, issuerDid, errMsg) {
@@ -135,6 +136,12 @@ module.exports.verifyCertificate = async function(jwt, errMsg) {
 	const resolver = new Resolver(getResolver());
 	try {
 		let result = await verifyCredential(jwt, resolver);
+		const expDate = result.payload.expirationDate;
+		if (expDate && new Date(expDate) < new Date()) {
+			console.log(Messages.CERTIFICATE.EXPIRED);
+			return Promise.reject(Messages.CERTIFICATE.ERR.EXPIRED);
+		}
+
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);

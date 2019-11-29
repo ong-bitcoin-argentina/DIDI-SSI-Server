@@ -2,8 +2,14 @@ const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posib
 
 module.exports = {
 	CERTIFICATE: {
+		ERR: {
+			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
+			SAVE: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." },
+			EXPIRED: { code: "CERT_EXPIRED", message: "Error la creadencial ha expirado." }
+		},
 		SAVED: "Certificado guardado",
 		CREATED: "Certificado creado",
+		EXPIRED: "Certificado vencido",
 		VERIFIED: "Certificado validado"
 	},
 	INDEX: {
@@ -38,9 +44,7 @@ module.exports = {
 				CREATE: {
 					code: "CERT_CREATE_ERROR",
 					message: "No pudo generarse la credencial vinculando el did y el número."
-				},
-				VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
-				VERIFY: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." }
+				}
 			},
 			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms." },
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -69,7 +73,6 @@ module.exports = {
 		ERR: {
 			CERT: {
 				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el mail." },
-				VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." }
 			},
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail." },
