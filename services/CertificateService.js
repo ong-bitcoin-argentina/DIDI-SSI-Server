@@ -117,7 +117,7 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 		privateKey: Constants.SERVER_PRIVATE_KEY
 	});
 
-	const date = (new Date(expDate).getTime() / 1000) | 0;
+	const date = expDate ? (new Date(expDate).getTime() / 1000) | 0 : undefined;
 
 	const vcPayload = {
 		sub: did,
