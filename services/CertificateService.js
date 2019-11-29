@@ -49,6 +49,36 @@ module.exports.saveCertificate = async function(cert) {
 	}
 };
 
+// elimina un certificado de mouro
+module.exports.revokeCertificate = async function(cert) {
+	try {
+		let result = await client.mutate({
+			mutation: gql`
+				mutation($cert: String!) {
+					removeEdge(edgeJWT: $cert) {
+						from {
+							did
+						}
+						to {
+							did
+						}
+						jwt
+						visibility
+					}
+				}
+			`,
+			variables: {
+				cert: cert
+			}
+		});
+		console.log(Messages.CERTIFICATE.REVOKED);
+		return Promise.resolve(result);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.CERTIFICATE.ERR.SAVE);
+	}
+};
+
 module.exports.createPhoneCertificate = async function(did, phoneNumber) {
 	const subject = {
 		Phone: {

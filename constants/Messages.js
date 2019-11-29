@@ -4,9 +4,11 @@ module.exports = {
 	CERTIFICATE: {
 		ERR: {
 			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
+			REVOKE: { code: "CERT_REVOKE_ERROR", message: "Error al dar de baja la creadencial." },
 			SAVE: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." },
 			EXPIRED: { code: "CERT_EXPIRED", message: "Error la creadencial ha expirado." }
 		},
+		REVOKED: "Certificado revocado",
 		SAVED: "Certificado guardado",
 		CREATED: "Certificado creado",
 		EXPIRED: "Certificado vencido",
@@ -72,7 +74,7 @@ module.exports = {
 		},
 		ERR: {
 			CERT: {
-				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el mail." },
+				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el mail." }
 			},
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail." },

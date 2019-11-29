@@ -8,6 +8,7 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
+// TODO USAR CLAVE PRIVADA PARA VALIDAR QUE ES EL DUEÑO DEL DID...
 router.post(
 	"/issuer/issueCertificate",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -31,6 +32,32 @@ router.post(
 		}
 	}
 );
+
+// TODO USAR CLAVE PRIVADA PARA VALIDAR QUE ES EL DUEÑO DEL DID...
+router.post(
+	"/issuer/revokeCertificate",
+	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.checkValidationResult,
+	async function(req, res) {
+		const did = req.body.did;
+		const jwt = req.body.jwt;
+
+		try {
+			const issuer = await IssuerService.getIssuer(did);
+			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+
+			const verified = await CertificateService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
+
+			await CertificateService.revokeCertificate(jwt);
+			return ResponseHandler.sendRes(res, Messages.ISSUER.CERT_SAVED);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
 
 router.post(
 	"/issuer/verifyCertificate",
