@@ -8,7 +8,6 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-// TODO USAR CLAVE PRIVADA PARA VALIDAR QUE ES EL DUEÑO DEL DID...
 router.post(
 	"/issuer/issueCertificate",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -33,7 +32,6 @@ router.post(
 	}
 );
 
-// TODO USAR CLAVE PRIVADA PARA VALIDAR QUE ES EL DUEÑO DEL DID...
 router.post(
 	"/issuer/revokeCertificate",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
