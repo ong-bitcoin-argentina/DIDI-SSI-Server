@@ -65,11 +65,14 @@ router.post(
 
 			const issuer = await IssuerService.getIssuer(result.payload.iss);
 			if (!issuer) {
-				result.issuer = result.payload.iss;
+				result.issuer = false;
 				return ResponseHandler.sendRes(res, { cert: result, err: Messages.ISSUER.ERR.IS_INVALID });
 			}
 
 			result.issuer = issuer.name;
+			const isInMouro = await CertificateService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
+			if (!isInMouro) return ResponseHandler.sendRes(res, { cert: result, err: Messages.ISSUER.ERR.NOT_FOUND });
+
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
