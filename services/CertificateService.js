@@ -50,25 +50,16 @@ module.exports.saveCertificate = async function(cert) {
 };
 
 // elimina un certificado de mouro
-module.exports.revokeCertificate = async function(cert) {
+module.exports.revokeCertificate = async function(hash) {
 	try {
 		let result = await client.mutate({
 			mutation: gql`
-				mutation($cert: String!) {
-					removeEdge(edgeJWT: $cert) {
-						from {
-							did
-						}
-						to {
-							did
-						}
-						jwt
-						visibility
-					}
+				mutation($hash: String!) {
+					removeEdge(hash: $hash)
 				}
 			`,
 			variables: {
-				cert: cert
+				hash: hash
 			}
 		});
 		console.log(Messages.CERTIFICATE.REVOKED);
