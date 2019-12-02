@@ -27,14 +27,8 @@ module.exports.saveCertificate = async function(cert) {
 			mutation: gql`
 				mutation($cert: String!) {
 					addEdge(edgeJWT: $cert) {
-						from {
-							did
-						}
-						to {
-							did
-						}
+						hash
 						jwt
-						visibility
 					}
 				}
 			`,
@@ -43,7 +37,12 @@ module.exports.saveCertificate = async function(cert) {
 			}
 		});
 		console.log(Messages.CERTIFICATE.SAVED);
-		return Promise.resolve(result);
+		const res = result.data.addEdge;
+		console.log(res);
+		return Promise.resolve({
+			data: res.jwt,
+			hash: res.hash
+		});
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.CERTIFICATE.ERR.SAVE);

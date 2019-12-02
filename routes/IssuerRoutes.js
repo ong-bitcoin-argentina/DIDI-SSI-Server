@@ -24,8 +24,8 @@ router.post(
 			const verified = await CertificateService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
-			await CertificateService.saveCertificate(jwt);
-			return ResponseHandler.sendRes(res, Messages.ISSUER.CERT_SAVED);
+			const result = await CertificateService.saveCertificate(jwt);
+			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
@@ -55,7 +55,6 @@ router.post(
 		}
 	}
 );
-
 
 router.post(
 	"/issuer/verifyCertificate",
