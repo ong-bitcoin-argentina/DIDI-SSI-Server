@@ -148,7 +148,8 @@ module.exports = {
 			},
 			DELETE: { code: "ISSUER_DELETE", message: "No se pudo revocar la autorización para emisión de certificados." },
 			IS_INVALID: { code: "IS_INVALID", message: "El emisor no esta autorizado para emitir certificados." },
-			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." }
+			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
+			NOT_FOUND: { code: "NOT_FOUND", message: "El certificado no fue emitido o ha sido revocado." }
 		},
 		DELETED: "La autorizacion para emitir certificados fue revocada.",
 		CREATED: "El emisor fue autorizado a emitir certificados.",

@@ -163,3 +163,25 @@ module.exports.verifyCertificate = async function(jwt, errMsg) {
 		return Promise.reject(errMsg);
 	}
 };
+
+module.exports.isInMouro = async function(jwt, errMsg) {
+	try {
+		let result = await client.query({
+			query: gql`
+				query($jwt: String) {
+					edgeByJwt(edgeJWT: $jwt) {
+						hash
+					}
+				}
+			`,
+			variables: {
+				jwt: jwt
+			}
+		});
+		const res = result.data.edgeByJwt;
+		return Promise.resolve(res && res.hash);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(errMsg);
+	}
+};
