@@ -43,24 +43,16 @@ router.post(
 			// chequear que el mail haya sido validado
 			let mailValidated = await MailService.isValidated(did, eMail);
 			if (!mailValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.MAIL_NOT_VALIDATED);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
-		}
 
-		try {
 			// chequear que el tel haya sido validado
 			let phoneValidated = await SmsService.isValidated(did, phoneNumber);
 			if (!phoneValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.PHONE_NOT_VALIDATED);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
-		}
 
-		try {
 			// crear usuario
 			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
 		} catch (err) {
-			return ResponseHandler.sendErr(res, Messages.USER.ERR.COMMUNICATION_ERROR);
+			return ResponseHandler.sendErr(res, err);
 		}
 	}
 );
@@ -150,16 +142,16 @@ router.post(
 		const newPass = req.body.newPass;
 
 		try {
-			// validar codigo y actualizar pedido de validacion de mail
-			const mail = await MailService.validateMail(eMail, eMailValidationCode);
+			// validar codigo
+			let mail = await MailService.isValid(eMail, eMailValidationCode);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
 
-		try {
 			// actualizar contraseña
 			await UserService.recoverPassword(eMail, newPass);
+
+			// actualizar pedido de validacion de mail
+			mail = await MailService.validateMail(mail, mail.did);
+
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -232,23 +224,28 @@ router.post(
 		const password = req.body.password;
 
 		try {
-			// validar codigo y actualizar pedido de validacion de tel
-			const phone = await SmsService.validatePhone(newPhoneNumber, phoneValidationCode, did);
-			if (!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-
-		try {
-			// actualizar tel
-			await UserService.changePhoneNumber(did, newPhoneNumber, password);
+			// validar codigo
+			let phone = await SmsService.isValid(newPhoneNumber, phoneValidationCode);
 
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
 			let cert = await CertificateService.createPhoneCertificate(did, newPhoneNumber);
 			await CertificateService.verifyCertificatePhoneNumber(cert);
 
 			// mandar certificado a mouro
-			await CertificateService.saveCertificate(cert);
+			const jwt = await CertificateService.saveCertificate(cert);
+
+			// revocar certificado anterior
+			const jwts = phone.jwts;
+			if (jwts.length > 0) {
+				const hash = jwts[jwts.length - 1].hash;
+				await CertificateService.revokeCertificate(hash);
+			}
+
+			// actualizar tel
+			await UserService.changePhoneNumber(did, newPhoneNumber, password);
+
+			// validar codigo y actualizar pedido de validacion de mail
+			phone = await SmsService.validatePhone(phone, did, jwt);
 
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PHONE(cert));
 		} catch (err) {
@@ -286,24 +283,29 @@ router.post(
 		const password = req.body.password;
 
 		try {
-			// validar codigo y actualizar pedido de validacion de mail
-			const mail = await MailService.validateMail(newEMail, eMailValidationCode, did);
+			// validar codigo
+			let mail = await MailService.isValid(newEMail, eMailValidationCode);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-
-		try {
-			// actualizar mail
-			await UserService.changeEmail(did, newEMail, password);
 
 			// generar certificado validando que ese did le corresponde al dueño del mail
 			let cert = await CertificateService.createMailCertificate(did, newEMail);
 			await CertificateService.verifyCertificateEmail(cert);
 
 			// mandar certificado a mouro
-			await CertificateService.saveCertificate(cert);
+			const jwt = await CertificateService.saveCertificate(cert);
 
+			// revocar certificado anterior
+			const jwts = mail.jwts;
+			if (jwts.length > 0) {
+				const hash = jwts[jwts.length - 1].hash;
+				await CertificateService.revokeCertificate(hash);
+			}
+
+			// actualizar mail
+			await UserService.changeEmail(did, newEMail, password);
+
+			// validar codigo y actualizar pedido de validacion de mail
+			mail = await MailService.validateMail(mail, did, jwt);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

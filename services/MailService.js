@@ -3,6 +3,20 @@ const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const mailgun = require("mailgun-js")({ apiKey: Constants.MAILGUN_API_KEY, domain: Constants.MAILGUN_DOMAIN });
 
+// obtiene el pedido de validacion a partir del mail
+let getByMail = async function(email) {
+	try {
+		const mail = await Mail.getByEmail(email);
+		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
+		if (mail.expired()) return Promise.reject(Messages.EMAIL.ERR.VALIDATION_EXPIRED);
+		return Promise.resolve(mail);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+	}
+};
+module.exports.getByMail = getByMail;
+
 // realiza el envio de mail con el còdigo de validaciòn usando "Mailgun"
 module.exports.sendValidationCode = async function(eMail, code) {
 	const data = {
@@ -34,23 +48,24 @@ module.exports.create = async function(email, code, did) {
 	}
 };
 
-// validar codigo y actualizar pedido de validacion de mail
-module.exports.validateMail = async function(email, code, did) {
-	let mail;
+// marca el pedido como validado
+module.exports.validateMail = async function(mail, did, jwt) {
 	try {
-		// obtener pedido de validaciòn
-		mail = await Mail.getByEmail(email);
-		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
-		if (mail.expired()) return Promise.reject(Messages.EMAIL.ERR.VALIDATION_EXPIRED);
+		// validar mail
+		mail = await mail.validateMail(did, jwt);
+		return Promise.resolve(mail);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
 	}
+};
 
+// obtiene y compara el codigo de validacion
+module.exports.isValid = async function(email, code) {
 	try {
-		// validar mail
-		mail = await mail.validateMail(code, did);
-		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
+		let mail = await getByMail(email);
+		let valid = await mail.isValid(code);
+		if (!valid) return Promise.reject(Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 		return Promise.resolve(mail);
 	} catch (err) {
 		console.log(err);
