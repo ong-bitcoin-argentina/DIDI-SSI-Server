@@ -38,7 +38,6 @@ module.exports.saveCertificate = async function(cert) {
 		});
 		console.log(Messages.CERTIFICATE.SAVED);
 		const res = result.data.addEdge;
-		console.log(res);
 		return Promise.resolve({
 			data: res.jwt,
 			hash: res.hash

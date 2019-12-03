@@ -21,6 +21,16 @@ const MailSchema = new mongoose.Schema({
 			required: true
 		}
 	},
+	jwts: [
+		{
+			data: {
+				type: String
+			},
+			hash: {
+				type: String
+			}
+		}
+	],
 	validated: {
 		type: Boolean,
 		default: false
@@ -46,14 +56,24 @@ MailSchema.methods.expired = function() {
 	return this.expiresOn.getTime() < new Date().getTime();
 };
 
-// comparar codigos de validacion y actualizar flag "validated"
-MailSchema.methods.validateMail = async function(code, did) {
+// comparar codigos de validacion
+MailSchema.methods.isValid = async function(code) {
 	try {
 		const isMatch = Hashing.validateHash(code, this.code);
-		if (!isMatch) return Promise.resolve(null);
+		return Promise.resolve(isMatch);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
 
+// comparar codigos de validacion y actualizar flag "validated"
+MailSchema.methods.validateMail = async function(did, jwt) {
+	try {
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true, did: did } };
+		if (jwt) action["$push"] = { jwts: jwt };
+
 		await Mail.findOneAndUpdate(quiery, action);
 
 		this.validated = true;
@@ -119,12 +139,11 @@ Mail.getByEmail = async function(email) {
 	}
 };
 
-
 Mail.isValidated = async function(did, email) {
 	try {
 		const query = { did: did, email: email };
 		let mail = await Mail.findOne(query);
-		return Promise.resolve(mail? mail.validated : false);
+		return Promise.resolve(mail ? mail.validated : false);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
