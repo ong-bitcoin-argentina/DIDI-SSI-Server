@@ -71,6 +71,8 @@ router.post(
 
 			// tiene subcredenciales
 			if (subcredentials) {
+				let err = false;
+
 				const data = {};
 				const subcredencialKeys = Object.keys(subcredentials);
 
@@ -86,23 +88,21 @@ router.post(
 				}
 
 				const mouroRes = await Promise.all(mouroCalls);
-				for (let isInMouro of mouroRes)
-					if (!isInMouro) return ResponseHandler.sendRes(res, { cert: childCert, err: Messages.ISSUER.ERR.NOT_FOUND });
+				for (let isInMouro of mouroRes) if (!isInMouro) err = Messages.ISSUER.ERR.NOT_FOUND;
 
 				const childCerts = await Promise.all(verifyCalls);
 
 				// para la primer subcredencial validar el issuer
 				const firstSubCred = childCerts[0];
 
-				if (cert.payload.iss !== firstSubCred.payload.iss && cert.payload.iss !== firstSubCred.payload.sub) {
-					return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.IS_INVALID });
-				}
+				if (cert.payload.iss !== firstSubCred.payload.iss && cert.payload.iss !== firstSubCred.payload.sub)
+					err = Messages.ISSUER.ERR.IS_INVALID;
 
 				const did = firstSubCred.payload.iss;
 				const issuer = await IssuerService.getIssuer(did);
 				if (!issuer) {
-					firstSubCred.issuer = false;
-					return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.IS_INVALID });
+					cert.issuer = false;
+					err = Messages.ISSUER.ERR.IS_INVALID;
 				}
 
 				for (let childCert of childCerts) {
@@ -110,11 +110,12 @@ router.post(
 
 					// verificar que el issuer sea el mismo que en la primer subcredencial (el validado mas arriba)
 					if (did !== childCert.payload.iss) {
-						childCert.issuer = false;
-						return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.IS_INVALID });
+						cert.issuer = false;
+						err = Messages.ISSUER.ERR.IS_INVALID;
 					}
 
 					// agregar la info
+					console.log(childCert.payload);
 					const childSubject = childCert.payload.vc.credentialSubject;
 					if (childSubject) {
 						const childKeys = Object.keys(childSubject);
@@ -125,10 +126,9 @@ router.post(
 					}
 				}
 
-				cert.issuer = issuer.name;
 				subject[keys[0]].data = data;
-				console.log("cert");
-				console.log(cert);
+				if (issuer) cert.issuer = issuer.name;
+				if (err) return ResponseHandler.sendRes(res, { cert: cert, err: err });
 				return ResponseHandler.sendRes(res, cert);
 			} else {
 				//no tiene subcredenciales
