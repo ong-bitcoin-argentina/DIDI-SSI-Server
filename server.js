@@ -10,7 +10,13 @@ const UserRoutes = require("./routes/UserRoutes");
 const SmsRoutes = require("./routes/SmsRoutes");
 const MailRoutes = require("./routes/MailRoutes");
 
+// set up node module clusters - one worker per CPU available
+var cluster = require("cluster");
+var numCPUs = require("os").cpus().length;
+
 const app = express();
+var http = require("http");
+var server = http.createServer(app);
 
 app.use(
 	bodyParser.urlencoded({
@@ -64,6 +70,23 @@ app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
 app.use(route, MailRoutes);
 
-app.listen(Constants.PORT, function() {
+if (cluster.isMaster) {
+	console.log(Messages.INDEX.MSG.STARTING_WORKERS(numCPUs));
+
+	for (var i = 0; i < numCPUs; i++) {
+		cluster.fork();
+	}
+
+	cluster.on("online", function(worker) {
+		console.log(Messages.INDEX.MSG.STARTED_WORKER(worker.process.pid));
+	});
+
+	cluster.on("exit", function(worker, code, signal) {
+		console.log(Messages.INDEX.MSG.ENDED_WORKER(worker.process.pid, code, signal));
+		console.log(Messages.INDEX.MSG.STARTING_WORKER);
+		cluster.fork();
+	});
+} else {
+	server.listen(Constants.PORT);
 	console.log(Messages.INDEX.MSG.RUNNING_ON + Constants.PORT);
-});
+}

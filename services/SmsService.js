@@ -57,9 +57,6 @@ module.exports.validatePhone = async function(phone, did, jwt) {
 	try {
 		// validar tel
 		phone = await phone.validatePhone(did, jwt);
-
-
-		
 		return Promise.resolve(phone);
 	} catch (err) {
 		console.log(err);
