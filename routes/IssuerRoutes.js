@@ -99,6 +99,7 @@ router.post(
 					err = Messages.ISSUER.ERR.IS_INVALID;
 
 				const did = firstSubCred.payload.iss;
+				const sub = firstSubCred.payload.sub;
 				const issuer = await IssuerService.getIssuer(did);
 				if (!issuer) {
 					cert.issuer = false;
@@ -109,13 +110,12 @@ router.post(
 					if (!childCert) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
 					// verificar que el issuer sea el mismo que en la primer subcredencial (el validado mas arriba)
-					if (did !== childCert.payload.iss) {
+					if (did !== childCert.payload.iss || sub !== childCert.payload.sub) {
 						cert.issuer = false;
 						err = Messages.ISSUER.ERR.IS_INVALID;
 					}
 
 					// agregar la info
-					console.log(childCert.payload);
 					const childSubject = childCert.payload.vc.credentialSubject;
 					if (childSubject) {
 						const childKeys = Object.keys(childSubject);
