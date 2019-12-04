@@ -59,23 +59,94 @@ router.post(
 	async function(req, res) {
 		const jwt = req.body.jwt;
 
+		let cert;
 		try {
-			const result = await CertificateService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			if (!result) return ResponseHandler.sendRes(res, { cert: result, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
+			// validar formato y desempaquetar
+			cert = await CertificateService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			if (!cert) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
-			const issuer = await IssuerService.getIssuer(result.payload.iss);
-			if (!issuer) {
-				result.issuer = false;
-				return ResponseHandler.sendRes(res, { cert: result, err: Messages.ISSUER.ERR.IS_INVALID });
+			const subject = cert.payload.vc.credentialSubject;
+			const keys = Object.keys(subject);
+			const subcredentials = subject[keys[0]].wrapped;
+
+			// tiene subcredenciales
+			if (subcredentials) {
+				const data = {};
+				const subcredencialKeys = Object.keys(subcredentials);
+
+				const verifyCalls = [];
+				const mouroCalls = [];
+				for (let key of subcredencialKeys) {
+					const jwt = subcredentials[key];
+					// validar formato y desempaquetar
+					verifyCalls.push(CertificateService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID));
+
+					// validar fue emitido y no revocado
+					mouroCalls.push(CertificateService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND));
+				}
+
+				const mouroRes = await Promise.all(mouroCalls);
+				for (let isInMouro of mouroRes)
+					if (!isInMouro) return ResponseHandler.sendRes(res, { cert: childCert, err: Messages.ISSUER.ERR.NOT_FOUND });
+
+				const childCerts = await Promise.all(verifyCalls);
+
+				// para la primer subcredencial validar el issuer
+				const firstSubCred = childCerts[0];
+
+				if (cert.payload.iss !== firstSubCred.payload.iss && cert.payload.iss !== firstSubCred.payload.sub) {
+					return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.IS_INVALID });
+				}
+
+				const did = firstSubCred.payload.iss;
+				const issuer = await IssuerService.getIssuer(did);
+				if (!issuer) {
+					firstSubCred.issuer = false;
+					return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.IS_INVALID });
+				}
+
+				for (let childCert of childCerts) {
+					if (!childCert) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
+
+					// verificar que el issuer sea el mismo que en la primer subcredencial (el validado mas arriba)
+					if (did !== childCert.payload.iss) {
+						childCert.issuer = false;
+						return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.IS_INVALID });
+					}
+
+					// agregar la info
+					const childSubject = childCert.payload.vc.credentialSubject;
+					if (childSubject) {
+						const childKeys = Object.keys(childSubject);
+						if (childKeys.length && childSubject[childKeys[0]].data) {
+							for (let childCertKey of Object.keys(childSubject[childKeys[0]].data))
+								data[childCertKey] = childSubject[childKeys[0]].data[childCertKey];
+						}
+					}
+				}
+
+				cert.issuer = issuer.name;
+				subject[keys[0]].data = data;
+				console.log("cert");
+				console.log(cert);
+				return ResponseHandler.sendRes(res, cert);
+			} else {
+				//no tiene subcredenciales
+
+				// validar emisor
+				const issuer = await IssuerService.getIssuer(cert.payload.iss);
+				cert.issuer = issuer ? issuer.name : false;
+				if (!cert.issuer) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.IS_INVALID });
+
+				// validar fue emitido y no revocado
+				const isInMouro = await CertificateService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
+				if (!isInMouro) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.NOT_FOUND });
+
+				return ResponseHandler.sendRes(res, cert);
 			}
-
-			result.issuer = issuer.name;
-			const isInMouro = await CertificateService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
-			if (!isInMouro) return ResponseHandler.sendRes(res, { cert: result, err: Messages.ISSUER.ERR.NOT_FOUND });
-
-			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
+			console.log(err);
+			return ResponseHandler.sendRes(res, err);
 		}
 	}
 );
