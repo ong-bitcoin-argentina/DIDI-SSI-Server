@@ -187,16 +187,40 @@ module.exports = {
 				message: "El campo " + field + " es incorrecto, se esperaba un mail"
 			};
 		},
+		IP_FORMAT_INVALID: function(field) {
+			return {
+				code: "PARAMETER_TYPE_ERROR",
+				message: "El campo " + field + " es incorrecto, se esperaba una direccion ip"
+			};
+		},
 		STRING_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
 				message: "El campo " + field + " es incorrecto, se esperaba un texto"
 			};
 		},
+		NUMBER_FORMAT_INVALID: function(field) {
+			return {
+				code: "PARAMETER_TYPE_ERROR",
+				message: "El campo " + field + " es incorrecto, se esperaba un número"
+			};
+		},
+		BOOLEAN_FORMAT_INVALID: function(field) {
+			return {
+				code: "PARAMETER_TYPE_ERROR",
+				message: "El campo " + field + " es incorrecto, se esperaba un booleano ('true' o 'false')"
+			};
+		},
 		BASE64_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
 				message: "El campo " + field + " es incorrecto, se esperaba un texto en base 64"
+			};
+		},
+		DNI_FORMAT_INVALID: function(field) {
+			return {
+				code: "PARAMETER_TYPE_ERROR",
+				message: "El campo " + field + " es incorrecto, se esperaba una dni"
 			};
 		},
 		DATE_FORMAT_INVALID: function(field) {

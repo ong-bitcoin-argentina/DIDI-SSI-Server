@@ -9,6 +9,7 @@ const IssuerRoutes = require("./routes/IssuerRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const SmsRoutes = require("./routes/SmsRoutes");
 const MailRoutes = require("./routes/MailRoutes");
+const RenaperRoutes = require("./routes/RenaperRoutes"); 
 
 // set up node module clusters - one worker per CPU available
 var cluster = require("cluster");
@@ -69,6 +70,7 @@ app.use(route, IssuerRoutes);
 app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
 app.use(route, MailRoutes);
+app.use(route, RenaperRoutes);
 
 if (cluster.isMaster) {
 	console.log(Messages.INDEX.MSG.STARTING_WORKERS(numCPUs));
