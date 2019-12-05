@@ -7,6 +7,7 @@ const mailgun = require("mailgun-js")({ apiKey: Constants.MAILGUN_API_KEY, domai
 let getByMail = async function(email) {
 	try {
 		const mail = await Mail.getByEmail(email);
+		if (Constants.DEBUGG) return Promise.resolve(mail);
 		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
 		if (mail.expired()) return Promise.reject(Messages.EMAIL.ERR.VALIDATION_EXPIRED);
 		return Promise.resolve(mail);

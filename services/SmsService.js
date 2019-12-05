@@ -44,6 +44,7 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 module.exports.create = async function(phoneNumber, code, did) {
 	try {
 		let phone = await Phone.generate(phoneNumber, code, did);
+		if (Constants.DEBUGG) return Promise.resolve(phone);
 		if (!phone) return Promise.reject(Messages.SMS.ERR.CREATE);
 		return Promise.resolve(phone);
 	} catch (err) {
