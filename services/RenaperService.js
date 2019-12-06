@@ -1,5 +1,5 @@
 const Constants = require("../constants/Constants");
-const Messages = require("../constants/Messages");
+const fetch = require("node-fetch");
 
 const renaperPost = async function(url, body) {
 	try {
@@ -14,6 +14,8 @@ const renaperPost = async function(url, body) {
 		});
 
 		const jsonResp = await response.json();
+		console.log("url: " + url);
+		console.log(jsonResp);
 		return jsonResp.status === "error" ? Promise.reject(jsonResp) : Promise.resolve(jsonResp);
 	} catch (err) {
 		console.log(err);

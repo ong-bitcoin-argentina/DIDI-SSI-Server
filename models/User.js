@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const Hashing = require("./utils/Hashing");
 
 const UserSchema = new mongoose.Schema({
+	did: {
+		type: String,
+		required: true
+	},
+
 	mail: {
 		type: String,
 		required: true
@@ -11,6 +16,7 @@ const UserSchema = new mongoose.Schema({
 			type: String
 		}
 	],
+
 	phoneNumber: {
 		type: String,
 		required: true
@@ -20,10 +26,12 @@ const UserSchema = new mongoose.Schema({
 			type: String
 		}
 	],
-	did: {
+
+	seed: {
 		type: String,
 		required: true
 	},
+
 	password: {
 		salt: {
 			type: String,
@@ -33,10 +41,6 @@ const UserSchema = new mongoose.Schema({
 			type: String,
 			required: true
 		}
-	},
-	seed: {
-		type: String,
-		required: true
 	},
 	deleted: {
 		type: Boolean,
@@ -135,6 +139,24 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 	}
 };
 
+UserSchema.methods.addJWT = async function(jwt) {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: {
+			documentData: documentData
+		},
+		$push: { jwts: jwt }
+	};
+
+	try {
+		await User.findOneAndUpdate(updateQuery, updateAction);
+		this.jwts.push(jwt);
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+};
+
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
@@ -145,6 +167,7 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 	user.oldEmails = [];
 	user.phoneNumber = phoneNumber;
 	user.oldPhoneNumbers = [];
+	user.jwts = [];
 	user.did = did;
 	user.seed = seed;
 	user.createdOn = new Date();

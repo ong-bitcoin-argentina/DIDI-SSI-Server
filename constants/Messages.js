@@ -3,6 +3,7 @@ const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posib
 module.exports = {
 	CERTIFICATE: {
 		ERR: {
+			CREATE: { code: "CERT_CREATE_ERROR", message: "Error al crear la creadencial." },
 			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
 			REVOKE: { code: "CERT_REVOKE_ERROR", message: "Error al dar de baja la creadencial." },
 			SAVE: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." },
