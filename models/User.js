@@ -7,6 +7,17 @@ const UserSchema = new mongoose.Schema({
 		required: true
 	},
 
+	jwts: [
+		{
+			data: {
+				type: String
+			},
+			hash: {
+				type: String
+			}
+		}
+	],
+
 	mail: {
 		type: String,
 		required: true
