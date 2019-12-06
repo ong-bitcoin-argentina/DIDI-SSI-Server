@@ -75,6 +75,17 @@ module.exports.create = async function(did, privateKeySeed, userMail, phoneNumbe
 	}
 };
 
+module.exports.addJwt = async function(user, jwt) {
+	try {
+		user = await user.addJwt(jwt);
+		if (!user) return Promise.reject(Messages.USER.ERR.UPDATE);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.UPDATE);
+	}
+};
+
 // validar contraseña
 module.exports.login = async function(did, email, pass) {
 	let user;

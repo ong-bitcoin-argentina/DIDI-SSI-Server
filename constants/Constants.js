@@ -31,6 +31,10 @@ const RENAPER_API = process.env.RENAPER_API || "https://renaperpreprod.dnm.gob.a
 const RENAPER_URL =
 	process.env.RENAPER_URL || "http://onboarding.renaper.prod.vusecurity.com:8080/vu-onboarding-rest/onboarding/";
 
+const FINGER_PRINT_DATA =
+	process.env.FINGER_PRINT_DATA ||
+	"***REMOVED***";
+
 module.exports = {
 	API_VERSION: "1.0",
 	DEBUGG: DEBUGG,
@@ -41,6 +45,7 @@ module.exports = {
 	RENAPER_API: RENAPER_API,
 	RENAPER_SCORE_TRESHOULD: RENAPER_SCORE_TRESHOULD,
 
+	FINGER_PRINT_DATA: FINGER_PRINT_DATA,
 	RENAPER_APP_VERS: "1.0.0",
 	RENAPER_ANALYZE_ANOMALIES: false,
 	RENAPER_ANALYZE_OCR: false,
