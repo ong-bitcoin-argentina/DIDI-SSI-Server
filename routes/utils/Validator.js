@@ -87,9 +87,8 @@ module.exports.validateBody = function(params) {
 					case Constants.VALIDATION_TYPES.IS_BOOLEAN:
 						// campo es un booleano
 						validation.custom(async function(value) {
-							if (value != "true" && value != "false")
-								return Promise.reject(Messages.VALIDATION.BOOLEAN_FORMAT_INVALID(param.name));
-							return Promise.resolve(value);
+							if (value == "true" || value == "false") return Promise.resolve(value);
+							else return Promise.reject(Messages.VALIDATION.BOOLEAN_FORMAT_INVALID(param.name));
 						});
 						break;
 					case Constants.VALIDATION_TYPES.IS_NUMBER:
