@@ -17,7 +17,6 @@ module.exports.create = async function(did, name) {
 module.exports.delete = async function(did) {
 	try {
 		let issuer = await Issuer.delete(did);
-		if (!issuer) return Promise.reject(Messages.ISSUER.ERR.DELETE);
 		return Promise.resolve(issuer);
 	} catch (err) {
 		console.log(err);

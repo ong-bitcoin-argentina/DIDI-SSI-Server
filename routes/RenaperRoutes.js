@@ -228,11 +228,17 @@ router.post(
 			const user = UserService.getAndValidate(did, password);
 
 			// obtener info del usuario de renaper
+			console.log("newOpperation");
 			const operationId = await RenaperService.newOpperation(dni, gender, deviceIp, fingerPrintData);
+			console.log("addFront");
 			await RenaperService.addFront(dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr);
+			console.log("addBack");
 			await RenaperService.addBack(dni, gender, operationId, backImage, analyzeAnomalies, analyzeOcr);
+			console.log("addSelfie");
 			await RenaperService.addSelfie(dni, gender, operationId, selfieImage);
+			console.log("addBarcode");
 			await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate);
+			console.log("endOperation");
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
 			if (userData.confidence > Constants.RENAPER_SCORE_TRESHOULD) return ResponseHandler.sendRes(res, userData);

@@ -154,8 +154,8 @@ module.exports = {
 		ERR: {
 			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			CREATE: {
-				code: "ISSUER_CREATE",
-				message: "No se pudo autorizar al did para la emisión de certificados, ya estaba autorizado."
+				code: "ALREADY_CREATED",
+				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
 			},
 			DELETE: { code: "ISSUER_DELETE", message: "No se pudo revocar la autorización para emisión de certificados." },
 			IS_INVALID: { code: "IS_INVALID", message: "El emisor no esta autorizado para emitir certificados." },
