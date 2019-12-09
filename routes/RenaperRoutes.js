@@ -138,7 +138,8 @@ router.post(
 		{ name: "operationId", validate: [Constants.VALIDATION_TYPES.IS_NUMBER] },
 		{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "lastName", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "birthDate", validate: [Constants.VALIDATION_TYPES.IS_DATE_TIME] }
+		{ name: "birthDate", validate: [Constants.VALIDATION_TYPES.IS_DATE_TIME] },
+		{ name: "order", validate: [Constants.VALIDATION_TYPES.IS_STRING] }		
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
@@ -148,9 +149,10 @@ router.post(
 		const name = req.body.name;
 		const lastName = req.body.lastName;
 		const birthDate = req.body.birthDate;
+		const order = req.body.order;
 
 		try {
-			const result = await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate);
+			const result = await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate, order);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -184,11 +186,6 @@ router.post(
 	"/renaper/validateDni",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{
-			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
-		},
 
 		{ name: "dni", validate: [Constants.VALIDATION_TYPES.IS_DNI] },
 		{ name: "gender", validate: [Constants.VALIDATION_TYPES.IS_GENDER] },
@@ -196,6 +193,7 @@ router.post(
 		{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "lastName", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "birthDate", validate: [Constants.VALIDATION_TYPES.IS_DATE_TIME] },
+		{ name: "order", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 
 		{ name: "selfieImage", validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] },
 		{ name: "frontImage", validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] },
@@ -204,7 +202,6 @@ router.post(
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const password = req.body.password;
 
 		const dni = req.body.dni;
 		const gender = req.body.gender;
@@ -212,6 +209,7 @@ router.post(
 		const name = req.body.name;
 		const lastName = req.body.lastName;
 		const birthDate = req.body.birthDate;
+		const order = req.body.order;
 
 		const selfieImage = req.body.selfieImage;
 
@@ -224,8 +222,8 @@ router.post(
 		const analyzeOcr = Constants.RENAPER_ANALYZE_OCR;
 
 		try {
-			// obtener usuario y validar pass
-			const user = UserService.getAndValidate(did, password);
+			// obtener usuario
+			const user = UserService.getByDID(did);
 
 			// obtener info del usuario de renaper
 			console.log("newOpperation");
@@ -237,7 +235,7 @@ router.post(
 			console.log("addSelfie");
 			await RenaperService.addSelfie(dni, gender, operationId, selfieImage);
 			console.log("addBarcode");
-			await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate);
+			await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate, order);
 			console.log("endOperation");
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
