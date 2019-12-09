@@ -110,14 +110,14 @@ module.exports.addSelfie = async function(dni, gender, operationId, selfie) {
 	}
 };
 
-module.exports.addBarcode = async function(dni, gender, operationId, name, lastName, birthDate) {
+module.exports.addBarcode = async function(dni, gender, operationId, name, lastName, birthDate, order) {
 	const document = {
 		names: name,
 		lastNames: lastName,
 		number: dni,
 		birthdate: birthDate,
 		gender: gender,
-		order: operationId
+		order: order
 	};
 
 	try {
