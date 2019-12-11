@@ -24,7 +24,7 @@ router.post(
 			const verified = await CertificateService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
-			const result = await CertificateService.saveCertificate(jwt);
+			const result = await CertificateService.saveCertificate(jwt, verified.payload.sub);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -35,17 +35,19 @@ router.post(
 router.post(
 	"/issuer/revokeCertificate",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([{ name: "sub", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	Validator.validateBody([{ name: "hash", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
+		const sub = req.body.sub;
 		const hash = req.body.hash;
 
 		try {
 			const issuer = await IssuerService.getIssuer(did);
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
-			await CertificateService.revokeCertificate(hash);
+			await CertificateService.revokeCertificate(hash, sub);
 			return ResponseHandler.sendRes(res, Messages.ISSUER.CERT_SAVED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

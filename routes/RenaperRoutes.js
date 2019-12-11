@@ -275,8 +275,8 @@ router.post(
 			const addAditionalCert = UserService.addJwt(user, resAditionalCert);
 
 			// enviar certificados a mouro para ser guardado
-			const saveCert = MouroService.saveCertificate(resCert);
-			const saveAditionalCert = MouroService.saveCertificate(resAditionalCert);
+			const saveCert = MouroService.saveCertificate(resCert, did);
+			const saveAditionalCert = MouroService.saveCertificate(resAditionalCert, did);
 
 			const result = await Promise.all([addCert, addAditionalCert, saveCert, saveAditionalCert]);
 			return ResponseHandler.sendRes(res, result);
