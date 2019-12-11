@@ -171,6 +171,23 @@ router.post(
 	}
 );
 
+router.get(
+	"/issuer/",
+	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.checkValidationResult,
+	async function(req, res) {
+		const did = req.body.did;
+
+		try {
+			const issuer = await IssuerService.getIssuer(did);
+			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+			return ResponseHandler.sendRes(res, issuer.name);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
 router.delete(
 	"/issuer/",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
