@@ -9,6 +9,8 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
+var jwt = require("jsonwebtoken");
+
 /*
 router.post(
 	"/renaper/newOperation",
@@ -201,7 +203,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const did = req.body.did;
+		const certDID = req.body.did;
 
 		const dni = req.body.dni;
 		const gender = req.body.gender;
@@ -222,6 +224,9 @@ router.post(
 		const analyzeOcr = Constants.RENAPER_ANALYZE_OCR;
 
 		try {
+			const didData = jwt.decode(certDID);
+			const did = didData.iss;
+
 			// obtener usuario
 			const user = UserService.getByDID(did);
 
