@@ -21,19 +21,20 @@ const client = new ApolloClient({
 });
 
 // recibe el caertificado y lo envia a mouro para ser guardado
-module.exports.saveCertificate = async function(cert) {
+module.exports.saveCertificate = async function(cert, did) {
 	try {
 		let result = await client.mutate({
 			mutation: gql`
-				mutation($cert: String!) {
-					addEdge(edgeJWT: $cert) {
+				mutation($cert: String!, $did: String!) {
+					addEdge(edgeJWT: $cert, did: $did) {
 						hash
 						jwt
 					}
 				}
 			`,
 			variables: {
-				cert: cert
+				cert: cert,
+				did: did
 			}
 		});
 		console.log(Messages.CERTIFICATE.SAVED);
@@ -49,16 +50,17 @@ module.exports.saveCertificate = async function(cert) {
 };
 
 // elimina un certificado de mouro
-module.exports.revokeCertificate = async function(hash) {
+module.exports.revokeCertificate = async function(hash, did) {
 	try {
 		let result = await client.mutate({
 			mutation: gql`
-				mutation($hash: String!) {
-					removeEdge(hash: $hash)
+				mutation($hash: String!, $did: String!) {
+					removeEdge(hash: $hash, did: $did)
 				}
 			`,
 			variables: {
-				hash: hash
+				hash: hash,
+				did: did
 			}
 		});
 		console.log(Messages.CERTIFICATE.REVOKED);

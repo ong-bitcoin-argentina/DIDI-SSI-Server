@@ -232,13 +232,13 @@ router.post(
 			await CertificateService.verifyCertificatePhoneNumber(cert);
 
 			// mandar certificado a mouro
-			const jwt = await CertificateService.saveCertificate(cert);
+			const jwt = await CertificateService.saveCertificate(cert, did);
 
 			// revocar certificado anterior
 			const jwts = phone.jwts;
 			if (jwts.length > 0) {
 				const hash = jwts[jwts.length - 1].hash;
-				await CertificateService.revokeCertificate(hash);
+				await CertificateService.revokeCertificate(hash, did);
 			}
 
 			// actualizar tel
@@ -292,13 +292,13 @@ router.post(
 			await CertificateService.verifyCertificateEmail(cert);
 
 			// mandar certificado a mouro
-			const jwt = await CertificateService.saveCertificate(cert);
+			const jwt = await CertificateService.saveCertificate(cert, did);
 
 			// revocar certificado anterior
 			const jwts = mail.jwts;
 			if (jwts.length > 0) {
 				const hash = jwts[jwts.length - 1].hash;
-				await CertificateService.revokeCertificate(hash);
+				await CertificateService.revokeCertificate(hash, did);
 			}
 
 			// actualizar mail
