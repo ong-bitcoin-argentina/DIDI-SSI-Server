@@ -63,7 +63,7 @@ router.post(
 			await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate, order);
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
-			if (userData.confidence < Constants.RENAPER_SCORE_TRESHOULD) {
+			if (!userData || !userData.confidence || userData.confidence < Constants.RENAPER_SCORE_TRESHOULD) {
 				return ResponseHandler.sendErr(res, Messages.RENAPER.WEAK_MATCH);
 			}
 
