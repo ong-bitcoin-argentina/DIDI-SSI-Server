@@ -52,8 +52,8 @@ app.use(bodyParser.json());
 app.use(function(req, _, next) {
 	if (Constants.DEBUGG) {
 		console.log(req.method + " " + req.originalUrl);
-		//process.stdout.write("body: ");
-		//console.log(req.body);
+		process.stdout.write("body: ");
+		console.log(req.body);
 		console.log();
 	}
 	next();
