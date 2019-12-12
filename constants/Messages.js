@@ -1,6 +1,41 @@
 const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." };
 
 module.exports = {
+	RENAPER: {
+		WEAK_MATCH: {
+			code: "WEAK_MATCH",
+			message:
+				"El resultado arrojado por Renaper tiene un bajo grado de precision, por favor intente sacar mejores fotos."
+		},
+		SCAN_BAR_CODE: {
+			code: "SCAN_BAR_CODE",
+			message: "Hubo un error al enviar el codigo de barras, por favor intentelo de nuevo mas tarde"
+		},
+		NEW_OPERATION: {
+			code: "NEW_OPERATION",
+			message: "Hubo un error al iniciar el tramite de validacion, por favor intentelo de nuevo mas tarde"
+		},
+		ADD_FRONT: {
+			code: "ADD_FRONT",
+			message: "Hubo un error al enviar la foto del frente, por favor intentelo de nuevo mas tarde"
+		},
+		ADD_BACK: {
+			code: "ADD_BACK",
+			message: "Hubo un error al enviar la foto del dorso, por favor intentelo de nuevo mas tarde"
+		},
+		ADD_SELFIE: {
+			code: "ADD_SELFIE",
+			message: "Hubo un error al enviar la selfie, por favor intentelo de nuevo mas tarde"
+		},
+		ADD_BAR_CODE: {
+			code: "ADD_BAR_CODE",
+			message: "Hubo un error al analizar el codigo de barras, por favor intentelo de nuevo mas tarde"
+		},
+		END_OPERATION: {
+			code: "END_OPERATION",
+			message: "Hubo un error al analizar los datos, por favor intentelo de nuevo mas tarde"
+		}
+	},
 	CERTIFICATE: {
 		ERR: {
 			CREATE: { code: "CERT_CREATE_ERROR", message: "Error al crear la creadencial." },

@@ -1,5 +1,6 @@
 const Constants = require("../constants/Constants");
 const fetch = require("node-fetch");
+const Messages = require("../constants/Messages");
 
 const renaperPost = async function(url, body) {
 	try {
@@ -14,8 +15,8 @@ const renaperPost = async function(url, body) {
 		});
 
 		const jsonResp = await response.json();
-		console.log("url: " + url);
-		console.log(jsonResp);
+		// console.log("url: " + url);
+		// console.log(jsonResp);
 		return jsonResp.status === "error" ? Promise.reject(jsonResp) : Promise.resolve(jsonResp);
 	} catch (err) {
 		console.log(err);
@@ -33,7 +34,7 @@ module.exports.scanBarcode = async function(file) {
 		);
 		return Promise.resolve(result.data);
 	} catch (err) {
-		return Promise.reject(err);
+		return Promise.reject(Messages.RENAPER.SCAN_BAR_CODE);
 	}
 };
 
@@ -51,7 +52,7 @@ module.exports.newOpperation = async function(dni, gender, deviceIp, fingerprint
 		);
 		return Promise.resolve(result.operationId);
 	} catch (err) {
-		return Promise.reject(err);
+		return Promise.reject(Messages.RENAPER.NEW_OPERATION);
 	}
 };
 
@@ -70,7 +71,7 @@ module.exports.addFront = async function(dni, gender, operationId, frontImage, a
 		);
 		return Promise.resolve(result);
 	} catch (err) {
-		return Promise.reject(err);
+		return Promise.reject(Messages.RENAPER.ADD_FRONT);
 	}
 };
 
@@ -89,7 +90,7 @@ module.exports.addBack = async function(dni, gender, operationId, backImage, ana
 		);
 		return Promise.resolve(result);
 	} catch (err) {
-		return Promise.reject(err);
+		return Promise.reject(Messages.RENAPER.ADD_BACK);
 	}
 };
 
@@ -106,7 +107,7 @@ module.exports.addSelfie = async function(dni, gender, operationId, selfie) {
 		);
 		return Promise.resolve(result);
 	} catch (err) {
-		return Promise.reject(err);
+		return Promise.reject(Messages.RENAPER.ADD_SELFIE);
 	}
 };
 
@@ -132,7 +133,7 @@ module.exports.addBarcode = async function(dni, gender, operationId, name, lastN
 		);
 		return Promise.resolve(result);
 	} catch (err) {
-		return Promise.reject(err);
+		return Promise.reject(Messages.RENAPER.ADD_BAR_CODE);
 	}
 };
 
@@ -148,6 +149,6 @@ module.exports.endOperation = async function(dni, gender, operationId) {
 		);
 		return Promise.resolve(result);
 	} catch (err) {
-		return Promise.reject(err);
+		return Promise.reject(Messages.RENAPER.END_OPERATION);
 	}
 };

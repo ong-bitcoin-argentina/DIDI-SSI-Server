@@ -153,9 +153,6 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 UserSchema.methods.addJWT = async function(jwt) {
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: {
-			documentData: documentData
-		},
 		$push: { jwts: jwt }
 	};
 

@@ -75,9 +75,9 @@ module.exports.create = async function(did, privateKeySeed, userMail, phoneNumbe
 	}
 };
 
-module.exports.addJwt = async function(user, jwt) {
+module.exports.addJWT = async function(user, jwt) {
 	try {
-		user = await user.addJwt(jwt);
+		user = await user.addJWT(jwt);
 		if (!user) return Promise.reject(Messages.USER.ERR.UPDATE);
 		return Promise.resolve(user);
 	} catch (err) {
