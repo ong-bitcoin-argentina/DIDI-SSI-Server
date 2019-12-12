@@ -9,7 +9,7 @@ const IssuerRoutes = require("./routes/IssuerRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const SmsRoutes = require("./routes/SmsRoutes");
 const MailRoutes = require("./routes/MailRoutes");
-const RenaperRoutes = require("./routes/RenaperRoutes"); 
+const RenaperRoutes = require("./routes/RenaperRoutes");
 
 // set up node module clusters - one worker per CPU available
 var cluster = require("cluster");
@@ -18,6 +18,10 @@ var numCPUs = require("os").cpus().length;
 const app = express();
 var http = require("http");
 var server = http.createServer(app);
+
+//Set Request Size Limit
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 app.use(
 	bodyParser.urlencoded({
@@ -48,8 +52,8 @@ app.use(bodyParser.json());
 app.use(function(req, _, next) {
 	if (Constants.DEBUGG) {
 		console.log(req.method + " " + req.originalUrl);
-		process.stdout.write("body: ");
-		console.log(req.body);
+		//process.stdout.write("body: ");
+		//console.log(req.body);
 		console.log();
 	}
 	next();

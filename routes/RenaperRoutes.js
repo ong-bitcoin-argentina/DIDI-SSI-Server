@@ -9,7 +9,7 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-var jwt = require("jsonwebtoken");
+// var jwt = require("jsonwebtoken");
 
 /*
 router.post(
@@ -194,7 +194,7 @@ router.post(
 
 		{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "lastName", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "birthDate", validate: [Constants.VALIDATION_TYPES.IS_DATE_TIME] },
+		{ name: "birthDate", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "order", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 
 		{ name: "selfieImage", validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] },
@@ -203,18 +203,16 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const certDID = req.body.did;
+		const did = req.body.did;
 
 		const dni = req.body.dni;
 		const gender = req.body.gender;
-
 		const name = req.body.name;
 		const lastName = req.body.lastName;
 		const birthDate = req.body.birthDate;
 		const order = req.body.order;
 
 		const selfieImage = req.body.selfieImage;
-
 		const frontImage = req.body.frontImage;
 		const backImage = req.body.backImage;
 
@@ -224,27 +222,23 @@ router.post(
 		const analyzeOcr = Constants.RENAPER_ANALYZE_OCR;
 
 		try {
-			const didData = jwt.decode(certDID);
-			const did = didData.iss;
+			//const didData = jwt.decode(certDID);
+			//const did = didData.iss;
 
 			// obtener usuario
-			const user = UserService.getByDID(did);
+			const user = await UserService.getByDID(did);
 
 			// obtener info del usuario de renaper
-			console.log("newOpperation");
 			const operationId = await RenaperService.newOpperation(dni, gender, deviceIp, fingerPrintData);
-			console.log("addFront");
 			await RenaperService.addFront(dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr);
-			console.log("addBack");
 			await RenaperService.addBack(dni, gender, operationId, backImage, analyzeAnomalies, analyzeOcr);
-			console.log("addSelfie");
 			await RenaperService.addSelfie(dni, gender, operationId, selfieImage);
-			console.log("addBarcode");
 			await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate, order);
-			console.log("endOperation");
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
-			if (userData.confidence > Constants.RENAPER_SCORE_TRESHOULD) return ResponseHandler.sendRes(res, userData);
+			if (userData.confidence < Constants.RENAPER_SCORE_TRESHOULD) {
+				return ResponseHandler.sendErr(res, Messages.RENAPER.WEAK_MATCH);
+			}
 
 			// generar certificados con esa info
 			const data = {
@@ -252,35 +246,48 @@ router.post(
 				names: userData.ocr.names,
 				lastNames: userData.ocr.lastNames,
 				gender: userData.ocr.gender,
-				birthdate: new Date(userData.ocr.birthdate)
+				birthdate: userData.ocr.birthdate
 			};
-			const aditionalData = userData.ocr.extra.aditional;
+			const additional = JSON.parse(userData.ocr.extra.additional);
+
+			// delete empty fields
+			var propNames = Object.getOwnPropertyNames(additional);
+			for (var i = 0; i < propNames.length; i++) {
+				var propName = propNames[i];
+				if (additional[propName] === null || additional[propName] === undefined) {
+					delete additional[propName];
+				}
+			}
 
 			const generateCert = CertificateService.createCertificate(
 				did,
-				data,
-				aditionalData.ExpiryDate,
+				{ identidad: data },
+				additional.ExpiryDate,
 				Messages.CERTIFICATE.ERR.CREATE
 			);
+
 			const generateAditionalCert = CertificateService.createCertificate(
 				did,
-				aditionalData,
-				aditionalData.ExpiryDate,
+				{ "identidad (adicionales): ": additional },
+				additional.ExpiryDate,
 				Messages.CERTIFICATE.ERR.CREATE
 			);
-			const [resCert, resAditionalCert] = await Promise.all([generateCert, generateAditionalCert]);
 
-			// agregar info de renaper al usuario
-			const addCert = UserService.addJwt(user, resCert);
-			const addAditionalCert = UserService.addJwt(user, resAditionalCert);
+			const [cert, aditionalCert] = await Promise.all([generateCert, generateAditionalCert]);
 
 			// enviar certificados a mouro para ser guardado
-			const saveCert = MouroService.saveCertificate(resCert, did);
-			const saveAditionalCert = MouroService.saveCertificate(resAditionalCert, did);
+			const saveCert = CertificateService.saveCertificate(cert, did);
+			const saveAditionalCert = CertificateService.saveCertificate(aditionalCert, did);
+			const [resCert, resAditionalCert] = await Promise.all([saveCert, saveAditionalCert]);
 
-			const result = await Promise.all([addCert, addAditionalCert, saveCert, saveAditionalCert]);
-			return ResponseHandler.sendRes(res, result);
+			// agregar info de renaper al usuario
+			const addCert = UserService.addJWT(user, resCert);
+			const addAditionalCert = UserService.addJWT(user, resAditionalCert);
+
+			await Promise.all([addCert, addAditionalCert]);
+			return ResponseHandler.sendRes(res, {});
 		} catch (err) {
+			console.log(err);
 			return ResponseHandler.sendErr(res, err);
 		}
 	}
