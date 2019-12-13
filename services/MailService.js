@@ -12,7 +12,7 @@ let getByMail = async function(email) {
 		return Promise.resolve(mail);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 module.exports.getByMail = getByMail;
@@ -46,7 +46,7 @@ module.exports.create = async function(email, code, did) {
 		return Promise.resolve(mail);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -58,7 +58,7 @@ module.exports.validateMail = async function(mail, did, jwt) {
 		return Promise.resolve(mail);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -71,7 +71,7 @@ module.exports.isValid = async function(email, code) {
 		return Promise.resolve(mail);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -82,6 +82,6 @@ module.exports.isValidated = async function(did, email) {
 		return Promise.resolve(isValidated);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };

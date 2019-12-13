@@ -14,7 +14,7 @@ let getByPhoneNumber = async function(phoneNumber) {
 		return Promise.resolve(phone);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 module.exports.getByPhoneNumber = getByPhoneNumber;
@@ -51,7 +51,7 @@ module.exports.create = async function(phoneNumber, code, did) {
 		return Promise.resolve(phone);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -63,7 +63,7 @@ module.exports.validatePhone = async function(phone, did, jwt) {
 		return Promise.resolve(phone);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -76,7 +76,7 @@ module.exports.isValid = async function(phoneNumber, code) {
 		return Promise.resolve(phone);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -87,6 +87,6 @@ module.exports.isValidated = async function(did, phoneNumber) {
 		return Promise.resolve(isValidated);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };

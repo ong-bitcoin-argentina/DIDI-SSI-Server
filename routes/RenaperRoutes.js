@@ -4,6 +4,7 @@ const ResponseHandler = require("./utils/ResponseHandler");
 const CertificateService = require("../services/CertificateService");
 const UserService = require("../services/UserService");
 const RenaperService = require("../services/RenaperService");
+const AuthRequestService = require("../services/AuthRequestService");
 
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
@@ -48,23 +49,46 @@ router.post(
 		const analyzeAnomalies = Constants.RENAPER_ANALYZE_ANOMALIES;
 		const analyzeOcr = Constants.RENAPER_ANALYZE_OCR;
 
+		let user, operationId, authRequest;
 		try {
 			//const didData = jwt.decode(certDID);
 			//const did = didData.iss;
 
 			// obtener usuario
-			const user = await UserService.getByDID(did);
+			user = await UserService.getByDID(did);
 
-			// obtener info del usuario de renaper
-			const operationId = await RenaperService.newOpperation(dni, gender, deviceIp, fingerPrintData);
+			// iniciar pedido de validacion de identidad con el renaper
+			operationId = await RenaperService.newOpperation(dni, gender, deviceIp, fingerPrintData);
+
+			// guardar estado como "en progreso y retornar"
+			authRequest = await AuthRequestService.create(operationId, did);
+		} catch (err) {
+			console.log(err);
+			return ResponseHandler.suploadFileendErr(res, err);
+		}
+
+		ResponseHandler.sendRes(res, { status: authRequest.status, operationId: authRequest.operationId });
+
+		try {
+			// agregar frente del dni al pedido
 			await RenaperService.addFront(dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr);
+
+			// agregar dorso del dni al pedido
 			await RenaperService.addBack(dni, gender, operationId, backImage, analyzeAnomalies, analyzeOcr);
+
+			// agregar selfie al pedido
 			await RenaperService.addSelfie(dni, gender, operationId, selfieImage);
+
+			// agregar codigo de barras al pedido
 			await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate, order);
+
+			// ejecutar pedido
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
+			// si no hubo match o no se obtuvo la precision buscada pasar a estado "fallido"
 			if (!userData || !userData.confidence || userData.confidence < Constants.RENAPER_SCORE_TRESHOULD) {
-				return ResponseHandler.sendErr(res, Messages.RENAPER.WEAK_MATCH);
+				await authRequest.update(Constants.AUTHENTICATION_REQUEST.FALIED, Messages.RENAPER.WEAK_MATCH.message);
+				return;
 			}
 
 			// generar certificados con esa info
@@ -110,9 +134,38 @@ router.post(
 			// agregar info de renaper al usuario
 			const addCert = UserService.addJWT(user, resCert);
 			const addAditionalCert = UserService.addJWT(user, resAditionalCert);
-
 			await Promise.all([addCert, addAditionalCert]);
-			return ResponseHandler.sendRes(res, {});
+			await authRequest.update(Constants.AUTHENTICATION_REQUEST.SUCCESSFUL);
+			return;
+		} catch (err) {
+			console.log(err);
+			await authRequest.update(Constants.AUTHENTICATION_REQUEST.FALIED, err.message);
+			return;
+		}
+	}
+);
+
+router.get(
+	"/renaper/validateDni",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "operationId", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	async function(req, res) {
+		const did = req.body.did;
+		const operationId = req.body.operationId;
+
+		try {
+			//const didData = jwt.decode(certDID);
+			//const did = didData.iss;
+
+			const authRequest = await AuthRequestService.getByOperationId(operationId);
+			return ResponseHandler.sendRes(res, {
+				status: authRequest.status,
+				operationId: authRequest.operationId,
+				message: authRequest.errorMessage
+			});
 		} catch (err) {
 			console.log(err);
 			return ResponseHandler.sendErr(res, err);
