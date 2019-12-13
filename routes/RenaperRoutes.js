@@ -92,33 +92,53 @@ router.post(
 			}
 
 			// generar certificados con esa info
-			const data = {
-				dni: dni,
-				names: userData.ocr.names,
-				lastNames: userData.ocr.lastNames,
-				gender: userData.ocr.gender,
-				birthdate: userData.ocr.birthdate
-			};
-			const additional = JSON.parse(userData.ocr.extra.additional);
+			const data = JSON.parse(userData.personData.person);
 
-			// delete empty fields
-			var propNames = Object.getOwnPropertyNames(additional);
-			for (var i = 0; i < propNames.length; i++) {
-				var propName = propNames[i];
-				if (!additional[propName]) delete additional[propName];
-			}
+			const personData = {
+				dni: data.number,
+				//"gender": data.gender === "M" ? "Hombre" : "Mujer",
+				names: data.names,
+				lastNames: data.lastNames,
+				//"birthdate": data.birthdate,
+				//"cuil": data.cuil,
+				//"messageOfDeath": data.messageOfDeath,
+				nationality: data.nationality
+				//"countryBirth": data.countryBirth
+			};
 
 			const generateCert = CertificateService.createCertificate(
 				did,
-				{ identidad: { preview: { fields: ["dni", "names", "lastNames", "gender"], type: 1 }, data: data } },
-				additional.ExpiryDate,
+				{
+					"Datos Personales": {
+						preview: { fields: ["dni", "names", "lastNames", "nationality"], type: 2 },
+						data: personData
+					}
+				},
+				data.ExpiryDate,
 				Messages.CERTIFICATE.ERR.CREATE
 			);
 
+			const addressData = {
+				streetAddress: data.streetAddress,
+				numberStreet: data.numberStreet,
+				floor: data.floor,
+				department: data.department,
+				zipCode: data.zipCode,
+				city: data.city,
+				municipality: data.municipality,
+				province: data.province,
+				country: data.country
+			};
+
 			const generateAditionalCert = CertificateService.createCertificate(
 				did,
-				{ "identidad (adicionales): ": { preview: { fields: ["Address", "Nationality"], type: 0 }, data: additional } },
-				additional.ExpiryDate,
+				{
+					"Domicilio Legal": {
+						preview: { fields: ["streetAddress", "numberStreet", "zipCode", "city", "province", "country"], type: 1 },
+						data: addressData
+					}
+				},
+				data.ExpiryDate,
 				Messages.CERTIFICATE.ERR.CREATE
 			);
 
