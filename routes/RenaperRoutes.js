@@ -105,21 +105,19 @@ router.post(
 			var propNames = Object.getOwnPropertyNames(additional);
 			for (var i = 0; i < propNames.length; i++) {
 				var propName = propNames[i];
-				if (additional[propName] === null || additional[propName] === undefined) {
-					delete additional[propName];
-				}
+				if (!additional[propName]) delete additional[propName];
 			}
 
 			const generateCert = CertificateService.createCertificate(
 				did,
-				{ identidad: data },
+				{ identidad: { preview: { fields: ["dni", "names", "lastNames", "gender"], type: 1 }, data: data } },
 				additional.ExpiryDate,
 				Messages.CERTIFICATE.ERR.CREATE
 			);
 
 			const generateAditionalCert = CertificateService.createCertificate(
 				did,
-				{ "identidad (adicionales): ": additional },
+				{ "identidad (adicionales): ": { preview: { fields: ["Address", "Nationality"], type: 0 }, data: additional } },
 				additional.ExpiryDate,
 				Messages.CERTIFICATE.ERR.CREATE
 			);
