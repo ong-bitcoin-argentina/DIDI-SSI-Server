@@ -1,7 +1,20 @@
 const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." };
 
 module.exports = {
+	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 	RENAPER: {
+		CREATE: {
+			code: "REQ_CREATE",
+			message: "No pudo registrarse el pedido de validacion de identidad."
+		},
+		GET: {
+			code: "REQ_GET",
+			message: "No pudo obtenerse el pedido de validacion de identidad."
+		},
+		UPDATE: {
+			code: "REQ_UPDATE",
+			message: "No pudo actualizarse el pedido de validacion de identidad."
+		},
 		WEAK_MATCH: {
 			code: "WEAK_MATCH",
 			message:
@@ -95,7 +108,6 @@ module.exports = {
 				}
 			},
 			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms." },
-			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese teléfono ya se encuentra asociado a un usuario." },
 			VALIDATION_EXPIRED: {
 				code: "VALIDATION_EXPIRED",
@@ -122,7 +134,6 @@ module.exports = {
 			CERT: {
 				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el mail." }
 			},
-			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail." },
 			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
 			NO_VALIDATIONS_FOR_EMAIL: {
@@ -165,7 +176,6 @@ module.exports = {
 			}
 		},
 		ERR: {
-			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
 			INVALID_USER_DID: {
@@ -187,7 +197,6 @@ module.exports = {
 	},
 	ISSUER: {
 		ERR: {
-			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			CREATE: {
 				code: "ALREADY_CREATED",
 				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
