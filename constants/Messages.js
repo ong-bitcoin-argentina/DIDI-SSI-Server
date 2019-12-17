@@ -206,6 +206,7 @@ module.exports = {
 			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
 			NOT_FOUND: { code: "NOT_FOUND", message: "El certificado no fue emitido o ha sido revocado." }
 		},
+		CERT_REVOKED: "El certificado fue revocado.",
 		DELETED: "La autorizacion para emitir certificados fue revocada.",
 		CREATED: "El emisor fue autorizado a emitir certificados.",
 		CERT_SAVED: "El certificado fue guardado.",
