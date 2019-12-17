@@ -67,7 +67,7 @@ module.exports.revokeCertificate = async function(hash, did) {
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.CERTIFICATE.ERR.SAVE);
+		return Promise.reject(Messages.CERTIFICATE.ERR.REVOKE);
 	}
 };
 
@@ -78,6 +78,7 @@ module.exports.createPhoneCertificate = async function(did, phoneNumber) {
 				type: 0,
 				fields: ["phoneNumber"]
 			},
+			category: "identity",
 			data: {
 				phoneNumber: phoneNumber
 			}
@@ -93,6 +94,7 @@ module.exports.createMailCertificate = async function(did, email) {
 				type: 0,
 				fields: ["email"]
 			},
+			category: "identity",
 			data: {
 				email: email
 			}

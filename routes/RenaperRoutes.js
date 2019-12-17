@@ -111,6 +111,7 @@ router.post(
 				{
 					"Datos Personales": {
 						preview: { fields: ["dni", "names", "lastNames", "nationality"], type: 2 },
+						category: "identity",
 						data: personData
 					}
 				},
@@ -135,6 +136,7 @@ router.post(
 				{
 					"Domicilio Legal": {
 						preview: { fields: ["streetAddress", "numberStreet", "zipCode", "city", "province", "country"], type: 1 },
+						category: "identity",
 						data: addressData
 					}
 				},

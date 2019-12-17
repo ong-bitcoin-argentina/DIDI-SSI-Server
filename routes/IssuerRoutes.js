@@ -48,7 +48,7 @@ router.post(
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
 			await CertificateService.revokeCertificate(hash, sub);
-			return ResponseHandler.sendRes(res, Messages.ISSUER.CERT_SAVED);
+			return ResponseHandler.sendRes(res, Messages.ISSUER.CERT_REVOKED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
