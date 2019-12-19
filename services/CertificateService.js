@@ -121,13 +121,14 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 
 	const vcPayload = {
 		sub: did,
-		exp: date,
 		vc: {
 			"@context": [Constants.CREDENTIALS.CONTEXT],
 			type: [Constants.CREDENTIALS.TYPES.VERIFIABLE],
 			credentialSubject: subject
 		}
 	};
+
+	if (expDate) vcPayload["exp"] = date;
 
 	try {
 		let result = await createVerifiableCredential(vcPayload, vcissuer);
