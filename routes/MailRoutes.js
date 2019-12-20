@@ -34,19 +34,13 @@ router.post(
 		const password = req.body.password;
 
 		try {
-			if (did && password) {
-				// se ingresò contraseña, validarla
-				await UserService.getAndValidate(did, password);
-			}
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
+			// se ingresò contraseña, validarla
+			if (did && password) await UserService.getAndValidate(did, password);
 
-		// generar còdigo de validacion
-		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
-		if (Constants.DEBUGG) console.log(code);
+			// generar còdigo de validacion
+			let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
+			if (Constants.DEBUGG) console.log(code);
 
-		try {
 			// crear y guardar pedido de validacion de mail
 			await MailService.create(eMail, code, undefined);
 
@@ -81,31 +75,30 @@ router.post(
 		const eMail = req.body.eMail.toLowerCase();
 		const did = req.body.did;
 
-		let mail;
 		try {
-			// validar codigo y actualizar pedido de validacion de mail
-			mail = await MailService.validateMail(eMail, validationCode, did);
-			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
+			// validar codigo
+			let mail = await MailService.isValid(eMail, validationCode);
 
-		try {
 			// validar que no existe un usuario con ese mail
 			const user = await UserService.getByEmail(eMail);
 			if (user) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.ALREADY_EXISTS);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-		
-		try {
+
 			// generar certificado validando que ese did le corresponde al dueño del mail
-			let cert = await CertificateService.createMailCertificate(did, mail.email);
+			let cert = await CertificateService.createMailCertificate(did, eMail);
 			await CertificateService.verifyCertificateEmail(cert);
 
 			// mandar certificado a mouro
-			await CertificateService.saveCertificate(cert);
+			const jwt = await CertificateService.saveCertificate(cert, did);
 
+			// revocar certificado anterior
+			const jwts = mail.jwts;
+			if(jwts.length > 0) {
+				const hash = jwts[jwts.length-1].hash;
+				await CertificateService.revokeCertificate(hash, did);
+			}
+
+			// validar codigo y actualizar pedido de validacion de mail
+			mail = await MailService.validateMail(mail, did, jwt);
 			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

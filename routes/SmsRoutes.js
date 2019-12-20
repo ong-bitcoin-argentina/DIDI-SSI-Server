@@ -37,19 +37,13 @@ router.post(
 		const password = req.body.password;
 
 		try {
-			if (password && did) {
-				// se ingresò contraseña, validarla
-				await UserService.getAndValidate(did, password);
-			}
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
+			// se ingresò contraseña, validarla
+			if (password && did) await UserService.getAndValidate(did, password);
 
-		// generar còdigo de validacion
-		let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
-		if (Constants.DEBUGG) console.log(code);
+			// generar còdigo de validacion
+			let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
+			if (Constants.DEBUGG) console.log(code);
 
-		try {
 			// crear y guardar pedido de validacion de tel
 			await SmsService.create(phoneNumber, code, undefined);
 
@@ -88,30 +82,29 @@ router.post(
 		const did = req.body.did;
 
 		try {
+			// validar codigo
+			let phone = await SmsService.isValid(cellPhoneNumber, validationCode);
+
 			// validar que no existe un usuario con ese mail
 			const user = await UserService.getByTel(cellPhoneNumber);
 			if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
 
-		let phone;
-		try {
-			// validar codigo y actualizar pedido de validacion de tel
-			phone = await SmsService.validatePhone(cellPhoneNumber, validationCode, did);
-			if (!phone) return ResponseHandler.sendErr(res, Messages.SMS.ERR.NO_SMSCODE_MATCH);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-
-		try {
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
 			let cert = await CertificateService.createPhoneCertificate(did, phone.phoneNumber);
 			await CertificateService.verifyCertificatePhoneNumber(cert);
 
 			// mandar certificado a mouro
-			await CertificateService.saveCertificate(cert);
+			const jwt = await CertificateService.saveCertificate(cert, did);
 
+			// revocar certificado anterior
+			const jwts = phone.jwts;
+			if(jwts.length > 0) {
+				const hash = jwts[jwts.length-1].hash;
+				await CertificateService.revokeCertificate(hash, did);
+			}
+
+			// validar codigo y actualizar pedido de validacion de mail
+			phone = await SmsService.validatePhone(phone, did, jwt);
 			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

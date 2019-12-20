@@ -1,8 +1,57 @@
 const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor." };
 
 module.exports = {
+	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+	RENAPER: {
+		CREATE: {
+			code: "REQ_CREATE",
+			message: "No pudo registrarse el pedido de validacion de identidad."
+		},
+		GET: {
+			code: "REQ_GET",
+			message: "No pudo obtenerse el pedido de validacion de identidad."
+		},
+		UPDATE: {
+			code: "REQ_UPDATE",
+			message: "No pudo actualizarse el pedido de validacion de identidad."
+		},
+		WEAK_MATCH: {
+			code: "WEAK_MATCH",
+			message:
+				"El resultado arrojado por Renaper tiene un bajo grado de precision, por favor intente sacar mejores fotos."
+		},
+		SCAN_BAR_CODE: {
+			code: "SCAN_BAR_CODE",
+			message: "Hubo un error al enviar el codigo de barras, por favor intentelo de nuevo mas tarde"
+		},
+		NEW_OPERATION: {
+			code: "NEW_OPERATION",
+			message: "Hubo un error al iniciar el tramite de validacion, por favor intentelo de nuevo mas tarde"
+		},
+		ADD_FRONT: {
+			code: "ADD_FRONT",
+			message: "Hubo un error al enviar la foto del frente, por favor intentelo de nuevo mas tarde"
+		},
+		ADD_BACK: {
+			code: "ADD_BACK",
+			message: "Hubo un error al enviar la foto del dorso, por favor intentelo de nuevo mas tarde"
+		},
+		ADD_SELFIE: {
+			code: "ADD_SELFIE",
+			message: "Hubo un error al enviar la selfie, por favor intentelo de nuevo mas tarde"
+		},
+		ADD_BAR_CODE: {
+			code: "ADD_BAR_CODE",
+			message: "Hubo un error al analizar el codigo de barras, por favor intentelo de nuevo mas tarde"
+		},
+		END_OPERATION: {
+			code: "END_OPERATION",
+			message: "Hubo un error al analizar los datos, por favor intentelo de nuevo mas tarde"
+		}
+	},
 	CERTIFICATE: {
 		ERR: {
+			CREATE: { code: "CERT_CREATE_ERROR", message: "Error al crear la creadencial." },
 			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
 			REVOKE: { code: "CERT_REVOKE_ERROR", message: "Error al dar de baja la creadencial." },
 			SAVE: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." },
@@ -22,7 +71,17 @@ module.exports = {
 			CONNECTING: "conectandose a: ",
 			CONNECTED: "Base de datos conectada.",
 			HELLO_WORLD: "Hola DIDI!",
-			RUNNING_ON: "Ejecutandose en puerto "
+			RUNNING_ON: "Ejecutandose en puerto ",
+			STARTING_WORKER: "Arrancando nuevo worker",
+			STARTING_WORKERS: num => {
+				return "Inicializando " + num + " workers";
+			},
+			STARTED_WORKER: pid => {
+				return "Worker " + pid + " inicializado";
+			},
+			ENDED_WORKER: (pid, code, signal) => {
+				return "Worker " + pid + " termino con codigo: " + code + ", y señal: " + signal;
+			}
 		}
 	},
 	SMS: {
@@ -49,7 +108,6 @@ module.exports = {
 				}
 			},
 			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms." },
-			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese teléfono ya se encuentra asociado a un usuario." },
 			VALIDATION_EXPIRED: {
 				code: "VALIDATION_EXPIRED",
@@ -76,7 +134,6 @@ module.exports = {
 			CERT: {
 				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el mail." }
 			},
-			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail." },
 			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto." },
 			NO_VALIDATIONS_FOR_EMAIL: {
@@ -119,7 +176,6 @@ module.exports = {
 			}
 		},
 		ERR: {
-			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
 			INVALID_USER_DID: {
@@ -141,15 +197,16 @@ module.exports = {
 	},
 	ISSUER: {
 		ERR: {
-			COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 			CREATE: {
-				code: "ISSUER_CREATE",
-				message: "No se pudo autorizar al did para la emisión de certificados, ya estaba autorizado."
+				code: "ALREADY_CREATED",
+				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
 			},
 			DELETE: { code: "ISSUER_DELETE", message: "No se pudo revocar la autorización para emisión de certificados." },
 			IS_INVALID: { code: "IS_INVALID", message: "El emisor no esta autorizado para emitir certificados." },
-			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." }
+			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
+			NOT_FOUND: { code: "NOT_FOUND", message: "El certificado no fue emitido o ha sido revocado." }
 		},
+		CERT_REVOKED: "El certificado fue revocado.",
 		DELETED: "La autorizacion para emitir certificados fue revocada.",
 		CREATED: "El emisor fue autorizado a emitir certificados.",
 		CERT_SAVED: "El certificado fue guardado.",
@@ -176,16 +233,40 @@ module.exports = {
 				message: "El campo " + field + " es incorrecto, se esperaba un mail"
 			};
 		},
+		IP_FORMAT_INVALID: function(field) {
+			return {
+				code: "PARAMETER_TYPE_ERROR",
+				message: "El campo " + field + " es incorrecto, se esperaba una direccion ip"
+			};
+		},
 		STRING_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
 				message: "El campo " + field + " es incorrecto, se esperaba un texto"
 			};
 		},
+		NUMBER_FORMAT_INVALID: function(field) {
+			return {
+				code: "PARAMETER_TYPE_ERROR",
+				message: "El campo " + field + " es incorrecto, se esperaba un número"
+			};
+		},
+		BOOLEAN_FORMAT_INVALID: function(field) {
+			return {
+				code: "PARAMETER_TYPE_ERROR",
+				message: "El campo " + field + " es incorrecto, se esperaba un booleano ('true' o 'false')"
+			};
+		},
 		BASE64_FORMAT_INVALID: function(field) {
 			return {
 				code: "PARAMETER_TYPE_ERROR",
 				message: "El campo " + field + " es incorrecto, se esperaba un texto en base 64"
+			};
+		},
+		DNI_FORMAT_INVALID: function(field) {
+			return {
+				code: "PARAMETER_TYPE_ERROR",
+				message: "El campo " + field + " es incorrecto, se esperaba una dni"
 			};
 		},
 		DATE_FORMAT_INVALID: function(field) {
