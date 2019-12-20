@@ -9,7 +9,7 @@ module.exports.create = async function(did, name) {
 		return Promise.resolve(issuer);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -17,11 +17,10 @@ module.exports.create = async function(did, name) {
 module.exports.delete = async function(did) {
 	try {
 		let issuer = await Issuer.delete(did);
-		if (!issuer) return Promise.reject(Messages.ISSUER.ERR.DELETE);
 		return Promise.resolve(issuer);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -32,6 +31,6 @@ module.exports.getIssuer = async function(did) {
 		return Promise.resolve(issuer);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.ISSUER.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };

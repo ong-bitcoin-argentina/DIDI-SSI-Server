@@ -21,29 +21,28 @@ const client = new ApolloClient({
 });
 
 // recibe el caertificado y lo envia a mouro para ser guardado
-module.exports.saveCertificate = async function(cert) {
+module.exports.saveCertificate = async function(cert, did) {
 	try {
 		let result = await client.mutate({
 			mutation: gql`
-				mutation($cert: String!) {
-					addEdge(edgeJWT: $cert) {
-						from {
-							did
-						}
-						to {
-							did
-						}
+				mutation($cert: String!, $did: String!) {
+					addEdge(edgeJWT: $cert, did: $did) {
+						hash
 						jwt
-						visibility
 					}
 				}
 			`,
 			variables: {
-				cert: cert
+				cert: cert,
+				did: did
 			}
 		});
 		console.log(Messages.CERTIFICATE.SAVED);
-		return Promise.resolve(result);
+		const res = result.data.addEdge;
+		return Promise.resolve({
+			data: res.jwt,
+			hash: res.hash
+		});
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.CERTIFICATE.ERR.SAVE);
@@ -51,32 +50,24 @@ module.exports.saveCertificate = async function(cert) {
 };
 
 // elimina un certificado de mouro
-module.exports.revokeCertificate = async function(cert) {
+module.exports.revokeCertificate = async function(hash, did) {
 	try {
 		let result = await client.mutate({
 			mutation: gql`
-				mutation($cert: String!) {
-					removeEdge(edgeJWT: $cert) {
-						from {
-							did
-						}
-						to {
-							did
-						}
-						jwt
-						visibility
-					}
+				mutation($hash: String!, $did: String!) {
+					removeEdge(hash: $hash, did: $did)
 				}
 			`,
 			variables: {
-				cert: cert
+				hash: hash,
+				did: did
 			}
 		});
 		console.log(Messages.CERTIFICATE.REVOKED);
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.CERTIFICATE.ERR.SAVE);
+		return Promise.reject(Messages.CERTIFICATE.ERR.REVOKE);
 	}
 };
 
@@ -87,6 +78,7 @@ module.exports.createPhoneCertificate = async function(did, phoneNumber) {
 				type: 0,
 				fields: ["phoneNumber"]
 			},
+			category: "identity",
 			data: {
 				phoneNumber: phoneNumber
 			}
@@ -102,6 +94,7 @@ module.exports.createMailCertificate = async function(did, email) {
 				type: 0,
 				fields: ["email"]
 			},
+			category: "identity",
 			data: {
 				email: email
 			}
@@ -117,7 +110,7 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 		privateKey: Constants.SERVER_PRIVATE_KEY
 	});
 
-	const date = (new Date(expDate).getTime() / 1000) | 0;
+	const date = expDate ? (new Date(expDate).getTime() / 1000) | 0 : undefined;
 
 	const vcPayload = {
 		sub: did,
@@ -169,6 +162,28 @@ module.exports.verifyCertificate = async function(jwt, errMsg) {
 	try {
 		let result = await verifyCredential(jwt, resolver);
 		return Promise.resolve(result);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(errMsg);
+	}
+};
+
+module.exports.isInMouro = async function(jwt, errMsg) {
+	try {
+		let result = await client.query({
+			query: gql`
+				query($jwt: String) {
+					edgeByJwt(edgeJWT: $jwt) {
+						hash
+					}
+				}
+			`,
+			variables: {
+				jwt: jwt
+			}
+		});
+		const res = result.data.edgeByJwt;
+		return Promise.resolve(res && res.hash);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(errMsg);

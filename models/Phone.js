@@ -20,6 +20,16 @@ const PhoneSchema = new mongoose.Schema({
 			required: true
 		}
 	},
+	jwts: [
+		{
+			data: {
+				type: String
+			},
+			hash: {
+				type: String
+			}
+		}
+	],
 	validated: {
 		type: Boolean,
 		default: false
@@ -45,14 +55,24 @@ PhoneSchema.methods.expired = function() {
 	return this.expiresOn.getTime() < new Date().getTime();
 };
 
-// comparar codigos de validacion y actualizar flag "validated"
-PhoneSchema.methods.validatePhone = async function(code, did) {
+// comparar codigos de validacion
+PhoneSchema.methods.isValid = async function(code) {
 	try {
 		const isMatch = Hashing.validateHash(code, this.code);
-		if (!isMatch) return Promise.resolve(null);
+		return Promise.resolve(isMatch);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
 
+// actualizar flag "validated"
+PhoneSchema.methods.validatePhone = async function(did, jwt) {
+	try {
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true, did: did } };
+		if (jwt) action["$push"] = { jwts: jwt };
+
 		await Phone.findOneAndUpdate(quiery, action);
 
 		this.validated = true;

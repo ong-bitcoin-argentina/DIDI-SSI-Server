@@ -5,6 +5,20 @@ const Constants = require("../constants/Constants");
 
 const twilio = require("twilio");
 
+// obtiene el pedido de validacion a partir del tel
+let getByPhoneNumber = async function(phoneNumber) {
+	try {
+		const phone = await Phone.getByPhoneNumber(phoneNumber);
+		if (!phone) return Promise.reject(Messages.SMS.ERR.NO_VALIDATIONS_FOR_NUMBER);
+		if (phone.expired()) return Promise.reject(Messages.SMS.ERR.VALIDATION_EXPIRED);
+		return Promise.resolve(phone);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
+	}
+};
+module.exports.getByPhoneNumber = getByPhoneNumber;
+
 // realiza el envio de sms con el còdigo de validaciòn usando "Twillio"
 module.exports.sendValidationCode = async function(phoneNumber, code) {
 	const data = {
@@ -12,6 +26,8 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 		to: Constants.PHONE_REGION + phoneNumber.substring(phoneNumber.length - 8),
 		from: Constants.TWILIO_PHONE_NUMBER
 	};
+
+	if (Constants.DEBUGG) return Promise.resolve(code);
 
 	var client = twilio(Constants.TWILIO_SID, Constants.TWILIO_TOKEN);
 	if (Constants.DEBUGG) console.log(Messages.SMS.SENDING(data.to));
@@ -30,33 +46,37 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 module.exports.create = async function(phoneNumber, code, did) {
 	try {
 		let phone = await Phone.generate(phoneNumber, code, did);
+		if (Constants.DEBUGG) return Promise.resolve(phone);
 		if (!phone) return Promise.reject(Messages.SMS.ERR.CREATE);
 		return Promise.resolve(phone);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
-module.exports.validatePhone = async function(phoneNumber, code, did) {
-	let phone;
-	try {
-		phone = await Phone.getByPhoneNumber(phoneNumber);
-		if (!phone) return Promise.reject(Messages.SMS.ERR.NO_VALIDATIONS_FOR_NUMBER);
-		if (phone.expired()) return Promise.reject(Messages.SMS.ERR.VALIDATION_EXPIRED);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(Messages.EMAIL.ERR.COMMUNICATION_ERROR);
-	}
-
+// marca el pedido como validado
+module.exports.validatePhone = async function(phone, did, jwt) {
 	try {
 		// validar tel
-		phone = await phone.validatePhone(code, did);
-		if (!phone) return Promise.reject(Messages.SMS.ERR.NO_SMSCODE_MATCH);
+		phone = await phone.validatePhone(did, jwt);
 		return Promise.resolve(phone);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
+	}
+};
+
+// obtiene y compara el codigo de validacion
+module.exports.isValid = async function(phoneNumber, code) {
+	try {
+		let phone = await getByPhoneNumber(phoneNumber);
+		let valid = await phone.isValid(code);
+		if (!valid) return Promise.reject(Messages.SMS.ERR.NO_SMSCODE_MATCH);
+		return Promise.resolve(phone);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -67,6 +87,6 @@ module.exports.isValidated = async function(did, phoneNumber) {
 		return Promise.resolve(isValidated);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.SMS.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };

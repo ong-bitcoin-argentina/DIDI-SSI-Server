@@ -8,7 +8,7 @@ let getByDID = async function(did) {
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 module.exports.getByDID = getByDID;
@@ -20,7 +20,7 @@ let getByEmail = async function(email) {
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 module.exports.getByEmail = getByEmail;
@@ -32,7 +32,7 @@ let getByTel = async function(phoneNumber) {
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 module.exports.getByTel = getByTel;
@@ -71,7 +71,18 @@ module.exports.create = async function(did, privateKeySeed, userMail, phoneNumbe
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
+	}
+};
+
+module.exports.addJWT = async function(user, jwt) {
+	try {
+		user = await user.addJWT(jwt);
+		if (!user) return Promise.reject(Messages.USER.ERR.UPDATE);
+		return Promise.resolve(user);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.UPDATE);
 	}
 };
 
@@ -98,7 +109,7 @@ module.exports.recoverAccount = async function(mail, pass) {
 		user = await User.getByEmail(mail);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.ERR.COMMUNICATION_ERROR);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 
 	if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_EMAIL);
