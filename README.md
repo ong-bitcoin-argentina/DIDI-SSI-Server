@@ -1,13 +1,16 @@
 # didi-server
 
 ## Variables de entorno
+
 ## importante:
+
 ## - al correr en docker estas constantes se toman del archibo '.env',
+
 ## - al correr de forma local, los que no se pasen por paràmetro se tomaràn del archibo de constantes (constants/Constants.js)
 
 MONGO_INITDB_ROOT_USERNAME
 MONGO_INITDB_ROOT_PASSWORD
-MONGO_INITDB_DATABASE
+MONGO_DB
 MONGO_USERNAME
 MONGO_PASSWORD
 
