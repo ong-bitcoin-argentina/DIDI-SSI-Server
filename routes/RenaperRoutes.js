@@ -64,7 +64,7 @@ router.post(
 			authRequest = await AuthRequestService.create(operationId, did);
 		} catch (err) {
 			console.log(err);
-			return ResponseHandler.suploadFileendErr(res, err);
+			return ResponseHandler.sendErr(res, err);
 		}
 
 		ResponseHandler.sendRes(res, { status: authRequest.status, operationId: authRequest.operationId });
@@ -165,8 +165,8 @@ router.post(
 	}
 );
 
-router.get(
-	"/renaper/validateDni",
+router.post(
+	"/renaper/validateDniState",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "operationId", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
