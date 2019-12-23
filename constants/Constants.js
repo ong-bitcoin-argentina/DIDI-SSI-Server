@@ -10,7 +10,7 @@ const SERVER_DID = process.env.SERVER_DID || "***REMOVED***";
 const SERVER_PRIVATE_KEY =
 	process.env.SERVER_PRIVATE_KEY || "***REMOVED***";
 
-const MOURO_URL = process.env.MOURO_URL || "http://192.168.2.114:3001/graphql";
+const MOURO_URL = process.env.MOURO_URL || "http://192.168.2.113:3001/graphql";
 
 const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
 const MONGO_URL =
