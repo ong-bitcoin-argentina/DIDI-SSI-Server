@@ -35,6 +35,9 @@ const FINGER_PRINT_DATA =
 	process.env.FINGER_PRINT_DATA ||
 	"***REMOVED***";
 
+const NO_EMAILS = process.env.NO_EMAILS || true;
+const NO_SMS = process.env.NO_SMS || true;
+
 module.exports = {
 	API_VERSION: "1.0",
 	DEBUGG: DEBUGG,
@@ -104,5 +107,8 @@ module.exports = {
 		IN_PROGRESS: "In Progress",
 		SUCCESSFUL: "Successful",
 		FALIED: "Falied"
-	}
+	},
+
+	NO_EMAILS: NO_EMAILS,
+	NO_SMS: NO_SMS
 };
