@@ -19,6 +19,11 @@ const app = express();
 var http = require("http");
 var server = http.createServer(app);
 
+const log = console.log;
+console.log = function(data) {
+	log(new Date().toISOString() + ": " + data);
+};
+
 //Set Request Size Limit
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
