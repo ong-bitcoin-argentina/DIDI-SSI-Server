@@ -26,7 +26,7 @@ module.exports.sendValidationCode = async function(eMail, code) {
 		text: Messages.EMAIL.VALIDATION.MESSAGE(code)
 	};
 
-	if (Constants.DEBUGG) return Promise.resolve(code);
+	if (Constants.NO_EMAILS) return Promise.resolve(code);
 
 	try {
 		const result = await mailgun.messages().send(data);
