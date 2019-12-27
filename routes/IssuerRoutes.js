@@ -18,12 +18,15 @@ router.post(
 		const jwt = req.body.jwt;
 
 		try {
+			console.log("checking issuer authorization for " + did);
 			const issuer = await IssuerService.getIssuer(did);
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
+			console.log("validating jwt for " + did);
 			const verified = await CertificateService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
+			console.log("creating certificate for " + did);
 			const result = await CertificateService.saveCertificate(jwt, verified.payload.sub);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -44,9 +47,11 @@ router.post(
 		const hash = req.body.hash;
 
 		try {
+			console.log("checking issuer authorization for " + did);
 			const issuer = await IssuerService.getIssuer(did);
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
+			console.log("revoking certificate for " + did);
 			await CertificateService.revokeCertificate(hash, sub);
 			return ResponseHandler.sendRes(res, Messages.ISSUER.CERT_REVOKED);
 		} catch (err) {
@@ -64,6 +69,7 @@ router.post(
 		let cert;
 		try {
 			// validar formato y desempaquetar
+			console.log("verifying certificate for " + did);
 			cert = await CertificateService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!cert) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
@@ -73,6 +79,7 @@ router.post(
 
 			// tiene subcredenciales
 			if (subcredentials) {
+				console.log("verifying microcertificates for " + did);
 				let err = false;
 
 				const data = {};
