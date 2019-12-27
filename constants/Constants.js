@@ -1,42 +1,37 @@
-const DEBUGG = process.env.DEBUGG_MODE || true;
-const MONGO_DIR = process.env.MONGO_DIR || "127.0.0.1";
-const MONGO_PORT = process.env.MONGO_PORT || "27017";
+const DEBUGG = process.env.DEBUGG_MODE;
+const MONGO_DIR = process.env.MONGO_DIR;
+const MONGO_PORT = process.env.MONGO_PORT;
 const MONGO_USER = process.env.MONGO_USERNAME;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
-const MONGO_DB = process.env.MONGO_DB || "didi";
-const PORT = process.env.PORT || 3000;
+const MONGO_DB = process.env.MONGO_DB;
+const PORT = process.env.PORT;
 
-const SERVER_DID = process.env.SERVER_DID || "***REMOVED***";
-const SERVER_PRIVATE_KEY =
-	process.env.SERVER_PRIVATE_KEY || "***REMOVED***";
+const SERVER_DID = process.env.SERVER_DID;
+const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
 
-const MOURO_URL = process.env.MOURO_URL || "http://192.168.2.113:3001/graphql";
+const MOURO_URL = process.env.MOURO_URL;
 
 const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
-const MONGO_URL =
-	MONGO_USER && MONGO_PASSWORD ? "mongodb://" + MONGO_USER + ":" + MONGO_PASSWORD + "@" + URL : "mongodb://" + URL;
+const MONGO_URL = MONGO_USER && MONGO_PASSWORD ? "mongodb://" + MONGO_USER + ":" + MONGO_PASSWORD + "@" + URL : "mongodb://" + URL;
 
-const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY || "***REMOVED***";
-const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN || "***REMOVED***";
+const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY;
+const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
 
-const TWILIO_SID = process.env.TWILIO_SID || "***REMOVED***";
-const TWILIO_TOKEN = process.env.TWILIO_TOKEN || "***REMOVED***";
-const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER || "***REMOVED***";
-const PHONE_REGION = process.env.PHONE_REGION || "+54911";
+const TWILIO_SID = process.env.TWILIO_SID;
+const TWILIO_TOKEN = process.env.TWILIO_TOKEN;
+const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+const PHONE_REGION = process.env.PHONE_REGION;
 
-const SERVER_IP = process.env.SERVER_IP || "192.168.2.137";
-const RENAPER_SCORE_TRESHOULD = process.env.RENAPER_SCORE_TRESHOULD || "75";
-const RENAPER_API_KEY = process.env.RENAPER_API_KEY || "***REMOVED***";
-const RENAPER_API = process.env.RENAPER_API || "https://renaperpreprod.dnm.gob.ar/";
-const RENAPER_URL =
-	process.env.RENAPER_URL || "http://onboarding.renaper.prod.vusecurity.com:8080/vu-onboarding-rest/onboarding/";
+const SERVER_IP = process.env.SERVER_IP;
+const RENAPER_SCORE_TRESHOULD = process.env.RENAPER_SCORE_TRESHOULD;
+const RENAPER_API_KEY = process.env.RENAPER_API_KEY;
+const RENAPER_API = process.env.RENAPER_API;
+const RENAPER_URL = process.env.RENAPER_URL;
 
-const FINGER_PRINT_DATA =
-	process.env.FINGER_PRINT_DATA ||
-	"***REMOVED***";
+const FINGER_PRINT_DATA = process.env.FINGER_PRINT_DATA;
 
-const NO_EMAILS = process.env.NO_EMAILS || true;
-const NO_SMS = process.env.NO_SMS || true;
+const NO_EMAILS = process.env.NO_EMAILS;
+const NO_SMS = process.env.NO_SMS;
 
 module.exports = {
 	API_VERSION: "1.0",
