@@ -21,7 +21,9 @@ var server = http.createServer(app);
 
 const log = console.log;
 console.log = function(data) {
-	log(new Date().toISOString() + ": " + data);
+	log(new Date().toISOString() + ": ");
+	log(data);
+	log();
 };
 
 //Set Request Size Limit
