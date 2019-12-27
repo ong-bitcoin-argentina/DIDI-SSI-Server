@@ -71,26 +71,28 @@ router.post(
 
 		try {
 			// agregar frente del dni al pedido
-			console.log( operationId + " adding dni front data for " + did);
+			console.log(operationId + " adding dni front data for " + did);
 			await RenaperService.addFront(dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr);
 
 			// agregar dorso del dni al pedido
-			console.log( operationId + " adding dni back data for " + did);
+			console.log(operationId + " adding dni back data for " + did);
 			await RenaperService.addBack(dni, gender, operationId, backImage, analyzeAnomalies, analyzeOcr);
 
 			// agregar selfie al pedido
-			console.log( operationId + " adding selfie data for " + did);
+			console.log(operationId + " adding selfie data for " + did);
 			await RenaperService.addSelfie(dni, gender, operationId, selfieImage);
 
 			// agregar codigo de barras al pedido
-			console.log( operationId + " adding bar code data for " + did);
+			console.log(operationId + " adding bar code data for " + did);
 			await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate, order);
 
 			// ejecutar pedido
-			console.log( operationId + " executing request for " + did);
+			console.log(operationId + " executing request for " + did);
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
-			console.log( operationId + " checking results for " + did);
+			console.log(userData);
+
+			console.log(operationId + " checking results for " + did);
 			// si no hubo match o no se obtuvo la precision buscada pasar a estado "fallido"
 			if (!userData || !userData.confidence || userData.confidence < Constants.RENAPER_SCORE_TRESHOULD) {
 				await authRequest.update(Constants.AUTHENTICATION_REQUEST.FALIED, Messages.RENAPER.WEAK_MATCH.message);
@@ -112,7 +114,7 @@ router.post(
 				//"countryBirth": data.countryBirth
 			};
 
-			console.log( operationId + " creating certificates for " + did);
+			console.log(operationId + " creating certificates for " + did);
 
 			const generateCert = CertificateService.createCertificate(
 				did,
