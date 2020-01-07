@@ -4,7 +4,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"local": "DEBUGG_MODE=true MONGO_DIR=127.0.0.1 MONGO_PORT=27017 MONGO_DB=didi PORT=3000 SERVER_DID=***REMOVED*** SERVER_PRIVATE_KEY=***REMOVED*** MOURO_URL=http://192.168.2.113:3001/graphql MAILGUN_API_KEY=***REMOVED*** MAILGUN_DOMAIN=***REMOVED*** NO_EMAILS=true TWILIO_SID=***REMOVED*** TWILIO_TOKEN=***REMOVED*** TWILIO_PHONE_NUMBER=***REMOVED*** PHONE_REGION=+54911 NO_SMS=true SERVER_IP=192.168.2.113 RENAPER_SCORE_TRESHOULD=75 RENAPER_API_KEY=***REMOVED*** RENAPER_API=https://renaperpreprod.dnm.gob.ar/ RENAPER_URL=http://onboarding.renaper.prod.vusecurity.com:8080/vu-onboarding-rest/onboarding/ FINGER_PRINT_DATA=***REMOVED*** nodemon --experimental-worker server.js",
+		"local": "DEBUGG_MODE=true MONGO_DIR=127.0.0.1 MONGO_PORT=27017 MONGO_DB=didi PORT=3000 SERVER_DID=***REMOVED*** SERVER_PRIVATE_KEY=***REMOVED*** MOURO_URL=http://192.168.2.113:3001/graphql MAILGUN_API_KEY=***REMOVED*** MAILGUN_DOMAIN=***REMOVED*** NO_EMAILS=true TWILIO_SID=***REMOVED*** TWILIO_TOKEN=***REMOVED*** TWILIO_PHONE_NUMBER=***REMOVED*** NO_SMS=false SERVER_IP=192.168.2.113 RENAPER_SCORE_TRESHOULD=75 RENAPER_API_KEY=***REMOVED*** RENAPER_API=https://renaperpreprod.dnm.gob.ar/ RENAPER_URL=http://onboarding.renaper.prod.vusecurity.com:8080/vu-onboarding-rest/onboarding/ FINGER_PRINT_DATA=***REMOVED*** nodemon --experimental-worker server.js",
 		"start": "nodemon --experimental-worker server.js"
 	},
 	"keywords": [
