@@ -43,7 +43,8 @@ module.exports.validateBody = function(params) {
 						break;
 					case Constants.VALIDATION_TYPES.IS_MOBILE_PHONE:
 						// campo es un tel, valida que el formato sea el correcto
-						validation.isMobilePhone("any").withMessage(Messages.VALIDATION.MOVILE_PHONE_FORMAT_INVALID(param.name));
+						regex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
+						validation.matches(regex).withMessage(Messages.VALIDATION.MOVILE_PHONE_FORMAT_INVALID(param.name));
 						break;
 					case Constants.VALIDATION_TYPES.IS_EMAIL:
 						// campo es un mail, valida que el formato sea el correcto
