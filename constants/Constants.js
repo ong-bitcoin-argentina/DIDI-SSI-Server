@@ -1,4 +1,4 @@
-const DEBUGG = process.env.DEBUGG_MODE;
+const DEBUGG = process.env.DEBUGG_MODE === "true";
 const MONGO_DIR = process.env.MONGO_DIR;
 const MONGO_PORT = process.env.MONGO_PORT;
 const MONGO_USER = process.env.MONGO_USERNAME;
@@ -12,7 +12,8 @@ const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
 const MOURO_URL = process.env.MOURO_URL;
 
 const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
-const MONGO_URL = MONGO_USER && MONGO_PASSWORD ? "mongodb://" + MONGO_USER + ":" + MONGO_PASSWORD + "@" + URL : "mongodb://" + URL;
+const MONGO_URL =
+	MONGO_USER && MONGO_PASSWORD ? "mongodb://" + MONGO_USER + ":" + MONGO_PASSWORD + "@" + URL : "mongodb://" + URL;
 
 const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY;
 const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
@@ -20,7 +21,6 @@ const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
 const TWILIO_SID = process.env.TWILIO_SID;
 const TWILIO_TOKEN = process.env.TWILIO_TOKEN;
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
-const PHONE_REGION = process.env.PHONE_REGION;
 
 const SERVER_IP = process.env.SERVER_IP;
 const RENAPER_SCORE_TRESHOULD = process.env.RENAPER_SCORE_TRESHOULD;
@@ -30,8 +30,8 @@ const RENAPER_URL = process.env.RENAPER_URL;
 
 const FINGER_PRINT_DATA = process.env.FINGER_PRINT_DATA;
 
-const NO_EMAILS = process.env.NO_EMAILS;
-const NO_SMS = process.env.NO_SMS;
+const NO_EMAILS = process.env.NO_EMAILS === "true";
+const NO_SMS = process.env.NO_SMS === "true";
 
 module.exports = {
 	API_VERSION: "1.0",
@@ -89,7 +89,6 @@ module.exports = {
 	TWILIO_SID: TWILIO_SID,
 	TWILIO_TOKEN: TWILIO_TOKEN,
 	TWILIO_PHONE_NUMBER: TWILIO_PHONE_NUMBER,
-	PHONE_REGION: PHONE_REGION,
 
 	RECOVERY_CODE_LENGTH: 6,
 	HOURS_BEFORE_CODE_EXPIRES: 1,

@@ -23,7 +23,7 @@ module.exports.getByPhoneNumber = getByPhoneNumber;
 module.exports.sendValidationCode = async function(phoneNumber, code) {
 	const data = {
 		body: Messages.SMS.VALIDATION.MESSAGE(code),
-		to: Constants.PHONE_REGION + phoneNumber.substring(phoneNumber.length - 8),
+		to: phoneNumber,
 		from: Constants.TWILIO_PHONE_NUMBER
 	};
 
