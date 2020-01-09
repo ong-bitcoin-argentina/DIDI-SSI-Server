@@ -69,7 +69,6 @@ router.post(
 		let cert;
 		try {
 			// validar formato y desempaquetar
-			console.log("verifying certificate for " + did);
 			cert = await CertificateService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!cert) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
@@ -79,7 +78,6 @@ router.post(
 
 			// tiene subcredenciales
 			if (subcredentials) {
-				console.log("verifying microcertificates for " + did);
 				let err = false;
 
 				const data = {};
