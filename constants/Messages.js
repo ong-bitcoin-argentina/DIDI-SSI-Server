@@ -218,6 +218,14 @@ module.exports = {
 			code: "PARAMETER_TYPE_ERROR",
 			message: "La contraseña ingresada es de uso común, por favor ingrese una mas segura."
 		},
+		PASSWORD_NOT_SAFE: {
+			code: "PASSWORD_NOT_SAFE",
+			message: "La contraseña debe tener caracteres en mayuscúlas, minúsculas, números y caracteres especiales, por favor ingrese una mas segura."
+		},
+		PASSWORD_TOO_SHORT: {
+			code: "PASSWORD_TOO_SHORT",
+			message: "La contraseña debe tener al menos 8 caracteres, por favor ingrese una mas segura."
+		},
 		DOES_NOT_EXIST: function(type) {
 			return { code: "PARAMETER_MISSING", message: "falta el campo: " + type };
 		},
