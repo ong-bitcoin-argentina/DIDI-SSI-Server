@@ -35,8 +35,14 @@ module.exports.validateBody = function(params) {
 				let regex;
 				switch (validationType) {
 					case Constants.VALIDATION_TYPES.IS_PASSWORD:
-						// campo es una contraseña, valida que no estè en la lista de contraseñas comùnes
+						// campo es una contraseña, valida que no estè en la lista de contraseñas comùnes, que tenga al menos 8 caracteres y letras min,may, numeros y caracteres especiales
+						regex = /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+
 						validation
+							.matches(regex)
+							.withMessage(Messages.VALIDATION.PASSWORD_NOT_SAFE)
+							.isLength({ min: 8 })
+							.withMessage(Messages.VALIDATION.PASSWORD_TOO_SHORT)
 							.not()
 							.isIn(Constants.COMMON_PASSWORDS)
 							.withMessage(Messages.VALIDATION.COMMON_PASSWORD);
