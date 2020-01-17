@@ -20,7 +20,29 @@ const client = new ApolloClient({
 	cache: new InMemoryCache()
 });
 
-// recibe el caertificado y lo envia a mouro para ser guardado
+// recupera el hash de backup para swarm
+module.exports.getHash = async function(did) {
+	try {
+		let result = await client.query({
+			query: gql`
+				query($did: String!) {
+					hash(did: $did)
+				}
+			`,
+			variables: {
+				did: did
+			}
+		});
+		console.log(Messages.CERTIFICATE.HASH);
+		const res = result.data.hash;
+		return Promise.resolve(res);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.CERTIFICATE.ERR.HASH);
+	}
+};
+
+// recibe el certificado y lo envia a mouro para ser guardado
 module.exports.saveCertificate = async function(cert, did) {
 	try {
 		let result = await client.mutate({

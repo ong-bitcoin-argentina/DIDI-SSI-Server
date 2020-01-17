@@ -54,9 +54,11 @@ module.exports = {
 			CREATE: { code: "CERT_CREATE_ERROR", message: "Error al crear la creadencial." },
 			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
 			REVOKE: { code: "CERT_REVOKE_ERROR", message: "Error al dar de baja la creadencial." },
+			HASH: { code: "CERT_HASH_ERROR", message: "Error al obtener hash de backup." },
 			SAVE: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." },
 			EXPIRED: { code: "CERT_EXPIRED", message: "Error la creadencial ha expirado." }
 		},
+		HASH: "Hash obtenido",
 		REVOKED: "Certificado revocado",
 		SAVED: "Certificado guardado",
 		CREATED: "Certificado creado",
@@ -203,6 +205,10 @@ module.exports = {
 			},
 			DELETE: { code: "ISSUER_DELETE", message: "No se pudo revocar la autorización para emisión de certificados." },
 			IS_INVALID: { code: "IS_INVALID", message: "El emisor no esta autorizado para emitir certificados." },
+			CERT_SUB_IS_INVALID: {
+				code: "CERT_SUB_IS_INVALID",
+				message: "El certificado fue emitido a un usuario no registrado."
+			},
 			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
 			NOT_FOUND: { code: "NOT_FOUND", message: "El certificado no fue emitido o ha sido revocado." }
 		},
@@ -220,7 +226,8 @@ module.exports = {
 		},
 		PASSWORD_NOT_SAFE: {
 			code: "PASSWORD_NOT_SAFE",
-			message: "La contraseña debe tener caracteres en mayuscúlas, minúsculas, números y caracteres especiales, por favor ingrese una mas segura."
+			message:
+				"La contraseña debe tener caracteres en mayuscúlas, minúsculas, números y caracteres especiales, por favor ingrese una mas segura."
 		},
 		PASSWORD_TOO_SHORT: {
 			code: "PASSWORD_TOO_SHORT",
