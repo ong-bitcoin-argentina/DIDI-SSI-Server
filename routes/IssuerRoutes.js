@@ -3,6 +3,7 @@ const ResponseHandler = require("./utils/ResponseHandler");
 
 const IssuerService = require("../services/IssuerService");
 const CertificateService = require("../services/CertificateService");
+const UserService = require("../services/UserService");
 
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
@@ -26,8 +27,17 @@ router.post(
 			const verified = await CertificateService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
+			const sub = verified.payload.sub;
+			let subject = await UserService.getByDID(sub);
+			if (!subject) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_SUB_IS_INVALID);
+
 			console.log("creating certificate for " + did);
 			const result = await CertificateService.saveCertificate(jwt, verified.payload.sub);
+
+			console.log("getting hash for " + did);
+			const hash = await CertificateService.getHash(verified.payload.sub);
+			if (hash) subject = await subject.updateHash(hash);
+
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -70,7 +80,8 @@ router.post(
 		try {
 			// validar formato y desempaquetar
 			cert = await CertificateService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			if (!cert) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
+			if (!cert || !cert.payload.vc)
+				return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
 			const subject = cert.payload.vc.credentialSubject;
 			const keys = Object.keys(subject);
@@ -153,7 +164,7 @@ router.post(
 			}
 		} catch (err) {
 			console.log(err);
-			return ResponseHandler.sendRes(res, err);
+			return ResponseHandler.sendErr(res, err);
 		}
 	}
 );

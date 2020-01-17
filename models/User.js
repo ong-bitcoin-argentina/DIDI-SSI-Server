@@ -43,6 +43,10 @@ const UserSchema = new mongoose.Schema({
 		required: true
 	},
 
+	backupHash: {
+		type: String
+	},
+
 	password: {
 		salt: {
 			type: String,
@@ -164,6 +168,22 @@ UserSchema.methods.addJWT = async function(jwt) {
 		return Promise.reject(err);
 	}
 };
+
+UserSchema.methods.updateHash = async function(hash) {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { backupHash: hash, modifiedOn: new Date() }
+	};
+
+	try {
+		await User.findOneAndUpdate(updateQuery, updateAction);
+		this.backupHash = hash;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+};
+
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
