@@ -80,7 +80,8 @@ router.post(
 		try {
 			// validar formato y desempaquetar
 			cert = await CertificateService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			if (!cert) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
+			if (!cert || !cert.payload.vc)
+				return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
 			const subject = cert.payload.vc.credentialSubject;
 			const keys = Object.keys(subject);
@@ -163,7 +164,7 @@ router.post(
 			}
 		} catch (err) {
 			console.log(err);
-			return ResponseHandler.sendRes(res, err);
+			return ResponseHandler.sendErr(res, err);
 		}
 	}
 );
