@@ -1,9 +1,11 @@
 const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
+const Certificate = require("../models/Certificate");
+
 const MailService = require("../services/MailService");
 const UserService = require("../services/UserService");
-const CertificateService = require("../services/CertificateService");
+const MouroService = require("../services/MouroService");
 
 const Validator = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
@@ -84,21 +86,22 @@ router.post(
 			if (user) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.ALREADY_EXISTS);
 
 			// generar certificado validando que ese did le corresponde al dueño del mail
-			let cert = await CertificateService.createMailCertificate(did, eMail);
-			await CertificateService.verifyCertificateEmail(cert);
-
-			// mandar certificado a mouro
-			const jwt = await CertificateService.saveCertificate(cert, did);
+			let cert = await MouroService.createMailCertificate(did, eMail);
+			await MouroService.verifyCertificateEmail(cert);
 
 			// revocar certificado anterior
-			const jwts = mail.jwts;
-			if(jwts.length > 0) {
-				const hash = jwts[jwts.length-1].hash;
-				await CertificateService.revokeCertificate(hash, did);
+			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.EMAIL);
+			for(let elem of old) {
+				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
+				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
 			}
 
+			// mandar certificado a mouro
+			const jwt = await MouroService.saveCertificate(cert, did);
+
 			// validar codigo y actualizar pedido de validacion de mail
-			mail = await MailService.validateMail(mail, did, jwt);
+			await Certificate.generate(Constants.CERTIFICATE_NAMES.EMAIL, did, Constants.CERTIFICATE_STATUS.UNVERIFIED, jwt.data, jwt.hash);
+			mail = await MailService.validateMail(mail, did);
 			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

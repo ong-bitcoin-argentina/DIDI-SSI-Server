@@ -56,10 +56,10 @@ module.exports.create = async function(phoneNumber, code, did) {
 };
 
 // marca el pedido como validado
-module.exports.validatePhone = async function(phone, did, jwt) {
+module.exports.validatePhone = async function(phone, did) {
 	try {
 		// validar tel
-		phone = await phone.validatePhone(did, jwt);
+		phone = await phone.validatePhone(did);
 		return Promise.resolve(phone);
 	} catch (err) {
 		console.log(err);

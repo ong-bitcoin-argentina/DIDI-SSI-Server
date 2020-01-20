@@ -16,7 +16,7 @@ module.exports.sendRes = function(res, data) {
 };
 
 module.exports.sendErr = function(res, err) {
-	if (Constants.DEBUGG) console.log(err);
+	if (Constants.DEBUGG && err) console.log(err);
 
 	res.type("application/json; charset=UTF-8");
 	return res.json({

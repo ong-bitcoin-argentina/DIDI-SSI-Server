@@ -7,17 +7,6 @@ const UserSchema = new mongoose.Schema({
 		required: true
 	},
 
-	jwts: [
-		{
-			data: {
-				type: String
-			},
-			hash: {
-				type: String
-			}
-		}
-	],
-
 	mail: {
 		type: String,
 		required: true
@@ -154,21 +143,6 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 	}
 };
 
-UserSchema.methods.addJWT = async function(jwt) {
-	const updateQuery = { _id: this._id };
-	const updateAction = {
-		$push: { jwts: jwt }
-	};
-
-	try {
-		await User.findOneAndUpdate(updateQuery, updateAction);
-		this.jwts.push(jwt);
-		return Promise.resolve(this);
-	} catch (err) {
-		return Promise.reject(err);
-	}
-};
-
 UserSchema.methods.updateHash = async function(hash) {
 	const updateQuery = { _id: this._id };
 	const updateAction = {
@@ -184,7 +158,6 @@ UserSchema.methods.updateHash = async function(hash) {
 	}
 };
 
-
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
@@ -195,7 +168,6 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 	user.oldEmails = [];
 	user.phoneNumber = phoneNumber;
 	user.oldPhoneNumbers = [];
-	user.jwts = [];
 	user.did = did;
 	user.seed = seed;
 	user.createdOn = new Date();
