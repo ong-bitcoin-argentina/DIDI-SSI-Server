@@ -179,8 +179,10 @@ router.post(
 				if (!err && !cert.issuer) err = Messages.ISSUER.ERR.IS_INVALID;
 
 				// validar fue emitido y no revocado
-				const isInMouro = await MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
-				if (!err && !isInMouro) err = Messages.ISSUER.ERR.NOT_FOUND;
+				if (!err) {
+					const isInMouro = await MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
+					if (!isInMouro) err = Messages.ISSUER.ERR.NOT_FOUND;
+				}
 
 				if (err) return ResponseHandler.sendRes(res, { cert: cert, err: err });
 				return ResponseHandler.sendRes(res, cert);
