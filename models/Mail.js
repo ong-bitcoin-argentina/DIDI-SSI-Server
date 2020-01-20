@@ -21,16 +21,6 @@ const MailSchema = new mongoose.Schema({
 			required: true
 		}
 	},
-	jwts: [
-		{
-			data: {
-				type: String
-			},
-			hash: {
-				type: String
-			}
-		}
-	],
 	validated: {
 		type: Boolean,
 		default: false
@@ -68,11 +58,10 @@ MailSchema.methods.isValid = async function(code) {
 };
 
 // comparar codigos de validacion y actualizar flag "validated"
-MailSchema.methods.validateMail = async function(did, jwt) {
+MailSchema.methods.validateMail = async function(did) {
 	try {
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true, did: did } };
-		if (jwt) action["$push"] = { jwts: jwt };
 
 		await Mail.findOneAndUpdate(quiery, action);
 

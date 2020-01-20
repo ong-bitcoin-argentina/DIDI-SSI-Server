@@ -1,5 +1,6 @@
 const Constants = require("../constants/Constants");
 const Messages = require("../constants/Messages");
+const Certificate = require("../models/Certificate");
 
 const EthrDID = require("ethr-did");
 const { createVerifiableCredential, verifyCredential } = require("did-jwt-vc");
@@ -72,7 +73,7 @@ module.exports.saveCertificate = async function(cert, did) {
 };
 
 // elimina un certificado de mouro
-module.exports.revokeCertificate = async function(hash, did) {
+module.exports.revokeCertificate = async function(jwt, hash, did) {
 	try {
 		let result = await client.mutate({
 			mutation: gql`
@@ -156,11 +157,21 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 };
 
 module.exports.verifyCertificateEmail = async function(jwt) {
-	return await module.exports.verifyCertificateAndDid(jwt, Constants.SERVER_DID, Messages.CERTIFICATE.ERR.VERIFY);
+	const result = await module.exports.verifyCertificateAndDid(
+		jwt,
+		Constants.SERVER_DID,
+		Messages.CERTIFICATE.ERR.VERIFY
+	);
+	return result;
 };
 
 module.exports.verifyCertificatePhoneNumber = async function(jwt) {
-	return await module.exports.verifyCertificateAndDid(jwt, Constants.SERVER_DID, Messages.CERTIFICATE.ERR.VERIFY);
+	const result = await module.exports.verifyCertificateAndDid(
+		jwt,
+		Constants.SERVER_DID,
+		Messages.CERTIFICATE.ERR.VERIFY
+	);
+	return result;
 };
 
 module.exports.verifyCertificateAndDid = async function(jwt, issuerDid, errMsg) {
@@ -182,6 +193,9 @@ module.exports.verifyCertificateAndDid = async function(jwt, issuerDid, errMsg) 
 module.exports.verifyCertificate = async function(jwt, errMsg) {
 	try {
 		let result = await verifyCredential(jwt, resolver);
+
+		const status = await Certificate.findByJwt(jwt);
+		result.status = status ? status.status : Constants.CERTIFICATE_STATUS.UNVERIFIED;
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);

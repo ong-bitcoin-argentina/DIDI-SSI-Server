@@ -1,10 +1,11 @@
 const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
+const Certificate = require("../models/Certificate");
 
 const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
 const SmsService = require("../services/SmsService");
-const CertificateService = require("../services/CertificateService");
+const MouroService = require("../services/MouroService");
 
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
@@ -228,25 +229,31 @@ router.post(
 			let phone = await SmsService.isValid(newPhoneNumber, phoneValidationCode);
 
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await CertificateService.createPhoneCertificate(did, newPhoneNumber);
-			await CertificateService.verifyCertificatePhoneNumber(cert);
-
-			// mandar certificado a mouro
-			const jwt = await CertificateService.saveCertificate(cert, did);
+			let cert = await MouroService.createPhoneCertificate(did, newPhoneNumber);
+			await MouroService.verifyCertificatePhoneNumber(cert);
 
 			// revocar certificado anterior
-			const jwts = phone.jwts;
-			if (jwts.length > 0) {
-				const hash = jwts[jwts.length - 1].hash;
-				await CertificateService.revokeCertificate(hash, did);
+			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.TEL);
+			for(let elem of old) {
+				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
+				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
 			}
+
+			// mandar certificado a mouro
+			const jwt = await MouroService.saveCertificate(cert, did);
 
 			// actualizar tel
 			await UserService.changePhoneNumber(did, newPhoneNumber, password);
 
 			// validar codigo y actualizar pedido de validacion de mail
-			phone = await SmsService.validatePhone(phone, did, jwt);
-
+			await Certificate.generate(
+				Constants.CERTIFICATE_NAMES.TEL,
+				did,
+				Constants.CERTIFICATE_STATUS.UNVERIFIED,
+				jwt.data,
+				jwt.hash
+			);
+			phone = await SmsService.validatePhone(phone, did);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PHONE(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -288,24 +295,31 @@ router.post(
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 
 			// generar certificado validando que ese did le corresponde al dueño del mail
-			let cert = await CertificateService.createMailCertificate(did, newEMail);
-			await CertificateService.verifyCertificateEmail(cert);
-
-			// mandar certificado a mouro
-			const jwt = await CertificateService.saveCertificate(cert, did);
+			let cert = await MouroService.createMailCertificate(did, newEMail);
+			await MouroService.verifyCertificateEmail(cert);
 
 			// revocar certificado anterior
-			const jwts = mail.jwts;
-			if (jwts.length > 0) {
-				const hash = jwts[jwts.length - 1].hash;
-				await CertificateService.revokeCertificate(hash, did);
+			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.EMAIL);
+			for(let elem of old) {
+				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
+				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
 			}
+
+			// mandar certificado a mouro
+			const jwt = await MouroService.saveCertificate(cert, did);
 
 			// actualizar mail
 			await UserService.changeEmail(did, newEMail, password);
 
 			// validar codigo y actualizar pedido de validacion de mail
-			mail = await MailService.validateMail(mail, did, jwt);
+			await Certificate.generate(
+				Constants.CERTIFICATE_NAMES.EMAIL,
+				did,
+				Constants.CERTIFICATE_STATUS.UNVERIFIED,
+				jwt.data,
+				jwt.hash
+			);
+			mail = await MailService.validateMail(mail, did);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

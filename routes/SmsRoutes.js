@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
+const Certificate = require("../models/Certificate");
 
 const SmsService = require("../services/SmsService");
 const UserService = require("../services/UserService");
-const CertificateService = require("../services/CertificateService");
+const MouroService = require("../services/MouroService");
 
 const Validator = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
@@ -90,21 +91,28 @@ router.post(
 			if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
 
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await CertificateService.createPhoneCertificate(did, phone.phoneNumber);
-			await CertificateService.verifyCertificatePhoneNumber(cert);
-
-			// mandar certificado a mouro
-			const jwt = await CertificateService.saveCertificate(cert, did);
+			let cert = await MouroService.createPhoneCertificate(did, phone.phoneNumber);
+			await MouroService.verifyCertificatePhoneNumber(cert);
 
 			// revocar certificado anterior
-			const jwts = phone.jwts;
-			if(jwts.length > 0) {
-				const hash = jwts[jwts.length-1].hash;
-				await CertificateService.revokeCertificate(hash, did);
+			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.TEL);
+			for (let elem of old) {
+				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
+				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
 			}
 
+			// mandar certificado a mouro
+			const jwt = await MouroService.saveCertificate(cert, did);
+
 			// validar codigo y actualizar pedido de validacion de mail
-			phone = await SmsService.validatePhone(phone, did, jwt);
+			await Certificate.generate(
+				Constants.CERTIFICATE_NAMES.TEL,
+				did,
+				Constants.CERTIFICATE_STATUS.UNVERIFIED,
+				jwt.data,
+				jwt.hash
+			);
+			phone = await SmsService.validatePhone(phone, did);
 			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED(cert));
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
