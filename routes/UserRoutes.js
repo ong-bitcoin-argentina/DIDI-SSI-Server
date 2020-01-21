@@ -234,7 +234,7 @@ router.post(
 
 			// revocar certificado anterior
 			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.TEL);
-			for(let elem of old) {
+			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
 				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
 			}
@@ -300,7 +300,7 @@ router.post(
 
 			// revocar certificado anterior
 			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.EMAIL);
-			for(let elem of old) {
+			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
 				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
 			}
@@ -321,6 +321,29 @@ router.post(
 			);
 			mail = await MailService.validateMail(mail, did);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL(cert));
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.post(
+	"/verifyCredential",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	async function(req, res) {
+		const did = req.body.did;
+		const jwt = req.body.jwt;
+
+		try {
+			const cert = await Certificate.findByJwt(jwt);
+			console.log(cert.userDID)
+			if (cert.userDID !== did) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
+			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
+			return ResponseHandler.sendRes(res, {});
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
