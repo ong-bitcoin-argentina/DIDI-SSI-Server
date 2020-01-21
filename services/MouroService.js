@@ -13,7 +13,7 @@ const fetch = require("node-fetch");
 
 const { Resolver } = require("did-resolver");
 const { getResolver } = require("ethr-did-resolver");
-const resolver = new Resolver(getResolver({ rpcUrl: "https://mainnet.infura.io/v3/ethr-did" }));
+const resolver = new Resolver(getResolver({ rpcUrl: "https://mainnet.infura.io/v3/***REMOVED***" }));
 
 // cliente para envio de certificados a mouro
 const client = new ApolloClient({
