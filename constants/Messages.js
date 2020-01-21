@@ -179,6 +179,7 @@ module.exports = {
 			}
 		},
 		ERR: {
+			VALIDATE_DID_ERROR: { code: "VALIDATE_DID_ERROR", message: "Ese did se encuentra autorizado a realizar esa operacion."},
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
 			INVALID_USER_DID: {

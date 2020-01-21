@@ -12,8 +12,10 @@ const Constants = require("../constants/Constants");
 
 router.post(
 	"/issuer/issueCertificate",
-	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
-	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
@@ -55,11 +57,45 @@ router.post(
 );
 
 router.post(
+	"/issuer/issueShareRequest",
+	Validator.validateBody([
+		{ name: "issuerDid", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	async function(req, res) {
+		const issuerDid = req.body.issuerDid;
+		const did = req.body.did;
+		const jwt = req.body.jwt;
+
+		try {
+			// validar que el emisor sea valido
+			const decoded = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			if (decoded.payload.iss != issuerDid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
+
+			const issuer = await IssuerService.getIssuer(issuerDid);
+			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+
+			const shareReq = await MouroService.createShareRequest(did, jwt);
+			console.log(shareReq);
+			const result = await MouroService.saveCertificate(shareReq, did);
+			return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			console.log(err);
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.post(
 	"/issuer/revokeCertificate",
-	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
-	Validator.validateBody([{ name: "sub", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
-	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
-	Validator.validateBody([{ name: "hash", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "sub", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "hash", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
@@ -196,8 +232,10 @@ router.post(
 
 router.post(
 	"/issuer/",
-	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
-	Validator.validateBody([{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;

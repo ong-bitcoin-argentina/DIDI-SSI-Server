@@ -3,6 +3,7 @@ const Messages = require("../constants/Messages");
 const Certificate = require("../models/Certificate");
 
 const EthrDID = require("ethr-did");
+const { decodeJWT, SimpleSigner, createJWT } = require("did-jwt");
 const { createVerifiableCredential, verifyCredential } = require("did-jwt-vc");
 
 const { InMemoryCache } = require("apollo-cache-inmemory");
@@ -126,6 +127,16 @@ module.exports.createMailCertificate = async function(did, email) {
 	return module.exports.createCertificate(did, subject, undefined, Messages.EMAIL.ERR.CERT.CREATE);
 };
 
+// genera un certificado pidiendo info a determinado usuario
+module.exports.createShareRequest = async function(did, jwt) {
+	const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
+	const token = await createJWT(
+		{ sub: did, disclosureRequest: jwt },
+		{ alg: "ES256K-R", issuer: "did:ethr:" + Constants.SERVER_DID, signer }
+	);
+	return token;
+};
+
 // genera un certificado asociando la informaciòn recibida en "subject" con el did
 module.exports.createCertificate = async function(did, subject, expDate, errMsg) {
 	const vcissuer = new EthrDID({
@@ -184,6 +195,16 @@ module.exports.verifyCertificateAndDid = async function(jwt, issuerDid, errMsg) 
 		}
 
 		return Promise.resolve(null);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(errMsg);
+	}
+};
+
+module.exports.decodeCertificate = async function(jwt, errMsg) {
+	try {
+		let result = await decodeJWT(jwt);
+		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(errMsg);
