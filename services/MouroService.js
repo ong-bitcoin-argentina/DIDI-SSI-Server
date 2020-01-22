@@ -2,6 +2,8 @@ const Constants = require("../constants/Constants");
 const Messages = require("../constants/Messages");
 const Certificate = require("../models/Certificate");
 
+const { Credentials } = require("uport-credentials");
+
 const EthrDID = require("ethr-did");
 const { decodeJWT, SimpleSigner, createJWT } = require("did-jwt");
 const { createVerifiableCredential, verifyCredential } = require("did-jwt-vc");
@@ -13,7 +15,9 @@ const fetch = require("node-fetch");
 
 const { Resolver } = require("did-resolver");
 const { getResolver } = require("ethr-did-resolver");
-const resolver = new Resolver(getResolver({ rpcUrl: Constants.BLOCKCHAIN.BLOCK_CHAIN_URL, registry: Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT }));
+const resolver = new Resolver(
+	getResolver({ rpcUrl: Constants.BLOCKCHAIN.BLOCK_CHAIN_URL, registry: Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT })
+);
 
 // cliente para envio de certificados a mouro
 const client = new ApolloClient({
@@ -125,6 +129,22 @@ module.exports.createMailCertificate = async function(did, email) {
 		}
 	};
 	return module.exports.createCertificate(did, subject, undefined, Messages.EMAIL.ERR.CERT.CREATE);
+};
+
+// genera un certificado pidiendo info a determinado usuario
+module.exports.createPetition = async function(did, data) {
+	const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
+	const credentials = new Credentials({ did: "did:ethr:" + Constants.SERVER_DID, signer });
+
+	try {
+		const petition = await credentials.createDisclosureRequest(data);
+		if (Constants.DEBUGG) console.log(petition);
+		const result = module.exports.createShareRequest(did, petition);
+		return Promise.resolve(result);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
 };
 
 // genera un certificado pidiendo info a determinado usuario
