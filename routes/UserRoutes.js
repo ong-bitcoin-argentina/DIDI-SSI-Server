@@ -328,6 +328,37 @@ router.post(
 );
 
 router.post(
+	"/verifyCredentialRequest",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	async function(req, res) {
+		const did = req.body.did;
+		const jwt = req.body.jwt;
+
+		try {
+			const cb = Constants.ADDRESS + ":" + Constants.PORT + "/api/1.0/didi/verifyCredential";
+			const data = {
+				callbackUrl: cb,
+				claims: {
+					verifiable: {
+						jwt: jwt
+					}
+				}
+			};
+			const petition = await MouroService.createPetition(did, data);
+			const result = await MouroService.saveCertificate(petition, did);
+			console.log(result);
+			// return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.post(
 	"/verifyCredential",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
