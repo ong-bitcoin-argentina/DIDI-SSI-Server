@@ -78,7 +78,6 @@ router.post(
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
 			const shareReq = await MouroService.createShareRequest(did, jwt);
-			console.log(shareReq);
 			const result = await MouroService.saveCertificate(shareReq, did);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
