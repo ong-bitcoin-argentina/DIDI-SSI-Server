@@ -39,7 +39,7 @@ router.post(
 
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
-				did,
+				verified.payload.sub,
 				Constants.CERTIFICATE_STATUS.UNVERIFIED,
 				result.data,
 				result.hash
@@ -108,12 +108,15 @@ router.post(
 			const issuer = await IssuerService.getIssuer(did);
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
+			const verified = await MouroService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
+
 			console.log("revoking certificate for " + did);
 			await MouroService.revokeCertificate(jwt, hash, sub);
 
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
-				did,
+				verified.payload.sub,
 				Constants.CERTIFICATE_STATUS.REVOKED,
 				jwt,
 				hash
