@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
-const CertificateService = require("../services/CertificateService");
+const Certificate = require("../models/Certificate");
+const MouroService = require("../services/MouroService");
 const UserService = require("../services/UserService");
 const RenaperService = require("../services/RenaperService");
 const AuthRequestService = require("../services/AuthRequestService");
@@ -116,7 +117,7 @@ router.post(
 
 			console.log(operationId + " creating certificates for " + did);
 
-			const generateCert = CertificateService.createCertificate(
+			const generateCert = MouroService.createCertificate(
 				did,
 				{
 					"Datos Personales": {
@@ -141,7 +142,7 @@ router.post(
 				country: data.country
 			};
 
-			const generateAditionalCert = CertificateService.createCertificate(
+			const generateAditionalCert = MouroService.createCertificate(
 				did,
 				{
 					"Domicilio Legal": {
@@ -157,13 +158,25 @@ router.post(
 			const [cert, aditionalCert] = await Promise.all([generateCert, generateAditionalCert]);
 
 			// enviar certificados a mouro para ser guardado
-			const saveCert = CertificateService.saveCertificate(cert, did);
-			const saveAditionalCert = CertificateService.saveCertificate(aditionalCert, did);
+			const saveCert = MouroService.saveCertificate(cert, did);
+			const saveAditionalCert = MouroService.saveCertificate(aditionalCert, did);
 			const [resCert, resAditionalCert] = await Promise.all([saveCert, saveAditionalCert]);
 
 			// agregar info de renaper al usuario
-			const addCert = UserService.addJWT(user, resCert);
-			const addAditionalCert = UserService.addJWT(user, resAditionalCert);
+			const addCert = Certificate.generate(
+				Constants.CERTIFICATE_NAMES.USER_INFO,
+				did,
+				Constants.CERTIFICATE_STATUS.UNVERIFIED,
+				resCert.data,
+				resCert.hash
+			);
+			const addAditionalCert = Certificate.generate(
+				Constants.CERTIFICATE_NAMES.USER_ADDRESS,
+				did,
+				Constants.CERTIFICATE_STATUS.UNVERIFIED,
+				resAditionalCert.data,
+				resAditionalCert.hash
+			);
 			await Promise.all([addCert, addAditionalCert]);
 			await authRequest.update(Constants.AUTHENTICATION_REQUEST.SUCCESSFUL);
 			return;

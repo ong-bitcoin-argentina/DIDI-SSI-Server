@@ -51,6 +51,7 @@ module.exports = {
 	},
 	CERTIFICATE: {
 		ERR: {
+			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada" },
 			CREATE: { code: "CERT_CREATE_ERROR", message: "Error al crear la creadencial." },
 			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
 			REVOKE: { code: "CERT_REVOKE_ERROR", message: "Error al dar de baja la creadencial." },
@@ -178,6 +179,7 @@ module.exports = {
 			}
 		},
 		ERR: {
+			VALIDATE_DID_ERROR: { code: "VALIDATE_DID_ERROR", message: "Ese did se encuentra autorizado a realizar esa operacion."},
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
 			INVALID_USER_DID: {
@@ -210,7 +212,8 @@ module.exports = {
 				message: "El certificado fue emitido a un usuario no registrado."
 			},
 			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
-			NOT_FOUND: { code: "NOT_FOUND", message: "El certificado no fue emitido o ha sido revocado." }
+			REVOKED: { code: "REVOKED", message: "El certificado ha sido revocado." },
+			NOT_FOUND: { code: "NOT_FOUND", message: "El certificado no fue emitido." }
 		},
 		CERT_REVOKED: "El certificado fue revocado.",
 		DELETED: "La autorizacion para emitir certificados fue revocada.",
