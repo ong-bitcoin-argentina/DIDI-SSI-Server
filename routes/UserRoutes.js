@@ -340,7 +340,6 @@ router.post(
 
 		try {
 			const cert = await Certificate.findByJwt(jwt);
-			console.log(cert.userDID)
 			if (cert.userDID !== did) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
