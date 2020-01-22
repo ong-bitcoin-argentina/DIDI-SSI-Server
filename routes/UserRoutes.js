@@ -328,7 +328,7 @@ router.post(
 );
 
 router.post(
-	"/verifyCredential",
+	"/verifyCredentialRequest",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
@@ -339,8 +339,44 @@ router.post(
 		const jwt = req.body.jwt;
 
 		try {
+			const decoded = await MouroService.decodeCertificate(jwt, Messages.CERTIFICATE.ERR.VERIFY);
+			const name = Object.keys(decoded.payload.vc.credentialSubject)[0];
+
+			const cb = Constants.ADDRESS + ":" + Constants.PORT + "/api/1.0/didi/verifyCredential";
+			const data = {
+				callbackUrl: cb,
+				claims: {
+					verifiable: {
+						[name]: {
+							jwt: jwt,
+							essential: true
+						}
+					}
+				}
+			};
+
+			const petition = await MouroService.createPetition(did, data);
+			const result = await MouroService.saveCertificate(petition, did);
+			return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.post(
+	"/verifyCredential",
+	Validator.validateBody([{ name: "access_token", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.checkValidationResult,
+	async function(req, res) {
+		const access_token = req.body.access_token;
+
+		const data = await MouroService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
+		const jwt = await MouroService.decodeCertificate(data.payload.verified[0].jwt, Messages.CERTIFICATE.ERR.VERIFY);
+
+		try {
 			const cert = await Certificate.findByJwt(jwt);
-			if (cert.userDID !== did) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
+			if (cert.userDID !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
 		} catch (err) {

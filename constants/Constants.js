@@ -4,6 +4,8 @@ const MONGO_PORT = process.env.MONGO_PORT;
 const MONGO_USER = process.env.MONGO_USERNAME;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 const MONGO_DB = process.env.MONGO_DB;
+
+const ADDRESS = process.env.ADDRESS;
 const PORT = process.env.PORT;
 
 const SERVER_DID = process.env.SERVER_DID;
@@ -40,6 +42,7 @@ module.exports = {
 	API_VERSION: "1.0",
 	DEBUGG: DEBUGG,
 	MONGO_URL: MONGO_URL,
+	ADDRESS: ADDRESS,
 	PORT: PORT,
 
 	RENAPER_API_KEY: RENAPER_API_KEY,

@@ -34,6 +34,7 @@
 		"node-fetch": "^2.6.0",
 		"node-pre-gyp": "^0.13.0",
 		"nodemon": "^1.19.4",
-		"twilio": "^3.37.0"
+		"twilio": "^3.37.0",
+		"uport-credentials": "^1.2.3"
 	}
 }
