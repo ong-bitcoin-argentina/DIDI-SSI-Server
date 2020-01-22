@@ -372,10 +372,13 @@ router.post(
 		const access_token = req.body.access_token;
 
 		const data = await MouroService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
-		const jwt = await MouroService.decodeCertificate(data.payload.verified[0].jwt, Messages.CERTIFICATE.ERR.VERIFY);
+		const jwt = data.payload.verified[0];
+		const decoded = await MouroService.decodeCertificate(jwt, Messages.CERTIFICATE.ERR.VERIFY);
 
 		try {
 			const cert = await Certificate.findByJwt(jwt);
+			console.log(cert.userDID);
+			console.log(decoded.payload.iss);
 			if (cert.userDID !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
