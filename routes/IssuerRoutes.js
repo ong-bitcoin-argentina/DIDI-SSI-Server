@@ -100,7 +100,7 @@ router.post(
 	async function(req, res) {
 		const did = req.body.did;
 		const sub = req.body.sub;
-		const hash = req.body.jwt;
+		const jwt = req.body.jwt;
 		const hash = req.body.hash;
 
 		try {
