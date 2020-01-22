@@ -33,6 +33,9 @@ const FINGER_PRINT_DATA = process.env.FINGER_PRINT_DATA;
 const NO_EMAILS = process.env.NO_EMAILS === "true";
 const NO_SMS = process.env.NO_SMS === "true";
 
+const BLOCK_CHAIN_URL = process.env.BLOCK_CHAIN_URL;
+const BLOCK_CHAIN_CONTRACT = process.env.BLOCK_CHAIN_CONTRACT;
+
 module.exports = {
 	API_VERSION: "1.0",
 	DEBUGG: DEBUGG,
@@ -116,6 +119,8 @@ module.exports = {
 		VERIFIED: "VERIFIED",
 		REVOKED: "REVOKED"
 	},
+
+	BLOCKCHAIN: { BLOCK_CHAIN_URL: BLOCK_CHAIN_URL, BLOCK_CHAIN_CONTRACT: BLOCK_CHAIN_CONTRACT },
 
 	NO_EMAILS: NO_EMAILS,
 	NO_SMS: NO_SMS
