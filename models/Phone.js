@@ -20,16 +20,6 @@ const PhoneSchema = new mongoose.Schema({
 			required: true
 		}
 	},
-	jwts: [
-		{
-			data: {
-				type: String
-			},
-			hash: {
-				type: String
-			}
-		}
-	],
 	validated: {
 		type: Boolean,
 		default: false
@@ -67,11 +57,10 @@ PhoneSchema.methods.isValid = async function(code) {
 };
 
 // actualizar flag "validated"
-PhoneSchema.methods.validatePhone = async function(did, jwt) {
+PhoneSchema.methods.validatePhone = async function(did) {
 	try {
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true, did: did } };
-		if (jwt) action["$push"] = { jwts: jwt };
 
 		await Phone.findOneAndUpdate(quiery, action);
 

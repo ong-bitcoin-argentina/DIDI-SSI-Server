@@ -51,10 +51,10 @@ module.exports.create = async function(email, code, did) {
 };
 
 // marca el pedido como validado
-module.exports.validateMail = async function(mail, did, jwt) {
+module.exports.validateMail = async function(mail, did) {
 	try {
 		// validar mail
-		mail = await mail.validateMail(did, jwt);
+		mail = await mail.validateMail(did);
 		return Promise.resolve(mail);
 	} catch (err) {
 		console.log(err);
