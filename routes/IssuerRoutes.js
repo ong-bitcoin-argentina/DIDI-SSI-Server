@@ -253,11 +253,10 @@ router.post(
 );
 
 router.get(
-	"/issuer/",
-	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	"/issuer/:did",
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const did = req.body.did;
+		const did = req.params.did;
 
 		try {
 			const issuer = await IssuerService.getIssuer(did);
