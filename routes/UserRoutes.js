@@ -373,13 +373,23 @@ router.post(
 
 		const data = await MouroService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
 		const jwt = data.payload.verified[0];
-		const decoded = await MouroService.decodeCertificate(jwt, Messages.CERTIFICATE.ERR.VERIFY);
 
 		try {
 			const cert = await Certificate.findByJwt(jwt);
-			console.log(cert.userDID);
-			console.log(decoded.payload.iss);
 			if (cert.userDID !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
+
+			const decoded = await MouroService.decodeCertificate(cert.jwt, Messages.CERTIFICATE.ERR.VERIFY);
+
+			const credData = decoded.payload.vc.credentialSubject;
+			const certCategory = Object.keys(credData)[0];
+			const wrappedIndex = Object.keys(credData[certCategory]).indexOf("wrapped");
+			if (wrappedIndex >= 0) {
+				for (let key of Object.keys(credData[certCategory].wrapped)) {
+					const microCert = await Certificate.findByJwt(credData[certCategory].wrapped[key]);
+					microCert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
+				}
+			}
+
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
 		} catch (err) {
