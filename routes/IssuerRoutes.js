@@ -252,21 +252,17 @@ router.post(
 	}
 );
 
-router.get(
-	"/issuer/:did",
-	Validator.checkValidationResult,
-	async function(req, res) {
-		const did = req.params.did;
+router.get("/issuer/:did", Validator.checkValidationResult, async function(req, res) {
+	const did = req.params.did;
 
-		try {
-			const issuer = await IssuerService.getIssuer(did);
-			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-			return ResponseHandler.sendRes(res, issuer.name);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
+	try {
+		const issuer = await IssuerService.getIssuer(did);
+		if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+		return ResponseHandler.sendRes(res, issuer.name);
+	} catch (err) {
+		return ResponseHandler.sendErr(res, err);
 	}
-);
+});
 
 router.delete(
 	"/issuer/",
@@ -283,5 +279,17 @@ router.delete(
 		}
 	}
 );
+
+router.get("/headers/:did/:key", Validator.checkValidationResult, async function(req, res) {
+	const did = req.params.did;
+	const key = req.params.key;
+
+	try {
+		const header = await MouroService.getAuthHeader(did, key);
+		return ResponseHandler.sendRes(res, { Authorization: header });
+	} catch (err) {
+		return ResponseHandler.sendErr(res, err);
+	}
+});
 
 module.exports = router;

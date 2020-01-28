@@ -19,17 +19,33 @@ const resolver = new Resolver(
 	getResolver({ rpcUrl: Constants.BLOCKCHAIN.BLOCK_CHAIN_URL, registry: Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT })
 );
 
-// cliente para envio de certificados a mouro
-const client = new ApolloClient({
-	fetch: fetch,
-	uri: Constants.MOURO_URL,
-	cache: new InMemoryCache()
-});
+const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
+let getClient = async function() {
+	const auth = await module.exports.getAuthHeader("did:ethr:" + Constants.SERVER_DID, Constants.SERVER_PRIVATE_KEY);
+	return new ApolloClient({
+		fetch: fetch,
+		uri: Constants.MOURO_URL,
+		request: operation => {
+			operation.setContext({
+				headers: {
+					authorization: auth
+				}
+			});
+		},
+		cache: new InMemoryCache()
+	});
+};
+
+module.exports.getAuthHeader = async function(did, key) {
+	const signer = SimpleSigner(key);
+	const token = await createJWT({ exp: new Date().getTime() / 1000 + 500 }, { alg: "ES256K-R", issuer: did, signer });
+	return token ? `Bearer ${token}` : "";
+};
 
 // recupera el hash de backup para swarm
 module.exports.getHash = async function(did) {
 	try {
-		let result = await client.query({
+		let result = await (await getClient()).query({
 			query: gql`
 				query($did: String!) {
 					hash(did: $did)
@@ -51,7 +67,7 @@ module.exports.getHash = async function(did) {
 // recibe el certificado y lo envia a mouro para ser guardado
 module.exports.saveCertificate = async function(cert, did) {
 	try {
-		let result = await client.mutate({
+		let result = await (await getClient()).mutate({
 			mutation: gql`
 				mutation($cert: String!, $did: String!) {
 					addEdge(edgeJWT: $cert, did: $did) {
@@ -80,7 +96,7 @@ module.exports.saveCertificate = async function(cert, did) {
 // elimina un certificado de mouro
 module.exports.revokeCertificate = async function(jwt, hash, did) {
 	try {
-		let result = await client.mutate({
+		let result = await (await getClient()).mutate({
 			mutation: gql`
 				mutation($hash: String!, $did: String!) {
 					removeEdge(hash: $hash, did: $did)
@@ -133,7 +149,6 @@ module.exports.createMailCertificate = async function(did, email) {
 
 // genera un certificado pidiendo info a determinado usuario
 module.exports.createPetition = async function(did, data) {
-	const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
 	const credentials = new Credentials({ did: "did:ethr:" + Constants.SERVER_DID, signer });
 
 	try {
@@ -149,7 +164,6 @@ module.exports.createPetition = async function(did, data) {
 
 // genera un certificado pidiendo info a determinado usuario
 module.exports.createShareRequest = async function(did, jwt) {
-	const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
 	const token = await createJWT(
 		{ sub: did, disclosureRequest: jwt },
 		{ alg: "ES256K-R", issuer: "did:ethr:" + Constants.SERVER_DID, signer }
@@ -247,7 +261,7 @@ module.exports.verifyCertificate = async function(jwt, errMsg) {
 
 module.exports.isInMouro = async function(jwt, errMsg) {
 	try {
-		let result = await client.query({
+		let result = await (await getClient()).query({
 			query: gql`
 				query($jwt: String) {
 					edgeByJwt(edgeJWT: $jwt) {
