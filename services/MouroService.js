@@ -249,8 +249,8 @@ module.exports.verifyCertificate = async function(jwt, errMsg) {
 	try {
 		let result = await verifyCredential(jwt, resolver);
 
-		const status = await Certificate.findByJwt(jwt);
-		result.status = status ? status.status : Constants.CERTIFICATE_STATUS.UNVERIFIED;
+		const cert = await Certificate.findByJwt(jwt);
+		result.status = cert ? cert.status : Constants.CERTIFICATE_STATUS.UNVERIFIED;
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);

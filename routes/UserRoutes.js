@@ -238,7 +238,8 @@ router.post(
 			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.TEL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
-				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
+				const jwt = await elem.getJwt();
+				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
 			// mandar certificado a mouro
@@ -304,7 +305,8 @@ router.post(
 			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.EMAIL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
-				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
+				const jwt = await elem.getJwt();
+				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
 			// mandar certificado a mouro
@@ -378,9 +380,11 @@ router.post(
 
 		try {
 			const cert = await Certificate.findByJwt(jwt);
-			if (cert.userDID !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
+			const certDid = await cert.getDid();
+			if (certDid !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
 
-			const decoded = await MouroService.decodeCertificate(cert.jwt, Messages.CERTIFICATE.ERR.VERIFY);
+			const certJwt = await cert.getJwt();
+			const decoded = await MouroService.decodeCertificate(certJwt, Messages.CERTIFICATE.ERR.VERIFY);
 
 			const credData = decoded.payload.vc.credentialSubject;
 			const certCategory = Object.keys(credData)[0];

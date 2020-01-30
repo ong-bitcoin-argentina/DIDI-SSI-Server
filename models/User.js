@@ -92,7 +92,7 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
 		hash: this.phoneNumber.hash
 	};
 
-	await this.setEncryptedData("phoneNumber", newPhoneNumber);
+	await Encrypt.setEncryptedData(this, "phoneNumber", newPhoneNumber);
 	if (oldPhone.hash === this.phoneNumber.hash) return Promise.resolve(this);
 
 	const updateQuery = { _id: this._id };
@@ -117,7 +117,7 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 		hash: this.mail.hash
 	};
 
-	await this.setEncryptedData("mail", newEmail);
+	await Encrypt.setEncryptedData(this, "mail", newEmail);
 
 	if (oldMail.hash === this.mail.hash) return Promise.resolve(this);
 
@@ -151,46 +151,17 @@ UserSchema.methods.updateHash = async function(hash) {
 	}
 };
 
-UserSchema.methods.setEncryptedData = async function(name, data, saltData) {
-	try {
-		const encrypted = await Encrypt.encrypt(data);
-		const hashData = saltData ? await Hashing.saltedHash(data) : await Hashing.hash(data);
-
-		if (this[name].hash === hashData.hash) return Promise.resolve(this);
-
-		const encryptedData = {
-			encrypted: encrypted,
-			// salt: hashData.salt,
-			hash: hashData.hash
-		};
-		this[name] = encryptedData;
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
-};
-
-UserSchema.methods.getEncryptedData = async function(name) {
-	try {
-		const encrypted = this[name];
-		return await Encrypt.decript(encrypted);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
-};
-
 UserSchema.methods.getMail = async function() {
-	return this.getEncryptedData("mail");
-}
+	return await Encrypt.getEncryptedData(this, "mail");
+};
 
 UserSchema.methods.getPhoneNumber = async function() {
-	return this.getEncryptedData("phoneNumber");
-}
+	return await Encrypt.getEncryptedData(this, "phoneNumber");
+};
 
 UserSchema.methods.getDid = async function() {
-	return this.getEncryptedData("did");
-}
+	return await Encrypt.getEncryptedData(this, "did");
+};
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
@@ -205,10 +176,10 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 		user.modifiedOn = new Date();
 		user.deleted = false;
 
-		await user.setEncryptedData("did", did);
-		await user.setEncryptedData("phoneNumber", phoneNumber);
-		await user.setEncryptedData("mail", mail);
-		await user.setEncryptedData("seed", seed);
+		await Encrypt.setEncryptedData(user, "did", did);
+		await Encrypt.setEncryptedData(user, "phoneNumber", phoneNumber);
+		await Encrypt.setEncryptedData(user, "mail", mail);
+		await Encrypt.setEncryptedData(user, "seed", seed);
 		user.password = await Hashing.saltedHash(pass);
 
 		user = await user.save();

@@ -47,7 +47,7 @@ PhoneSchema.methods.isValid = async function(code) {
 // actualizar flag "validated"
 PhoneSchema.methods.validatePhone = async function(did) {
 	try {
-		await this.setEncryptedData("did", did);
+		await Encrypt.setEncryptedData(this, "did", did);
 
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true, did: this.did } };
@@ -62,42 +62,13 @@ PhoneSchema.methods.validatePhone = async function(did) {
 	}
 };
 
-PhoneSchema.methods.setEncryptedData = async function(name, data) {
-	try {
-		const encrypted = await Encrypt.encrypt(data);
-		const hashData = await Hashing.hash(data);
-
-		if (this[name].hash === hashData.hash) return Promise.resolve(this);
-
-		const encryptedData = {
-			encrypted: encrypted,
-			// salt: hashData.salt,
-			hash: hashData.hash
-		};
-		this[name] = encryptedData;
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
-};
-
-PhoneSchema.methods.getEncryptedData = async function(name) {
-	try {
-		const encrypted = this[name];
-		return await Encrypt.decript(encrypted);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
-};
-
 PhoneSchema.methods.getPhoneNumber = async function() {
-	return this.getEncryptedData("phoneNumber");
-}
+	return await Encrypt.getEncryptedData(this, "phoneNumber");
+};
 
 PhoneSchema.methods.getDid = async function() {
-	return this.getEncryptedData("did");
-}
+	return await Encrypt.getEncryptedData(this, "did");
+};
 
 const Phone = mongoose.model("Phone", PhoneSchema);
 module.exports = Phone;
@@ -105,22 +76,24 @@ module.exports = Phone;
 // crear nuevo pedido de validacion de tel, o pisar el anterior si hay otro con el mismo did
 Phone.generate = async function(phoneNumber, code, did) {
 	try {
-		const query = { phoneNumber: phoneNumber };
+		const hashData = await Hashing.hash(phoneNumber);
+		const query = { "phoneNumber.hash": hashData.hash };
 		let phone = await Phone.findOne(query);
 
 		if (!phone) phone = new Phone();
 
+		if (did) await Encrypt.setEncryptedData(phone, "did", did);
+
 		phone.createdOn = new Date();
 		phone.validated = false;
+
+		await Encrypt.setEncryptedData(phone, "phoneNumber", phoneNumber);
 
 		let date = new Date();
 		date.setHours(date.getHours() + 1);
 		phone.expiresOn = date;
 
-		if (did) await phone.setEncryptedData("did", did);
-		await phone.setEncryptedData("phoneNumber", phoneNumber);
 		phone.code = await Hashing.saltedHash(code);
-
 		phone = await phone.save();
 		return Promise.resolve(phone);
 	} catch (err) {
