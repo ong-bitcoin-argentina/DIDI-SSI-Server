@@ -48,7 +48,7 @@ let getAndValidate = async function(did, pass, email) {
 		}
 
 		// validar contraseña
-		let match = await user.comparePassword(pass);
+		let match = await user.compareField("password", pass);
 		if (!match) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 		return Promise.resolve(user);
 	} catch (err) {
@@ -80,9 +80,12 @@ module.exports.login = async function(did, email, pass) {
 	let user;
 	try {
 		user = await getAndValidate(did, pass, email);
-		console.log(user);
-		if (user.did != did) return Promise.reject(Messages.USER.ERR.INVALID_USER_DID);
-		if (user.mail != email) return Promise.reject(Messages.USER.ERR.INVALID_USER_EMAIL);
+
+		const sameDid = await user.compareField("did", did);
+		if (sameDid === false) return Promise.reject(Messages.USER.ERR.INVALID_USER_DID);
+
+		const sameEmail = await user.compareField("mail", email);
+		if (sameEmail === false) return Promise.reject(Messages.USER.ERR.INVALID_USER_EMAIL);
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
@@ -96,23 +99,18 @@ module.exports.recoverAccount = async function(mail, pass) {
 	try {
 		// buscar usuario asociado al mail
 		user = await User.getByEmail(mail);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(Messages.COMMUNICATION_ERROR);
-	}
 
-	if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_EMAIL);
+		if (!user) return Promise.reject(Messages.USER.ERR.NOMATCH_USER_EMAIL);
 
-	try {
 		// validar contraseña
-		const isMatch = await user.comparePassword(pass);
+		const isMatch = await user.compareField("password", pass);
 		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 
 		// retornar clave privada
-		return Promise.resolve(user.seed);
+		return Promise.resolve(user.getSeed());
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.ERR.INVALID_USER);
+		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
 
@@ -124,7 +122,7 @@ module.exports.changeEmail = async function(did, newMail, password) {
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
 
 		// validar contraseña
-		const isMatch = await user.comparePassword(password);
+		const isMatch = await user.compareField("password", password);
 		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 
 		// actualizar mail
@@ -145,11 +143,11 @@ module.exports.changePhoneNumber = async function(did, newPhoneNumber, password)
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
 
 		// validar contraseña
-		const isMatch = await user.comparePassword(password);
+		const isMatch = await user.compareField("password", password);
 		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 
 		// actualizar tel
-		user = await user.updatePhoneNumber(did, newPhoneNumber);
+		user = await user.updatePhoneNumber(newPhoneNumber);
 
 		return Promise.resolve(user);
 	} catch (err) {

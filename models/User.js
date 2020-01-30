@@ -1,51 +1,25 @@
 const mongoose = require("mongoose");
 const Hashing = require("./utils/Hashing");
+const Encrypt = require("./utils/Encryption");
+const EncryptedData = require("./dataTypes/EncryptedData");
+const HashedData = require("./dataTypes/HashedData");
 
 const UserSchema = new mongoose.Schema({
-	did: {
-		type: String,
-		required: true
-	},
+	did: EncryptedData,
 
-	mail: {
-		type: String,
-		required: true
-	},
-	oldEmails: [
-		{
-			type: String
-		}
-	],
+	mail: EncryptedData,
+	oldEmails: [EncryptedData],
 
-	phoneNumber: {
-		type: String,
-		required: true
-	},
-	oldPhoneNumbers: [
-		{
-			type: String
-		}
-	],
+	phoneNumber: EncryptedData,
+	oldPhoneNumbers: [EncryptedData],
 
-	seed: {
-		type: String,
-		required: true
-	},
+	seed: EncryptedData,
 
 	backupHash: {
 		type: String
 	},
 
-	password: {
-		salt: {
-			type: String,
-			required: true
-		},
-		hash: {
-			type: String,
-			required: true
-		}
-	},
+	password: HashedData,
 	deleted: {
 		type: Boolean,
 		default: false
@@ -61,22 +35,32 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.index(
-	{ did: 1, deleted: 1 },
+	{ "did.encrypted": 1, deleted: 1 },
 	{
 		unique: true
 	}
 );
 
 UserSchema.index(
-	{ mail: 1, deleted: 1 },
+	{ "mail.encrypted": 1, deleted: 1 },
 	{
 		unique: true
 	}
 );
 
-UserSchema.methods.comparePassword = async function(candidatePassword) {
+UserSchema.methods.getSeed = async function() {
 	try {
-		const result = Hashing.validateHash(candidatePassword, this.password);
+		const result = await Encrypt.decript(this.seed.encrypted);
+		return Promise.resolve(result);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+UserSchema.methods.compareField = async function(name, candidate) {
+	try {
+		const result = await Hashing.validateHash(candidate, this[name]);
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
@@ -85,7 +69,7 @@ UserSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 UserSchema.methods.updatePassword = async function(password) {
-	const hashData = Hashing.hash(password);
+	const hashData = await Hashing.saltedHash(password);
 
 	const updateQuery = { _id: this._id };
 	const updateAction = {
@@ -101,21 +85,25 @@ UserSchema.methods.updatePassword = async function(password) {
 	}
 };
 
-UserSchema.methods.updatePhoneNumber = async function(did, newPhoneNumber) {
-	if (this.phoneNumber == newPhoneNumber) {
-		return Promise.resolve(this);
-	}
+UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
+	const oldPhone = {
+		encrypted: this.phoneNumber.encrypted,
+		// salt: this.phoneNumber.salt,
+		hash: this.phoneNumber.hash
+	};
+
+	await this.setEncryptedData("phoneNumber", newPhoneNumber);
+	if (oldPhone.hash === this.phoneNumber.hash) return Promise.resolve(this);
 
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { did: did, phoneNumber: newPhoneNumber, modifiedOn: new Date() },
-		$push: { oldPhoneNumbers: this.phoneNumber }
+		$set: { phoneNumber: this.phoneNumber, modifiedOn: new Date() },
+		$push: { oldPhoneNumbers: oldPhone }
 	};
 
 	try {
 		await User.findOneAndUpdate(updateQuery, updateAction);
 		this.oldPhoneNumbers.push(this.phoneNumber);
-		this.phoneNumber = newPhoneNumber;
 		return Promise.resolve(this);
 	} catch (err) {
 		return Promise.reject(err);
@@ -123,20 +111,25 @@ UserSchema.methods.updatePhoneNumber = async function(did, newPhoneNumber) {
 };
 
 UserSchema.methods.updateEmail = async function(newEmail) {
-	if (this.mail == newEmail) {
-		return Promise.resolve(this);
-	}
+	const oldMail = {
+		encrypted: this.mail.encrypted,
+		// salt: this.mail.salt,
+		hash: this.mail.hash
+	};
+
+	await this.setEncryptedData("mail", newEmail);
+
+	if (oldMail.hash === this.mail.hash) return Promise.resolve(this);
 
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { mail: newEmail, modifiedOn: new Date() },
-		$push: { oldEmails: this.mail }
+		$set: { mail: this.mail, modifiedOn: new Date() },
+		$push: { oldEmails: oldMail }
 	};
 
 	try {
 		await User.findOneAndUpdate(updateQuery, updateAction);
-		this.oldEmails.push(this.mail);
-		this.mail = newEmail;
+		this.oldEmails.push(oldMail);
 		return Promise.resolve(this);
 	} catch (err) {
 		return Promise.reject(err);
@@ -158,30 +151,66 @@ UserSchema.methods.updateHash = async function(hash) {
 	}
 };
 
+UserSchema.methods.setEncryptedData = async function(name, data, saltData) {
+	try {
+		const encrypted = await Encrypt.encrypt(data);
+		const hashData = saltData ? await Hashing.saltedHash(data) : await Hashing.hash(data);
+
+		if (this[name].hash === hashData.hash) return Promise.resolve(this);
+
+		const encryptedData = {
+			encrypted: encrypted,
+			// salt: hashData.salt,
+			hash: hashData.hash
+		};
+		this[name] = encryptedData;
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+UserSchema.methods.getEncryptedData = async function(name) {
+	try {
+		const encrypted = this[name];
+		return await Encrypt.decript(encrypted);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+UserSchema.methods.getMail = async function() {
+	return this.getEncryptedData("mail");
+}
+
+UserSchema.methods.getPhoneNumber = async function() {
+	return this.getEncryptedData("phoneNumber");
+}
+
+UserSchema.methods.getDid = async function() {
+	return this.getEncryptedData("did");
+}
+
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
 // crear nuevo usuario
 User.generate = async function(did, seed, mail, phoneNumber, pass) {
-	let user = new User();
-	user.mail = mail;
-	user.oldEmails = [];
-	user.phoneNumber = phoneNumber;
-	user.oldPhoneNumbers = [];
-	user.did = did;
-	user.seed = seed;
-	user.createdOn = new Date();
-	user.modifiedOn = new Date();
-	user.deleted = false;
-
 	try {
-		user.password = Hashing.hash(pass);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
+		let user = new User();
+		user.oldEmails = [];
+		user.oldPhoneNumbers = [];
+		user.createdOn = new Date();
+		user.modifiedOn = new Date();
+		user.deleted = false;
 
-	try {
+		await user.setEncryptedData("did", did);
+		await user.setEncryptedData("phoneNumber", phoneNumber);
+		await user.setEncryptedData("mail", mail);
+		await user.setEncryptedData("seed", seed);
+		user.password = await Hashing.saltedHash(pass);
+
 		user = await user.save();
 		return Promise.resolve(user);
 	} catch (err) {
@@ -192,7 +221,8 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 
 User.getByDID = async function(did) {
 	try {
-		const query = { did: did, deleted: false };
+		const hashData = await Hashing.hash(did);
+		const query = { "did.hash": hashData.hash, deleted: false };
 		let user = await User.findOne(query);
 		return Promise.resolve(user);
 	} catch (err) {
@@ -203,7 +233,8 @@ User.getByDID = async function(did) {
 
 User.getByEmail = async function(email) {
 	try {
-		const query = { mail: email, deleted: false };
+		const hashData = await Hashing.hash(email);
+		const query = { "mail.hash": hashData.hash, deleted: false };
 		let user = await User.findOne(query);
 		return Promise.resolve(user);
 	} catch (err) {
@@ -214,7 +245,8 @@ User.getByEmail = async function(email) {
 
 User.getByTel = async function(phoneNumber) {
 	try {
-		const query = { phoneNumber: phoneNumber, deleted: false };
+		const hashData = await Hashing.hash(phoneNumber);
+		const query = { "phoneNumber.hash": hashData.hash, deleted: false };
 		let user = await User.findOne(query);
 		return Promise.resolve(user);
 	} catch (err) {

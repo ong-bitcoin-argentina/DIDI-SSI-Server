@@ -1,25 +1,13 @@
 const mongoose = require("mongoose");
 const Hashing = require("./utils/Hashing");
+const Encrypt = require("./utils/Encryption");
+const EncryptedData = require("./dataTypes/EncryptedData");
+const HashedData = require("./dataTypes/HashedData");
 
 const PhoneSchema = new mongoose.Schema({
-	phoneNumber: {
-		type: String,
-		required: true
-	},
-	did: {
-		type: String,
-		required: false
-	},
-	code: {
-		salt: {
-			type: String,
-			required: true
-		},
-		hash: {
-			type: String,
-			required: true
-		}
-	},
+	phoneNumber: EncryptedData,
+	did: EncryptedData,
+	code: HashedData,
 	validated: {
 		type: Boolean,
 		default: false
@@ -34,7 +22,7 @@ const PhoneSchema = new mongoose.Schema({
 });
 
 PhoneSchema.index(
-	{ phoneNumber: 1 },
+	{ "phoneNumber.encrypted": 1 },
 	{
 		unique: true
 	}
@@ -48,7 +36,7 @@ PhoneSchema.methods.expired = function() {
 // comparar codigos de validacion
 PhoneSchema.methods.isValid = async function(code) {
 	try {
-		const isMatch = Hashing.validateHash(code, this.code);
+		const isMatch = await Hashing.validateHash(code, this.code);
 		return Promise.resolve(isMatch);
 	} catch (err) {
 		console.log(err);
@@ -59,8 +47,10 @@ PhoneSchema.methods.isValid = async function(code) {
 // actualizar flag "validated"
 PhoneSchema.methods.validatePhone = async function(did) {
 	try {
+		await this.setEncryptedData("did", did);
+
 		let quiery = { _id: this._id };
-		let action = { $set: { validated: true, did: did } };
+		let action = { $set: { validated: true, did: this.did } };
 
 		await Phone.findOneAndUpdate(quiery, action);
 
@@ -72,40 +62,65 @@ PhoneSchema.methods.validatePhone = async function(did) {
 	}
 };
 
+PhoneSchema.methods.setEncryptedData = async function(name, data) {
+	try {
+		const encrypted = await Encrypt.encrypt(data);
+		const hashData = await Hashing.hash(data);
+
+		if (this[name].hash === hashData.hash) return Promise.resolve(this);
+
+		const encryptedData = {
+			encrypted: encrypted,
+			// salt: hashData.salt,
+			hash: hashData.hash
+		};
+		this[name] = encryptedData;
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+PhoneSchema.methods.getEncryptedData = async function(name) {
+	try {
+		const encrypted = this[name];
+		return await Encrypt.decript(encrypted);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+PhoneSchema.methods.getPhoneNumber = async function() {
+	return this.getEncryptedData("phoneNumber");
+}
+
+PhoneSchema.methods.getDid = async function() {
+	return this.getEncryptedData("did");
+}
+
 const Phone = mongoose.model("Phone", PhoneSchema);
 module.exports = Phone;
 
 // crear nuevo pedido de validacion de tel, o pisar el anterior si hay otro con el mismo did
 Phone.generate = async function(phoneNumber, code, did) {
-	let phone;
 	try {
 		const query = { phoneNumber: phoneNumber };
-		phone = await Phone.findOne(query);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
+		let phone = await Phone.findOne(query);
 
-	if (!phone) {
-		phone = new Phone();
-	}
+		if (!phone) phone = new Phone();
 
-	phone.phoneNumber = phoneNumber;
-	phone.did = did;
-	phone.createdOn = new Date();
-	phone.validated = false;
+		phone.createdOn = new Date();
+		phone.validated = false;
 
-	let date = new Date();
-	date.setHours(date.getHours() + 1);
-	phone.expiresOn = date;
+		let date = new Date();
+		date.setHours(date.getHours() + 1);
+		phone.expiresOn = date;
 
-	try {
-		phone.code = Hashing.hash(code);
-	} catch (err) {
-		return Promise.reject(err);
-	}
+		if (did) await phone.setEncryptedData("did", did);
+		await phone.setEncryptedData("phoneNumber", phoneNumber);
+		phone.code = await Hashing.saltedHash(code);
 
-	try {
 		phone = await phone.save();
 		return Promise.resolve(phone);
 	} catch (err) {
@@ -117,7 +132,8 @@ Phone.generate = async function(phoneNumber, code, did) {
 // obtener por tel
 Phone.getByPhoneNumber = async function(phoneNumber) {
 	try {
-		const query = { phoneNumber: phoneNumber, validated: false };
+		const hashData = await Hashing.hash(phoneNumber);
+		const query = { "phoneNumber.hash": hashData.hash, validated: false };
 		let phone = await Phone.findOne(query);
 		return Promise.resolve(phone);
 	} catch (err) {
@@ -128,7 +144,10 @@ Phone.getByPhoneNumber = async function(phoneNumber) {
 
 Phone.isValidated = async function(did, phoneNumber) {
 	try {
-		const query = { did: did, phoneNumber: phoneNumber };
+		const hashData = await Hashing.hash(phoneNumber);
+		const didHashData = await Hashing.hash(did);
+
+		const query = { "did.hash": didHashData.hash, "phoneNumber.hash": hashData.hash };
 		let phone = await Phone.findOne(query);
 		return Promise.resolve(phone ? phone.validated : false);
 	} catch (err) {

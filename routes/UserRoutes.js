@@ -151,7 +151,9 @@ router.post(
 			await UserService.recoverPassword(eMail, newPass);
 
 			// actualizar pedido de validacion de mail
-			mail = await MailService.validateMail(mail, mail.did);
+			console.log(await mail.getDid());
+
+			mail = await MailService.validateMail(mail, await mail.getDid());
 
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
