@@ -9,7 +9,7 @@ class Hashing {
 	}
 
 	static async saltedHash(data) {
-		const saltRounds = 10;
+		const saltRounds = 11;
 		const salt = await bcrypt.genSalt(saltRounds);
 		const hash = await bcrypt.hash(data, salt);
 		return { salt: salt, hash: hash };

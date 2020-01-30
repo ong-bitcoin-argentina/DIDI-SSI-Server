@@ -196,7 +196,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const did = req.body.did;
+		//const did = req.body.did;
 		const operationId = req.body.operationId;
 
 		try {

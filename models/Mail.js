@@ -49,7 +49,7 @@ MailSchema.methods.isValid = async function(code) {
 // comparar codigos de validacion y actualizar flag "validated"
 MailSchema.methods.validateMail = async function(did) {
 	try {
-		await this.setEncryptedData("did", did);
+		await Encrypt.setEncryptedData(this, "did", did);
 
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true, did: this.did } };
@@ -64,42 +64,13 @@ MailSchema.methods.validateMail = async function(did) {
 	}
 };
 
-MailSchema.methods.setEncryptedData = async function(name, data) {
-	try {
-		const encrypted = await Encrypt.encrypt(data);
-		const hashData = await Hashing.hash(data);
-
-		if (this[name].hash === hashData.hash) return Promise.resolve(this);
-
-		const encryptedData = {
-			encrypted: encrypted,
-			// salt: hashData.salt,
-			hash: hashData.hash
-		};
-		this[name] = encryptedData;
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
-};
-
-MailSchema.methods.getEncryptedData = async function(name) {
-	try {
-		const encrypted = this[name];
-		return await Encrypt.decript(encrypted);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
-};
-
 MailSchema.methods.getMail = async function() {
-	return this.getEncryptedData("email");
-}
+	return await Encrypt.getEncryptedData(this, "email");
+};
 
 MailSchema.methods.getDid = async function() {
-	return this.getEncryptedData("did");
-}
+	return await Encrypt.getEncryptedData(this, "did");
+};
 
 const Mail = mongoose.model("Mail", MailSchema);
 module.exports = Mail;
@@ -107,7 +78,8 @@ module.exports = Mail;
 // crear nuevo pedido de validacion de mail, o pisar el anterior si hay otro con el mismo did
 Mail.generate = async function(email, code, did) {
 	try {
-		const query = { email: email };
+		const hashData = await Hashing.hash(email);
+		const query = { "email.hash": hashData.hash };
 		let mail = await Mail.findOne(query);
 
 		if (!mail) mail = new Mail();
@@ -116,11 +88,10 @@ Mail.generate = async function(email, code, did) {
 		mail.createdOn = new Date();
 
 		let date = new Date();
+		if (did) await Encrypt.setEncryptedData(mail, "did", did);
 		date.setHours(date.getHours() + Constants.HOURS_BEFORE_CODE_EXPIRES);
 		mail.expiresOn = date;
-
-		if (did) await mail.setEncryptedData("did", did);
-		await mail.setEncryptedData("email", email);
+		await Encrypt.setEncryptedData(mail, "email", email);
 		mail.code = await Hashing.saltedHash(code);
 
 		mail = await mail.save();

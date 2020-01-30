@@ -145,6 +145,7 @@ router.post(
 			const keys = Object.keys(subject);
 			const subcredentials = subject[keys[0]].wrapped;
 
+			console.log(cert.status);
 			let err = cert.status === Constants.CERTIFICATE_STATUS.REVOKED ? Messages.ISSUER.ERR.REVOKED : false;
 
 			// tiene subcredenciales
