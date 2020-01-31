@@ -5,7 +5,10 @@ const EncryptedData = require("./dataTypes/EncryptedData");
 const HashedData = require("./dataTypes/HashedData");
 
 const UserSchema = new mongoose.Schema({
-	did: EncryptedData,
+	did: {
+		type: String,
+		required: true
+	},
 
 	mail: EncryptedData,
 	oldEmails: [EncryptedData],
@@ -35,7 +38,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.index(
-	{ "did.encrypted": 1, deleted: 1 },
+	{ "did": 1, deleted: 1 },
 	{
 		unique: true
 	}
@@ -160,7 +163,7 @@ UserSchema.methods.getPhoneNumber = async function() {
 };
 
 UserSchema.methods.getDid = async function() {
-	return await Encrypt.getEncryptedData(this, "did");
+	return this.did = did;
 };
 
 const User = mongoose.model("User", UserSchema);
@@ -175,8 +178,7 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 		user.createdOn = new Date();
 		user.modifiedOn = new Date();
 		user.deleted = false;
-
-		await Encrypt.setEncryptedData(user, "did", did);
+		user.did = did;
 		await Encrypt.setEncryptedData(user, "phoneNumber", phoneNumber);
 		await Encrypt.setEncryptedData(user, "mail", mail);
 		await Encrypt.setEncryptedData(user, "seed", seed);
@@ -192,8 +194,7 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 
 User.getByDID = async function(did) {
 	try {
-		const hashData = await Hashing.hash(did);
-		const query = { "did.hash": hashData.hash, deleted: false };
+		const query = { did: did, deleted: false };
 		let user = await User.findOne(query);
 		return Promise.resolve(user);
 	} catch (err) {

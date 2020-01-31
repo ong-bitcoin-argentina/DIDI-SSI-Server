@@ -45,6 +45,10 @@ AuthRequestSchema.methods.update = async function(status, errorMessage) {
 	}
 };
 
+AuthRequestSchema.methods.getDid = async function() {
+	return this.userDID;
+};
+
 const AuthRequest = mongoose.model("AuthRequest", AuthRequestSchema);
 module.exports = AuthRequest;
 

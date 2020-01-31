@@ -11,8 +11,11 @@ const statuses = [
 ];
 
 const CertificateSchema = new mongoose.Schema({
-	userDID: EncryptedData,
-	name: {
+	userDID: {
+		type: String,
+		required: true
+	},
+	certType: {
 		type: String,
 		required: true
 	},
@@ -32,7 +35,7 @@ const CertificateSchema = new mongoose.Schema({
 	}
 });
 
-CertificateSchema.index({ "userDID.encrypted": 1, hash: 1 });
+CertificateSchema.index({ userDID: 1, hash: 1 });
 
 // actualizar estado del certificado
 CertificateSchema.methods.update = async function(status) {
@@ -51,27 +54,26 @@ CertificateSchema.methods.getJwt = async function() {
 };
 
 CertificateSchema.methods.getDid = async function() {
-	return await Encrypt.getEncryptedData(this, "userDID");
+	return this.userDID;
 };
 
 const Certificate = mongoose.model("Certificate", CertificateSchema);
 module.exports = Certificate;
 
-Certificate.generate = async function(name, userDID, status, jwt, hash) {
+Certificate.generate = async function(type, userDID, status, jwt, hash) {
 	try {
 		const hashData = await Hashing.hash(jwt);
-		const didHashData = await Hashing.hash(userDID);
 
 		let certStatus = await Certificate.findOne({
-			"userDID.hash": didHashData.hash,
+			userDID: didHashData,
 			hash: hash,
 			"jwt.hash": hashData.hash
 		});
 		if (!certStatus) certStatus = new Certificate();
-		await Encrypt.setEncryptedData(certStatus, "userDID", userDID);
+		certStatus.userDID = userDID;
 		certStatus.status = status;
 		certStatus.hash = hash;
-		certStatus.name = name;
+		certStatus.certType = type;
 		certStatus.createdOn = new Date();
 		await Encrypt.setEncryptedData(certStatus, "jwt", jwt);
 
@@ -95,11 +97,9 @@ Certificate.findByJwt = async function(jwt) {
 	}
 };
 
-Certificate.findByName = async function(did, name) {
+Certificate.findByType = async function(did, type) {
 	try {
-		const didHashData = await Hashing.hash(did);
-
-		const query = { name: name, "userDID.hash": didHashData.hash };
+		const query = { certType: type, userDID: did };
 		const request = await Certificate.find(query);
 		return Promise.resolve(request);
 	} catch (err) {
