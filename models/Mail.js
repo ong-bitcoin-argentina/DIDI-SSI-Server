@@ -8,7 +8,10 @@ const Constants = require("../constants/Constants");
 
 const MailSchema = new mongoose.Schema({
 	email: EncryptedData,
-	did: EncryptedData,
+	did: {
+		type: String,
+		required: true
+	},
 	code: HashedData,
 	validated: {
 		type: Boolean,
@@ -49,7 +52,7 @@ MailSchema.methods.isValid = async function(code) {
 // comparar codigos de validacion y actualizar flag "validated"
 MailSchema.methods.validateMail = async function(did) {
 	try {
-		await Encrypt.setEncryptedData(this, "did", did);
+		this.did = did;
 
 		let quiery = { _id: this._id };
 		let action = { $set: { validated: true, did: this.did } };
@@ -69,7 +72,7 @@ MailSchema.methods.getMail = async function() {
 };
 
 MailSchema.methods.getDid = async function() {
-	return await Encrypt.getEncryptedData(this, "did");
+	return this.did;
 };
 
 const Mail = mongoose.model("Mail", MailSchema);
@@ -88,7 +91,7 @@ Mail.generate = async function(email, code, did) {
 		mail.createdOn = new Date();
 
 		let date = new Date();
-		if (did) await Encrypt.setEncryptedData(mail, "did", did);
+		if (did) this.did = did;
 		date.setHours(date.getHours() + Constants.HOURS_BEFORE_CODE_EXPIRES);
 		mail.expiresOn = date;
 		await Encrypt.setEncryptedData(mail, "email", email);
@@ -118,9 +121,7 @@ Mail.getByEmail = async function(email) {
 Mail.isValidated = async function(did, email) {
 	try {
 		const hashData = await Hashing.hash(email);
-		const didHashData = await Hashing.hash(did);
-
-		const query = { "did.hash": didHashData.hash, "email.hash": hashData.hash };
+		const query = { did: did, "email.hash": hashData.hash };
 		let mail = await Mail.findOne(query);
 
 		return Promise.resolve(mail ? mail.validated : false);

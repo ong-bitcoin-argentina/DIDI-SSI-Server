@@ -2,11 +2,10 @@ module.exports = {
 	encrypted: {
 		type: String
 	},
-	/*
 	salt: {
-		type: String
+		type: String,
+		optional: true
 	},
-	*/
 	hash: {
 		type: String
 	}

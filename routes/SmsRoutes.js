@@ -95,7 +95,7 @@ router.post(
 			await MouroService.verifyCertificatePhoneNumber(cert);
 
 			// revocar certificado anterior
-			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.TEL);
+			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
 				const jwt = await elem.getJwt();
