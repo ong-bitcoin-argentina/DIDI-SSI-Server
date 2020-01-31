@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Constants = require("../constants/Constants");
-const Hashing = require("./utils/Hashing");
 const Encrypt = require("./utils/Encryption");
 const EncryptedData = require("./dataTypes/EncryptedData");
 
