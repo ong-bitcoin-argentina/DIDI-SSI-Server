@@ -9,8 +9,7 @@ const Constants = require("../constants/Constants");
 const MailSchema = new mongoose.Schema({
 	email: EncryptedData,
 	did: {
-		type: String,
-		required: true
+		type: String
 	},
 	code: HashedData,
 	validated: {

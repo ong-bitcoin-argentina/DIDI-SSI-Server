@@ -7,8 +7,7 @@ const HashedData = require("./dataTypes/HashedData");
 const PhoneSchema = new mongoose.Schema({
 	phoneNumber: EncryptedData,
 	did: {
-		type: String,
-		required: true
+		type: String
 	},
 	code: HashedData,
 	validated: {
