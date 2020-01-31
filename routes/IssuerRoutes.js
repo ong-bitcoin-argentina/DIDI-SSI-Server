@@ -27,7 +27,12 @@ router.post(
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
 			console.log("validating jwt for " + did);
-			const verified = await MouroService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			const verified = await MouroService.verifyCertificateAndDid(
+				jwt,
+				undefined,
+				did,
+				Messages.ISSUER.ERR.CERT_IS_INVALID
+			);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
 			const sub = verified.payload.sub;
@@ -107,7 +112,7 @@ router.post(
 			const issuer = await IssuerService.getIssuer(did);
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
-			const verified = await MouroService.verifyCertificateAndDid(jwt, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			const verified = await MouroService.verifyCertificateAndDid(jwt, hash, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
 			console.log("revoking certificate for " + did);
@@ -137,7 +142,8 @@ router.post(
 		let cert;
 		try {
 			// validar formato y desempaquetar
-			cert = await MouroService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			const hash = await MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
+			cert = await MouroService.verifyCertificate(jwt, hash, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!cert || !cert.payload.vc)
 				return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
@@ -158,7 +164,7 @@ router.post(
 				for (let key of subcredencialKeys) {
 					const jwt = subcredentials[key];
 					// validar formato y desempaquetar
-					verifyCalls.push(MouroService.verifyCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID));
+					verifyCalls.push(MouroService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.CERT_IS_INVALID));
 
 					// validar fue emitido y no revocado
 					mouroCalls.push(MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND));

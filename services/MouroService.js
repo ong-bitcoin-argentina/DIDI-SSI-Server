@@ -201,27 +201,29 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 	}
 };
 
-module.exports.verifyCertificateEmail = async function(jwt) {
+module.exports.verifyCertificateEmail = async function(jwt, hash) {
 	const result = await module.exports.verifyCertificateAndDid(
 		jwt,
+		hash,
 		Constants.SERVER_DID,
 		Messages.CERTIFICATE.ERR.VERIFY
 	);
 	return result;
 };
 
-module.exports.verifyCertificatePhoneNumber = async function(jwt) {
+module.exports.verifyCertificatePhoneNumber = async function(jwt, hash) {
 	const result = await module.exports.verifyCertificateAndDid(
 		jwt,
+		hash,
 		Constants.SERVER_DID,
 		Messages.CERTIFICATE.ERR.VERIFY
 	);
 	return result;
 };
 
-module.exports.verifyCertificateAndDid = async function(jwt, issuerDid, errMsg) {
+module.exports.verifyCertificateAndDid = async function(jwt, hash, issuerDid, errMsg) {
 	try {
-		let result = await module.exports.verifyCertificate(jwt, errMsg);
+		let result = await module.exports.verifyCertificate(jwt, hash, errMsg);
 
 		if (result.payload.iss === issuerDid) {
 			console.log(Messages.CERTIFICATE.VERIFIED);
@@ -245,12 +247,16 @@ module.exports.decodeCertificate = async function(jwt, errMsg) {
 	}
 };
 
-module.exports.verifyCertificate = async function(jwt, errMsg) {
+module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 	try {
 		let result = await verifyCredential(jwt, resolver);
+		result.status = Constants.CERTIFICATE_STATUS.UNVERIFIED;
 
-		const cert = await Certificate.findByJwt(jwt);
-		result.status = cert ? cert.status : Constants.CERTIFICATE_STATUS.UNVERIFIED;
+		if (hash) {
+			const cert = await Certificate.findByHash(hash);
+			if (cert) result.status = cert.status;
+		}
+
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
@@ -273,7 +279,7 @@ module.exports.isInMouro = async function(jwt, errMsg) {
 			}
 		});
 		const res = result.data.edgeByJwt;
-		return Promise.resolve(res && res.hash);
+		return Promise.resolve(res && res.hash ? res.hash : undefined);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(errMsg);

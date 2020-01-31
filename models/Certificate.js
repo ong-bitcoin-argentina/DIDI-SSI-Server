@@ -62,12 +62,9 @@ module.exports = Certificate;
 
 Certificate.generate = async function(type, userDID, status, jwt, hash) {
 	try {
-		const hashData = await Hashing.hash(jwt);
-
 		let certStatus = await Certificate.findOne({
-			userDID: didHashData,
-			hash: hash,
-			"jwt.hash": hashData.hash
+			userDID: userDID,
+			hash: hash
 		});
 		if (!certStatus) certStatus = new Certificate();
 		certStatus.userDID = userDID;
@@ -75,7 +72,7 @@ Certificate.generate = async function(type, userDID, status, jwt, hash) {
 		certStatus.hash = hash;
 		certStatus.certType = type;
 		certStatus.createdOn = new Date();
-		await Encrypt.setEncryptedData(certStatus, "jwt", jwt);
+		await Encrypt.setEncryptedData(certStatus, "jwt", jwt, true);
 
 		certStatus = await certStatus.save();
 		return Promise.resolve(certStatus);
@@ -85,10 +82,9 @@ Certificate.generate = async function(type, userDID, status, jwt, hash) {
 	}
 };
 
-Certificate.findByJwt = async function(jwt) {
+Certificate.findByHash = async function(hash) {
 	try {
-		const hashData = await Hashing.hash(jwt);
-		const query = { "jwt.hash": hashData.hash };
+		const query = { hash: hash };
 		const request = await Certificate.findOne(query);
 		return Promise.resolve(request);
 	} catch (err) {

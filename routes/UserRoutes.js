@@ -377,9 +377,12 @@ router.post(
 
 		const data = await MouroService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
 		const jwt = data.payload.verified[0];
-
+		console.log(jwt);
 		try {
-			const cert = await Certificate.findByJwt(jwt);
+			const hash = await MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
+			if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
+
+			const cert = await Certificate.findByHash(hash);
 			const certDid = await cert.getDid();
 			if (certDid !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
 
@@ -391,10 +394,15 @@ router.post(
 			const wrappedIndex = Object.keys(credData[certCategory]).indexOf("wrapped");
 			if (wrappedIndex >= 0) {
 				for (let key of Object.keys(credData[certCategory].wrapped)) {
-					const microCert = await Certificate.findByJwt(credData[certCategory].wrapped[key]);
+					const hash = await MouroService.isInMouro(credData[certCategory].wrapped[key], Messages.ISSUER.ERR.NOT_FOUND);
+					if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
+
+					const microCert = await Certificate.findByHash(hash);
 					microCert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 				}
 			}
+
+			console.log(cert);
 
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
