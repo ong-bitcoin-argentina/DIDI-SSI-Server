@@ -11,6 +11,8 @@ const SmsRoutes = require("./routes/SmsRoutes");
 const MailRoutes = require("./routes/MailRoutes");
 const RenaperRoutes = require("./routes/RenaperRoutes");
 
+const BlockchainRoutes = require("./routes/BlockchainRoutes");
+
 // set up node module clusters - one worker per CPU available
 var cluster = require("cluster");
 var numCPUs = require("os").cpus().length;
@@ -81,6 +83,7 @@ app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
 app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
+app.use(route, BlockchainRoutes);
 
 if (cluster.isMaster) {
 	console.log(Messages.INDEX.MSG.STARTING_WORKERS(numCPUs));
