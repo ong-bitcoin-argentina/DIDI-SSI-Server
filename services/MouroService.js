@@ -2,6 +2,8 @@ const Constants = require("../constants/Constants");
 const Messages = require("../constants/Messages");
 const Certificate = require("../models/Certificate");
 
+const BlockchainService = require("../services/BlockchainService");
+
 const { Credentials } = require("uport-credentials");
 
 const EthrDID = require("ethr-did");
@@ -228,9 +230,26 @@ module.exports.verifyCertificateAndDid = async function(jwt, hash, issuerDid, er
 		if (result.payload.iss === issuerDid) {
 			console.log(Messages.CERTIFICATE.VERIFIED);
 			return Promise.resolve(result);
-		}
+		} else {
+			let cleanIssuerDid = issuerDid.split(":");
+			cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
 
-		return Promise.resolve(null);
+			let cleanIssDid = result.payload.iss.split(":");
+			cleanIssDid = cleanIssDid[cleanIssDid.length - 1];
+
+			const delegate = await BlockchainService.validDelegate(
+				cleanIssuerDid,
+				{ from: Constants.SERVER_DID },
+				cleanIssDid
+			);
+
+			if (delegate) {
+				console.log(Messages.CERTIFICATE.VERIFIED);
+				return Promise.resolve(result);
+			}
+
+			return Promise.reject(errMsg);
+		}
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(errMsg);

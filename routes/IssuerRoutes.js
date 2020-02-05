@@ -6,6 +6,8 @@ const IssuerService = require("../services/IssuerService");
 const MouroService = require("../services/MouroService");
 const UserService = require("../services/UserService");
 
+const BlockchainService = require("../services/BlockchainService");
+
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
@@ -27,12 +29,7 @@ router.post(
 			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
 			console.log("validating jwt for " + did);
-			const verified = await MouroService.verifyCertificateAndDid(
-				jwt,
-				undefined,
-				did,
-				Messages.ISSUER.ERR.CERT_IS_INVALID
-			);
+			const verified = await MouroService.verifyCertificateAndDid(jwt, undefined, did, Messages.ISSUER.ERR.IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
 			const sub = verified.payload.sub;
@@ -151,7 +148,6 @@ router.post(
 			const keys = Object.keys(subject);
 			const subcredentials = subject[keys[0]].wrapped;
 
-			console.log(cert.status);
 			let err = cert.status === Constants.CERTIFICATE_STATUS.REVOKED ? Messages.ISSUER.ERR.REVOKED : false;
 
 			// tiene subcredenciales
@@ -183,9 +179,32 @@ router.post(
 				if (cert.payload.iss !== firstSubCred.payload.iss && cert.payload.iss !== firstSubCred.payload.sub)
 					err = Messages.ISSUER.ERR.IS_INVALID;
 
-				const did = firstSubCred.payload.iss;
+				const delegator = firstSubCred.payload.delegator;
+				let did = firstSubCred.payload.iss;
 				const sub = firstSubCred.payload.sub;
-				const issuer = await IssuerService.getIssuer(did);
+
+				// si fue emitido por un issuer delegado, validar delegacion
+				if (delegator) {
+					let cleanIssuerDid = did.split(":");
+					cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
+
+					let cleanIssDid = delegator.split(":");
+					cleanIssDid = cleanIssDid[cleanIssDid.length - 1];
+
+					const delegate = await BlockchainService.validDelegate(
+						cleanIssDid,
+						{ from: Constants.SERVER_DID },
+						cleanIssuerDid
+					);
+
+					if (!delegate) {
+						cert.issuer = false;
+						err = Messages.ISSUER.ERR.IS_INVALID;
+					}
+				}
+
+				// validar issuer o delegador en caso de issuer delegado
+				const issuer = await IssuerService.getIssuer(delegator ? delegator : did);
 				if (!issuer) {
 					cert.issuer = false;
 					err = Messages.ISSUER.ERR.IS_INVALID;
@@ -218,8 +237,31 @@ router.post(
 			} else {
 				//no tiene subcredenciales
 
+				let did = cert.payload.iss;
+				const delegator = cert.payload.delegator;
+				// si fue emitido por un issuer delegado, validar delegacion
+				if (delegator) {
+					let cleanIssuerDid = did.split(":");
+					cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
+
+					let cleanIssDid = delegator.split(":");
+					cleanIssDid = cleanIssDid[cleanIssDid.length - 1];
+
+					const delegate = await BlockchainService.validDelegate(
+						cleanIssDid,
+						{ from: Constants.SERVER_DID },
+						cleanIssuerDid
+					);
+
+					if (!delegate) {
+						cert.issuer = false;
+						err = Messages.ISSUER.ERR.IS_INVALID;
+					}
+				}
+
 				// validar emisor
-				const issuer = await IssuerService.getIssuer(cert.payload.iss);
+				did = delegator ? delegator : did;
+				const issuer = await IssuerService.getIssuer(did);
 				cert.issuer = issuer ? issuer.name : false;
 				if (!err && !cert.issuer) err = Messages.ISSUER.ERR.IS_INVALID;
 
