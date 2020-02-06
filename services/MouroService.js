@@ -150,13 +150,19 @@ module.exports.createMailCertificate = async function(did, email) {
 };
 
 // genera un certificado pidiendo info a determinado usuario
-module.exports.createPetition = async function(did, data) {
-	const credentials = new Credentials({ did: "did:ethr:" + Constants.SERVER_DID, signer });
-
+module.exports.createPetition = async function(did, claims, cb) {
 	try {
-		const petition = await credentials.createDisclosureRequest(data);
+		const payload = {
+			iss: "did:ethr:" + Constants.ISSUER_SERVER_DID,
+			callback: cb,
+			claims: claims,
+			type: "shareReq"
+		};
+	
+		const credentials = new Credentials({ did: "did:ethr:" + Constants.SERVER_DID, signer });
+		const petition = await credentials.signJWT(payload);
 		if (Constants.DEBUGG) console.log(petition);
-		const result = module.exports.createShareRequest(did, petition);
+		const result = module.exports.createShareRequest(did, undefined, petition);
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
@@ -165,11 +171,9 @@ module.exports.createPetition = async function(did, data) {
 };
 
 // genera un certificado pidiendo info a determinado usuario
-module.exports.createShareRequest = async function(did, jwt) {
-	const token = await createJWT(
-		{ sub: did, disclosureRequest: jwt },
-		{ alg: "ES256K-R", issuer: "did:ethr:" + Constants.SERVER_DID, signer }
-	);
+module.exports.createShareRequest = async function(did, delegatorDid, jwt) {
+	const payload = { sub: did, disclosureRequest: jwt, delegator: delegatorDid };
+	const token = await createJWT(payload, { alg: "ES256K-R", issuer: "did:ethr:" + Constants.SERVER_DID, signer });
 	return token;
 };
 
@@ -223,33 +227,38 @@ module.exports.verifyCertificatePhoneNumber = async function(jwt, hash) {
 	return result;
 };
 
+module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegatorDid, errMsg) {
+	let cleanCertIssDid = certIssDid.split(":");
+	cleanCertIssDid = cleanCertIssDid[cleanCertIssDid.length - 1];
+
+	let cleanIssuerDid = issuerDid.split(":");
+	cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
+
+	let cleanDelegatorDid = delegatorDid ? delegatorDid.split(":") : [];
+	cleanDelegatorDid = cleanDelegatorDid[cleanDelegatorDid.length - 1];
+
+	if (cleanIssuerDid === cleanCertIssDid) {
+		console.log(Messages.CERTIFICATE.VERIFIED);
+		return Promise.resolve();
+	} else {
+		const delegate = await BlockchainService.validDelegate(
+			cleanDelegatorDid,
+			{ from: Constants.SERVER_DID },
+			cleanIssuerDid
+		);
+		if (delegate) {
+			console.log(Messages.CERTIFICATE.VERIFIED);
+			return Promise.resolve();
+		}
+		return Promise.reject(errMsg);
+	}
+};
+
 module.exports.verifyCertificateAndDid = async function(jwt, hash, issuerDid, errMsg) {
 	try {
 		let result = await module.exports.verifyCertificate(jwt, hash, errMsg);
-
-		if (result.payload.iss === issuerDid) {
-			console.log(Messages.CERTIFICATE.VERIFIED);
-			return Promise.resolve(result);
-		} else {
-			let cleanIssuerDid = issuerDid.split(":");
-			cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
-
-			let cleanIssDid = result.payload.iss.split(":");
-			cleanIssDid = cleanIssDid[cleanIssDid.length - 1];
-
-			const delegate = await BlockchainService.validDelegate(
-				cleanIssuerDid,
-				{ from: Constants.SERVER_DID },
-				cleanIssDid
-			);
-
-			if (delegate) {
-				console.log(Messages.CERTIFICATE.VERIFIED);
-				return Promise.resolve(result);
-			}
-
-			return Promise.reject(errMsg);
-		}
+		await module.exports.verifyIssuerDid(issuerDid, result.payload.iss, result.payload.delegator, errMsg);
+		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(errMsg);

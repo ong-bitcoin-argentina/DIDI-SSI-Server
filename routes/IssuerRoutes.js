@@ -24,10 +24,6 @@ router.post(
 		const jwt = req.body.jwt;
 
 		try {
-			console.log("checking issuer authorization for " + did);
-			const issuer = await IssuerService.getIssuer(did);
-			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-
 			console.log("validating jwt for " + did);
 			const verified = await MouroService.verifyCertificateAndDid(jwt, undefined, did, Messages.ISSUER.ERR.IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
@@ -61,12 +57,14 @@ router.post(
 router.post(
 	"/issuer/issueShareRequest",
 	Validator.validateBody([
+		{ name: "delegatorDid", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
 		{ name: "issuerDid", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
+		const delegatorDid = req.body.delegatorDid;
 		const issuerDid = req.body.issuerDid;
 		const did = req.body.did;
 		const jwt = req.body.jwt;
@@ -75,11 +73,16 @@ router.post(
 			// validar que el emisor sea valido
 			const decoded = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (decoded.payload.iss != issuerDid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			if (delegatorDid) {
+				await MouroService.verifyIssuerDid(issuerDid, decoded.payload.iss, delegatorDid, Messages.ISSUER.ERR.IS_INVALID);
+				const issuer = await IssuerService.getIssuer(delegatorDid);
+				if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+			} else {
+				const issuer = await IssuerService.getIssuer(issuerDid);
+				if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+			}
 
-			const issuer = await IssuerService.getIssuer(issuerDid);
-			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-
-			const shareReq = await MouroService.createShareRequest(did, jwt);
+			const shareReq = await MouroService.createShareRequest(did, delegatorDid, jwt);
 			const result = await MouroService.saveCertificate(shareReq, did);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -105,10 +108,6 @@ router.post(
 		const hash = req.body.hash;
 
 		try {
-			console.log("checking issuer authorization for " + did);
-			const issuer = await IssuerService.getIssuer(did);
-			if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-
 			const verified = await MouroService.verifyCertificateAndDid(jwt, hash, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 

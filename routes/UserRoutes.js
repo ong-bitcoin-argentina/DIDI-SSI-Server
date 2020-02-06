@@ -347,19 +347,16 @@ router.post(
 			const name = Object.keys(decoded.payload.vc.credentialSubject)[0];
 
 			const cb = Constants.ADDRESS + ":" + Constants.PORT + "/api/1.0/didi/verifyCredential";
-			const data = {
-				callbackUrl: cb,
-				claims: {
-					verifiable: {
-						[name]: {
-							jwt: jwt,
-							essential: true
-						}
+			const claims = {
+				verifiable: {
+					[name]: {
+						jwt: jwt,
+						essential: true
 					}
 				}
 			};
 
-			const petition = await MouroService.createPetition(did, data);
+			const petition = await MouroService.createPetition(did, claims, cb);
 			const result = await MouroService.saveCertificate(petition, did);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -377,7 +374,7 @@ router.post(
 
 		const data = await MouroService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
 		const jwt = data.payload.verified[0];
-		console.log(jwt);
+
 		try {
 			const hash = await MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
 			if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
