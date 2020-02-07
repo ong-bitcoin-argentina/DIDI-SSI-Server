@@ -152,13 +152,16 @@ module.exports.createMailCertificate = async function(did, email) {
 // genera un certificado pidiendo info a determinado usuario
 module.exports.createPetition = async function(did, claims, cb) {
 	try {
+		const exp = ((new Date().getTime() + 600000) / 1000) | 0;
+
 		const payload = {
 			iss: "did:ethr:" + Constants.ISSUER_SERVER_DID,
+			exp: exp,
 			callback: cb,
 			claims: claims,
 			type: "shareReq"
 		};
-	
+
 		const credentials = new Credentials({ did: "did:ethr:" + Constants.SERVER_DID, signer });
 		const petition = await credentials.signJWT(payload);
 		if (Constants.DEBUGG) console.log(petition);
