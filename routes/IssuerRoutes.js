@@ -12,6 +12,9 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
+/*
+	Valida y envia a mouro el certificado generado por el issuer para ser guardado
+*/
 router.post(
 	"/issuer/issueCertificate",
 	Validator.validateBody([
@@ -25,16 +28,20 @@ router.post(
 
 		try {
 			console.log("validating jwt for " + did);
+			// validar certificado y emisor (que este autorizado para emitir)
 			const verified = await MouroService.verifyCertificateAndDid(jwt, undefined, did, Messages.ISSUER.ERR.IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
+			// validar sujeto (que este registrado en didi)
 			const sub = verified.payload.sub;
 			let subject = await UserService.getByDID(sub);
 			if (!subject) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_SUB_IS_INVALID);
 
 			console.log("creating certificate for " + did);
+			// guardar certificado en mouro
 			const result = await MouroService.saveCertificate(jwt, verified.payload.sub);
 
+			// guardar estado
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
 				verified.payload.sub,
@@ -44,6 +51,7 @@ router.post(
 			);
 
 			console.log("getting hash for " + did);
+			// guardar hash de recuperacion (swarm)
 			const hash = await MouroService.getHash(verified.payload.sub);
 			if (hash) subject = await subject.updateHash(hash);
 
@@ -54,6 +62,10 @@ router.post(
 	}
 );
 
+/*
+	Permite pedir al usuario dueño del did, uno o mas certificados para obtener la informacion de los mismos
+	(genera un shareRequest y lo envia via mouro para que el usuario envie la informacion)
+*/
 router.post(
 	"/issuer/issueShareRequest",
 	Validator.validateBody([
@@ -74,7 +86,12 @@ router.post(
 			const decoded = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (decoded.payload.iss != issuerDid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (delegatorDid) {
-				await MouroService.verifyIssuerDid(issuerDid, decoded.payload.iss, delegatorDid, Messages.ISSUER.ERR.IS_INVALID);
+				await MouroService.verifyIssuerDid(
+					issuerDid,
+					decoded.payload.iss,
+					delegatorDid,
+					Messages.ISSUER.ERR.IS_INVALID
+				);
 				const issuer = await IssuerService.getIssuer(delegatorDid);
 				if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 			} else {
@@ -82,6 +99,7 @@ router.post(
 				if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 			}
 
+			// crear el pedido y mandarlo a travez de mouro
 			const shareReq = await MouroService.createShareRequest(did, delegatorDid, jwt);
 			const result = await MouroService.saveCertificate(shareReq, did);
 			return ResponseHandler.sendRes(res, result);
@@ -92,6 +110,10 @@ router.post(
 	}
 );
 
+/*
+	Permite revocar un certificado previamente almacenado en mouro
+	(la revocacion no esta implementada, de momento esto simplemente elimina los certificados)
+*/
 router.post(
 	"/issuer/revokeCertificate",
 	Validator.validateBody([
@@ -108,12 +130,15 @@ router.post(
 		const hash = req.body.hash;
 
 		try {
+			// validar certificado y emisor
 			const verified = await MouroService.verifyCertificateAndDid(jwt, hash, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
 			console.log("revoking certificate for " + did);
+			// revocar certificado
 			await MouroService.revokeCertificate(jwt, hash, sub);
 
+			// actualizar estado
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
 				verified.payload.sub,
@@ -129,6 +154,10 @@ router.post(
 	}
 );
 
+/*
+	Permite validar un certificado a partir del jwt
+	(utilizado principalmente por el viewer)
+*/
 router.post(
 	"/issuer/verifyCertificate",
 	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -149,7 +178,7 @@ router.post(
 
 			let err = cert.status === Constants.CERTIFICATE_STATUS.REVOKED ? Messages.ISSUER.ERR.REVOKED : false;
 
-			// tiene subcredenciales
+			// tiene subcredenciales -> validarlas tambien
 			if (subcredentials) {
 				const data = {};
 				const subcredencialKeys = Object.keys(subcredentials);
@@ -165,11 +194,13 @@ router.post(
 					mouroCalls.push(MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND));
 				}
 
+				// verificar en // que las microcredenciales esten en mouro
 				const mouroRes = await Promise.all(mouroCalls);
 				if (!err) {
 					for (let isInMouro of mouroRes) if (!isInMouro) err = Messages.ISSUER.ERR.NOT_FOUND;
 				}
 
+				// hacer verificaciones en //
 				const childCerts = await Promise.all(verifyCalls);
 
 				// para la primer subcredencial validar el issuer
@@ -280,6 +311,10 @@ router.post(
 	}
 );
 
+/*
+	Autorizar un issuer para la emision de certificados
+	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
+*/
 router.post(
 	"/issuer/",
 	Validator.validateBody([
@@ -300,6 +335,9 @@ router.post(
 	}
 );
 
+/*
+	Obtener nombre de un emisor autorizado a partir de su did
+*/
 router.get("/issuer/:did", Validator.checkValidationResult, async function(req, res) {
 	const did = req.params.did;
 
@@ -312,6 +350,10 @@ router.get("/issuer/:did", Validator.checkValidationResult, async function(req, 
 	}
 });
 
+/*
+	Revocar autorizacion de un emisor para emitir certificados
+	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
+*/
 router.delete(
 	"/issuer/",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -328,6 +370,10 @@ router.delete(
 	}
 );
 
+/*
+	Utilitario, permite generar header para hacer llamadas en la consola de mouro a mano
+	(se recomienda eliminarlo en la version final)
+*/
 router.get("/headers/:did/:key", Validator.checkValidationResult, async function(req, res) {
 	const did = req.params.did;
 	const key = req.params.key;

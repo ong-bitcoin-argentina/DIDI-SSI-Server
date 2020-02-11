@@ -4,6 +4,7 @@ const Encrypt = require("./utils/Encryption");
 const EncryptedData = require("./dataTypes/EncryptedData");
 const HashedData = require("./dataTypes/HashedData");
 
+// Registra la informacion correspondiente a un usuario de didi
 const UserSchema = new mongoose.Schema({
 	did: {
 		type: String,
@@ -38,7 +39,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.index(
-	{ "did": 1, deleted: 1 },
+	{ did: 1, deleted: 1 },
 	{
 		unique: true
 	}
@@ -51,6 +52,7 @@ UserSchema.index(
 	}
 );
 
+// retorna clave privada del usuario
 UserSchema.methods.getSeed = async function() {
 	try {
 		const result = await Encrypt.decript(this.seed.encrypted);
@@ -61,6 +63,7 @@ UserSchema.methods.getSeed = async function() {
 	}
 };
 
+// compara los campos hasheados
 UserSchema.methods.compareField = async function(name, candidate) {
 	try {
 		const result = await Hashing.validateHash(candidate, this[name]);
@@ -71,9 +74,12 @@ UserSchema.methods.compareField = async function(name, candidate) {
 	}
 };
 
+// actualiza la contraseña del usuario
 UserSchema.methods.updatePassword = async function(password) {
+	// hashear clave
 	const hashData = await Hashing.saltedHash(password);
 
+	// actualizar clave
 	const updateQuery = { _id: this._id };
 	const updateAction = {
 		$set: { password: hashData, modifiedOn: new Date() }
@@ -88,6 +94,7 @@ UserSchema.methods.updatePassword = async function(password) {
 	}
 };
 
+// actualiza el numero de telefono asociado al usuario
 UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
 	const oldPhone = {
 		encrypted: this.phoneNumber.encrypted,
@@ -95,9 +102,12 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
 		hash: this.phoneNumber.hash
 	};
 
+	// encriptar numero
 	await Encrypt.setEncryptedData(this, "phoneNumber", newPhoneNumber);
+	// si no hay cambio, retornar
 	if (oldPhone.hash === this.phoneNumber.hash) return Promise.resolve(this);
 
+	// actualizar numero
 	const updateQuery = { _id: this._id };
 	const updateAction = {
 		$set: { phoneNumber: this.phoneNumber, modifiedOn: new Date() },
@@ -113,6 +123,7 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
 	}
 };
 
+// actualiza el mail asociado al usuario
 UserSchema.methods.updateEmail = async function(newEmail) {
 	const oldMail = {
 		encrypted: this.mail.encrypted,
@@ -120,10 +131,12 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 		hash: this.mail.hash
 	};
 
+	// encriptar mail
 	await Encrypt.setEncryptedData(this, "mail", newEmail);
-
+	// si no hay cambio, retornar
 	if (oldMail.hash === this.mail.hash) return Promise.resolve(this);
 
+	// actualizar mail
 	const updateQuery = { _id: this._id };
 	const updateAction = {
 		$set: { mail: this.mail, modifiedOn: new Date() },
@@ -139,6 +152,7 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 	}
 };
 
+// actualiza el hash de backup (swarm)
 UserSchema.methods.updateHash = async function(hash) {
 	const updateQuery = { _id: this._id };
 	const updateAction = {
@@ -154,16 +168,19 @@ UserSchema.methods.updateHash = async function(hash) {
 	}
 };
 
+// retornar mail asociado al usuario
 UserSchema.methods.getMail = async function() {
 	return await Encrypt.getEncryptedData(this, "mail");
 };
 
+// retornar numero de telefono asociado al usuario
 UserSchema.methods.getPhoneNumber = async function() {
 	return await Encrypt.getEncryptedData(this, "phoneNumber");
 };
 
+// retornar did asociado al usuario
 UserSchema.methods.getDid = async function() {
-	return this.did = did;
+	return (this.did = did);
 };
 
 const User = mongoose.model("User", UserSchema);
@@ -192,6 +209,7 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 	}
 };
 
+// obtener usuario a partir del did
 User.getByDID = async function(did) {
 	try {
 		const query = { did: did, deleted: false };
@@ -203,6 +221,7 @@ User.getByDID = async function(did) {
 	}
 };
 
+// obtener usuario a partir del mail
 User.getByEmail = async function(email) {
 	try {
 		const hashData = await Hashing.hash(email);
@@ -215,6 +234,7 @@ User.getByEmail = async function(email) {
 	}
 };
 
+// obtener usuario a partir del numero de telefono
 User.getByTel = async function(phoneNumber) {
 	try {
 		const hashData = await Hashing.hash(phoneNumber);

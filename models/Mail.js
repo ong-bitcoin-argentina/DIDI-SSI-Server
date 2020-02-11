@@ -6,6 +6,7 @@ const HashedData = require("./dataTypes/HashedData");
 
 const Constants = require("../constants/Constants");
 
+// Registra los pedidos de validacion de mails
 const MailSchema = new mongoose.Schema({
 	email: EncryptedData,
 	did: {
@@ -66,10 +67,12 @@ MailSchema.methods.validateMail = async function(did) {
 	}
 };
 
+// retorna el mail a validar
 MailSchema.methods.getMail = async function() {
 	return await Encrypt.getEncryptedData(this, "email");
 };
 
+// retorna el did al que fue dirigido el pedido de validacion
 MailSchema.methods.getDid = async function() {
 	return this.did;
 };
@@ -104,7 +107,7 @@ Mail.generate = async function(email, code, did) {
 	}
 };
 
-// obtener por mail
+// obtener pedido de validacion de mail no validado correspondiente a ese mail
 Mail.getByEmail = async function(email) {
 	try {
 		const hashData = await Hashing.hash(email);
@@ -117,6 +120,7 @@ Mail.getByEmail = async function(email) {
 	}
 };
 
+// retorna true si el mail fue validado para ese did
 Mail.isValidated = async function(did, email) {
 	try {
 		const hashData = await Hashing.hash(email);

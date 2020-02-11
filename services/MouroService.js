@@ -21,6 +21,7 @@ const resolver = new Resolver(
 	getResolver({ rpcUrl: Constants.BLOCKCHAIN.BLOCK_CHAIN_URL, registry: Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT })
 );
 
+// inicializa cliente para realizar llamadas a mouro
 const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
 let getClient = async function() {
 	const auth = await module.exports.getAuthHeader("did:ethr:" + Constants.SERVER_DID, Constants.SERVER_PRIVATE_KEY);
@@ -38,6 +39,7 @@ let getClient = async function() {
 	});
 };
 
+// agrega token a pedidos para indicar a mouro que es el didi-server quien realiza los llamados
 module.exports.getAuthHeader = async function(did, key) {
 	const signer = SimpleSigner(key);
 	const token = await createJWT({ exp: new Date().getTime() / 1000 + 500 }, { alg: "ES256K-R", issuer: did, signer });
@@ -117,6 +119,7 @@ module.exports.revokeCertificate = async function(jwt, hash, did) {
 	}
 };
 
+// genera un certificado que certifique la propiedad del numero de telefono por parte del dueño del did
 module.exports.createPhoneCertificate = async function(did, phoneNumber) {
 	const subject = {
 		Phone: {
@@ -133,6 +136,7 @@ module.exports.createPhoneCertificate = async function(did, phoneNumber) {
 	return module.exports.createCertificate(did, subject, undefined, Messages.SMS.ERR.CERT.CREATE);
 };
 
+// genera un certificado que certifique la propiedad del mail por parte del dueño del did
 module.exports.createMailCertificate = async function(did, email) {
 	const subject = {
 		Email: {
@@ -210,6 +214,7 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 	}
 };
 
+// analiza la validez del certificado para el certificado de numero de mail
 module.exports.verifyCertificateEmail = async function(jwt, hash) {
 	const result = await module.exports.verifyCertificateAndDid(
 		jwt,
@@ -220,6 +225,7 @@ module.exports.verifyCertificateEmail = async function(jwt, hash) {
 	return result;
 };
 
+// analiza la validez del certificado para el certificado de numero de telefono
 module.exports.verifyCertificatePhoneNumber = async function(jwt, hash) {
 	const result = await module.exports.verifyCertificateAndDid(
 		jwt,
@@ -230,33 +236,20 @@ module.exports.verifyCertificatePhoneNumber = async function(jwt, hash) {
 	return result;
 };
 
-module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegatorDid, errMsg) {
-	let cleanCertIssDid = certIssDid.split(":");
-	cleanCertIssDid = cleanCertIssDid[cleanCertIssDid.length - 1];
-
-	let cleanIssuerDid = issuerDid.split(":");
-	cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
-
-	let cleanDelegatorDid = delegatorDid ? delegatorDid.split(":") : [];
-	cleanDelegatorDid = cleanDelegatorDid[cleanDelegatorDid.length - 1];
-
-	if (cleanIssuerDid === cleanCertIssDid) {
-		console.log(Messages.CERTIFICATE.VERIFIED);
-		return Promise.resolve();
-	} else {
-		const delegate = await BlockchainService.validDelegate(
-			cleanDelegatorDid,
-			{ from: Constants.SERVER_DID },
-			cleanIssuerDid
-		);
-		if (delegate) {
-			console.log(Messages.CERTIFICATE.VERIFIED);
-			return Promise.resolve();
-		}
+// decodifica el certificado, retornando la info (independientemente de si el certificado es valido o no)
+module.exports.decodeCertificate = async function(jwt, errMsg) {
+	try {
+		let result = await decodeJWT(jwt);
+		return Promise.resolve(result);
+	} catch (err) {
+		console.log(err);
 		return Promise.reject(errMsg);
 	}
 };
 
+// analiza la validez del certificado, su formato, emisor, etc
+// adicionalmente, analiza la validez del emisor del certificado
+// retorna la info del certificado y su estado
 module.exports.verifyCertificateAndDid = async function(jwt, hash, issuerDid, errMsg) {
 	try {
 		let result = await module.exports.verifyCertificate(jwt, hash, errMsg);
@@ -268,16 +261,8 @@ module.exports.verifyCertificateAndDid = async function(jwt, hash, issuerDid, er
 	}
 };
 
-module.exports.decodeCertificate = async function(jwt, errMsg) {
-	try {
-		let result = await decodeJWT(jwt);
-		return Promise.resolve(result);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(errMsg);
-	}
-};
-
+// analiza la validez del certificado, su formato, emisor, etc
+// retorna la info del certificado y su estado
 module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 	try {
 		let result = await verifyCredential(jwt, resolver);
@@ -295,6 +280,44 @@ module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 	}
 };
 
+// analiza la validez del emisor del certificado
+module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegatorDid, errMsg) {
+	// did a validar
+	let cleanIssuerDid = issuerDid.split(":");
+	cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
+
+	// iss
+	let cleanCertIssDid = certIssDid.split(":");
+	cleanCertIssDid = cleanCertIssDid[cleanCertIssDid.length - 1];
+
+	// did delegador en caso que el did a validar no este autorizado de forma directa
+	let cleanDelegatorDid = delegatorDid ? delegatorDid.split(":") : [];
+	cleanDelegatorDid = cleanDelegatorDid[cleanDelegatorDid.length - 1];
+
+	// validar que el emisor es el correcto
+	if (cleanIssuerDid === cleanCertIssDid) {
+		if (delegatorDid) {
+			// validar que el delegador haya delegado al issuer
+			const delegate = await BlockchainService.validDelegate(
+				cleanDelegatorDid,
+				{ from: Constants.SERVER_DID },
+				cleanIssuerDid
+			);
+			if (delegate) {
+				console.log(Messages.CERTIFICATE.VERIFIED);
+				return Promise.resolve();
+			}
+		}
+		console.log(Messages.CERTIFICATE.VERIFIED);
+		return Promise.resolve();
+	} else {
+		return Promise.reject(errMsg);
+	}
+};
+
+
+// realiza llamado a mouro pidiendo el jwt para ver si este existe en mouro
+// retorna el hash interno en mouro
 module.exports.isInMouro = async function(jwt, errMsg) {
 	try {
 		let result = await (await getClient()).query({

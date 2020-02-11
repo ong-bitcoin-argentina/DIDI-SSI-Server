@@ -4,6 +4,7 @@ const Encrypt = require("./utils/Encryption");
 const EncryptedData = require("./dataTypes/EncryptedData");
 const HashedData = require("./dataTypes/HashedData");
 
+// Registra los pedidos de validacion de numeros de telefono
 const PhoneSchema = new mongoose.Schema({
 	phoneNumber: EncryptedData,
 	did: {
@@ -64,10 +65,12 @@ PhoneSchema.methods.validatePhone = async function(did) {
 	}
 };
 
+// retorna el numero de telefono a validar
 PhoneSchema.methods.getPhoneNumber = async function() {
 	return await Encrypt.getEncryptedData(this, "phoneNumber");
 };
 
+// retorna el did al que fue dirigido el pedido de validacion
 PhoneSchema.methods.getDid = async function() {
 	return this.did;
 };
@@ -104,7 +107,7 @@ Phone.generate = async function(phoneNumber, code, did) {
 	}
 };
 
-// obtener por tel
+// obtener pedido de validacion de numero de telefono no validado correspondiente a ese numero
 Phone.getByPhoneNumber = async function(phoneNumber) {
 	try {
 		const hashData = await Hashing.hash(phoneNumber);
@@ -117,6 +120,7 @@ Phone.getByPhoneNumber = async function(phoneNumber) {
 	}
 };
 
+// retorna true si el numero de telefono fue validado para ese did
 Phone.isValidated = async function(did, phoneNumber) {
 	try {
 		const hashData = await Hashing.hash(phoneNumber);

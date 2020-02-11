@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Registra los emisores autorizados a emitir certificados
 const IssuerSchema = new mongoose.Schema({
 	did: {
 		type: String,
@@ -24,6 +25,7 @@ IssuerSchema.index({ did: 1 }, { deleted: true });
 const Issuer = mongoose.model("Issuer", IssuerSchema);
 module.exports = Issuer;
 
+// autorizar a un nuevo emisor a emitir certificados
 Issuer.generate = async function(did, name) {
 	try {
 		const query = { did: did, deleted: false };
@@ -49,6 +51,7 @@ Issuer.generate = async function(did, name) {
 	}
 };
 
+// revocar autorizacion de un nuevo emisor a emitir certificados
 Issuer.delete = async function(did) {
 	try {
 		const query = { did: did, deleted: false };
@@ -61,6 +64,7 @@ Issuer.delete = async function(did) {
 	}
 };
 
+// retorna emisor no revocado a partir del did
 Issuer.getIssuer = async function(did) {
 	try {
 		const query = { did: did, deleted: false };
