@@ -100,7 +100,7 @@ router.post(
 			}
 
 			// crear el pedido y mandarlo a travez de mouro
-			const shareReq = await MouroService.createShareRequest(did, delegatorDid, jwt);
+			const shareReq = await MouroService.createShareRequest(did, jwt);
 			const result = await MouroService.saveCertificate(shareReq, did);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {

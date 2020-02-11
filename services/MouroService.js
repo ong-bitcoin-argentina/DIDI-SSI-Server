@@ -169,7 +169,7 @@ module.exports.createPetition = async function(did, claims, cb) {
 		const credentials = new Credentials({ did: "did:ethr:" + Constants.SERVER_DID, signer });
 		const petition = await credentials.signJWT(payload);
 		if (Constants.DEBUGG) console.log(petition);
-		const result = module.exports.createShareRequest(did, undefined, petition);
+		const result = module.exports.createShareRequest(did, petition);
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
@@ -178,8 +178,8 @@ module.exports.createPetition = async function(did, claims, cb) {
 };
 
 // genera un certificado pidiendo info a determinado usuario
-module.exports.createShareRequest = async function(did, delegatorDid, jwt) {
-	const payload = { sub: did, disclosureRequest: jwt, delegator: delegatorDid };
+module.exports.createShareRequest = async function(did, jwt) {
+	const payload = { sub: did, disclosureRequest: jwt };
 	const token = await createJWT(payload, { alg: "ES256K-R", issuer: "did:ethr:" + Constants.SERVER_DID, signer });
 	return token;
 };
@@ -314,7 +314,6 @@ module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegator
 		return Promise.reject(errMsg);
 	}
 };
-
 
 // realiza llamado a mouro pidiendo el jwt para ver si este existe en mouro
 // retorna el hash interno en mouro
