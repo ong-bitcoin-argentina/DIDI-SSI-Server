@@ -9,6 +9,7 @@ const statuses = [
 	Constants.CERTIFICATE_STATUS.REVOKED
 ];
 
+// Registra la informacion del estado de un certificado emitido
 const CertificateSchema = new mongoose.Schema({
 	userDID: {
 		type: String,
@@ -48,10 +49,12 @@ CertificateSchema.methods.update = async function(status) {
 	}
 };
 
+// retorna el jwt del certificado
 CertificateSchema.methods.getJwt = async function() {
 	return await Encrypt.getEncryptedData(this, "jwt");
 };
 
+// retorna el did del dueño del certificado
 CertificateSchema.methods.getDid = async function() {
 	return this.userDID;
 };
@@ -59,6 +62,7 @@ CertificateSchema.methods.getDid = async function() {
 const Certificate = mongoose.model("Certificate", CertificateSchema);
 module.exports = Certificate;
 
+// inicailizar registro de estado de un certificado
 Certificate.generate = async function(type, userDID, status, jwt, hash) {
 	try {
 		let certStatus = await Certificate.findOne({
@@ -81,6 +85,7 @@ Certificate.generate = async function(type, userDID, status, jwt, hash) {
 	}
 };
 
+// retorna el pedido buscandolo por el 'hash' de mouro
 Certificate.findByHash = async function(hash) {
 	try {
 		const query = { hash: hash };
@@ -92,6 +97,7 @@ Certificate.findByHash = async function(hash) {
 	}
 };
 
+// retorna el pedido buscandolo por tipo de certificado (telefono, mail, domicilio, etc)
 Certificate.findByType = async function(did, type) {
 	try {
 		const query = { certType: type, userDID: did };

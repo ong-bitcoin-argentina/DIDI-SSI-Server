@@ -331,6 +331,10 @@ router.post(
 	}
 );
 
+/*
+	Permite pedir al usuario dueño del did, el certificado para validar que es efectivamente el dueño del mismo
+	(genera un shareRequest y lo envia via mouro para que el usuario valide el certificado)
+*/
 router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
@@ -365,6 +369,9 @@ router.post(
 	}
 );
 
+/*
+	Recibe la respuesta al pedido de '/verifyCredentialRequest', marcando al certificado como validado
+*/
 router.post(
 	"/verifyCredential",
 	Validator.validateBody([{ name: "access_token", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -376,20 +383,25 @@ router.post(
 		const jwt = data.payload.verified[0];
 
 		try {
+			// valido que el certificado este en mouro
 			const hash = await MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
 			if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
 
+			// obtengo el certificado
 			const cert = await Certificate.findByHash(hash);
 			const certDid = await cert.getDid();
+			// valido que el emisor sea el correcto
 			if (certDid !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
 
 			const certJwt = await cert.getJwt();
+			// decodifico jwt
 			const decoded = await MouroService.decodeCertificate(certJwt, Messages.CERTIFICATE.ERR.VERIFY);
 
 			const credData = decoded.payload.vc.credentialSubject;
 			const certCategory = Object.keys(credData)[0];
 			const wrappedIndex = Object.keys(credData[certCategory]).indexOf("wrapped");
 			if (wrappedIndex >= 0) {
+				// de haberlas, marco microcredenciales como validadas
 				for (let key of Object.keys(credData[certCategory].wrapped)) {
 					const hash = await MouroService.isInMouro(credData[certCategory].wrapped[key], Messages.ISSUER.ERR.NOT_FOUND);
 					if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
@@ -398,9 +410,7 @@ router.post(
 					microCert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 				}
 			}
-
-			console.log(cert);
-
+			// marco macrocredencial como validada
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
 		} catch (err) {
