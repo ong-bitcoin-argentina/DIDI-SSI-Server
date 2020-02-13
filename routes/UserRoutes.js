@@ -384,7 +384,7 @@ router.post(
 
 		try {
 			// valido que el certificado este en mouro
-			const hash = await MouroService.isInMouro(jwt, data.payload.sub, Messages.ISSUER.ERR.NOT_FOUND);
+			const hash = await MouroService.isInMouro(jwt, data.payload.iss, Messages.ISSUER.ERR.NOT_FOUND);
 			if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
 
 			// obtengo el certificado
