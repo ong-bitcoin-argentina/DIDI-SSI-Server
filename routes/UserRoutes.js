@@ -405,7 +405,7 @@ router.post(
 				for (let key of Object.keys(credData[certCategory].wrapped)) {
 					const hash = await MouroService.isInMouro(
 						credData[certCategory].wrapped[key],
-						data.payload.sub,
+						data.payload.iss,
 						Messages.ISSUER.ERR.NOT_FOUND
 					);
 					if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
