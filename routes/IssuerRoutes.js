@@ -160,14 +160,20 @@ router.post(
 */
 router.post(
 	"/issuer/verifyCertificate",
-	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "micros", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true }
+	]),
 	async function(req, res) {
 		const jwt = req.body.jwt;
+		const micros = req.body.micros ? req.body.micros.split(",") : [];
+		console.log(micros);
 
 		let cert;
 		try {
 			// validar formato y desempaquetar
-			const hash = await MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
+			const data = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			const hash = await MouroService.isInMouro(jwt, data.payload.sub, Messages.ISSUER.ERR.NOT_FOUND);
 			cert = await MouroService.verifyCertificate(jwt, hash, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!cert || !cert.payload.vc)
 				return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
@@ -186,12 +192,16 @@ router.post(
 				const verifyCalls = [];
 				const mouroCalls = [];
 				for (let key of subcredencialKeys) {
-					const jwt = subcredentials[key];
-					// validar formato y desempaquetar
-					verifyCalls.push(MouroService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.CERT_IS_INVALID));
+					console.log(key);
+					if (micros.length === 0 || micros.indexOf(key) >= 0) {
+						const jwt = subcredentials[key];
 
-					// validar fue emitido y no revocado
-					mouroCalls.push(MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND));
+						// validar formato y desempaquetar
+						verifyCalls.push(MouroService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.CERT_IS_INVALID));
+
+						// validar fue emitido y no revocado
+						mouroCalls.push(MouroService.isInMouro(jwt, data.payload.sub, Messages.ISSUER.ERR.NOT_FOUND));
+					}
 				}
 
 				// verificar en // que las microcredenciales esten en mouro
@@ -297,7 +307,7 @@ router.post(
 
 				// validar fue emitido y no revocado
 				if (!err) {
-					const isInMouro = await MouroService.isInMouro(jwt, Messages.ISSUER.ERR.NOT_FOUND);
+					const isInMouro = await MouroService.isInMouro(jwt, cert.payload.sub, Messages.ISSUER.ERR.NOT_FOUND);
 					if (!isInMouro) err = Messages.ISSUER.ERR.NOT_FOUND;
 				}
 

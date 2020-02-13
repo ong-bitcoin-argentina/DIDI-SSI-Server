@@ -317,18 +317,21 @@ module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegator
 
 // realiza llamado a mouro pidiendo el jwt para ver si este existe en mouro
 // retorna el hash interno en mouro
-module.exports.isInMouro = async function(jwt, errMsg) {
+module.exports.isInMouro = async function(jwt, did, errMsg) {
+	console.log(did);
+
 	try {
 		let result = await (await getClient()).query({
 			query: gql`
-				query($jwt: String) {
-					edgeByJwt(edgeJWT: $jwt) {
+				query($jwt: String!, $did: String!) {
+					edgeByJwt(edgeJWT: $jwt, did: $did) {
 						hash
 					}
 				}
 			`,
 			variables: {
-				jwt: jwt
+				jwt: jwt,
+				did: did
 			}
 		});
 		const res = result.data.edgeByJwt;
