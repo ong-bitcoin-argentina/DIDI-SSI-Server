@@ -192,7 +192,6 @@ router.post(
 				const verifyCalls = [];
 				const mouroCalls = [];
 				for (let key of subcredencialKeys) {
-					console.log(key);
 					if (micros.length === 0 || micros.indexOf(key) >= 0) {
 						const jwt = subcredentials[key];
 
