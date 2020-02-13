@@ -167,13 +167,12 @@ router.post(
 	async function(req, res) {
 		const jwt = req.body.jwt;
 		const micros = req.body.micros ? req.body.micros.split(",") : [];
-		console.log(micros);
 
 		let cert;
 		try {
 			// validar formato y desempaquetar
-			const data = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			const hash = await MouroService.isInMouro(jwt, data.payload.sub, Messages.ISSUER.ERR.NOT_FOUND);
+			const decripted = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			const hash = await MouroService.isInMouro(jwt, decripted.payload.sub, Messages.ISSUER.ERR.NOT_FOUND);
 			cert = await MouroService.verifyCertificate(jwt, hash, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!cert || !cert.payload.vc)
 				return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
@@ -199,7 +198,7 @@ router.post(
 						verifyCalls.push(MouroService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.CERT_IS_INVALID));
 
 						// validar fue emitido y no revocado
-						mouroCalls.push(MouroService.isInMouro(jwt, data.payload.sub, Messages.ISSUER.ERR.NOT_FOUND));
+						mouroCalls.push(MouroService.isInMouro(jwt, decripted.payload.sub, Messages.ISSUER.ERR.NOT_FOUND));
 					}
 				}
 
