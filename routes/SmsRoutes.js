@@ -12,10 +12,10 @@ const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
 /**
-*	Validación de teléfono. El usuario debe envia su numero de celular para
-*	poder generar una validación a través de SMS.
-*	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
-*/
+ *	Validación de teléfono. El usuario debe envia su numero de celular para
+ *	poder generar una validación a través de SMS.
+ *	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
+ */
 router.post(
 	"/sendSmsValidator",
 	Validator.validateBody([
@@ -59,9 +59,9 @@ router.post(
 );
 
 /**
-*	Validación del código de 6 digitos enviado por SMS.  El usuario debe ingresar
-*	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendSmsValidator".
-*/
+ *	Validación del código de 6 digitos enviado por SMS.  El usuario debe ingresar
+ *	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendSmsValidator".
+ */
 router.post(
 	"/verifySmsCode",
 	Validator.validateBody([

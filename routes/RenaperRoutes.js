@@ -12,8 +12,8 @@ const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
 /**
-*	Permite validar la identidad de un usuario contra renaper
-*/
+ *	Permite validar la identidad de un usuario contra renaper
+ */
 router.post(
 	"/renaper/validateDni",
 	Validator.validateBody([
@@ -193,8 +193,8 @@ router.post(
 );
 
 /**
-*	Retorna el estado del pedido realizado en "/validateDni"
-*/
+ *	Retorna el estado del pedido realizado en "/validateDni"
+ */
 router.post(
 	"/renaper/validateDniState",
 	Validator.validateBody([

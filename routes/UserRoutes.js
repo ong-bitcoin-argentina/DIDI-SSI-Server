@@ -12,9 +12,9 @@ const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
 
 /**
-*	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
-*	tanto el mail como el telèfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
-*/
+ *	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
+ *	tanto el mail como el telèfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
+ */
 router.post(
 	"/registerUser",
 	Validator.validateBody([
@@ -59,8 +59,8 @@ router.post(
 );
 
 /**
-*	Retorna la clave privada que sirve para recuperar la cuenta de didi.
-*/
+ *	Retorna la clave privada que sirve para recuperar la cuenta de didi.
+ */
 router.post(
 	"/recoverAccount",
 	Validator.validateBody([
@@ -87,9 +87,9 @@ router.post(
 );
 
 /**
-*	Valida que la contraseña se corresponda con la del usuario que tiene el did ingresado,
-*	no genera ningùn token ni informaciòn ùtil.
-*/
+ *	Valida que la contraseña se corresponda con la del usuario que tiene el did ingresado,
+ *	no genera ningùn token ni informaciòn ùtil.
+ */
 router.post(
 	"/userLogin",
 	Validator.validateBody([
@@ -118,9 +118,9 @@ router.post(
 );
 
 /**
-*	Permite cambiar la contraseña a partir de la cuènta de mail asociada al usuario (caso, me olvidè la contraseña),
-*	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
-*/
+ *	Permite cambiar la contraseña a partir de la cuènta de mail asociada al usuario (caso, me olvidè la contraseña),
+ *	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
+ */
 router.post(
 	"/recoverPassword",
 	Validator.validateBody([
@@ -163,8 +163,8 @@ router.post(
 );
 
 /**
-*	Permite cambiar la contarseña del usuario en el caso que el usuario conoce el mail y contraseña anterior.
-*/
+ *	Permite cambiar la contarseña del usuario en el caso que el usuario conoce el mail y contraseña anterior.
+ */
 router.post(
 	"/changePassword",
 	Validator.validateBody([
@@ -197,9 +197,9 @@ router.post(
 );
 
 /**
-*	Permite cambiar el nùmero de tel asociado al usuario,
-*	require que se haya mandado un còdigo de validaciòn con "/sendSmsValidator" antes de usarse.
-*/
+ *	Permite cambiar el nùmero de tel asociado al usuario,
+ *	require que se haya mandado un còdigo de validaciòn con "/sendSmsValidator" antes de usarse.
+ */
 router.post(
 	"/changePhoneNumber",
 	Validator.validateBody([
@@ -265,9 +265,9 @@ router.post(
 );
 
 /**
-*	Permite cambiar el mail asociado al usuario,
-*	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
-*/
+ *	Permite cambiar el mail asociado al usuario,
+ *	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
+ */
 router.post(
 	"/changeEmail",
 	Validator.validateBody([
@@ -332,9 +332,9 @@ router.post(
 );
 
 /**
-*	Permite pedir al usuario dueño del did, el certificado para validar que es efectivamente el dueño del mismo
-*	(genera un shareRequest y lo envia via mouro para que el usuario valide el certificado)
-*/
+ *	Permite pedir al usuario dueño del did, el certificado para validar que es efectivamente el dueño del mismo
+ *	(genera un shareRequest y lo envia via mouro para que el usuario valide el certificado)
+ */
 router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
@@ -370,8 +370,8 @@ router.post(
 );
 
 /**
-*	Recibe la respuesta al pedido de '/verifyCredentialRequest', marcando al certificado como validado
-*/
+ *	Recibe la respuesta al pedido de '/verifyCredentialRequest', marcando al certificado como validado
+ */
 router.post(
 	"/verifyCredential",
 	Validator.validateBody([{ name: "access_token", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
