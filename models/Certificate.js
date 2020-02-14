@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Constants = require("../constants/Constants");
+const Encrypt = require("./utils/Encryption");
+const EncryptedData = require("./dataTypes/EncryptedData");
 
 const statuses = [
 	Constants.CERTIFICATE_STATUS.UNVERIFIED,
@@ -7,12 +9,13 @@ const statuses = [
 	Constants.CERTIFICATE_STATUS.REVOKED
 ];
 
+// Registra la informacion del estado de un certificado emitido
 const CertificateSchema = new mongoose.Schema({
 	userDID: {
 		type: String,
 		required: true
 	},
-	name: {
+	certType: {
 		type: String,
 		required: true
 	},
@@ -25,17 +28,14 @@ const CertificateSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	jwt: {
-		type: String,
-		required: true
-	},
+	jwt: EncryptedData,
 	createdOn: {
 		type: Date,
 		default: Date.now()
 	}
 });
 
-CertificateSchema.index({ name: 1, hash: 1 });
+CertificateSchema.index({ userDID: 1, hash: 1 });
 
 // actualizar estado del certificado
 CertificateSchema.methods.update = async function(status) {
@@ -49,19 +49,34 @@ CertificateSchema.methods.update = async function(status) {
 	}
 };
 
+// retorna el jwt del certificado
+CertificateSchema.methods.getJwt = async function() {
+	return await Encrypt.getEncryptedData(this, "jwt");
+};
+
+// retorna el did del dueño del certificado
+CertificateSchema.methods.getDid = async function() {
+	return this.userDID;
+};
+
 const Certificate = mongoose.model("Certificate", CertificateSchema);
 module.exports = Certificate;
 
-Certificate.generate = async function(name, userDID, status, jwt, hash) {
+// inicailizar registro de estado de un certificado
+Certificate.generate = async function(type, userDID, status, jwt, hash) {
 	try {
-		let certStatus = await Certificate.findOne({ jwt: jwt, hash: hash, name: name });
+		let certStatus = await Certificate.findOne({
+			userDID: userDID,
+			hash: hash
+		});
 		if (!certStatus) certStatus = new Certificate();
-		certStatus.name = name;
 		certStatus.userDID = userDID;
 		certStatus.status = status;
-		certStatus.jwt = jwt;
 		certStatus.hash = hash;
+		certStatus.certType = type;
 		certStatus.createdOn = new Date();
+		await Encrypt.setEncryptedData(certStatus, "jwt", jwt, true);
+
 		certStatus = await certStatus.save();
 		return Promise.resolve(certStatus);
 	} catch (err) {
@@ -70,9 +85,10 @@ Certificate.generate = async function(name, userDID, status, jwt, hash) {
 	}
 };
 
-Certificate.findByJwt = async function(jwt) {
+// retorna el pedido buscandolo por el 'hash' de mouro
+Certificate.findByHash = async function(hash) {
 	try {
-		const query = { jwt: jwt };
+		const query = { hash: hash };
 		const request = await Certificate.findOne(query);
 		return Promise.resolve(request);
 	} catch (err) {
@@ -81,9 +97,10 @@ Certificate.findByJwt = async function(jwt) {
 	}
 };
 
-Certificate.findByName = async function(did, name) {
+// retorna el pedido buscandolo por tipo de certificado (telefono, mail, domicilio, etc)
+Certificate.findByType = async function(did, type) {
 	try {
-		const query = { name: name, userDID: did };
+		const query = { certType: type, userDID: did };
 		const request = await Certificate.find(query);
 		return Promise.resolve(request);
 	} catch (err) {

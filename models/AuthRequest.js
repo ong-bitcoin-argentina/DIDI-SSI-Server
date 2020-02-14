@@ -7,6 +7,7 @@ const statuses = [
 	Constants.AUTHENTICATION_REQUEST.FALIED
 ];
 
+// Registra la informacion de un pedido de validacion de identidad contra Renaper
 const AuthRequestSchema = new mongoose.Schema({
 	operationId: {
 		type: String,
@@ -45,9 +46,15 @@ AuthRequestSchema.methods.update = async function(status, errorMessage) {
 	}
 };
 
+// retorna el did del usuario a validar
+AuthRequestSchema.methods.getDid = async function() {
+	return this.userDID;
+};
+
 const AuthRequest = mongoose.model("AuthRequest", AuthRequestSchema);
 module.exports = AuthRequest;
 
+// inicailizar registro de un pedido nuevo
 AuthRequest.generate = async function(operationId, userDID) {
 	try {
 		const req = await AuthRequest.findByOperationId(operationId);
@@ -67,6 +74,7 @@ AuthRequest.generate = async function(operationId, userDID) {
 	}
 };
 
+// retorna el pedido buscandolo por 'operationId'
 AuthRequest.findByOperationId = async function(operationId) {
 	try {
 		const query = { operationId: operationId };

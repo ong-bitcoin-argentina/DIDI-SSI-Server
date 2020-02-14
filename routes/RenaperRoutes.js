@@ -11,8 +11,9 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-// var jwt = require("jsonwebtoken");
-
+/*
+	Permite validar la identidad de un usuario contra renaper
+*/
 router.post(
 	"/renaper/validateDni",
 	Validator.validateBody([
@@ -50,11 +51,8 @@ router.post(
 		const analyzeAnomalies = Constants.RENAPER_ANALYZE_ANOMALIES;
 		const analyzeOcr = Constants.RENAPER_ANALYZE_OCR;
 
-		let user, operationId, authRequest;
+		let operationId, authRequest;
 		try {
-			//const didData = jwt.decode(certDID);
-			//const did = didData.iss;
-
 			// obtener usuario
 			user = await UserService.getByDID(did);
 
@@ -68,6 +66,7 @@ router.post(
 			return ResponseHandler.sendErr(res, err);
 		}
 
+		// retonrar el codigo de operacion para que la APP android pueda consultar el estado de la misma y continuar procesando
 		ResponseHandler.sendRes(res, { status: authRequest.status, operationId: authRequest.operationId });
 
 		try {
@@ -91,11 +90,12 @@ router.post(
 			console.log(operationId + " executing request for " + did);
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
-			console.log(userData);
+			if (Constants.DEBUGG) console.log(userData);
 
 			console.log(operationId + " checking results for " + did);
 			// si no hubo match o no se obtuvo la precision buscada pasar a estado "fallido"
 			if (!userData || !userData.confidence || userData.confidence < Constants.RENAPER_SCORE_TRESHOULD) {
+				// actualizar estado del pedido para que la APP android sepa que la sincronizacion no fue exitosa
 				await authRequest.update(Constants.AUTHENTICATION_REQUEST.FALIED, Messages.RENAPER.WEAK_MATCH.message);
 				return;
 			}
@@ -103,6 +103,7 @@ router.post(
 			// generar certificados con esa info
 			const data = JSON.parse(userData.personData.person);
 
+			// cert#1 info personal
 			const personData = {
 				dni: data.number,
 				//"gender": data.gender === "M" ? "Hombre" : "Mujer",
@@ -116,7 +117,6 @@ router.post(
 			};
 
 			console.log(operationId + " creating certificates for " + did);
-
 			const generateCert = MouroService.createCertificate(
 				did,
 				{
@@ -130,6 +130,7 @@ router.post(
 				Messages.CERTIFICATE.ERR.CREATE
 			);
 
+			// cert#2 direccion
 			const addressData = {
 				streetAddress: data.streetAddress,
 				numberStreet: data.numberStreet,
@@ -155,9 +156,10 @@ router.post(
 				Messages.CERTIFICATE.ERR.CREATE
 			);
 
+			// crear certificados en //
 			const [cert, aditionalCert] = await Promise.all([generateCert, generateAditionalCert]);
 
-			// enviar certificados a mouro para ser guardado
+			// enviar en // certificados a mouro para ser guardados
 			const saveCert = MouroService.saveCertificate(cert, did);
 			const saveAditionalCert = MouroService.saveCertificate(aditionalCert, did);
 			const [resCert, resAditionalCert] = await Promise.all([saveCert, saveAditionalCert]);
@@ -178,6 +180,8 @@ router.post(
 				resAditionalCert.hash
 			);
 			await Promise.all([addCert, addAditionalCert]);
+
+			// actualizar estado del pedido para que la APP android sepa que la sincronizacion fue exitosa
 			await authRequest.update(Constants.AUTHENTICATION_REQUEST.SUCCESSFUL);
 			return;
 		} catch (err) {
@@ -188,6 +192,9 @@ router.post(
 	}
 );
 
+/*
+	Retorna el estado del pedido realizado en "/validateDni"
+*/
 router.post(
 	"/renaper/validateDniState",
 	Validator.validateBody([
@@ -196,13 +203,8 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
-		const did = req.body.did;
 		const operationId = req.body.operationId;
-
 		try {
-			//const didData = jwt.decode(certDID);
-			//const did = didData.iss;
-
 			const authRequest = await AuthRequestService.getByOperationId(operationId);
 			return ResponseHandler.sendRes(res, {
 				status: authRequest.status,
