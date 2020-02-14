@@ -12,10 +12,10 @@ const CodeGenerator = require("./utils/CodeGenerator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-/*
-	Validación del email. El usuario debe envia su mail personal para poder
-	generar una validación a través del envio de un correo electronico. 
-	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
+/**
+*	Validación del email. El usuario debe envia su mail personal para poder
+*	generar una validación a través del envio de un correo electronico. 
+*	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
 */
 router.post(
 	"/sendMailValidator",
@@ -56,9 +56,9 @@ router.post(
 	}
 );
 
-/*
-	Validación del código de 6 digitos enviado por Mail. El usuario debe ingresar
-	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendMailValidator".
+/**
+*	Validación del código de 6 digitos enviado por Mail. El usuario debe ingresar
+*	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendMailValidator".
 */
 router.post(
 	"/verifyMailCode",
