@@ -195,14 +195,13 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 
 	const vcPayload = {
 		sub: did,
+		exp: date,
 		vc: {
 			"@context": [Constants.CREDENTIALS.CONTEXT],
 			type: [Constants.CREDENTIALS.TYPES.VERIFIABLE],
 			credentialSubject: subject
 		}
 	};
-
-	if (expDate) vcPayload["exp"] = date;
 
 	try {
 		let result = await createVerifiableCredential(vcPayload, vcissuer);
@@ -335,6 +334,30 @@ module.exports.isInMouro = async function(jwt, did, errMsg) {
 		});
 		const res = result.data.edgeByJwt;
 		return Promise.resolve(res && res.hash ? res.hash : undefined);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(errMsg);
+	}
+};
+
+// retorna el cert correspondiente al hash
+module.exports.getByHash = async function(hash, did, errMsg) {
+	try {
+		let result = await (await getClient()).query({
+			query: gql`
+				query($hash: String!, $did: String!) {
+					edgeByHash(hash: $hash, did: $did) {
+						jwt
+					}
+				}
+			`,
+			variables: {
+				hash: hash,
+				did: did
+			}
+		});
+		const res = result.data.edgeByHash;
+		return Promise.resolve(res && res.jwt ? res.jwt : undefined);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(errMsg);

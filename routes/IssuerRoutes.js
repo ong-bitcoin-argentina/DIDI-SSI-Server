@@ -319,6 +319,27 @@ router.post(
 	}
 );
 
+// retorna los cert correspondientes a los hashes recibidos
+router.post(
+	"/issuer/getCertificates",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "hashes", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	async function(req, res) {
+		try {
+			const did = req.body.did;
+			const hashes = req.body.hashes.split(",");
+			const promises = hashes.map(hash => MouroService.getByHash(hash, did, Messages.ISSUER.ERR.NOT_FOUND));
+			const jwts = await Promise.all(promises);
+			return ResponseHandler.sendRes(res, jwts);
+		} catch (err) {
+			console.log(err);
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
 /*
 	Autorizar un issuer para la emision de certificados
 	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
