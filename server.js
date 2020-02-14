@@ -11,7 +11,7 @@ const SmsRoutes = require("./routes/SmsRoutes");
 const MailRoutes = require("./routes/MailRoutes");
 const RenaperRoutes = require("./routes/RenaperRoutes");
 
-// set up node module clusters - one worker per CPU available
+// inicializar cluster para workers, uno por cpu disponible
 var cluster = require("cluster");
 var numCPUs = require("os").cpus().length;
 
@@ -19,14 +19,14 @@ const app = express();
 var http = require("http");
 var server = http.createServer(app);
 
+// sobreescribir log para agregarle el timestamp
 const log = console.log;
 console.log = function(data) {
-	log(new Date().toISOString() + ": ");
+	process.stdout.write(new Date().toISOString() + ": ");
 	log(data);
-	log();
 };
 
-//Set Request Size Limit
+// aumentar el tamaño de request permitido (fix renaper...)
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
@@ -39,6 +39,7 @@ app.use(bodyParser.json());
 
 if (Constants.DEBUGG) console.log(Messages.INDEX.MSG.CONNECTING + Constants.MONGO_URL);
 
+// configuracion de mongoose
 mongoose
 	.connect(Constants.MONGO_URL, {
 		useCreateIndex: true,
@@ -55,7 +56,7 @@ app.get("/", (_, res) => res.send(Messages.INDEX.MSG.HELLO_WORLD));
 
 app.use(bodyParser.json());
 
-// log calls
+// loggear llamadas
 app.use(function(req, _, next) {
 	if (Constants.DEBUGG) {
 		console.log(req.method + " " + req.originalUrl);
@@ -65,7 +66,7 @@ app.use(function(req, _, next) {
 	next();
 });
 
-// log errors
+// loggear errores
 app.use(function(error, _, _, next) {
 	console.log(error);
 	next();
@@ -82,6 +83,7 @@ app.use(route, SmsRoutes);
 app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
 
+// forkear workers
 if (cluster.isMaster) {
 	console.log(Messages.INDEX.MSG.STARTING_WORKERS(numCPUs));
 

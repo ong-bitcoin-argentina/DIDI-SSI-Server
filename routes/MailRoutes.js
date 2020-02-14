@@ -90,10 +90,11 @@ router.post(
 			await MouroService.verifyCertificateEmail(cert);
 
 			// revocar certificado anterior
-			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.EMAIL);
+			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);
 			for(let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
-				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
+				const jwt = await elem.getJwt();
+				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
 			// mandar certificado a mouro

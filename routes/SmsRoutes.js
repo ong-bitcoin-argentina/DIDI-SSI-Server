@@ -91,14 +91,15 @@ router.post(
 			if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
 
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await MouroService.createPhoneCertificate(did, phone.phoneNumber);
+			let cert = await MouroService.createPhoneCertificate(did, cellPhoneNumber);
 			await MouroService.verifyCertificatePhoneNumber(cert);
 
 			// revocar certificado anterior
-			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.TEL);
+			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
-				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
+				const jwt = await elem.getJwt();
+				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
 			// mandar certificado a mouro

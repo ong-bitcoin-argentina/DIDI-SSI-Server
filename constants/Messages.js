@@ -179,7 +179,10 @@ module.exports = {
 			}
 		},
 		ERR: {
-			VALIDATE_DID_ERROR: { code: "VALIDATE_DID_ERROR", message: "Ese did se encuentra autorizado a realizar esa operacion."},
+			VALIDATE_DID_ERROR: {
+				code: "VALIDATE_DID_ERROR",
+				message: "Ese did se encuentra autorizado a realizar esa operacion."
+			},
 			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
 			INVALID_USER_DID: {
@@ -209,7 +212,7 @@ module.exports = {
 			IS_INVALID: { code: "IS_INVALID", message: "El emisor no esta autorizado para emitir certificados." },
 			CERT_SUB_IS_INVALID: {
 				code: "CERT_SUB_IS_INVALID",
-				message: "El certificado fue emitido a un usuario no registrado."
+				message: "No pudo encontrarse ningun usuario registrado en didi con ese DID."
 			},
 			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
 			REVOKED: { code: "REVOKED", message: "El certificado ha sido revocado." },

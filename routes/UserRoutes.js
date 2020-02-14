@@ -151,7 +151,9 @@ router.post(
 			await UserService.recoverPassword(eMail, newPass);
 
 			// actualizar pedido de validacion de mail
-			mail = await MailService.validateMail(mail, mail.did);
+			console.log(await mail.getDid());
+
+			mail = await MailService.validateMail(mail, await mail.getDid());
 
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
@@ -233,10 +235,11 @@ router.post(
 			await MouroService.verifyCertificatePhoneNumber(cert);
 
 			// revocar certificado anterior
-			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.TEL);
+			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
-				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
+				const jwt = await elem.getJwt();
+				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
 			// mandar certificado a mouro
@@ -299,10 +302,11 @@ router.post(
 			await MouroService.verifyCertificateEmail(cert);
 
 			// revocar certificado anterior
-			const old = await Certificate.findByName(did, Constants.CERTIFICATE_NAMES.EMAIL);
+			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
-				await MouroService.revokeCertificate(elem.jwt, elem.hash, did);
+				const jwt = await elem.getJwt();
+				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
 			// mandar certificado a mouro
@@ -327,6 +331,10 @@ router.post(
 	}
 );
 
+/*
+	Permite pedir al usuario dueño del did, el certificado para validar que es efectivamente el dueño del mismo
+	(genera un shareRequest y lo envia via mouro para que el usuario valide el certificado)
+*/
 router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
@@ -343,19 +351,16 @@ router.post(
 			const name = Object.keys(decoded.payload.vc.credentialSubject)[0];
 
 			const cb = Constants.ADDRESS + ":" + Constants.PORT + "/api/1.0/didi/verifyCredential";
-			const data = {
-				callbackUrl: cb,
-				claims: {
-					verifiable: {
-						[name]: {
-							jwt: jwt,
-							essential: true
-						}
+			const claims = {
+				verifiable: {
+					[name]: {
+						jwt: jwt,
+						essential: true
 					}
 				}
 			};
 
-			const petition = await MouroService.createPetition(did, data);
+			const petition = await MouroService.createPetition(did, claims, cb);
 			const result = await MouroService.saveCertificate(petition, did);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -364,6 +369,9 @@ router.post(
 	}
 );
 
+/*
+	Recibe la respuesta al pedido de '/verifyCredentialRequest', marcando al certificado como validado
+*/
 router.post(
 	"/verifyCredential",
 	Validator.validateBody([{ name: "access_token", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -375,21 +383,38 @@ router.post(
 		const jwt = data.payload.verified[0];
 
 		try {
-			const cert = await Certificate.findByJwt(jwt);
-			if (cert.userDID !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
+			// valido que el certificado este en mouro
+			const hash = await MouroService.isInMouro(jwt, data.payload.iss, Messages.ISSUER.ERR.NOT_FOUND);
+			if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
 
-			const decoded = await MouroService.decodeCertificate(cert.jwt, Messages.CERTIFICATE.ERR.VERIFY);
+			// obtengo el certificado
+			const cert = await Certificate.findByHash(hash);
+			const certDid = await cert.getDid();
+			// valido que el emisor sea el correcto
+			if (certDid !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
+
+			const certJwt = await cert.getJwt();
+			// decodifico jwt
+			const decoded = await MouroService.decodeCertificate(certJwt, Messages.CERTIFICATE.ERR.VERIFY);
 
 			const credData = decoded.payload.vc.credentialSubject;
 			const certCategory = Object.keys(credData)[0];
 			const wrappedIndex = Object.keys(credData[certCategory]).indexOf("wrapped");
 			if (wrappedIndex >= 0) {
+				// de haberlas, marco microcredenciales como validadas
 				for (let key of Object.keys(credData[certCategory].wrapped)) {
-					const microCert = await Certificate.findByJwt(credData[certCategory].wrapped[key]);
+					const hash = await MouroService.isInMouro(
+						credData[certCategory].wrapped[key],
+						data.payload.iss,
+						Messages.ISSUER.ERR.NOT_FOUND
+					);
+					if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
+
+					const microCert = await Certificate.findByHash(hash);
 					microCert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 				}
 			}
-
+			// marco macrocredencial como validada
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
 		} catch (err) {
