@@ -52,12 +52,12 @@ module.exports = {
 	CERTIFICATE: {
 		ERR: {
 			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada" },
-			CREATE: { code: "CERT_CREATE_ERROR", message: "Error al crear la creadencial." },
-			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la creadencial generada." },
-			REVOKE: { code: "CERT_REVOKE_ERROR", message: "Error al dar de baja la creadencial." },
+			CREATE: { code: "CERT_CREATE_ERROR", message: "Error al crear la credencial." },
+			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la credencial generada." },
+			REVOKE: { code: "CERT_REVOKE_ERROR", message: "Error al dar de baja la credencial." },
 			HASH: { code: "CERT_HASH_ERROR", message: "Error al obtener hash de backup." },
 			SAVE: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada." },
-			EXPIRED: { code: "CERT_EXPIRED", message: "Error la creadencial ha expirado." }
+			EXPIRED: { code: "CERT_EXPIRED", message: "Error la credencial ha expirado." }
 		},
 		HASH: "Hash obtenido",
 		REVOKED: "Certificado revocado",

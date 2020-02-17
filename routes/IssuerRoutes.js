@@ -112,7 +112,7 @@ router.post(
 
 /**
  *	Permite revocar un certificado previamente almacenado en mouro
- *	(la revocacion no esta implementada, de momento esto simplemente elimina los certificados)
+ *	(la revocacion no esta implementada en mouro)
  */
 router.post(
 	"/issuer/revokeCertificate",
@@ -346,7 +346,7 @@ router.post(
 /**
  *	Obtener nombre de un emisor autorizado a partir de su did
  */
-router.get("/issuer/:did", Validator.checkValidationResult, async function(req, res) {
+router.get("/issuer/:did", async function(req, res) {
 	const did = req.params.did;
 
 	try {
