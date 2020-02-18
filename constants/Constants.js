@@ -44,6 +44,8 @@ const RSK_URL = process.env.RSK_URL;
 const RSA_PRIVATE_KEY = process.env.RSA_PRIVATE_KEY;
 const HASH_SALT = process.env.HASH_SALT;
 
+const FIREBASE_URL = process.env.FIREBASE_URL;
+
 module.exports = {
 	API_VERSION: "1.0",
 	DEBUGG: DEBUGG,
@@ -139,6 +141,8 @@ module.exports = {
 		DELEGATE_DURATION: DELEGATE_DURATION,
 		SET_ATTRIBUTE: SET_ATTRIBUTE
 	},
+
+	FIREBASE_URL: FIREBASE_URL,
 
 	NO_EMAILS: NO_EMAILS,
 	NO_SMS: NO_SMS

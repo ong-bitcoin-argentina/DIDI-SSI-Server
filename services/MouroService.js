@@ -2,8 +2,7 @@ const Constants = require("../constants/Constants");
 const Messages = require("../constants/Messages");
 const Certificate = require("../models/Certificate");
 
-const BlockchainService = require("../services/BlockchainService");
-
+const BlockchainService = require("./BlockchainService");
 const { Credentials } = require("uport-credentials");
 
 const EthrDID = require("ethr-did");

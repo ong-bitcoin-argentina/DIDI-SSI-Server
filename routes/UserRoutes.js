@@ -6,6 +6,7 @@ const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
 const SmsService = require("../services/SmsService");
 const MouroService = require("../services/MouroService");
+const FirebaseService = require("../services/FirebaseService");
 
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
@@ -29,13 +30,18 @@ router.post(
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
 		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "firebaseId",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING]
+		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
 		const phoneNumber = req.body.phoneNumber;
+		const firebaseId = req.body.firebaseId;
 
 		const did = req.body.did;
 		const privateKeySeed = req.body.privateKeySeed;
@@ -50,7 +56,7 @@ router.post(
 			if (!phoneValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.PHONE_NOT_VALIDATED);
 
 			// crear usuario
-			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password);
+			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password, firebaseId);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -69,16 +75,21 @@ router.post(
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
+		{
+			name: "firebaseId",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING]
 		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
+		const firebaseId = req.body.firebaseId;
 
 		try {
 			// compara contraseña y retorna clave privada
-			const seed = await UserService.recoverAccount(eMail, password);
+			const seed = await UserService.recoverAccount(eMail, password, firebaseId);
 			return ResponseHandler.sendRes(res, { privateKeySeed: seed });
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -217,6 +228,10 @@ router.post(
 			name: "phoneValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+		},
+		{
+			name: "firebaseId",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING]
 		}
 	]),
 	Validator.checkValidationResult,
@@ -225,6 +240,7 @@ router.post(
 		const phoneValidationCode = req.body.phoneValidationCode;
 		const newPhoneNumber = req.body.newPhoneNumber;
 		const password = req.body.password;
+		const firebaseId = req.body.firebaseId;
 
 		try {
 			// validar codigo
@@ -246,7 +262,7 @@ router.post(
 			const jwt = await MouroService.saveCertificate(cert, did);
 
 			// actualizar tel
-			await UserService.changePhoneNumber(did, newPhoneNumber, password);
+			await UserService.changePhoneNumber(did, newPhoneNumber, password, firebaseId);
 
 			// validar codigo y actualizar pedido de validacion de mail
 			await Certificate.generate(
@@ -361,6 +377,11 @@ router.post(
 			};
 
 			const petition = await MouroService.createPetition(did, claims, cb);
+
+			// enviar push notification
+			const user = await UserService.getByDID(did);
+			await FirebaseService.sendPushNotification(Messages.PUSH.VALIDATION_REQ.TITLE, Messages.PUSH.VALIDATION_REQ.MESSAGE, user.firebaseId);
+
 			const result = await MouroService.saveCertificate(petition, did);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {

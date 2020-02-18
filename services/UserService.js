@@ -59,14 +59,14 @@ let getAndValidate = async function(did, pass, email) {
 module.exports.getAndValidate = getAndValidate;
 
 // crear un usuario, siempre que este no exista uno asociado al did
-module.exports.create = async function(did, privateKeySeed, userMail, phoneNumber, userPass) {
+module.exports.create = async function(did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId) {
 	try {
 		// validar si ya existe un usuario asociado a ese did
 		let user = await getByDID(did);
 		if (user) return Promise.reject(Messages.USER.ERR.USER_ALREADY_EXIST);
 
 		// crear usuario
-		user = await User.generate(did, privateKeySeed, userMail, phoneNumber, userPass);
+		user = await User.generate(did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId);
 		if (!user) return Promise.reject(Messages.USER.ERR.CREATE);
 		return Promise.resolve(user);
 	} catch (err) {
@@ -94,7 +94,7 @@ module.exports.login = async function(did, email, pass) {
 };
 
 // retorna la clave privada de didi
-module.exports.recoverAccount = async function(mail, pass) {
+module.exports.recoverAccount = async function(mail, pass, firebaseId) {
 	let user;
 	try {
 		// buscar usuario asociado al mail
@@ -105,6 +105,8 @@ module.exports.recoverAccount = async function(mail, pass) {
 		// validar contraseña
 		const isMatch = await user.compareField("password", pass);
 		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
+
+		await user.updateFirebaseId(firebaseId);
 
 		// retornar clave privada
 		return Promise.resolve(user.getSeed());
@@ -136,7 +138,7 @@ module.exports.changeEmail = async function(did, newMail, password) {
 };
 
 // obtener usuario y actualizar tel
-module.exports.changePhoneNumber = async function(did, newPhoneNumber, password) {
+module.exports.changePhoneNumber = async function(did, newPhoneNumber, password, firebaseId) {
 	try {
 		// obtener usuario
 		let user = await getByDID(did);
@@ -147,7 +149,7 @@ module.exports.changePhoneNumber = async function(did, newPhoneNumber, password)
 		if (!isMatch) return Promise.reject(Messages.USER.ERR.INVALID_USER);
 
 		// actualizar tel
-		user = await user.updatePhoneNumber(newPhoneNumber);
+		user = await user.updatePhoneNumber(newPhoneNumber, firebaseId);
 
 		return Promise.resolve(user);
 	} catch (err) {

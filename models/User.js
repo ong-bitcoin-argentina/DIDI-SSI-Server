@@ -22,7 +22,9 @@ const UserSchema = new mongoose.Schema({
 	backupHash: {
 		type: String
 	},
-
+	firebaseId: {
+		type: String
+	},
 	password: HashedData,
 	deleted: {
 		type: Boolean,
@@ -95,7 +97,7 @@ UserSchema.methods.updatePassword = async function(password) {
 };
 
 // actualiza el numero de telefono asociado al usuario
-UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
+UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber, firebaseId) {
 	const oldPhone = {
 		encrypted: this.phoneNumber.encrypted,
 		// salt: this.phoneNumber.salt,
@@ -110,7 +112,7 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
 	// actualizar numero
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { phoneNumber: this.phoneNumber, modifiedOn: new Date() },
+		$set: { phoneNumber: this.phoneNumber, firebaseId: firebaseId, modifiedOn: new Date() },
 		$push: { oldPhoneNumbers: oldPhone }
 	};
 
@@ -122,6 +124,23 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber) {
 		return Promise.reject(err);
 	}
 };
+
+// actualiza el id de firebase
+UserSchema.methods.updateFirebaseId = async function(firebaseId) {
+	// actualizar firebaseId
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { firebaseId: firebaseId, modifiedOn: new Date() }
+	};
+
+	try {
+		await User.findOneAndUpdate(updateQuery, updateAction);
+		this.firebaseId = firebaseId;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+}
 
 // actualiza el mail asociado al usuario
 UserSchema.methods.updateEmail = async function(newEmail) {
@@ -187,7 +206,7 @@ const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
 // crear nuevo usuario
-User.generate = async function(did, seed, mail, phoneNumber, pass) {
+User.generate = async function(did, seed, mail, phoneNumber, pass, firebaseId) {
 	try {
 		let user = new User();
 		user.oldEmails = [];
@@ -196,6 +215,7 @@ User.generate = async function(did, seed, mail, phoneNumber, pass) {
 		user.modifiedOn = new Date();
 		user.deleted = false;
 		user.did = did;
+		user.firebaseId = firebaseId;
 		await Encrypt.setEncryptedData(user, "phoneNumber", phoneNumber);
 		await Encrypt.setEncryptedData(user, "mail", mail);
 		await Encrypt.setEncryptedData(user, "seed", seed);

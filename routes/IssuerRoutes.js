@@ -7,6 +7,7 @@ const MouroService = require("../services/MouroService");
 const UserService = require("../services/UserService");
 
 const BlockchainService = require("../services/BlockchainService");
+const FirebaseService = require("../services/FirebaseService");
 
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
@@ -40,6 +41,10 @@ router.post(
 			console.log("creating certificate for " + did);
 			// guardar certificado en mouro
 			const result = await MouroService.saveCertificate(jwt, verified.payload.sub);
+
+			// enviar push notification
+			const user = await UserService.getByDID(sub);
+			await FirebaseService.sendPushNotification(Messages.PUSH.NEW_CERT.TITLE, Messages.PUSH.NEW_CERT.MESSAGE, user.firebaseId);
 
 			// guardar estado
 			await Certificate.generate(
@@ -102,6 +107,11 @@ router.post(
 			// crear el pedido y mandarlo a travez de mouro
 			const shareReq = await MouroService.createShareRequest(did, jwt);
 			const result = await MouroService.saveCertificate(shareReq, did);
+
+			// enviar push notification
+			const user = await UserService.getByDID(did);
+			await FirebaseService.sendPushNotification(Messages.PUSH.SHARE_REQ.TITLE, Messages.PUSH.SHARE_REQ.MESSAGE, user.firebaseId);
+
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			console.log(err);

@@ -225,6 +225,21 @@ module.exports = {
 		IS_VALID: "El emisor esta autorizado para emitir certificados",
 		IS_INVALID: "El emisor no esta autorizado para emitir certificados."
 	},
+	PUSH: {
+		VALIDATION_REQ: {
+			TITLE: "Pedido de Validacion",
+			MESSAGE: "Tienes un pedido de validacion para un certificado"
+		},
+		SHARE_REQ: {
+			TITLE: "Pedido de Certificado",
+			MESSAGE: "Tienes un pedido de certificado nuevo"
+		},
+		NEW_CERT: {
+			TITLE: "Nuevo Certificado",
+			MESSAGE: "Tienes un certificado nuevo"
+		}
+	},
+
 	VALIDATION: {
 		COMMON_PASSWORD: {
 			code: "PARAMETER_TYPE_ERROR",
