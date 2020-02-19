@@ -6,14 +6,15 @@ const MouroService = require("../services/MouroService");
 const UserService = require("../services/UserService");
 const RenaperService = require("../services/RenaperService");
 const AuthRequestService = require("../services/AuthRequestService");
+const FirebaseService = require("../services/FirebaseService");
 
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-/*
-	Permite validar la identidad de un usuario contra renaper
-*/
+/**
+ *	Permite validar la identidad de un usuario contra renaper
+ */
 router.post(
 	"/renaper/validateDni",
 	Validator.validateBody([
@@ -164,6 +165,9 @@ router.post(
 			const saveAditionalCert = MouroService.saveCertificate(aditionalCert, did);
 			const [resCert, resAditionalCert] = await Promise.all([saveCert, saveAditionalCert]);
 
+			// enviar push notification
+			await FirebaseService.sendPushNotification(Messages.PUSH.NEW_CERT.TITLE, Messages.PUSH.NEW_CERT.MESSAGE, user.firebaseId);
+
 			// agregar info de renaper al usuario
 			const addCert = Certificate.generate(
 				Constants.CERTIFICATE_NAMES.USER_INFO,
@@ -183,6 +187,7 @@ router.post(
 
 			// actualizar estado del pedido para que la APP android sepa que la sincronizacion fue exitosa
 			await authRequest.update(Constants.AUTHENTICATION_REQUEST.SUCCESSFUL);
+
 			return;
 		} catch (err) {
 			console.log(err);
@@ -192,9 +197,9 @@ router.post(
 	}
 );
 
-/*
-	Retorna el estado del pedido realizado en "/validateDni"
-*/
+/**
+ *	Retorna el estado del pedido realizado en "/validateDni"
+ */
 router.post(
 	"/renaper/validateDniState",
 	Validator.validateBody([

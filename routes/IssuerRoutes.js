@@ -7,14 +7,15 @@ const MouroService = require("../services/MouroService");
 const UserService = require("../services/UserService");
 
 const BlockchainService = require("../services/BlockchainService");
+const FirebaseService = require("../services/FirebaseService");
 
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-/*
-	Valida y envia a mouro el certificado generado por el issuer para ser guardado
-*/
+/**
+ *	Valida y envia a mouro el certificado generado por el issuer para ser guardado
+ */
 router.post(
 	"/issuer/issueCertificate",
 	Validator.validateBody([
@@ -41,6 +42,10 @@ router.post(
 			// guardar certificado en mouro
 			const result = await MouroService.saveCertificate(jwt, verified.payload.sub);
 
+			// enviar push notification
+			const user = await UserService.getByDID(sub);
+			await FirebaseService.sendPushNotification(Messages.PUSH.NEW_CERT.TITLE, Messages.PUSH.NEW_CERT.MESSAGE, user.firebaseId);
+
 			// guardar estado
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
@@ -62,10 +67,10 @@ router.post(
 	}
 );
 
-/*
-	Permite pedir al usuario dueño del did, uno o mas certificados para obtener la informacion de los mismos
-	(genera un shareRequest y lo envia via mouro para que el usuario envie la informacion)
-*/
+/**
+ *	Permite pedir al usuario dueño del did, uno o mas certificados para obtener la informacion de los mismos
+ *	(genera un shareRequest y lo envia via mouro para que el usuario envie la informacion)
+ */
 router.post(
 	"/issuer/issueShareRequest",
 	Validator.validateBody([
@@ -102,6 +107,11 @@ router.post(
 			// crear el pedido y mandarlo a travez de mouro
 			const shareReq = await MouroService.createShareRequest(did, jwt);
 			const result = await MouroService.saveCertificate(shareReq, did);
+
+			// enviar push notification
+			const user = await UserService.getByDID(did);
+			await FirebaseService.sendPushNotification(Messages.PUSH.SHARE_REQ.TITLE, Messages.PUSH.SHARE_REQ.MESSAGE, user.firebaseId);
+
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			console.log(err);
@@ -110,10 +120,10 @@ router.post(
 	}
 );
 
-/*
-	Permite revocar un certificado previamente almacenado en mouro
-	(la revocacion no esta implementada, de momento esto simplemente elimina los certificados)
-*/
+/**
+ *	Permite revocar un certificado previamente almacenado en mouro
+ *	(la revocacion no esta implementada en mouro)
+ */
 router.post(
 	"/issuer/revokeCertificate",
 	Validator.validateBody([
@@ -154,10 +164,10 @@ router.post(
 	}
 );
 
-/*
-	Permite validar un certificado a partir del jwt
-	(utilizado principalmente por el viewer)
-*/
+/**
+ *	Permite validar un certificado a partir del jwt
+ *	(utilizado principalmente por el viewer)
+ */
 router.post(
 	"/issuer/verifyCertificate",
 	Validator.validateBody([
@@ -319,10 +329,10 @@ router.post(
 	}
 );
 
-/*
-	Autorizar un issuer para la emision de certificados
-	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
-*/
+/**
+ *	Autorizar un issuer para la emision de certificados
+ *	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
+ */
 router.post(
 	"/issuer/",
 	Validator.validateBody([
@@ -343,10 +353,10 @@ router.post(
 	}
 );
 
-/*
-	Obtener nombre de un emisor autorizado a partir de su did
-*/
-router.get("/issuer/:did", Validator.checkValidationResult, async function(req, res) {
+/**
+ *	Obtener nombre de un emisor autorizado a partir de su did
+ */
+router.get("/issuer/:did", async function(req, res) {
 	const did = req.params.did;
 
 	try {
@@ -358,10 +368,10 @@ router.get("/issuer/:did", Validator.checkValidationResult, async function(req, 
 	}
 });
 
-/*
-	Revocar autorizacion de un emisor para emitir certificados
-	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
-*/
+/**
+ *	Revocar autorizacion de un emisor para emitir certificados
+ *	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
+ */
 router.delete(
 	"/issuer/",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -378,10 +388,10 @@ router.delete(
 	}
 );
 
-/*
-	Utilitario, permite generar header para hacer llamadas en la consola de mouro a mano
-	(se recomienda eliminarlo en la version final)
-*/
+/**
+ *	Utilitario, permite generar header para hacer llamadas en la consola de mouro a mano
+ *	(se recomienda eliminarlo en la version final)
+ */
 router.get("/headers/:did/:key", Validator.checkValidationResult, async function(req, res) {
 	const did = req.params.did;
 	const key = req.params.key;

@@ -6,15 +6,16 @@ const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
 const SmsService = require("../services/SmsService");
 const MouroService = require("../services/MouroService");
+const FirebaseService = require("../services/FirebaseService");
 
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
 
-/*
-	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
-	tanto el mail como el telèfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
-*/
+/**
+ *	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
+ *	tanto el mail como el telèfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
+ */
 router.post(
 	"/registerUser",
 	Validator.validateBody([
@@ -29,13 +30,19 @@ router.post(
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
 		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "firebaseId",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			optional: true
+		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
 		const phoneNumber = req.body.phoneNumber;
+		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		const did = req.body.did;
 		const privateKeySeed = req.body.privateKeySeed;
@@ -50,7 +57,7 @@ router.post(
 			if (!phoneValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.PHONE_NOT_VALIDATED);
 
 			// crear usuario
-			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password);
+			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password, firebaseId);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -58,9 +65,9 @@ router.post(
 	}
 );
 
-/*
-	Retorna la clave privada que sirve para recuperar la cuenta de didi.
-*/
+/**
+ *	Retorna la clave privada que sirve para recuperar la cuenta de didi.
+ */
 router.post(
 	"/recoverAccount",
 	Validator.validateBody([
@@ -69,16 +76,22 @@ router.post(
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		},
+		{
+			name: "firebaseId",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
+		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		try {
 			// compara contraseña y retorna clave privada
-			const seed = await UserService.recoverAccount(eMail, password);
+			const seed = await UserService.recoverAccount(eMail, password, firebaseId);
 			return ResponseHandler.sendRes(res, { privateKeySeed: seed });
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -86,10 +99,10 @@ router.post(
 	}
 );
 
-/*
-	Valida que la contraseña se corresponda con la del usuario que tiene el did ingresado,
-	no genera ningùn token ni informaciòn ùtil.
-*/
+/**
+ *	Valida que la contraseña se corresponda con la del usuario que tiene el did ingresado,
+ *	no genera ningùn token ni informaciòn ùtil.
+ */
 router.post(
 	"/userLogin",
 	Validator.validateBody([
@@ -117,10 +130,10 @@ router.post(
 	}
 );
 
-/*
-	Permite cambiar la contraseña a partir de la cuènta de mail asociada al usuario (caso, me olvidè la contraseña),
-	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
-*/
+/**
+ *	Permite cambiar la contraseña a partir de la cuènta de mail asociada al usuario (caso, me olvidè la contraseña),
+ *	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
+ */
 router.post(
 	"/recoverPassword",
 	Validator.validateBody([
@@ -162,9 +175,9 @@ router.post(
 	}
 );
 
-/*
-	Permite cambiar la contarseña del usuario en el caso que el usuario conoce el mail y contraseña anterior.
-*/
+/**
+ *	Permite cambiar la contarseña del usuario en el caso que el usuario conoce el mail y contraseña anterior.
+ */
 router.post(
 	"/changePassword",
 	Validator.validateBody([
@@ -196,10 +209,10 @@ router.post(
 	}
 );
 
-/*
-	Permite cambiar el nùmero de tel asociado al usuario,
-	require que se haya mandado un còdigo de validaciòn con "/sendSmsValidator" antes de usarse.
-*/
+/**
+ *	Permite cambiar el nùmero de tel asociado al usuario,
+ *	require que se haya mandado un còdigo de validaciòn con "/sendSmsValidator" antes de usarse.
+ */
 router.post(
 	"/changePhoneNumber",
 	Validator.validateBody([
@@ -217,6 +230,11 @@ router.post(
 			name: "phoneValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+		},
+		{
+			name: "firebaseId",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
@@ -225,6 +243,7 @@ router.post(
 		const phoneValidationCode = req.body.phoneValidationCode;
 		const newPhoneNumber = req.body.newPhoneNumber;
 		const password = req.body.password;
+		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		try {
 			// validar codigo
@@ -246,7 +265,7 @@ router.post(
 			const jwt = await MouroService.saveCertificate(cert, did);
 
 			// actualizar tel
-			await UserService.changePhoneNumber(did, newPhoneNumber, password);
+			await UserService.changePhoneNumber(did, newPhoneNumber, password, firebaseId);
 
 			// validar codigo y actualizar pedido de validacion de mail
 			await Certificate.generate(
@@ -264,10 +283,10 @@ router.post(
 	}
 );
 
-/*
-	Permite cambiar el mail asociado al usuario,
-	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
-*/
+/**
+ *	Permite cambiar el mail asociado al usuario,
+ *	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
+ */
 router.post(
 	"/changeEmail",
 	Validator.validateBody([
@@ -331,10 +350,10 @@ router.post(
 	}
 );
 
-/*
-	Permite pedir al usuario dueño del did, el certificado para validar que es efectivamente el dueño del mismo
-	(genera un shareRequest y lo envia via mouro para que el usuario valide el certificado)
-*/
+/**
+ *	Permite pedir al usuario dueño del did, el certificado para validar que es efectivamente el dueño del mismo
+ *	(genera un shareRequest y lo envia via mouro para que el usuario valide el certificado)
+ */
 router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
@@ -361,6 +380,15 @@ router.post(
 			};
 
 			const petition = await MouroService.createPetition(did, claims, cb);
+
+			// enviar push notification
+			const user = await UserService.getByDID(did);
+			await FirebaseService.sendPushNotification(
+				Messages.PUSH.VALIDATION_REQ.TITLE,
+				Messages.PUSH.VALIDATION_REQ.MESSAGE,
+				user.firebaseId
+			);
+
 			const result = await MouroService.saveCertificate(petition, did);
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -369,9 +397,9 @@ router.post(
 	}
 );
 
-/*
-	Recibe la respuesta al pedido de '/verifyCredentialRequest', marcando al certificado como validado
-*/
+/**
+ *	Recibe la respuesta al pedido de '/verifyCredentialRequest', marcando al certificado como validado
+ */
 router.post(
 	"/verifyCredential",
 	Validator.validateBody([{ name: "access_token", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),

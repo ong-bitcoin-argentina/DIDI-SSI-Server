@@ -12,11 +12,11 @@ const CodeGenerator = require("./utils/CodeGenerator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-/*
-	Validación del email. El usuario debe envia su mail personal para poder
-	generar una validación a través del envio de un correo electronico. 
-	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
-*/
+/**
+ *	Validación del email. El usuario debe envia su mail personal para poder
+ *	generar una validación a través del envio de un correo electronico.
+ *	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
+ */
 router.post(
 	"/sendMailValidator",
 	Validator.validateBody([
@@ -56,10 +56,10 @@ router.post(
 	}
 );
 
-/*
-	Validación del código de 6 digitos enviado por Mail. El usuario debe ingresar
-	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendMailValidator".
-*/
+/**
+ *	Validación del código de 6 digitos enviado por Mail. El usuario debe ingresar
+ *	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendMailValidator".
+ */
 router.post(
 	"/verifyMailCode",
 	Validator.validateBody([
@@ -91,7 +91,7 @@ router.post(
 
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);
-			for(let elem of old) {
+			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
 				const jwt = await elem.getJwt();
 				await MouroService.revokeCertificate(jwt, elem.hash, did);
@@ -101,7 +101,13 @@ router.post(
 			const jwt = await MouroService.saveCertificate(cert, did);
 
 			// validar codigo y actualizar pedido de validacion de mail
-			await Certificate.generate(Constants.CERTIFICATE_NAMES.EMAIL, did, Constants.CERTIFICATE_STATUS.UNVERIFIED, jwt.data, jwt.hash);
+			await Certificate.generate(
+				Constants.CERTIFICATE_NAMES.EMAIL,
+				did,
+				Constants.CERTIFICATE_STATUS.UNVERIFIED,
+				jwt.data,
+				jwt.hash
+			);
 			mail = await MailService.validateMail(mail, did);
 			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(cert));
 		} catch (err) {
