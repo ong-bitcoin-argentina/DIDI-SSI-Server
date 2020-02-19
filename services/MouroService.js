@@ -166,7 +166,7 @@ module.exports.createPetition = async function(did, claims, cb) {
 			type: "shareReq"
 		};
 
-		const credentials = new Credentials({ did: "did:ethr:" + Constants.SERVER_DID, signer });
+		const credentials = new Credentials({ did: "did:ethr:" + Constants.SERVER_DID, signer, resolver });
 		const petition = await credentials.signJWT(payload);
 		if (Constants.DEBUGG) console.log(petition);
 		const result = module.exports.createShareRequest(did, petition);
