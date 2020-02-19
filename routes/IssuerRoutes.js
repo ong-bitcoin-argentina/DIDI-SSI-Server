@@ -94,8 +94,7 @@ router.post(
 				await MouroService.verifyIssuerDid(
 					issuerDid,
 					decoded.payload.iss,
-					delegatorDid,
-					Messages.ISSUER.ERR.IS_INVALID
+					delegatorDid
 				);
 				const issuer = await IssuerService.getIssuer(delegatorDid);
 				if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);

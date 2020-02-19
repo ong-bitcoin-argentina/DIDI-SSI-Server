@@ -2,6 +2,7 @@ const Constants = require("../constants/Constants");
 const Messages = require("../constants/Messages");
 const Certificate = require("../models/Certificate");
 
+const IssuerService = require("./IssuerService");
 const BlockchainService = require("./BlockchainService");
 const { Credentials } = require("uport-credentials");
 
@@ -253,7 +254,7 @@ module.exports.decodeCertificate = async function(jwt, errMsg) {
 module.exports.verifyCertificateAndDid = async function(jwt, hash, issuerDid, errMsg) {
 	try {
 		let result = await module.exports.verifyCertificate(jwt, hash, errMsg);
-		await module.exports.verifyIssuerDid(issuerDid, result.payload.iss, result.payload.delegator, errMsg);
+		await module.exports.verifyIssuerDid(issuerDid, result.payload.iss, result.payload.delegator);
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
@@ -281,7 +282,7 @@ module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 };
 
 // analiza la validez del emisor del certificado
-module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegatorDid, errMsg) {
+module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegatorDid) {
 	// did a validar
 	let cleanIssuerDid = issuerDid.split(":");
 	cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
@@ -297,6 +298,9 @@ module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegator
 	// validar que el emisor es el correcto
 	if (cleanIssuerDid === cleanCertIssDid) {
 		if (delegatorDid) {
+			const issuer = await IssuerService.getIssuer("did:ethr:" + cleanDelegatorDid);
+			if (!issuer) return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
+
 			// validar que el delegador haya delegado al issuer
 			const delegate = await BlockchainService.validDelegate(
 				cleanDelegatorDid,
@@ -306,12 +310,17 @@ module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegator
 			if (delegate) {
 				console.log(Messages.CERTIFICATE.VERIFIED);
 				return Promise.resolve();
+			} else {
+				return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
 			}
+		} else {
+			const issuer = await IssuerService.getIssuer("did:ethr:" + cleanIssuerDid);
+			if (!issuer) return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
+			console.log(Messages.CERTIFICATE.VERIFIED);
+			return Promise.resolve();
 		}
-		console.log(Messages.CERTIFICATE.VERIFIED);
-		return Promise.resolve();
 	} else {
-		return Promise.reject(errMsg);
+		return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
 	}
 };
 
