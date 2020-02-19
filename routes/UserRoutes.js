@@ -33,7 +33,8 @@ router.post(
 		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING]
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
@@ -41,7 +42,7 @@ router.post(
 		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
 		const phoneNumber = req.body.phoneNumber;
-		const firebaseId = req.body.firebaseId;
+		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		const did = req.body.did;
 		const privateKeySeed = req.body.privateKeySeed;
@@ -78,14 +79,15 @@ router.post(
 		},
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING]
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
-		const firebaseId = req.body.firebaseId;
+		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		try {
 			// compara contraseña y retorna clave privada
@@ -231,7 +233,8 @@ router.post(
 		},
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING]
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
@@ -240,7 +243,7 @@ router.post(
 		const phoneValidationCode = req.body.phoneValidationCode;
 		const newPhoneNumber = req.body.newPhoneNumber;
 		const password = req.body.password;
-		const firebaseId = req.body.firebaseId;
+		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		try {
 			// validar codigo
@@ -380,7 +383,11 @@ router.post(
 
 			// enviar push notification
 			const user = await UserService.getByDID(did);
-			await FirebaseService.sendPushNotification(Messages.PUSH.VALIDATION_REQ.TITLE, Messages.PUSH.VALIDATION_REQ.MESSAGE, user.firebaseId);
+			await FirebaseService.sendPushNotification(
+				Messages.PUSH.VALIDATION_REQ.TITLE,
+				Messages.PUSH.VALIDATION_REQ.MESSAGE,
+				user.firebaseId
+			);
 
 			const result = await MouroService.saveCertificate(petition, did);
 			return ResponseHandler.sendRes(res, result);

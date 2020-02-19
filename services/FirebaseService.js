@@ -10,6 +10,8 @@ firebaseAdmin.initializeApp({
 
 // crear y mandar una push notification
 module.exports.sendPushNotification = async function(title, message, firebaseId) {
+	if (!firebaseId) return;
+
 	const msg = {
 		notification: {
 			title: title,
