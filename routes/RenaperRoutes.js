@@ -166,7 +166,7 @@ router.post(
 			const [resCert, resAditionalCert] = await Promise.all([saveCert, saveAditionalCert]);
 
 			// enviar push notification
-			await FirebaseService.sendPushNotification(Messages.PUSH.NEW_CERT.TITLE, Messages.PUSH.NEW_CERT.MESSAGE, user.firebaseId);
+			await FirebaseService.sendPushNotification(Messages.PUSH.NEW_CERT.TITLE, Messages.PUSH.NEW_CERT.MESSAGE, user.firebaseId, Messages.PUSH.TYPES.NEW_CERT);
 
 			// agregar info de renaper al usuario
 			const addCert = Certificate.generate(
@@ -174,7 +174,7 @@ router.post(
 				did,
 				Constants.CERTIFICATE_STATUS.UNVERIFIED,
 				resCert.data,
-				resCert.hash
+				resCert.hash,
 			);
 			const addAditionalCert = Certificate.generate(
 				Constants.CERTIFICATE_NAMES.USER_ADDRESS,
