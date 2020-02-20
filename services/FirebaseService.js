@@ -17,7 +17,8 @@ module.exports.sendPushNotification = async function(title, message, firebaseId)
 			title: title,
 			body: message
 		},
-		token: firebaseId
+		token: firebaseId,
+		data: { notificationType: type }
 	};
 
 	try {

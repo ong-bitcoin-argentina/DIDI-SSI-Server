@@ -386,7 +386,8 @@ router.post(
 			await FirebaseService.sendPushNotification(
 				Messages.PUSH.VALIDATION_REQ.TITLE,
 				Messages.PUSH.VALIDATION_REQ.MESSAGE,
-				user.firebaseId
+				user.firebaseId,
+				Messages.PUSH.TYPES.VALIDATION_REQ
 			);
 
 			const result = await MouroService.saveCertificate(petition, did);

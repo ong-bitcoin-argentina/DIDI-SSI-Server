@@ -46,7 +46,8 @@ router.post(
 			await FirebaseService.sendPushNotification(
 				Messages.PUSH.NEW_CERT.TITLE,
 				Messages.PUSH.NEW_CERT.MESSAGE,
-				user.firebaseId
+				user.firebaseId,
+				Messages.PUSH.TYPES.NEW_CERT
 			);
 
 			// guardar estado
@@ -104,7 +105,8 @@ router.post(
 			await FirebaseService.sendPushNotification(
 				Messages.PUSH.SHARE_REQ.TITLE,
 				Messages.PUSH.SHARE_REQ.MESSAGE,
-				user.firebaseId
+				user.firebaseId,
+				Messages.PUSH.TYPES.SHARE_REQ
 			);
 
 			return ResponseHandler.sendRes(res, result);

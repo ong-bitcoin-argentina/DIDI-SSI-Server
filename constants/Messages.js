@@ -226,6 +226,11 @@ module.exports = {
 		IS_INVALID: "El emisor no esta autorizado para emitir certificados."
 	},
 	PUSH: {
+		TYPES: {
+			NEW_CERT:"NEW_CERT",
+			SHARE_REQ:"SHARE_REQ",
+			VALIDATION_REQ:"VALIDATION_REQ"
+		},
 		VALIDATION_REQ: {
 			TITLE: "Pedido de Validacion",
 			MESSAGE: "Tienes un pedido de validacion para un certificado"
