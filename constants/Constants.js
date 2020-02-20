@@ -46,6 +46,8 @@ const HASH_SALT = process.env.HASH_SALT;
 const FIREBASE_URL = process.env.FIREBASE_URL;
 
 module.exports = {
+	DIDI_SERVER_NAME: "Didi Server",
+
 	API_VERSION: "1.0",
 	DEBUGG: DEBUGG,
 	MONGO_URL: MONGO_URL,

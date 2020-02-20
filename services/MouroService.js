@@ -2,7 +2,6 @@ const Constants = require("../constants/Constants");
 const Messages = require("../constants/Messages");
 const Certificate = require("../models/Certificate");
 
-const IssuerService = require("./IssuerService");
 const BlockchainService = require("./BlockchainService");
 const { Credentials } = require("uport-credentials");
 
@@ -37,6 +36,13 @@ let getClient = async function() {
 		},
 		cache: new InMemoryCache()
 	});
+};
+
+// quita la extension "did:ethr:"
+const cleanDid = function(did) {
+	let cleanDid = did.split(":");
+	cleanDid = cleanDid[cleanDid.length - 1];
+	return cleanDid;
 };
 
 // agrega token a pedidos para indicar a mouro que es el didi-server quien realiza los llamados
@@ -283,41 +289,42 @@ module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 
 // analiza la validez del emisor del certificado
 module.exports.verifyIssuerDid = async function(issuerDid, certIssDid, delegatorDid) {
-	// did a validar
-	let cleanIssuerDid = issuerDid.split(":");
-	cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
+	let cleanIssuerDid = cleanDid(issuerDid);
+	let cleanCertIssDid = cleanDid(certIssDid);
 
-	// iss
-	let cleanCertIssDid = certIssDid.split(":");
-	cleanCertIssDid = cleanCertIssDid[cleanCertIssDid.length - 1];
+	// si el certificado lo emitio el didi-server, es correcto
+	if (cleanIssuerDid === Constants.SERVER_DID) {
+		console.log(Messages.CERTIFICATE.VERIFIED);
+		return Promise.resolve();
+	}
 
-	// did delegador en caso que el did a validar no este autorizado de forma directa
-	let cleanDelegatorDid = delegatorDid ? delegatorDid.split(":") : [];
-	cleanDelegatorDid = cleanDelegatorDid[cleanDelegatorDid.length - 1];
-
-	// validar que el emisor es el correcto
+	// validar que el emisor haya sido autorizado por el didi-server
+	// o alguien a quien se le fue delegada esa capacidad por un emisor autorizado por el didi-server
 	if (cleanIssuerDid === cleanCertIssDid) {
+		// validar que el delegador este autorizado por didi-server
 		if (delegatorDid) {
-			const issuer = await IssuerService.getIssuer("did:ethr:" + cleanDelegatorDid);
-			if (!issuer) return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
-
-			// validar que el delegador haya delegado al issuer
-			const delegate = await BlockchainService.validDelegate(
-				cleanDelegatorDid,
+			const delegated = await BlockchainService.validDelegate(
+				Constants.SERVER_DID,
 				{ from: Constants.SERVER_DID },
-				cleanIssuerDid
+				delegatorDid
 			);
-			if (delegate) {
-				console.log(Messages.CERTIFICATE.VERIFIED);
-				return Promise.resolve();
-			} else {
-				return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
-			}
-		} else {
-			const issuer = await IssuerService.getIssuer("did:ethr:" + cleanIssuerDid);
-			if (!issuer) return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
+
+			if (!delegated) return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
+		}
+
+		// validar que el issuer este autorizado por el delegador o el didi-server
+		let didDelegator = delegatorDid ? delegatorDid : Constants.SERVER_DID;
+		const delegated = await BlockchainService.validDelegate(
+			didDelegator,
+			{ from: Constants.SERVER_DID },
+			issuerDid
+		);
+
+		if (delegated) {
 			console.log(Messages.CERTIFICATE.VERIFIED);
 			return Promise.resolve();
+		} else {
+			return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);
 		}
 	} else {
 		return Promise.reject(Messages.ISSUER.ERR.IS_INVALID);

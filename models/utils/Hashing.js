@@ -19,7 +19,7 @@ class Hashing {
 	}
 
 	// compara el dato hasheado con el original para validarlo
-	static async validateHash(data, hashData) {
+	static async validateHash(data, hashData) {  
 		return await bcrypt.compare(data, hashData.hash);
 	}
 }

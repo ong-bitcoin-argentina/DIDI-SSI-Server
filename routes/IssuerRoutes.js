@@ -2,7 +2,6 @@ const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 
 const Certificate = require("../models/Certificate");
-const IssuerService = require("../services/IssuerService");
 const MouroService = require("../services/MouroService");
 const UserService = require("../services/UserService");
 
@@ -44,7 +43,11 @@ router.post(
 
 			// enviar push notification
 			const user = await UserService.getByDID(sub);
-			await FirebaseService.sendPushNotification(Messages.PUSH.NEW_CERT.TITLE, Messages.PUSH.NEW_CERT.MESSAGE, user.firebaseId);
+			await FirebaseService.sendPushNotification(
+				Messages.PUSH.NEW_CERT.TITLE,
+				Messages.PUSH.NEW_CERT.MESSAGE,
+				user.firebaseId
+			);
 
 			// guardar estado
 			await Certificate.generate(
@@ -90,18 +93,7 @@ router.post(
 			// validar que el emisor sea valido
 			const decoded = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (decoded.payload.iss != issuerDid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			if (delegatorDid) {
-				await MouroService.verifyIssuerDid(
-					issuerDid,
-					decoded.payload.iss,
-					delegatorDid
-				);
-				const issuer = await IssuerService.getIssuer(delegatorDid);
-				if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-			} else {
-				const issuer = await IssuerService.getIssuer(issuerDid);
-				if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-			}
+			await MouroService.verifyIssuerDid(issuerDid, decoded.payload.iss, delegatorDid);
 
 			// crear el pedido y mandarlo a travez de mouro
 			const shareReq = await MouroService.createShareRequest(did, jwt);
@@ -109,7 +101,11 @@ router.post(
 
 			// enviar push notification
 			const user = await UserService.getByDID(did);
-			await FirebaseService.sendPushNotification(Messages.PUSH.SHARE_REQ.TITLE, Messages.PUSH.SHARE_REQ.MESSAGE, user.firebaseId);
+			await FirebaseService.sendPushNotification(
+				Messages.PUSH.SHARE_REQ.TITLE,
+				Messages.PUSH.SHARE_REQ.MESSAGE,
+				user.firebaseId
+			);
 
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -192,6 +188,25 @@ router.post(
 
 			let err = cert.status === Constants.CERTIFICATE_STATUS.REVOKED ? Messages.ISSUER.ERR.REVOKED : false;
 
+			// validar emisor
+			let did = cert.payload.iss;
+			try {
+				const delegator = cert.payload.delegator;
+				await MouroService.verifyIssuerDid(did, did, delegator);
+
+				// obtener nombre del issuer para el certificado
+				const issuerName = await BlockchainService.getDelegateName(delegator ? delegator : did);
+				if (issuerName) {
+					cert.issuer = issuerName;
+				} else {
+					cert.issuer = false;
+					err = Messages.ISSUER.ERR.IS_INVALID;
+				}
+			} catch (_) {
+				cert.issuer = false;
+				err = Messages.ISSUER.ERR.IS_INVALID;
+			}
+
 			// tiene subcredenciales -> validarlas tambien
 			if (subcredentials) {
 				const data = {};
@@ -226,33 +241,13 @@ router.post(
 				if (cert.payload.iss !== firstSubCred.payload.iss && cert.payload.iss !== firstSubCred.payload.sub)
 					err = Messages.ISSUER.ERR.IS_INVALID;
 
-				const delegator = firstSubCred.payload.delegator;
-				let did = firstSubCred.payload.iss;
+				// validar emisor para primer microcredencial
+				const did = firstSubCred.payload.iss;
 				const sub = firstSubCred.payload.sub;
-
-				// si fue emitido por un issuer delegado, validar delegacion
-				if (delegator) {
-					let cleanIssuerDid = did.split(":");
-					cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
-
-					let cleanIssDid = delegator.split(":");
-					cleanIssDid = cleanIssDid[cleanIssDid.length - 1];
-
-					const delegate = await BlockchainService.validDelegate(
-						cleanIssDid,
-						{ from: Constants.SERVER_DID },
-						cleanIssuerDid
-					);
-
-					if (!delegate) {
-						cert.issuer = false;
-						err = Messages.ISSUER.ERR.IS_INVALID;
-					}
-				}
-
-				// validar issuer o delegador en caso de issuer delegado
-				const issuer = await IssuerService.getIssuer(delegator ? delegator : did);
-				if (!issuer) {
+				try {
+					const delegator = firstSubCred.payload.delegator;
+					await MouroService.verifyIssuerDid(did, did, delegator);
+				} catch (_) {
 					cert.issuer = false;
 					err = Messages.ISSUER.ERR.IS_INVALID;
 				}
@@ -260,7 +255,7 @@ router.post(
 				for (let childCert of childCerts) {
 					if (!childCert) return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
-					// verificar que el issuer sea el mismo que en la primer subcredencial (el validado mas arriba)
+					// verificar que todas las microcredenciales tengan el mismo emisor (ya validado arriba) y destino
 					if (did !== childCert.payload.iss || sub !== childCert.payload.sub) {
 						cert.issuer = false;
 						err = Messages.ISSUER.ERR.IS_INVALID;
@@ -276,51 +271,11 @@ router.post(
 						}
 					}
 				}
-
 				subject[keys[0]].data = data;
-				if (issuer) cert.issuer = issuer.name;
-				if (err) return ResponseHandler.sendRes(res, { cert: cert, err: err });
-				return ResponseHandler.sendRes(res, cert);
-			} else {
-				//no tiene subcredenciales
-
-				let did = cert.payload.iss;
-				const delegator = cert.payload.delegator;
-				// si fue emitido por un issuer delegado, validar delegacion
-				if (delegator) {
-					let cleanIssuerDid = did.split(":");
-					cleanIssuerDid = cleanIssuerDid[cleanIssuerDid.length - 1];
-
-					let cleanIssDid = delegator.split(":");
-					cleanIssDid = cleanIssDid[cleanIssDid.length - 1];
-
-					const delegate = await BlockchainService.validDelegate(
-						cleanIssDid,
-						{ from: Constants.SERVER_DID },
-						cleanIssuerDid
-					);
-
-					if (!delegate) {
-						cert.issuer = false;
-						err = Messages.ISSUER.ERR.IS_INVALID;
-					}
-				}
-
-				// validar emisor
-				did = delegator ? delegator : did;
-				const issuer = await IssuerService.getIssuer(did);
-				cert.issuer = issuer ? issuer.name : false;
-				if (!err && !cert.issuer) err = Messages.ISSUER.ERR.IS_INVALID;
-
-				// validar fue emitido y no revocado
-				if (!err) {
-					const isInMouro = await MouroService.isInMouro(jwt, cert.payload.sub, Messages.ISSUER.ERR.NOT_FOUND);
-					if (!isInMouro) err = Messages.ISSUER.ERR.NOT_FOUND;
-				}
-
-				if (err) return ResponseHandler.sendRes(res, { cert: cert, err: err });
-				return ResponseHandler.sendRes(res, cert);
 			}
+
+			if (err) return ResponseHandler.sendRes(res, { cert: cert, err: err });
+			return ResponseHandler.sendRes(res, cert);
 		} catch (err) {
 			console.log(err);
 			return ResponseHandler.sendErr(res, err);
@@ -334,17 +289,18 @@ router.post(
  */
 router.post(
 	"/issuer/",
-	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
-	]),
+	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
-		const name = req.body.name;
 
 		try {
-			await IssuerService.create(did, name);
+			// autorizo en la blockchain
+			await BlockchainService.addDelegate(
+				Constants.SERVER_DID,
+				{ from: Constants.SERVER_DID, key: Constants.SERVER_PRIVATE_KEY },
+				did
+			);
 			return ResponseHandler.sendRes(res, Messages.ISSUER.CREATED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -359,9 +315,11 @@ router.get("/issuer/:did", async function(req, res) {
 	const did = req.params.did;
 
 	try {
-		const issuer = await IssuerService.getIssuer(did);
-		if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-		return ResponseHandler.sendRes(res, issuer.name);
+		console.log(did);
+		const issuerName = await BlockchainService.getDelegateName(did);
+		console.log(issuerName);
+		if (!issuerName) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+		return ResponseHandler.sendRes(res, issuerName);
 	} catch (err) {
 		return ResponseHandler.sendErr(res, err);
 	}
@@ -379,7 +337,13 @@ router.delete(
 		const did = req.body.did;
 
 		try {
-			await IssuerService.delete(did);
+			// elimino autorizacion en la blockchain
+			await BlockchainService.revokeDelegate(
+				Constants.SERVER_DID,
+				{ from: Constants.SERVER_DID, key: Constants.SERVER_PRIVATE_KEY },
+				did
+			);
+
 			return ResponseHandler.sendRes(res, Messages.ISSUER.DELETED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

@@ -239,7 +239,15 @@ module.exports = {
 			MESSAGE: "Tienes un certificado nuevo"
 		}
 	},
-
+	DELEGATE: {
+		ERR: {
+			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
+			CREATE: { code: "USER_CREATE", message: "El usuario no pudo ser creado." },
+			GET: { code: "USER_GET", message: "El usuario no pudo ser obtenido." },
+			SET_NAME: { code: "DELEGATE_SET_NAME", message: "El delegado no pudo ser verificado." },
+			GET_NAME: { code: "DELEGATE_GET_NAME", message: "El nombre del emisor no pudo ser obtenido." }
+		}
+	},
 	VALIDATION: {
 		COMMON_PASSWORD: {
 			code: "PARAMETER_TYPE_ERROR",
