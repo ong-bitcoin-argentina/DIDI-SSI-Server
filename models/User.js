@@ -125,7 +125,7 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber, firebaseId
 	// encriptar numero
 	await Encrypt.setEncryptedData(this, "phoneNumber", newPhoneNumber);
 	// si no hay cambio, retornar
-	if (oldPhone.hash === this.phoneNumber.hash) return Promise.reject(Messages.USER.ERR.PHONE_DUPLICATED);
+	if (oldPhone.hash === this.phoneNumber.hash) return Promise.resolve(this);
 
 	for (let old of this.oldPhoneNumbers) {
 		const oldValue = await Encrypt.decript(old.encrypted);
@@ -161,7 +161,7 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 	// encriptar mail
 	await Encrypt.setEncryptedData(this, "mail", newEmail);
 	// si no hay cambio, retornar
-	if (oldMail.hash === this.mail.hash) return Promise.reject(Messages.USER.ERR.PHONE_DUPLICATED);
+	if (oldMail.hash === this.mail.hash) return Promise.resolve(this);
 
 	for (let old of this.oldEmails) {
 		const oldValue = await Encrypt.decript(old.encrypted);
