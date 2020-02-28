@@ -223,7 +223,6 @@ module.exports = {
 		CREATED: "El emisor fue autorizado a emitir certificados.",
 		CERT_SAVED: "El certificado fue guardado.",
 		IS_VALID: "El emisor esta autorizado para emitir certificados",
-		IS_INVALID: "El emisor no esta autorizado para emitir certificados."
 	},
 	PUSH: {
 		TYPES: {

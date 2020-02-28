@@ -317,9 +317,7 @@ router.get("/issuer/:did", async function(req, res) {
 	const did = req.params.did;
 
 	try {
-		console.log(did);
 		const issuerName = await BlockchainService.getDelegateName(did);
-		console.log(issuerName);
 		if (!issuerName) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 		return ResponseHandler.sendRes(res, issuerName);
 	} catch (err) {
