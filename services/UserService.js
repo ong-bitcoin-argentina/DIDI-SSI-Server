@@ -130,7 +130,6 @@ module.exports.changeEmail = async function(did, newMail, password) {
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
-		if (err === Messages.USER.ERR.MAIL_DUPLICATED) return Promise.reject(err);
 		return Promise.reject(Messages.USER.ERR.UPDATE);
 	}
 };
@@ -152,7 +151,6 @@ module.exports.changePhoneNumber = async function(did, newPhoneNumber, password,
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
-		if (err === Messages.USER.ERR.PHONE_DUPLICATED) return Promise.reject(err);
 		return Promise.reject(Messages.USER.ERR.UPDATE);
 	}
 };

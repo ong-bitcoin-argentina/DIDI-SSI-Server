@@ -253,9 +253,6 @@ router.post(
 			let cert = await MouroService.createPhoneCertificate(did, newPhoneNumber);
 			await MouroService.verifyCertificatePhoneNumber(cert);
 
-			// actualizar tel
-			await UserService.changePhoneNumber(did, newPhoneNumber, password, firebaseId);
-
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
 			for (let elem of old) {
@@ -266,6 +263,9 @@ router.post(
 
 			// mandar certificado a mouro
 			const jwt = await MouroService.saveCertificate(cert, did);
+
+			// actualizar tel
+			await UserService.changePhoneNumber(did, newPhoneNumber, password, firebaseId);
 
 			// validar codigo y actualizar pedido de validacion de mail
 			await Certificate.generate(
@@ -320,9 +320,6 @@ router.post(
 			let cert = await MouroService.createMailCertificate(did, newEMail);
 			await MouroService.verifyCertificateEmail(cert);
 
-			// actualizar mail
-			await UserService.changeEmail(did, newEMail, password);
-
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);
 			for (let elem of old) {
@@ -333,6 +330,9 @@ router.post(
 
 			// mandar certificado a mouro
 			const jwt = await MouroService.saveCertificate(cert, did);
+
+			// actualizar mail
+			await UserService.changeEmail(did, newEMail, password);
 
 			// validar codigo y actualizar pedido de validacion de mail
 			await Certificate.generate(

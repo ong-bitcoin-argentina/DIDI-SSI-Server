@@ -3,7 +3,6 @@ const Hashing = require("./utils/Hashing");
 const Encrypt = require("./utils/Encryption");
 const EncryptedData = require("./dataTypes/EncryptedData");
 const HashedData = require("./dataTypes/HashedData");
-const Messages = require("../constants/Messages");
 
 // Registra la informacion correspondiente a un usuario de didi
 const UserSchema = new mongoose.Schema({
@@ -97,23 +96,6 @@ UserSchema.methods.updatePassword = async function(password) {
 	}
 };
 
-// actualiza el id de firebase
-UserSchema.methods.updateFirebaseId = async function(firebaseId) {
-	// actualizar firebaseId
-	const updateQuery = { _id: this._id };
-	const updateAction = {
-		$set: { firebaseId: firebaseId, modifiedOn: new Date() }
-	};
-
-	try {
-		await User.findOneAndUpdate(updateQuery, updateAction);
-		this.firebaseId = firebaseId;
-		return Promise.resolve(this);
-	} catch (err) {
-		return Promise.reject(err);
-	}
-};
-
 // actualiza el numero de telefono asociado al usuario
 UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber, firebaseId) {
 	const oldPhone = {
@@ -125,14 +107,7 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber, firebaseId
 	// encriptar numero
 	await Encrypt.setEncryptedData(this, "phoneNumber", newPhoneNumber);
 	// si no hay cambio, retornar
-	if (oldPhone.hash === this.phoneNumber.hash) return Promise.reject(Messages.USER.ERR.PHONE_DUPLICATED);
-
-	for (let old of this.oldPhoneNumbers) {
-		const oldValue = await Encrypt.decript(old.encrypted);
-		if (oldValue === newPhoneNumber) {
-			return Promise.reject(Messages.USER.ERR.PHONE_DUPLICATED);
-		}
-	}
+	if (oldPhone.hash === this.phoneNumber.hash) return Promise.resolve(this);
 
 	// actualizar numero
 	const updateQuery = { _id: this._id };
@@ -150,6 +125,23 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber, firebaseId
 	}
 };
 
+// actualiza el id de firebase
+UserSchema.methods.updateFirebaseId = async function(firebaseId) {
+	// actualizar firebaseId
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { firebaseId: firebaseId, modifiedOn: new Date() }
+	};
+
+	try {
+		await User.findOneAndUpdate(updateQuery, updateAction);
+		this.firebaseId = firebaseId;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+}
+
 // actualiza el mail asociado al usuario
 UserSchema.methods.updateEmail = async function(newEmail) {
 	const oldMail = {
@@ -161,14 +153,7 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 	// encriptar mail
 	await Encrypt.setEncryptedData(this, "mail", newEmail);
 	// si no hay cambio, retornar
-	if (oldMail.hash === this.mail.hash) return Promise.reject(Messages.USER.ERR.PHONE_DUPLICATED);
-
-	for (let old of this.oldEmails) {
-		const oldValue = await Encrypt.decript(old.encrypted);
-		if (oldValue === newEmail) {
-			return Promise.reject(Messages.USER.ERR.MAIL_DUPLICATED);
-		}
-	}
+	if (oldMail.hash === this.mail.hash) return Promise.resolve(this);
 
 	// actualizar mail
 	const updateQuery = { _id: this._id };
