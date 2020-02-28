@@ -179,14 +179,6 @@ module.exports = {
 			}
 		},
 		ERR: {
-			PHONE_DUPLICATED: {
-				code: "PHONE_DUPLICATED",
-				message: "Ese numero ya fue usado con anterioridad, elige otro."
-			},
-			MAIL_DUPLICATED: {
-				code: "MAIL_DUPLICATED",
-				message: "Ese mail ya fue usado con anterioridad, elige otro."
-			},
 			VALIDATE_DID_ERROR: {
 				code: "VALIDATE_DID_ERROR",
 				message: "Ese did se encuentra autorizado a realizar esa operacion."
@@ -230,13 +222,13 @@ module.exports = {
 		DELETED: "La autorizacion para emitir certificados fue revocada.",
 		CREATED: "El emisor fue autorizado a emitir certificados.",
 		CERT_SAVED: "El certificado fue guardado.",
-		IS_VALID: "El emisor esta autorizado para emitir certificados"
+		IS_VALID: "El emisor esta autorizado para emitir certificados",
 	},
 	PUSH: {
 		TYPES: {
-			NEW_CERT: "NEW_CERT",
-			SHARE_REQ: "SHARE_REQ",
-			VALIDATION_REQ: "VALIDATION_REQ"
+			NEW_CERT:"NEW_CERT",
+			SHARE_REQ:"SHARE_REQ",
+			VALIDATION_REQ:"VALIDATION_REQ"
 		},
 		VALIDATION_REQ: {
 			TITLE: "Pedido de Validacion",
