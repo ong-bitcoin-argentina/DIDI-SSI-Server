@@ -183,7 +183,7 @@ module.exports = {
 				code: "VALIDATE_DID_ERROR",
 				message: "Ese did se encuentra autorizado a realizar esa operacion."
 			},
-			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese mail ya se encuentra registrado." },
+			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese did ya se encuentra asociado a un usuario." },
 			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden." },
 			INVALID_USER_DID: {
 				code: "INVALID_USER_DID",
@@ -222,13 +222,13 @@ module.exports = {
 		DELETED: "La autorizacion para emitir certificados fue revocada.",
 		CREATED: "El emisor fue autorizado a emitir certificados.",
 		CERT_SAVED: "El certificado fue guardado.",
-		IS_VALID: "El emisor esta autorizado para emitir certificados",
+		IS_VALID: "El emisor esta autorizado para emitir certificados"
 	},
 	PUSH: {
 		TYPES: {
-			NEW_CERT:"NEW_CERT",
-			SHARE_REQ:"SHARE_REQ",
-			VALIDATION_REQ:"VALIDATION_REQ"
+			NEW_CERT: "NEW_CERT",
+			SHARE_REQ: "SHARE_REQ",
+			VALIDATION_REQ: "VALIDATION_REQ"
 		},
 		VALIDATION_REQ: {
 			TITLE: "Pedido de Validacion",
