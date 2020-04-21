@@ -100,7 +100,7 @@ Certificate.findByHash = async function(hash) {
 // retorna el pedido buscandolo por tipo de certificado (telefono, mail, domicilio, etc)
 Certificate.findByType = async function(did, type) {
 	try {
-		const query = { certType: type, userDID: did };
+		const query = { certType: type, userDID: did, status: {$ne: Constants.CERTIFICATE_STATUS.REVOKED } };
 		const request = await Certificate.find(query);
 		return Promise.resolve(request);
 	} catch (err) {

@@ -291,10 +291,14 @@ router.post(
  */
 router.post(
 	"/issuer/",
-	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([{ 
+		name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING],
+		name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING],
+	}]),
 	Validator.checkValidationResult,
 	async function(req, res) {
 		const did = req.body.did;
+		const name = req.body.name;
 
 		try {
 			// autorizo en la blockchain
