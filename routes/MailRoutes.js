@@ -63,6 +63,31 @@ router.post(
 );
 
 /**
+ *	Reenviar Validación del email. 
+ */
+router.post(
+	"/reSendMailValidator",
+	Validator.validateBody([
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
+	]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		const eMail = req.body.eMail.toLowerCase();
+
+		try {
+			const mail = await MailService.getByMail(eMail);
+
+			// mandar mail con còdigo de validacion
+			await MailService.sendValidationCode(eMail, mail.code);
+
+			return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.SENT);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
  *	Validación del código de 6 digitos enviado por Mail. El usuario debe ingresar
  *	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendMailValidator".
  */

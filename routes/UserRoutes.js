@@ -71,8 +71,9 @@ router.post(
 /**
  *	Renueva el token de firebase
  */
+/*
 router.post(
-	"/renewToken",
+	"/renewFirebaseToken",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
@@ -102,6 +103,7 @@ router.post(
 		}
 	}
 );
+*/
 
 /**
  *	Retorna la clave privada que sirve para recuperar la cuenta de didi.
@@ -151,16 +153,23 @@ router.post(
 			length: { min: Constants.PASSWORD_MIN_LENGTH },
 		},
 		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{
+			name: "firebaseId",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			optional: true,
+		},
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
 		const did = req.body.did;
 		const password = req.body.password;
 		const eMail = req.body.eMail.toLowerCase();
+		const firebaseId = req.body.firebaseId;
 
 		try {
 			// validar la contraseña y retornar un boolean
-			await UserService.login(did, eMail, password);
+			const user = await UserService.login(did, eMail, password);
+			if (firebaseId) await user.updateFirebaseId(firebaseId);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.LOGGED_IN);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
