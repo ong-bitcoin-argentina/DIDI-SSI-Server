@@ -69,6 +69,41 @@ router.post(
 );
 
 /**
+ *	Renueva el token de firebase
+ */
+router.post(
+	"/renewToken",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{
+			name: "password",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
+		},
+		{
+			name: "firebaseId",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			optional: true,
+		},
+	]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		const did = req.body.did;
+		const password = req.body.password;
+		const firebaseId = req.body.firebaseId;
+
+		try {
+			// valida la contraseña y renueva el firebaseId
+			const user = await UserService.getAndValidate(did, password);
+			await user.updateFirebaseId(firebaseId);
+			return ResponseHandler.sendRes(res, { firebaseId: user.firebaseId });
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
  *	Retorna la clave privada que sirve para recuperar la cuenta de didi.
  */
 router.post(
