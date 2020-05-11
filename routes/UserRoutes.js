@@ -23,22 +23,22 @@ router.post(
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
 		},
 		{
 			name: "phoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
 		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
 			name: "firebaseId",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			optional: true
-		}
+			optional: true,
+		},
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
 		const phoneNumber = req.body.phoneNumber;
@@ -48,6 +48,9 @@ router.post(
 		const privateKeySeed = req.body.privateKeySeed;
 
 		try {
+			await UserService.emailTaken(eMail);
+			await UserService.telTaken(phoneNumber);
+
 			// chequear que el mail haya sido validado
 			let mailValidated = await MailService.isValidated(did, eMail);
 			if (!mailValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.MAIL_NOT_VALIDATED);
@@ -75,16 +78,16 @@ router.post(
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
 		},
 		{
 			name: "firebaseId",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			optional: true
-		}
+			optional: true,
+		},
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const password = req.body.password;
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
@@ -110,12 +113,12 @@ router.post(
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
 		},
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
+		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 		const password = req.body.password;
 		const eMail = req.body.eMail.toLowerCase();
@@ -141,16 +144,16 @@ router.post(
 		{
 			name: "eMailValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
 		},
 		{
 			name: "newPass",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
-		}
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
+		},
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const eMailValidationCode = req.body.eMailValidationCode;
 		const newPass = req.body.newPass;
@@ -185,16 +188,16 @@ router.post(
 		{
 			name: "oldPass",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
 		},
 		{
 			name: "newPass",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
-		}
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
+		},
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 		const oldPass = req.body.oldPass;
 		const newPass = req.body.newPass;
@@ -219,26 +222,26 @@ router.post(
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
 			name: "newPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
 		},
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
 		},
 		{
 			name: "phoneValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
 		},
 		{
 			name: "firebaseId",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			optional: true
-		}
+			optional: true,
+		},
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 		const phoneValidationCode = req.body.phoneValidationCode;
 		const newPhoneNumber = req.body.newPhoneNumber;
@@ -246,6 +249,9 @@ router.post(
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		try {
+			// validar telefono nuevo en uso
+			await UserService.telTaken(newPhoneNumber, did);
+
 			// validar codigo
 			let phone = await SmsService.isValid(newPhoneNumber, phoneValidationCode);
 
@@ -296,22 +302,25 @@ router.post(
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH }
+			length: { min: Constants.PASSWORD_MIN_LENGTH },
 		},
 		{
 			name: "eMailValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
-		}
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
+		},
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 		const eMailValidationCode = req.body.eMailValidationCode;
 		const newEMail = req.body.newEMail.toLowerCase();
 		const password = req.body.password;
 
 		try {
+			// validar mail nuevo en uso
+			await UserService.emailTaken(newEMail, did);
+
 			// validar codigo
 			let mail = await MailService.isValid(newEMail, eMailValidationCode);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
@@ -358,10 +367,10 @@ router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 		const jwt = req.body.jwt;
 
@@ -374,9 +383,9 @@ router.post(
 				verifiable: {
 					[name]: {
 						jwt: jwt,
-						essential: true
-					}
-				}
+						essential: true,
+					},
+				},
 			};
 
 			const petition = await MouroService.createPetition(did, claims, cb);
@@ -405,7 +414,7 @@ router.post(
 	"/verifyCredential",
 	Validator.validateBody([{ name: "access_token", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const access_token = req.body.access_token;
 
 		const data = await MouroService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);

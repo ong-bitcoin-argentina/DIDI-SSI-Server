@@ -8,7 +8,7 @@ const HashedData = require("./dataTypes/HashedData");
 const UserSchema = new mongoose.Schema({
 	did: {
 		type: String,
-		required: true
+		required: true,
 	},
 
 	mail: EncryptedData,
@@ -20,42 +20,42 @@ const UserSchema = new mongoose.Schema({
 	seed: EncryptedData,
 
 	backupHash: {
-		type: String
+		type: String,
 	},
 	firebaseId: {
-		type: String
+		type: String,
 	},
 	password: HashedData,
 	deleted: {
 		type: Boolean,
-		default: false
+		default: false,
 	},
 	createdOn: {
 		type: Date,
-		default: Date.now()
+		default: Date.now(),
 	},
 	modifiedOn: {
 		type: Date,
-		default: Date.now()
-	}
+		default: Date.now(),
+	},
 });
 
 UserSchema.index(
 	{ did: 1, deleted: 1 },
 	{
-		unique: true
+		unique: true,
 	}
 );
 
 UserSchema.index(
 	{ "mail.encrypted": 1, deleted: 1 },
 	{
-		unique: true
+		unique: true,
 	}
 );
 
 // retorna clave privada del usuario
-UserSchema.methods.getSeed = async function() {
+UserSchema.methods.getSeed = async function () {
 	try {
 		const result = await Encrypt.decript(this.seed.encrypted);
 		return Promise.resolve(result);
@@ -66,7 +66,7 @@ UserSchema.methods.getSeed = async function() {
 };
 
 // compara los campos hasheados
-UserSchema.methods.compareField = async function(name, candidate) {
+UserSchema.methods.compareField = async function (name, candidate) {
 	try {
 		const result = await Hashing.validateHash(candidate, this[name]);
 		return Promise.resolve(result);
@@ -77,14 +77,14 @@ UserSchema.methods.compareField = async function(name, candidate) {
 };
 
 // actualiza la contraseña del usuario
-UserSchema.methods.updatePassword = async function(password) {
+UserSchema.methods.updatePassword = async function (password) {
 	// hashear clave
 	const hashData = await Hashing.saltedHash(password);
 
 	// actualizar clave
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { password: hashData, modifiedOn: new Date() }
+		$set: { password: hashData, modifiedOn: new Date() },
 	};
 
 	try {
@@ -97,11 +97,11 @@ UserSchema.methods.updatePassword = async function(password) {
 };
 
 // actualiza el numero de telefono asociado al usuario
-UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber, firebaseId) {
+UserSchema.methods.updatePhoneNumber = async function (newPhoneNumber, firebaseId) {
 	const oldPhone = {
 		encrypted: this.phoneNumber.encrypted,
 		// salt: this.phoneNumber.salt,
-		hash: this.phoneNumber.hash
+		hash: this.phoneNumber.hash,
 	};
 
 	// encriptar numero
@@ -113,7 +113,7 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber, firebaseId
 	const updateQuery = { _id: this._id };
 	const updateAction = {
 		$set: { phoneNumber: this.phoneNumber, firebaseId: firebaseId, modifiedOn: new Date() },
-		$push: { oldPhoneNumbers: oldPhone }
+		$push: { oldPhoneNumbers: oldPhone },
 	};
 
 	try {
@@ -126,11 +126,11 @@ UserSchema.methods.updatePhoneNumber = async function(newPhoneNumber, firebaseId
 };
 
 // actualiza el id de firebase
-UserSchema.methods.updateFirebaseId = async function(firebaseId) {
+UserSchema.methods.updateFirebaseId = async function (firebaseId) {
 	// actualizar firebaseId
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { firebaseId: firebaseId, modifiedOn: new Date() }
+		$set: { firebaseId: firebaseId, modifiedOn: new Date() },
 	};
 
 	try {
@@ -140,14 +140,14 @@ UserSchema.methods.updateFirebaseId = async function(firebaseId) {
 	} catch (err) {
 		return Promise.reject(err);
 	}
-}
+};
 
 // actualiza el mail asociado al usuario
-UserSchema.methods.updateEmail = async function(newEmail) {
+UserSchema.methods.updateEmail = async function (newEmail) {
 	const oldMail = {
 		encrypted: this.mail.encrypted,
 		// salt: this.mail.salt,
-		hash: this.mail.hash
+		hash: this.mail.hash,
 	};
 
 	// encriptar mail
@@ -159,7 +159,7 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 	const updateQuery = { _id: this._id };
 	const updateAction = {
 		$set: { mail: this.mail, modifiedOn: new Date() },
-		$push: { oldEmails: oldMail }
+		$push: { oldEmails: oldMail },
 	};
 
 	try {
@@ -172,10 +172,10 @@ UserSchema.methods.updateEmail = async function(newEmail) {
 };
 
 // actualiza el hash de backup (swarm)
-UserSchema.methods.updateHash = async function(hash) {
+UserSchema.methods.updateHash = async function (hash) {
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { backupHash: hash, modifiedOn: new Date() }
+		$set: { backupHash: hash, modifiedOn: new Date() },
 	};
 
 	try {
@@ -188,27 +188,57 @@ UserSchema.methods.updateHash = async function(hash) {
 };
 
 // retornar mail asociado al usuario
-UserSchema.methods.getMail = async function() {
+UserSchema.methods.getMail = async function () {
 	return await Encrypt.getEncryptedData(this, "mail");
 };
 
 // retornar numero de telefono asociado al usuario
-UserSchema.methods.getPhoneNumber = async function() {
+UserSchema.methods.getPhoneNumber = async function () {
 	return await Encrypt.getEncryptedData(this, "phoneNumber");
 };
 
 // retornar did asociado al usuario
-UserSchema.methods.getDid = async function() {
+UserSchema.methods.getDid = async function () {
 	return (this.did = did);
 };
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
 
-// crear nuevo usuario
-User.generate = async function(did, seed, mail, phoneNumber, pass, firebaseId) {
+User.emailTaken = async function (mail, exceptionDid) {
 	try {
-		let user = new User();
+		const hashData = await Hashing.hash(mail);
+		const repeatedMailQuery = {
+			$or: [{ "mail.hash": hashData.hash }, { "oldEmails.hash": hashData.hash }],
+		};
+		if (exceptionDid) repeatedMailQuery["did"] = { $ne: exceptionDid };
+
+		const sameMailUser = await User.find(repeatedMailQuery);
+		return Promise.resolve(sameMailUser.length > 0);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+};
+
+User.telTaken = async function (tel, exceptionDid) {
+	try {
+		const hashData = await Hashing.hash(tel);
+		const repeatedPhoneQuery = {
+			$or: [{ "phoneNumber.hash": hashData.hash }, { "oldPhoneNumbers.hash": hashData.hash }],
+		};
+		if (exceptionDid) repeatedPhoneQuery["did"] = { $ne: exceptionDid };
+
+		const samePhoneUser = await User.find(repeatedPhoneQuery);
+		return Promise.resolve(samePhoneUser.length > 0);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+};
+
+// crear nuevo usuario
+User.generate = async function (did, seed, mail, phoneNumber, pass, firebaseId) {
+	try {
+		user = new User();
 		user.oldEmails = [];
 		user.oldPhoneNumbers = [];
 		user.createdOn = new Date();
@@ -230,7 +260,7 @@ User.generate = async function(did, seed, mail, phoneNumber, pass, firebaseId) {
 };
 
 // obtener usuario a partir del did
-User.getByDID = async function(did) {
+User.getByDID = async function (did) {
 	try {
 		const query = { did: did, deleted: false };
 		let user = await User.findOne(query);
@@ -242,7 +272,7 @@ User.getByDID = async function(did) {
 };
 
 // obtener usuario a partir del mail
-User.getByEmail = async function(email) {
+User.getByEmail = async function (email) {
 	try {
 		const hashData = await Hashing.hash(email);
 		const query = { "mail.hash": hashData.hash, deleted: false };
@@ -255,7 +285,7 @@ User.getByEmail = async function(email) {
 };
 
 // obtener usuario a partir del numero de telefono
-User.getByTel = async function(phoneNumber) {
+User.getByTel = async function (phoneNumber) {
 	try {
 		const hashData = await Hashing.hash(phoneNumber);
 		const query = { "phoneNumber.hash": hashData.hash, deleted: false };

@@ -26,16 +26,22 @@ router.post(
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH },
-			optional: true
-		}
+			optional: true,
+		},
+		{ name: "unique", validate: [Constants.VALIDATION_TYPES.IS_BOOLEAN], optional: true },
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const did = req.body.did;
 		const password = req.body.password;
 
+		const unique = req.body.unique;
+
 		try {
+			// validar que el mail no este en uso
+			if (unique) await UserService.emailTaken(eMail);
+
 			// se ingresò contraseña, validarla
 			if (did && password) await UserService.getAndValidate(did, password);
 
@@ -66,13 +72,13 @@ router.post(
 		{
 			name: "validationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
 		},
 		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const validationCode = req.body.validationCode;
 		const eMail = req.body.eMail.toLowerCase();
 		const did = req.body.did;
