@@ -87,6 +87,7 @@ module.exports = {
 	},
 
 	VALIDATION_TYPES: {
+		IS_AUTH_TOKEN : "IsAuthToken",
 		IS_MOBILE_PHONE: "isMobilePhone",
 		IS_EMAIL: "isEmail",
 		IS_STRING: "isString",
