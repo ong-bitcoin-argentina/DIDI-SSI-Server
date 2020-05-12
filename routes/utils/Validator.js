@@ -1,10 +1,12 @@
 const Messages = require("../../constants/Messages");
 const Constants = require("../../constants/Constants");
 const ResponseHandler = require("../utils/ResponseHandler");
+const TokenService = require("../../services/TokenService");
+
 const { body, validationResult } = require("express-validator");
 
 // ejecuta validaciones generadas por "validateBody"
-module.exports.checkValidationResult = function(req, res, next) {
+module.exports.checkValidationResult = function (req, res, next) {
 	const result = validationResult(req);
 	if (result.isEmpty()) {
 		return next();
@@ -15,7 +17,7 @@ module.exports.checkValidationResult = function(req, res, next) {
 
 // recibe una lista de paràmetros de validacion y valida que los datos recibidos en el body
 // cumplan con esos paràmetros
-module.exports.validateBody = function(params) {
+module.exports.validateBody = function (params) {
 	const validations = [];
 	params.forEach(param => {
 		let validation;
@@ -24,10 +26,7 @@ module.exports.validateBody = function(params) {
 			validation = body(param.name).optional();
 		} else {
 			// campo no es opcional, valida que exista
-			validation = body(param.name)
-				.not()
-				.isEmpty()
-				.withMessage(Messages.VALIDATION.DOES_NOT_EXIST(param.name));
+			validation = body(param.name).not().isEmpty().withMessage(Messages.VALIDATION.DOES_NOT_EXIST(param.name));
 		}
 
 		if (param.validate && param.validate.length) {
@@ -93,20 +92,29 @@ module.exports.validateBody = function(params) {
 						break;
 					case Constants.VALIDATION_TYPES.IS_BOOLEAN:
 						// campo es un booleano
-						validation.custom(async function(value) {
+						validation.custom(async function (value) {
 							if (value == "true" || value == "false") return Promise.resolve(value);
 							else return Promise.reject(Messages.VALIDATION.BOOLEAN_FORMAT_INVALID(param.name));
 						});
 						break;
 					case Constants.VALIDATION_TYPES.IS_NUMBER:
 						// campo es un numero
-						validation.custom(async function(value) {
+						validation.custom(async function (value) {
 							if (isNaN(value)) return Promise.reject(Messages.VALIDATION.NUMBER_FORMAT_INVALID(param.name));
 							return Promise.resolve(value);
 						});
+						break;
 					case Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE:
 						// campo es una imagen en base64
 						// TODO
+						break;
+					case Constants.VALIDATION_TYPES.IS_AUTH_TOKEN:
+						validation.custom(async function (token, {req}) {
+							const data = await TokenService.getTokenData(token, req.body.did);
+							req.context = req.context ? req.context : {};
+							req.context.tokenData = data;
+							return Promise.resolve(data);
+						});
 						break;
 					case Constants.VALIDATION_TYPES.IS_FINGER_PRINT:
 						// campo es una huella base64
