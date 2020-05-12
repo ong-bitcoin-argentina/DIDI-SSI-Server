@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Messages = require("../constants/Messages");
 
 // obtener usuario
-let getByDID = async function(did) {
+let getByDID = async function (did) {
 	try {
 		let user = await User.getByDID(did);
 		return Promise.resolve(user);
@@ -14,7 +14,7 @@ let getByDID = async function(did) {
 module.exports.getByDID = getByDID;
 
 // obtener usuario con ese mail
-let getByEmail = async function(email) {
+let getByEmail = async function (email) {
 	try {
 		let user = await User.getByEmail(email);
 		return Promise.resolve(user);
@@ -26,7 +26,7 @@ let getByEmail = async function(email) {
 module.exports.getByEmail = getByEmail;
 
 // obtener usuario con ese tel
-let getByTel = async function(phoneNumber) {
+let getByTel = async function (phoneNumber) {
 	try {
 		let user = await User.getByTel(phoneNumber);
 		return Promise.resolve(user);
@@ -38,7 +38,7 @@ let getByTel = async function(phoneNumber) {
 module.exports.getByTel = getByTel;
 
 // obtener usuario y validar contraseña
-let getAndValidate = async function(did, pass, email) {
+let getAndValidate = async function (did, pass, email) {
 	try {
 		// obtener usuario
 		let user = await getByDID(did);
@@ -58,8 +58,32 @@ let getAndValidate = async function(did, pass, email) {
 };
 module.exports.getAndValidate = getAndValidate;
 
+let emailTaken = async function (mail, exceptionDid) {
+	try {
+		const taken = await User.emailTaken(mail, exceptionDid);
+		if (taken) return Promise.reject(Messages.USER.ERR.EMAIL_TAKEN);
+		return Promise.resolve();
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.ERR.VALIDATE);
+	}
+};
+module.exports.emailTaken = emailTaken;
+
+let telTaken = async function (tel, exceptionDid) {
+	try {
+		const taken = await User.telTaken(tel, exceptionDid);
+		if (taken) return Promise.reject(Messages.USER.ERR.TEL_TAKEN);
+		return Promise.resolve();
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.USER.VALIDATE);
+	}
+};
+module.exports.telTaken = telTaken;
+
 // crear un usuario, siempre que este no exista uno asociado al did
-module.exports.create = async function(did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId) {
+module.exports.create = async function (did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId) {
 	try {
 		// validar si ya existe un usuario asociado a ese did
 		let user = await getByDID(did);
@@ -76,7 +100,7 @@ module.exports.create = async function(did, privateKeySeed, userMail, phoneNumbe
 };
 
 // validar contraseña
-module.exports.login = async function(did, email, pass) {
+module.exports.login = async function (did, email, pass) {
 	let user;
 	try {
 		user = await getAndValidate(did, pass, email);
@@ -91,7 +115,7 @@ module.exports.login = async function(did, email, pass) {
 };
 
 // retorna la clave privada de didi
-module.exports.recoverAccount = async function(mail, pass, firebaseId) {
+module.exports.recoverAccount = async function (mail, pass, firebaseId) {
 	let user;
 	try {
 		// buscar usuario asociado al mail
@@ -114,7 +138,7 @@ module.exports.recoverAccount = async function(mail, pass, firebaseId) {
 };
 
 // obtener usuario y actualizar mail
-module.exports.changeEmail = async function(did, newMail, password) {
+module.exports.changeEmail = async function (did, newMail, password) {
 	try {
 		// obtener usuario
 		let user = await getByDID(did);
@@ -135,7 +159,7 @@ module.exports.changeEmail = async function(did, newMail, password) {
 };
 
 // obtener usuario y actualizar tel
-module.exports.changePhoneNumber = async function(did, newPhoneNumber, password, firebaseId) {
+module.exports.changePhoneNumber = async function (did, newPhoneNumber, password, firebaseId) {
 	try {
 		// obtener usuario
 		let user = await getByDID(did);
@@ -156,7 +180,7 @@ module.exports.changePhoneNumber = async function(did, newPhoneNumber, password,
 };
 
 // cambiar contraseña a partir de la vieja contraseña
-module.exports.changePassword = async function(did, oldPass, newPass) {
+module.exports.changePassword = async function (did, oldPass, newPass) {
 	let user;
 	try {
 		// obtener usuario y validar contraseña
@@ -177,7 +201,7 @@ module.exports.changePassword = async function(did, oldPass, newPass) {
 };
 
 // cambiar contraseña
-module.exports.recoverPassword = async function(eMail, newPass) {
+module.exports.recoverPassword = async function (eMail, newPass) {
 	try {
 		// obtener usuario
 		let user = await getByEmail(eMail);

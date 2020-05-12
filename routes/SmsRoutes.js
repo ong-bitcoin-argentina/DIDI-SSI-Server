@@ -21,23 +21,28 @@ router.post(
 	Validator.validateBody([
 		{
 			name: "cellPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
 		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH },
-			optional: true
-		}
+			optional: true,
+		},
+		{ name: "unique", validate: [Constants.VALIDATION_TYPES.IS_BOOLEAN], optional: true },
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const phoneNumber = req.body.cellPhoneNumber;
 		const did = req.body.did;
 		const password = req.body.password;
+		const unique = req.body.unique;
 
 		try {
+			// validar que el telefono no este en uso
+			if (unique) await UserService.telTaken(phoneNumber);
+
 			// se ingresò contraseña, validarla
 			if (password && did) await UserService.getAndValidate(did, password);
 
@@ -67,17 +72,17 @@ router.post(
 	Validator.validateBody([
 		{
 			name: "cellPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
 		},
 		{
 			name: "validationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
 		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const cellPhoneNumber = req.body.cellPhoneNumber;
 		const validationCode = req.body.validationCode;
 		const did = req.body.did;
