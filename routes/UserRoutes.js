@@ -23,19 +23,19 @@ router.post(
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "phoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
 		},
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
 			name: "firebaseId",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			optional: true,
-		},
+			optional: true
+		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -71,27 +71,20 @@ router.post(
 /**
  *	Renueva el token de firebase
  */
-/*
 router.post(
 	"/renewFirebaseToken",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
-			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
-		},
-		{
-			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			optional: true,
-		},
+			name: "token",
+			validate: [Constants.VALIDATION_TYPES.IS_AUTH_TOKEN]
+		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
 		const did = req.body.did;
 		const password = req.body.password;
-		const firebaseId = req.body.firebaseId;
+		const firebaseId = req.context.tokenData.firebaseId;
 
 		try {
 			// valida la contraseña y renueva el firebaseId
@@ -103,7 +96,6 @@ router.post(
 		}
 	}
 );
-*/
 
 /**
  *	Retorna la clave privada que sirve para recuperar la cuenta de didi.
@@ -115,13 +107,13 @@ router.post(
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "firebaseId",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			optional: true,
-		},
+			optional: true
+		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -150,14 +142,14 @@ router.post(
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
 		{
 			name: "firebaseId",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			optional: true,
-		},
+			optional: true
+		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -188,13 +180,13 @@ router.post(
 		{
 			name: "eMailValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
 		{
 			name: "newPass",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
-		},
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -232,13 +224,13 @@ router.post(
 		{
 			name: "oldPass",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "newPass",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
-		},
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
+		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -266,23 +258,23 @@ router.post(
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
 			name: "newPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
+			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
 		},
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "phoneValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
 		{
 			name: "firebaseId",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			optional: true,
-		},
+			optional: true
+		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -346,13 +338,13 @@ router.post(
 		{
 			name: "password",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
+			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "eMailValidationCode",
 			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
-		},
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
+		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -411,7 +403,7 @@ router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -427,9 +419,9 @@ router.post(
 				verifiable: {
 					[name]: {
 						jwt: jwt,
-						essential: true,
-					},
-				},
+						essential: true
+					}
+				}
 			};
 
 			const petition = await MouroService.createPetition(did, claims, cb);
