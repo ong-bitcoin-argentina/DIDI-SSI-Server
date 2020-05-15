@@ -1,14 +1,13 @@
-const Constants = require("../constants/Constants");
 const Messages = require("../constants/Messages");
+const { decodeJWT } = require("did-jwt");
 
 const jwt = require("jsonwebtoken");
 
 // validates the token and returns userId
-module.exports.getTokenData = async function (token, did) {
+module.exports.getTokenData = async function (token) {
 	try {
-		var decoded = jwt.verify(token, did);
-
-		if (!decoded || !decoded[fieldName]) {
+		const decoded = await decodeJWT(token);
+		if (!decoded) {
 			return Promise.reject(Messages.TOKEN.INVALID());
 		}
 

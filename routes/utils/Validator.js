@@ -109,10 +109,10 @@ module.exports.validateBody = function (params) {
 						// TODO
 						break;
 					case Constants.VALIDATION_TYPES.IS_AUTH_TOKEN:
-						validation.custom(async function (token, {req}) {
-							const data = await TokenService.getTokenData(token, req.body.did);
+						validation.custom(async function (token, { req }) {
+							const data = await TokenService.getTokenData(token);
 							req.context = req.context ? req.context : {};
-							req.context.tokenData = data;
+							req.context.tokenData = data.payload;
 							return Promise.resolve(data);
 						});
 						break;
