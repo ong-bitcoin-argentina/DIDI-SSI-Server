@@ -87,7 +87,7 @@ router.post(
 		try {
 			//renueva el firebaseId
 			const user = await UserService.getByDID(did);
-			if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.GET;
+			if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.GET);
 
 			await user.updateFirebaseId(firebaseId);
 			return ResponseHandler.sendRes(res, { firebaseId: user.firebaseId });
