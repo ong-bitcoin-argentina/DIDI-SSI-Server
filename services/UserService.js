@@ -106,11 +106,11 @@ module.exports.login = async function (did, email, pass) {
 		user = await getAndValidate(did, pass, email);
 
 		const sameEmail = await user.compareField("mail", email);
-		if (sameEmail === false) return Promise.reject(Messages.USER.ERR.INVALID_USER_EMAIL);
+		if (sameEmail === false) return Promise.reject(Messages.USER.ERR.INVALID_LOGIN);
 		return Promise.resolve(user);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		return Promise.reject(Messages.USER.ERR.INVALID_LOGIN);
 	}
 };
 
