@@ -426,14 +426,19 @@ router.post(
 
 			const petition = await MouroService.createPetition(did, claims, cb);
 
-			// enviar push notification
-			const user = await UserService.getByDID(did);
-			await FirebaseService.sendPushNotification(
-				Messages.PUSH.VALIDATION_REQ.TITLE,
-				Messages.PUSH.VALIDATION_REQ.MESSAGE,
-				user.firebaseId,
-				Messages.PUSH.TYPES.VALIDATION_REQ
-			);
+			try {
+				// enviar push notification
+				const user = await UserService.getByDID(did);
+				await FirebaseService.sendPushNotification(
+					Messages.PUSH.VALIDATION_REQ.TITLE,
+					Messages.PUSH.VALIDATION_REQ.MESSAGE,
+					user.firebaseId,
+					Messages.PUSH.TYPES.VALIDATION_REQ
+				);
+			} catch (err) {
+				console.log("Error sending push notifications:");
+				console.log(err);
+			}
 
 			const result = await MouroService.saveCertificate(petition, did);
 			return ResponseHandler.sendRes(res, result);

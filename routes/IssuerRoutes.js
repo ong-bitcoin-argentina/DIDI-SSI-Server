@@ -42,17 +42,6 @@ router.post(
 			// guardar certificado en mouro
 			const result = await MouroService.saveCertificate(jwt, verified.payload.sub);
 
-			// enviar push notification
-			if (req.body.sendPush) {
-				const user = await UserService.getByDID(sub);
-				await FirebaseService.sendPushNotification(
-					Messages.PUSH.NEW_CERT.TITLE,
-					Messages.PUSH.NEW_CERT.MESSAGE,
-					user.firebaseId,
-					Messages.PUSH.TYPES.NEW_CERT
-				);
-			}
-
 			// guardar estado
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
@@ -66,6 +55,22 @@ router.post(
 			// guardar hash de recuperacion (swarm)
 			const hash = await MouroService.getHash(verified.payload.sub);
 			if (hash) subject = await subject.updateHash(hash);
+
+			// enviar push notification
+			if (req.body.sendPush) {
+				try {
+					const user = await UserService.getByDID(sub);
+					await FirebaseService.sendPushNotification(
+						Messages.PUSH.NEW_CERT.TITLE,
+						Messages.PUSH.NEW_CERT.MESSAGE,
+						user.firebaseId,
+						Messages.PUSH.TYPES.NEW_CERT
+					);
+				} catch (err) {
+					console.log("Error sending push notifications:");
+					console.log(err);
+				}
+			}
 
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -103,14 +108,19 @@ router.post(
 			const shareReq = await MouroService.createShareRequest(did, jwt);
 			const result = await MouroService.saveCertificate(shareReq, did);
 
-			// enviar push notification
-			const user = await UserService.getByDID(did);
-			await FirebaseService.sendPushNotification(
-				Messages.PUSH.SHARE_REQ.TITLE,
-				Messages.PUSH.SHARE_REQ.MESSAGE,
-				user.firebaseId,
-				Messages.PUSH.TYPES.SHARE_REQ
-			);
+			try {
+				// enviar push notification
+				const user = await UserService.getByDID(did);
+				await FirebaseService.sendPushNotification(
+					Messages.PUSH.SHARE_REQ.TITLE,
+					Messages.PUSH.SHARE_REQ.MESSAGE,
+					user.firebaseId,
+					Messages.PUSH.TYPES.SHARE_REQ
+				);
+			} catch (err) {
+				console.log("Error sending push notifications:");
+				console.log(err);
+			}
 
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {

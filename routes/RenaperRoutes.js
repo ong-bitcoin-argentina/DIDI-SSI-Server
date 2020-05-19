@@ -33,7 +33,7 @@ router.post(
 		{ name: "backImage", validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] }
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 
 		const dni = req.body.dni;
@@ -165,8 +165,18 @@ router.post(
 			const saveAditionalCert = MouroService.saveCertificate(aditionalCert, did);
 			const [resCert, resAditionalCert] = await Promise.all([saveCert, saveAditionalCert]);
 
-			// enviar push notification
-			await FirebaseService.sendPushNotification(Messages.PUSH.NEW_CERT.TITLE, Messages.PUSH.NEW_CERT.MESSAGE, user.firebaseId, Messages.PUSH.TYPES.NEW_CERT);
+			try {
+				// enviar push notification
+				await FirebaseService.sendPushNotification(
+					Messages.PUSH.NEW_CERT.TITLE,
+					Messages.PUSH.NEW_CERT.MESSAGE,
+					user.firebaseId,
+					Messages.PUSH.TYPES.NEW_CERT
+				);
+			} catch (err) {
+				console.log("Error sending push notifications:");
+				console.log(err);
+			}
 
 			// agregar info de renaper al usuario
 			const addCert = Certificate.generate(
@@ -174,7 +184,7 @@ router.post(
 				did,
 				Constants.CERTIFICATE_STATUS.UNVERIFIED,
 				resCert.data,
-				resCert.hash,
+				resCert.hash
 			);
 			const addAditionalCert = Certificate.generate(
 				Constants.CERTIFICATE_NAMES.USER_ADDRESS,
@@ -207,7 +217,7 @@ router.post(
 		{ name: "operationId", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const operationId = req.body.operationId;
 		try {
 			const authRequest = await AuthRequestService.getByOperationId(operationId);
