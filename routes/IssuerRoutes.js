@@ -19,10 +19,11 @@ router.post(
 	"/issuer/issueCertificate",
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "sendPush", validate: [Constants.VALIDATION_TYPES.IS_BOOLEAN], optional: true }
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 		const jwt = req.body.jwt;
 
@@ -41,15 +42,6 @@ router.post(
 			// guardar certificado en mouro
 			const result = await MouroService.saveCertificate(jwt, verified.payload.sub);
 
-			// enviar push notification
-			const user = await UserService.getByDID(sub);
-			await FirebaseService.sendPushNotification(
-				Messages.PUSH.NEW_CERT.TITLE,
-				Messages.PUSH.NEW_CERT.MESSAGE,
-				user.firebaseId,
-				Messages.PUSH.TYPES.NEW_CERT
-			);
-
 			// guardar estado
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
@@ -63,6 +55,22 @@ router.post(
 			// guardar hash de recuperacion (swarm)
 			const hash = await MouroService.getHash(verified.payload.sub);
 			if (hash) subject = await subject.updateHash(hash);
+
+			// enviar push notification
+			if (req.body.sendPush) {
+				try {
+					const user = await UserService.getByDID(sub);
+					await FirebaseService.sendPushNotification(
+						Messages.PUSH.NEW_CERT.TITLE,
+						Messages.PUSH.NEW_CERT.MESSAGE,
+						user.firebaseId,
+						Messages.PUSH.TYPES.NEW_CERT
+					);
+				} catch (err) {
+					console.log("Error sending push notifications:");
+					console.log(err);
+				}
+			}
 
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -84,7 +92,7 @@ router.post(
 		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const delegatorDid = req.body.delegatorDid;
 		const issuerDid = req.body.issuerDid;
 		const did = req.body.did;
@@ -100,14 +108,19 @@ router.post(
 			const shareReq = await MouroService.createShareRequest(did, jwt);
 			const result = await MouroService.saveCertificate(shareReq, did);
 
-			// enviar push notification
-			const user = await UserService.getByDID(did);
-			await FirebaseService.sendPushNotification(
-				Messages.PUSH.SHARE_REQ.TITLE,
-				Messages.PUSH.SHARE_REQ.MESSAGE,
-				user.firebaseId,
-				Messages.PUSH.TYPES.SHARE_REQ
-			);
+			try {
+				// enviar push notification
+				const user = await UserService.getByDID(did);
+				await FirebaseService.sendPushNotification(
+					Messages.PUSH.SHARE_REQ.TITLE,
+					Messages.PUSH.SHARE_REQ.MESSAGE,
+					user.firebaseId,
+					Messages.PUSH.TYPES.SHARE_REQ
+				);
+			} catch (err) {
+				console.log("Error sending push notifications:");
+				console.log(err);
+			}
 
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
@@ -130,7 +143,7 @@ router.post(
 		{ name: "hash", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 		const sub = req.body.sub;
 		const jwt = req.body.jwt;
@@ -171,7 +184,7 @@ router.post(
 		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "micros", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true }
 	]),
-	async function(req, res) {
+	async function (req, res) {
 		const jwt = req.body.jwt;
 		const micros = req.body.micros ? req.body.micros.split(",") : [];
 
@@ -291,12 +304,16 @@ router.post(
  */
 router.post(
 	"/issuer/",
-	Validator.validateBody([{ 
-		name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING],
-		name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING],
-	}]),
+	Validator.validateBody([
+		{
+			name: "did",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			name: "name",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING]
+		}
+	]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 		const name = req.body.name;
 
@@ -317,7 +334,7 @@ router.post(
 /**
  *	Obtener nombre de un emisor autorizado a partir de su did
  */
-router.get("/issuer/:did", async function(req, res) {
+router.get("/issuer/:did", async function (req, res) {
 	const did = req.params.did;
 
 	try {
@@ -337,7 +354,7 @@ router.delete(
 	"/issuer/",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	Validator.checkValidationResult,
-	async function(req, res) {
+	async function (req, res) {
 		const did = req.body.did;
 
 		try {
@@ -359,7 +376,7 @@ router.delete(
  *	Utilitario, permite generar header para hacer llamadas en la consola de mouro a mano
  *	(se recomienda eliminarlo en la version final)
  */
-router.get("/headers/:did/:key", Validator.checkValidationResult, async function(req, res) {
+router.get("/headers/:did/:key", Validator.checkValidationResult, async function (req, res) {
 	const did = req.params.did;
 	const key = req.params.key;
 

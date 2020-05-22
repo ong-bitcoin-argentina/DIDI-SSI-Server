@@ -74,7 +74,6 @@ router.post(
 router.post(
 	"/renewFirebaseToken",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{
 			name: "token",
 			validate: [Constants.VALIDATION_TYPES.IS_AUTH_TOKEN]
@@ -82,13 +81,14 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const did = req.body.did;
-		const password = req.body.password;
+		const did = req.context.tokenData.iss;
 		const firebaseId = req.context.tokenData.firebaseId;
 
 		try {
-			// valida la contraseña y renueva el firebaseId
-			const user = await UserService.getAndValidate(did, password);
+			//renueva el firebaseId
+			const user = await UserService.getByDID(did);
+			if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.GET);
+
 			await user.updateFirebaseId(firebaseId);
 			return ResponseHandler.sendRes(res, { firebaseId: user.firebaseId });
 		} catch (err) {
@@ -426,14 +426,19 @@ router.post(
 
 			const petition = await MouroService.createPetition(did, claims, cb);
 
-			// enviar push notification
-			const user = await UserService.getByDID(did);
-			await FirebaseService.sendPushNotification(
-				Messages.PUSH.VALIDATION_REQ.TITLE,
-				Messages.PUSH.VALIDATION_REQ.MESSAGE,
-				user.firebaseId,
-				Messages.PUSH.TYPES.VALIDATION_REQ
-			);
+			try {
+				// enviar push notification
+				const user = await UserService.getByDID(did);
+				await FirebaseService.sendPushNotification(
+					Messages.PUSH.VALIDATION_REQ.TITLE,
+					Messages.PUSH.VALIDATION_REQ.MESSAGE,
+					user.firebaseId,
+					Messages.PUSH.TYPES.VALIDATION_REQ
+				);
+			} catch (err) {
+				console.log("Error sending push notifications:");
+				console.log(err);
+			}
 
 			const result = await MouroService.saveCertificate(petition, did);
 			return ResponseHandler.sendRes(res, result);
