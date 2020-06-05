@@ -43,6 +43,7 @@ const RSA_PRIVATE_KEY = process.env.RSA_PRIVATE_KEY;
 const HASH_SALT = process.env.HASH_SALT;
 
 const FIREBASE_URL = process.env.FIREBASE_URL;
+const FIREBASE_PRIV_KEY_PATH = process.env.FIREBASE_PRIV_KEY_PATH;
 
 module.exports = {
 	DIDI_SERVER_NAME: "Didi Server",
@@ -142,6 +143,7 @@ module.exports = {
 	},
 
 	FIREBASE_URL: FIREBASE_URL,
+	FIREBASE_PRIV_KEY_PATH: FIREBASE_PRIV_KEY_PATH,
 
 	NO_EMAILS: NO_EMAILS,
 	NO_SMS: NO_SMS

@@ -1,7 +1,7 @@
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const firebaseAdmin = require("firebase-admin");
-const credentialAccount = require("../firebase-admin.json");
+const credentialAccount = require(Constants.FIREBASE_PRIV_KEY_PATH);
 
 firebaseAdmin.initializeApp({
 	credential: firebaseAdmin.credential.cert(credentialAccount),
