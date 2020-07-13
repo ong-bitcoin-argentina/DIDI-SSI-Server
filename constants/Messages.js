@@ -150,8 +150,8 @@ module.exports = {
 			GET: COMMUNICATION_ERROR
 		},
 		VALIDATION: {
-			FROM: "Didi admin <me@samples.mailgun.org>",
-			SUBJECT: "DIDI validation code",
+			FROM: "DIDI <no-responder@didi.org.ar>",
+			SUBJECT: "DIDI - Código de validación",
 			MESSAGE: code => {
 				return (
 					"Hola,\n" +
