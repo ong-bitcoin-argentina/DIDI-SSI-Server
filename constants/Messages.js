@@ -1,4 +1,7 @@
-const COMMUNICATION_ERROR = { code: "COMMUNICATION_ERROR", message: "No es posible conetarse con el servidor, por favor inténtelo de nuevo más tarde." };
+const COMMUNICATION_ERROR = {
+	code: "COMMUNICATION_ERROR",
+	message: "No es posible conetarse con el servidor, por favor inténtelo de nuevo más tarde."
+};
 
 module.exports = {
 	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
@@ -52,11 +55,26 @@ module.exports = {
 	CERTIFICATE: {
 		ERR: {
 			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada, es necesario generar una nueva." },
-			CREATE: { code: "CERT_CREATE_ERROR", message: "Error al crear la credencial, por favor inténtelo de nuevo más tarde." },
-			VERIFY: { code: "CERT_VERIFY_ERROR", message: "Error al validar la credencial generada, por favor inténtelo de nuevo más tarde." },
-			REVOKE: { code: "CERT_REVOKE_ERROR", message: "Error al dar de baja la credencial, por favor inténtelo de nuevo más tarde." },
-			HASH: { code: "CERT_HASH_ERROR", message: "Error al obtener hash de backup, por favor inténtelo de nuevo más tarde." },
-			SAVE: { code: "CERT_SAVE_ERROR", message: "Error al guardar la creadencial generada, por favor inténtelo de nuevo más tarde." },
+			CREATE: {
+				code: "CERT_CREATE_ERROR",
+				message: "Error al crear la credencial, por favor inténtelo de nuevo más tarde."
+			},
+			VERIFY: {
+				code: "CERT_VERIFY_ERROR",
+				message: "Error al validar la credencial generada, por favor inténtelo de nuevo más tarde."
+			},
+			REVOKE: {
+				code: "CERT_REVOKE_ERROR",
+				message: "Error al dar de baja la credencial, por favor inténtelo de nuevo más tarde."
+			},
+			HASH: {
+				code: "CERT_HASH_ERROR",
+				message: "Error al obtener hash de backup, por favor inténtelo de nuevo más tarde."
+			},
+			SAVE: {
+				code: "CERT_SAVE_ERROR",
+				message: "Error al guardar la creadencial generada, por favor inténtelo de nuevo más tarde."
+			},
 			EXPIRED: { code: "CERT_EXPIRED", message: "Error la credencial ha expirado, es necesario generar una nueva." }
 		},
 		HASH: "Hash obtenido",
@@ -110,18 +128,32 @@ module.exports = {
 					message: "No pudo generarse la credencial vinculando el did y el número."
 				}
 			},
-			SMS_SEND_ERROR: { code: "SMS_SEND_ERROR", message: "No pudo mandarse el sms, por favor inténtelo de nuevo más tarde." },
-			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese teléfono ya se encuentra asociado a un usuario, por favor elija otro." },
+			SMS_SEND_ERROR: {
+				code: "SMS_SEND_ERROR",
+				message: "No pudo mandarse el sms, por favor inténtelo de nuevo más tarde."
+			},
+			ALREADY_EXISTS: {
+				code: "ALREADY_EXISTS",
+				message: "Ese teléfono ya se encuentra asociado a un usuario, por favor elija otro."
+			},
 			VALIDATION_EXPIRED: {
 				code: "VALIDATION_EXPIRED",
-				message: "El pedido de validacion para ese número ha expirado, es necesario realizar un nuevo pedido de validacion."
+				message:
+					"El pedido de validacion para ese número ha expirado, es necesario realizar un nuevo pedido de validacion."
 			},
 			NO_VALIDATIONS_FOR_NUMBER: {
 				code: "NO_VALIDATIONS",
 				message: "No se encontraron pedidos de validación para ese número."
 			},
-			NO_SMSCODE_MATCH: { code: "NO_SMSCODE_MATCH", message: "El código de validacion es incorrecto, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli." },
-			CREATE: { code: "VALIDATION_CREATE", message: "El pedido de validacion para ese número no pudo ser creado, por favor inténtelo de nuevo más tarde." },
+			NO_SMSCODE_MATCH: {
+				code: "NO_SMSCODE_MATCH",
+				message:
+					"El código de validacion es incorrecto, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli."
+			},
+			CREATE: {
+				code: "VALIDATION_CREATE",
+				message: "El pedido de validacion para ese número no pudo ser creado, por favor inténtelo de nuevo más tarde."
+			},
 			GET: COMMUNICATION_ERROR
 		}
 	},
@@ -135,18 +167,36 @@ module.exports = {
 		},
 		ERR: {
 			CERT: {
-				CREATE: { code: "CERT_CREATE_ERROR", message: "No pudo generarse la credencial vinculando el did y el mail, por favor inténtelo de nuevo más tarde." }
+				CREATE: {
+					code: "CERT_CREATE_ERROR",
+					message:
+						"No pudo generarse la credencial vinculando el did y el mail, por favor inténtelo de nuevo más tarde."
+				}
 			},
 			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail." },
-			NO_EMAILCODE_MATCH: { code: "NO_EMAILCODE_MATCH", message: "El código de validacion es incorrecto, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli." },
+			NO_EMAILCODE_MATCH: {
+				code: "NO_EMAILCODE_MATCH",
+				message:
+					"El código de validacion es incorrecto, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli."
+			},
 			NO_VALIDATIONS_FOR_EMAIL: {
 				code: "NO_VALIDATIONS",
 				message: "No se encontraron pedidos de validacion para ese mail."
 			},
-			ALREADY_EXISTS: { code: "ALREADY_EXISTS", message: "Ese mail ya se encuentra asociado a un usuario, por favor elija otro." },
-			VALIDATION_EXPIRED: { code: "VALIDATION_EXPIRED", message: "El pedido de validacion para ese mail ha expirado, es necesario realizar un nuevo pedido de validacion." },
+			ALREADY_EXISTS: {
+				code: "ALREADY_EXISTS",
+				message: "Ese mail ya se encuentra asociado a un usuario, por favor elija otro."
+			},
+			VALIDATION_EXPIRED: {
+				code: "VALIDATION_EXPIRED",
+				message:
+					"El pedido de validacion para ese mail ha expirado, es necesario realizar un nuevo pedido de validacion."
+			},
 			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail." },
-			CREATE: { code: "VALIDATION_CREATE", message: "El pedido de validacion para ese mail no pudo ser creado, por favor inténtelo de nuevo más tarde." },
+			CREATE: {
+				code: "VALIDATION_CREATE",
+				message: "El pedido de validacion para ese mail no pudo ser creado, por favor inténtelo de nuevo más tarde."
+			},
 			GET: COMMUNICATION_ERROR
 		},
 		VALIDATION: {
@@ -159,7 +209,6 @@ module.exports = {
 					"CODE: " +
 					code +
 					"\n\n" +
-					"Si no realizaste el pedido de dicho código por favor comunicate inmediatamente con nuestro servicio al cliente en didi@mailgun.com\n\n" +
 					"Saludos,\n" +
 					"El equipo de DIDI"
 				);
@@ -192,26 +241,60 @@ module.exports = {
 				code: "VALIDATE_DID_ERROR",
 				message: "Ese did no se encuentra autorizado a realizar esa operacion."
 			},
-			USER_ALREADY_EXIST: { code: "USER_ALREADY_EXIST", message: "Ese did ya se encuentra asociado a un usuario, si desea utilizar una cuenta ya existente, por favor dirigirse a 'Recuperar Cuenta'." },
-			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden, por favor, verifique los valores antes de intentarlo nuevamente." },
+			USER_ALREADY_EXIST: {
+				code: "USER_ALREADY_EXIST",
+				message:
+					"Ese did ya se encuentra asociado a un usuario, si desea utilizar una cuenta ya existente, por favor dirigirse a 'Recuperar Cuenta'."
+			},
+			INVALID_USER: {
+				code: "INVALID_USER",
+				message:
+					"El usuario y contraseña no coinciden, por favor, verifique los valores antes de intentarlo nuevamente."
+			},
 			INVALID_USER_DID: {
 				code: "INVALID_USER_DID",
 				message: "El usuario fue generado desde otro teléfono, es necesario recuperar la cuenta para loguearse."
 			},
-			INVALID_USER_EMAIL: { code: "INVALID_USER_EMAIL", message: "El mail ingresado no corresponde a ese usuario, por favor verifique que sea correcto antes de volver a intentarlo." },
-			NOMATCH_USER_DID: { code: "NOMATCH_USER_DID", message: "No se encontró ningún usuario con ese did, por favor verifique que sea correcto antes de volver a intentarlo." },
+			INVALID_USER_EMAIL: {
+				code: "INVALID_USER_EMAIL",
+				message:
+					"El mail ingresado no corresponde a ese usuario, por favor verifique que sea correcto antes de volver a intentarlo."
+			},
+			NOMATCH_USER_DID: {
+				code: "NOMATCH_USER_DID",
+				message:
+					"No se encontró ningún usuario con ese did, por favor verifique que sea correcto antes de volver a intentarlo."
+			},
 			NOMATCH_USER_EMAIL: {
 				code: "NOMATCH_USER_EMAIL",
-				message: "No se encontró ningún usuario con ese mail y contraseña, por favor, verifique los valores antes de intentarlo nuevamente."
+				message:
+					"No se encontró ningún usuario con ese mail y contraseña, por favor, verifique los valores antes de intentarlo nuevamente."
 			},
-			MAIL_NOT_VALIDATED: { code: "MAIL_NOT_VALIDATED", message: "Ese mail no fue validado, en caso de no haber terminado el proceso, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli." },
-			PHONE_NOT_VALIDATED: { code: "PHONE_NOT_VALIDATED", message: "Ese teléfono no fue validado, en caso de no haber terminado el proceso, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli." },
-			VALIDATE: { code: "VALIDATE", message: "Error al validar informacion de usuario, por favor inténtelo de nuevo más tarde." },
+			MAIL_NOT_VALIDATED: {
+				code: "MAIL_NOT_VALIDATED",
+				message:
+					"Ese mail no fue validado, en caso de no haber terminado el proceso, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli."
+			},
+			PHONE_NOT_VALIDATED: {
+				code: "PHONE_NOT_VALIDATED",
+				message:
+					"Ese teléfono no fue validado, en caso de no haber terminado el proceso, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli."
+			},
+			VALIDATE: {
+				code: "VALIDATE",
+				message: "Error al validar informacion de usuario, por favor inténtelo de nuevo más tarde."
+			},
 			EMAIL_TAKEN: { code: "EMAIL_TAKEN", message: "Ese mail ya se encuentra en uso, por favor elija otro." },
 			TEL_TAKEN: { code: "TEL_TAKEN", message: "Ese teléfono ya se encuentra en uso, por favor elija otro." },
-			CREATE: { code: "USER_CREATE", message: "Hubo un error al durante la creación  del usuario, por favor inténtelo de nuevo más tarde." },
+			CREATE: {
+				code: "USER_CREATE",
+				message: "Hubo un error al durante la creación  del usuario, por favor inténtelo de nuevo más tarde."
+			},
 			GET: { code: "USER_GET", message: "No se pudo obtener el usuario, por favor inténtelo de nuevo más tarde." },
-			UPDATE: { code: "USER_UPDATE", message: "No se pudo actualizar el usuario, por favor inténtelo de nuevo más tarde." }
+			UPDATE: {
+				code: "USER_UPDATE",
+				message: "No se pudo actualizar el usuario, por favor inténtelo de nuevo más tarde."
+			}
 		}
 	},
 	ISSUER: {
@@ -220,15 +303,31 @@ module.exports = {
 				code: "ALREADY_CREATED",
 				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
 			},
-			DELETE: { code: "ISSUER_DELETE", message: "No se pudo revocar la autorización para emisión de certificados, por favor inténtelo de nuevo más tarde." },
-			IS_INVALID: { code: "IS_INVALID", message: "El emisor no esta autorizado para emitir certificados, por favor contacte a un administrador para obtener dicha autorizacion." },
+			DELETE: {
+				code: "ISSUER_DELETE",
+				message:
+					"No se pudo revocar la autorización para emisión de certificados, por favor inténtelo de nuevo más tarde."
+			},
+			IS_INVALID: {
+				code: "IS_INVALID",
+				message:
+					"El emisor no esta autorizado para emitir certificados, por favor contacte a un administrador para obtener dicha autorizacion."
+			},
 			CERT_SUB_IS_INVALID: {
 				code: "CERT_SUB_IS_INVALID",
-				message: "No pudo encontrarse ningun usuario registrado en didi con ese DID, solo pueden emitirse certificados a usuarios registrados."
+				message:
+					"No pudo encontrarse ningun usuario registrado en didi con ese DID, solo pueden emitirse certificados a usuarios registrados."
 			},
 			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
-			REVOKED: { code: "REVOKED", message: "El certificado ha sido revocado, esta operacion solo esta permitida sobre certificados activos." },
-			NOT_FOUND: { code: "NOT_FOUND", message: "No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas." }
+			REVOKED: {
+				code: "REVOKED",
+				message: "El certificado ha sido revocado, esta operacion solo esta permitida sobre certificados activos."
+			},
+			NOT_FOUND: {
+				code: "NOT_FOUND",
+				message:
+					"No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas."
+			}
 		},
 		CERT_REVOKED: "El certificado fue revocado.",
 		DELETED: "La autorizacion para emitir certificados fue revocada.",
@@ -251,17 +350,30 @@ module.exports = {
 			MESSAGE: "Tienes un pedido de certificado nuevo"
 		},
 		NEW_CERT: {
-			TITLE: "Nuevo Certificado",
-			MESSAGE: "Tienes un certificado nuevo"
+			TITLE: "Nueva Credencial",
+			MESSAGE: "Tenés una nueva Credencial disponible para descargar en DIDI"
 		}
 	},
 	DELEGATE: {
 		ERR: {
-			INVALID_USER: { code: "INVALID_USER", message: "El usuario y contraseña no coinciden, por favor verifique que estas sean correctas y vuelva a intentarlo." },
-			CREATE: { code: "USER_CREATE", message: "El usuario no pudo ser creado, por favor inténtelo de nuevo más tarde." },
+			INVALID_USER: {
+				code: "INVALID_USER",
+				message:
+					"El usuario y contraseña no coinciden, por favor verifique que estas sean correctas y vuelva a intentarlo."
+			},
+			CREATE: {
+				code: "USER_CREATE",
+				message: "El usuario no pudo ser creado, por favor inténtelo de nuevo más tarde."
+			},
 			GET: { code: "USER_GET", message: "El usuario no pudo ser obtenido, por favor inténtelo de nuevo más tarde." },
-			SET_NAME: { code: "DELEGATE_SET_NAME", message: "El delegado no pudo ser verificado, por favor inténtelo de nuevo más tarde." },
-			GET_NAME: { code: "DELEGATE_GET_NAME", message: "El nombre del emisor no pudo ser obtenido, por favor inténtelo de nuevo más tarde." }
+			SET_NAME: {
+				code: "DELEGATE_SET_NAME",
+				message: "El delegado no pudo ser verificado, por favor inténtelo de nuevo más tarde."
+			},
+			GET_NAME: {
+				code: "DELEGATE_GET_NAME",
+				message: "El nombre del emisor no pudo ser obtenido, por favor inténtelo de nuevo más tarde."
+			}
 		}
 	},
 	VALIDATION: {
