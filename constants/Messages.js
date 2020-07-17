@@ -112,7 +112,7 @@ module.exports = {
 		},
 		VALIDATION: {
 			MESSAGE: code => {
-				return "Este es tu código de validacion para validar tu cuenta de DIDI: " + code;
+				return `Ingresá este código ${code} en la app ai.di para darte de alta.`;
 			}
 		},
 		SUCCESS: {
@@ -200,18 +200,19 @@ module.exports = {
 			GET: COMMUNICATION_ERROR
 		},
 		VALIDATION: {
-			FROM: "DIDI <no-responder@didi.org.ar>",
-			SUBJECT: "DIDI - Código de validación",
+			FROM: "ai·di <no-responder@didi.org.ar>",
+			SUBJECT: "Validación de correo electrónico en ai·di",
 			MESSAGE: code => {
-				return (
-					"Hola,\n" +
-					"Este es tu código de validacion para validar tu cuenta de DIDI\n\n" +
-					"CODE: " +
-					code +
-					"\n\n" +
-					"Saludos,\n" +
-					"El equipo de DIDI"
-				);
+				return `¡Hola!
+
+				Te damos la bienvenida desde el Equipo de App ai.di.
+				Para terminar el proceso de darte de alta copiá este código de 6 dígitos: ${code} e ingresalo en la pantalla que aparece en la aplicación ai·di.
+
+				De esta manera garantizamos que esta cuenta de correo te pertenece y protegemos tu información.
+				
+				¡Qué alegría que formes parte!
+				Saludos,
+				Equipo ai.di - Proyecto DIDI`;
 			}
 		}
 	},
