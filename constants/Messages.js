@@ -351,7 +351,7 @@ module.exports = {
 			MESSAGE: "Tienes un pedido de certificado nuevo"
 		},
 		NEW_CERT: {
-			TITLE: "Nueva Credencial",
+			TITLE: undefined,
 			MESSAGE: "Tenés una nueva Credencial disponible para descargar en DIDI"
 		}
 	},
