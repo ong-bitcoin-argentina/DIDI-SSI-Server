@@ -126,8 +126,16 @@ module.exports.setDelegateName = async function(issuerDID, credentials, name) {
 // obtiene el nombre que mostrara el delegado
 module.exports.getDelegateName = async function(issuerDID) {
 	try {
+		// TODO: esto genera errores cuando los eventos son muchos.
+		// Debe ser refactorizado.
+
 		const did = cleanDid(issuerDID);
+
 		if (did === Constants.SERVER_DID) return Promise.resolve(Constants.DIDI_SERVER_NAME);
+
+		// HACK TEMPORAL que devuelve el nombre de un ISSUER especificado
+		// por variable de entorno, para que no recorra todos los eventos.
+		if (did === Constants.ISSUER_SERVER_DID) return Promise.resolve(Constants.ISSUER_SERVER_NAME);
 
 		const contract = getContract({ from: did });
 		const events = await contract.getPastEvents("DIDAttributeChanged", { fromBlock: 0, toBlock: "latest" });

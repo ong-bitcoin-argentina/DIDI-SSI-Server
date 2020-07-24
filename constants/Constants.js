@@ -11,6 +11,9 @@ const PORT = process.env.PORT;
 const SERVER_DID = process.env.SERVER_DID;
 const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
 
+const ISSUER_SERVER_DID = process.env.ISSUER_SERVER_DID; // TODO: quitar cuando se resuelva el problema de los nombres de issuers
+const ISSUER_SERVER_NAME = process.env.ISSUER_SERVER_NAME; // TODO: quitar cuando se resuelva el problema de los nombres de issuers
+
 const MOURO_URL = process.env.MOURO_URL;
 
 const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
@@ -80,6 +83,8 @@ module.exports = {
 	MOURO_URL: MOURO_URL,
 	SERVER_DID: SERVER_DID,
 	SERVER_PRIVATE_KEY: SERVER_PRIVATE_KEY,
+	ISSUER_SERVER_DID: ISSUER_SERVER_DID, // TODO: quitar cuando se resuelva el problema de los nombres de issuers
+	ISSUER_SERVER_NAME: ISSUER_SERVER_NAME, // TODO: quitar cuando se resuelva el problema de los nombres de issuers
 	CREDENTIALS: {
 		TYPES: {
 			VERIFIABLE: "VerifiableCredential"
