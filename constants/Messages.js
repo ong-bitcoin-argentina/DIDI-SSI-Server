@@ -5,53 +5,6 @@ const COMMUNICATION_ERROR = {
 
 module.exports = {
 	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
-	RENAPER: {
-		CREATE: {
-			code: "REQ_CREATE",
-			message: "No pudo registrarse el pedido de validacion de identidad, por favor inténtelo de nuevo más tarde."
-		},
-		GET: {
-			code: "REQ_GET",
-			message: "No pudo obtenerse el pedido de validacion de identidad, por favor inténtelo de nuevo más tarde."
-		},
-		UPDATE: {
-			code: "REQ_UPDATE",
-			message: "No pudo actualizarse el pedido de validacion de identidad, por favor inténtelo de nuevo más tarde."
-		},
-		WEAK_MATCH: {
-			code: "WEAK_MATCH",
-			message:
-				"El resultado arrojado por Renaper tiene un bajo grado de precision, por favor inténte sacar mejores fotos."
-		},
-		SCAN_BAR_CODE: {
-			code: "SCAN_BAR_CODE",
-			message: "Hubo un error al enviar el código de barras, por favor inténtelo de nuevo más tarde."
-		},
-		NEW_OPERATION: {
-			code: "NEW_OPERATION",
-			message: "Hubo un error al iniciar el tramite de validacion, por favor inténtelo de nuevo más tarde."
-		},
-		ADD_FRONT: {
-			code: "ADD_FRONT",
-			message: "Hubo un error al enviar la foto del frente, por favor inténtelo de nuevo más tarde."
-		},
-		ADD_BACK: {
-			code: "ADD_BACK",
-			message: "Hubo un error al enviar la foto del dorso, por favor inténtelo de nuevo más tarde."
-		},
-		ADD_SELFIE: {
-			code: "ADD_SELFIE",
-			message: "Hubo un error al enviar la selfie, por favor inténtelo de nuevo más tarde."
-		},
-		ADD_BAR_CODE: {
-			code: "ADD_BAR_CODE",
-			message: "Hubo un error al analizar el código de barras, por favor inténtelo de nuevo más tarde."
-		},
-		END_OPERATION: {
-			code: "END_OPERATION",
-			message: "Hubo un error al analizar los datos, por favor inténtelo de nuevo más tarde."
-		}
-	},
 	CERTIFICATE: {
 		ERR: {
 			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada, es necesario generar una nueva." },
@@ -84,77 +37,26 @@ module.exports = {
 		EXPIRED: "Certificado vencido",
 		VERIFIED: "Certificado validado"
 	},
-	INDEX: {
+	DELEGATE: {
 		ERR: {
-			CONNECTION: "Error de conexion en la base de datos: "
-		},
-		MSG: {
-			CONNECTING: "conectandose a: ",
-			CONNECTED: "Base de datos conectada.",
-			HELLO_WORLD: "Hola DIDI!",
-			RUNNING_ON: "Ejecutandose en puerto ",
-			STARTING_WORKER: "Arrancando nuevo worker",
-			STARTING_WORKERS: num => {
-				return "Inicializando " + num + " workers";
-			},
-			STARTED_WORKER: pid => {
-				return "Worker " + pid + " inicializado";
-			},
-			ENDED_WORKER: (pid, code, signal) => {
-				return "Worker " + pid + " termino con código: " + code + ", y señal: " + signal;
-			}
-		}
-	},
-	SMS: {
-		SENT: "Message sent",
-		SENDING: function (number) {
-			return "Enviando sms a " + number;
-		},
-		VALIDATION: {
-			MESSAGE: code => {
-				return `Ingresá este código ${code} en la app ai.di para darte de alta.`;
-			}
-		},
-		SUCCESS: {
-			SENT: {},
-			MATCHED: function (cert) {
-				return { certificate: cert };
-			}
-		},
-		ERR: {
-			CERT: {
-				CREATE: {
-					code: "CERT_CREATE_ERROR",
-					message: "No pudo generarse la credencial vinculando el did y el número."
-				}
-			},
-			SMS_SEND_ERROR: {
-				code: "SMS_SEND_ERROR",
-				message: "No pudo mandarse el sms, por favor inténtelo de nuevo más tarde."
-			},
-			ALREADY_EXISTS: {
-				code: "ALREADY_EXISTS",
-				message: "Ese teléfono ya se encuentra asociado a un usuario, por favor elija otro."
-			},
-			VALIDATION_EXPIRED: {
-				code: "VALIDATION_EXPIRED",
+			INVALID_USER: {
+				code: "INVALID_USER",
 				message:
-					"El pedido de validacion para ese número ha expirado, es necesario realizar un nuevo pedido de validacion."
-			},
-			NO_VALIDATIONS_FOR_NUMBER: {
-				code: "NO_VALIDATIONS",
-				message: "No se encontraron pedidos de validación para ese número."
-			},
-			NO_SMSCODE_MATCH: {
-				code: "NO_SMSCODE_MATCH",
-				message:
-					"El código de validacion es incorrecto, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli."
+					"El usuario y contraseña no coinciden, por favor verifique que estas sean correctas y vuelva a intentarlo."
 			},
 			CREATE: {
-				code: "VALIDATION_CREATE",
-				message: "El pedido de validacion para ese número no pudo ser creado, por favor inténtelo de nuevo más tarde."
+				code: "USER_CREATE",
+				message: "El usuario no pudo ser creado, por favor inténtelo de nuevo más tarde."
 			},
-			GET: COMMUNICATION_ERROR
+			GET: { code: "USER_GET", message: "El usuario no pudo ser obtenido, por favor inténtelo de nuevo más tarde." },
+			SET_NAME: {
+				code: "DELEGATE_SET_NAME",
+				message: "El delegado no pudo ser verificado, por favor inténtelo de nuevo más tarde."
+			},
+			GET_NAME: {
+				code: "DELEGATE_GET_NAME",
+				message: "El nombre del emisor no pudo ser obtenido, por favor inténtelo de nuevo más tarde."
+			}
 		}
 	},
 	EMAIL: {
@@ -214,6 +116,188 @@ module.exports = {
 				Saludos,
 				Equipo ai.di - Proyecto DIDI`;
 			}
+		}
+	},
+	INDEX: {
+		ERR: {
+			CONNECTION: "Error de conexion en la base de datos: "
+		},
+		MSG: {
+			CONNECTING: "conectandose a: ",
+			CONNECTED: "Base de datos conectada.",
+			HELLO_WORLD: "Hola DIDI!",
+			RUNNING_ON: "Ejecutandose en puerto ",
+			STARTING_WORKER: "Arrancando nuevo worker",
+			STARTING_WORKERS: num => {
+				return "Inicializando " + num + " workers";
+			},
+			STARTED_WORKER: pid => {
+				return "Worker " + pid + " inicializado";
+			},
+			ENDED_WORKER: (pid, code, signal) => {
+				return "Worker " + pid + " termino con código: " + code + ", y señal: " + signal;
+			}
+		}
+	},
+	ISSUER: {
+		ERR: {
+			CREATE: {
+				code: "ALREADY_CREATED",
+				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
+			},
+			DELETE: {
+				code: "ISSUER_DELETE",
+				message:
+					"No se pudo revocar la autorización para emisión de certificados, por favor inténtelo de nuevo más tarde."
+			},
+			IS_INVALID: {
+				code: "IS_INVALID",
+				message:
+					"El emisor no esta autorizado para emitir certificados, por favor contacte a un administrador para obtener dicha autorizacion."
+			},
+			CERT_SUB_IS_INVALID: {
+				code: "CERT_SUB_IS_INVALID",
+				message:
+					"No pudo encontrarse ningun usuario registrado en ai·di con ese DID, solo pueden emitirse certificados a usuarios registrados."
+			},
+			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
+			REVOKED: {
+				code: "REVOKED",
+				message: "El certificado ha sido revocado, esta operacion solo esta permitida sobre certificados activos."
+			},
+			NOT_FOUND: {
+				code: "NOT_FOUND",
+				message:
+					"No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas."
+			}
+		},
+		CERT_REVOKED: "El certificado fue revocado.",
+		DELETED: "La autorizacion para emitir certificados fue revocada.",
+		CREATED: "El emisor fue autorizado a emitir certificados.",
+		CERT_SAVED: "El certificado fue guardado.",
+		IS_VALID: "El emisor esta autorizado para emitir certificados"
+	},
+	PUSH: {
+		TYPES: {
+			NEW_CERT: "NEW_CERT",
+			SHARE_REQ: "SHARE_REQ",
+			VALIDATION_REQ: "VALIDATION_REQ"
+		},
+		VALIDATION_REQ: {
+			TITLE: "Pedido de Validacion",
+			MESSAGE: "Tienes un pedido de validacion para un certificado"
+		},
+		SHARE_REQ: {
+			TITLE: "Pedido de Certificado",
+			MESSAGE: "Tienes un pedido de certificado nuevo"
+		},
+		NEW_CERT: {
+			TITLE: undefined,
+			MESSAGE: "Tenés una nueva Credencial disponible para descargar en ai·di"
+		}
+	},
+	RENAPER: {
+		CREATE: {
+			code: "REQ_CREATE",
+			message: "No pudo registrarse el pedido de validacion de identidad, por favor inténtelo de nuevo más tarde."
+		},
+		GET: {
+			code: "REQ_GET",
+			message: "No pudo obtenerse el pedido de validacion de identidad, por favor inténtelo de nuevo más tarde."
+		},
+		UPDATE: {
+			code: "REQ_UPDATE",
+			message: "No pudo actualizarse el pedido de validacion de identidad, por favor inténtelo de nuevo más tarde."
+		},
+		WEAK_MATCH: {
+			code: "WEAK_MATCH",
+			message:
+				"El resultado arrojado por Renaper tiene un bajo grado de precision, por favor inténte sacar mejores fotos."
+		},
+		SCAN_BAR_CODE: {
+			code: "SCAN_BAR_CODE",
+			message: "Hubo un error al enviar el código de barras, por favor inténtelo de nuevo más tarde."
+		},
+		NEW_OPERATION: {
+			code: "NEW_OPERATION",
+			message: "Hubo un error al iniciar el tramite de validacion, por favor inténtelo de nuevo más tarde."
+		},
+		ADD_FRONT: {
+			code: "ADD_FRONT",
+			message: "Hubo un error al enviar la foto del frente, por favor inténtelo de nuevo más tarde."
+		},
+		ADD_BACK: {
+			code: "ADD_BACK",
+			message: "Hubo un error al enviar la foto del dorso, por favor inténtelo de nuevo más tarde."
+		},
+		ADD_SELFIE: {
+			code: "ADD_SELFIE",
+			message: "Hubo un error al enviar la selfie, por favor inténtelo de nuevo más tarde."
+		},
+		ADD_BAR_CODE: {
+			code: "ADD_BAR_CODE",
+			message: "Hubo un error al analizar el código de barras, por favor inténtelo de nuevo más tarde."
+		},
+		END_OPERATION: {
+			code: "END_OPERATION",
+			message: "Hubo un error al analizar los datos, por favor inténtelo de nuevo más tarde."
+		}
+	},
+	SEMILLAS: {
+		SUCCESS: {
+			SHARE_DATA: "Tus datos fueron compartidos de forma correcta!"
+		}
+	},
+	SMS: {
+		SENT: "Message sent",
+		SENDING: function (number) {
+			return "Enviando sms a " + number;
+		},
+		VALIDATION: {
+			MESSAGE: code => {
+				return `Ingresá este código ${code} en la app ai.di para darte de alta.`;
+			}
+		},
+		SUCCESS: {
+			SENT: {},
+			MATCHED: function (cert) {
+				return { certificate: cert };
+			}
+		},
+		ERR: {
+			CERT: {
+				CREATE: {
+					code: "CERT_CREATE_ERROR",
+					message: "No pudo generarse la credencial vinculando el did y el número."
+				}
+			},
+			SMS_SEND_ERROR: {
+				code: "SMS_SEND_ERROR",
+				message: "No pudo mandarse el sms, por favor inténtelo de nuevo más tarde."
+			},
+			ALREADY_EXISTS: {
+				code: "ALREADY_EXISTS",
+				message: "Ese teléfono ya se encuentra asociado a un usuario, por favor elija otro."
+			},
+			VALIDATION_EXPIRED: {
+				code: "VALIDATION_EXPIRED",
+				message:
+					"El pedido de validacion para ese número ha expirado, es necesario realizar un nuevo pedido de validacion."
+			},
+			NO_VALIDATIONS_FOR_NUMBER: {
+				code: "NO_VALIDATIONS",
+				message: "No se encontraron pedidos de validación para ese número."
+			},
+			NO_SMSCODE_MATCH: {
+				code: "NO_SMSCODE_MATCH",
+				message:
+					"El código de validacion es incorrecto, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli."
+			},
+			CREATE: {
+				code: "VALIDATION_CREATE",
+				message: "El pedido de validacion para ese número no pudo ser creado, por favor inténtelo de nuevo más tarde."
+			},
+			GET: COMMUNICATION_ERROR
 		}
 	},
 	TOKEN: {
@@ -295,85 +379,6 @@ module.exports = {
 			UPDATE: {
 				code: "USER_UPDATE",
 				message: "No se pudo actualizar el usuario, por favor inténtelo de nuevo más tarde."
-			}
-		}
-	},
-	ISSUER: {
-		ERR: {
-			CREATE: {
-				code: "ALREADY_CREATED",
-				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
-			},
-			DELETE: {
-				code: "ISSUER_DELETE",
-				message:
-					"No se pudo revocar la autorización para emisión de certificados, por favor inténtelo de nuevo más tarde."
-			},
-			IS_INVALID: {
-				code: "IS_INVALID",
-				message:
-					"El emisor no esta autorizado para emitir certificados, por favor contacte a un administrador para obtener dicha autorizacion."
-			},
-			CERT_SUB_IS_INVALID: {
-				code: "CERT_SUB_IS_INVALID",
-				message:
-					"No pudo encontrarse ningun usuario registrado en didi con ese DID, solo pueden emitirse certificados a usuarios registrados."
-			},
-			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
-			REVOKED: {
-				code: "REVOKED",
-				message: "El certificado ha sido revocado, esta operacion solo esta permitida sobre certificados activos."
-			},
-			NOT_FOUND: {
-				code: "NOT_FOUND",
-				message:
-					"No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas."
-			}
-		},
-		CERT_REVOKED: "El certificado fue revocado.",
-		DELETED: "La autorizacion para emitir certificados fue revocada.",
-		CREATED: "El emisor fue autorizado a emitir certificados.",
-		CERT_SAVED: "El certificado fue guardado.",
-		IS_VALID: "El emisor esta autorizado para emitir certificados"
-	},
-	PUSH: {
-		TYPES: {
-			NEW_CERT: "NEW_CERT",
-			SHARE_REQ: "SHARE_REQ",
-			VALIDATION_REQ: "VALIDATION_REQ"
-		},
-		VALIDATION_REQ: {
-			TITLE: "Pedido de Validacion",
-			MESSAGE: "Tienes un pedido de validacion para un certificado"
-		},
-		SHARE_REQ: {
-			TITLE: "Pedido de Certificado",
-			MESSAGE: "Tienes un pedido de certificado nuevo"
-		},
-		NEW_CERT: {
-			TITLE: undefined,
-			MESSAGE: "Tenés una nueva Credencial disponible para descargar en DIDI"
-		}
-	},
-	DELEGATE: {
-		ERR: {
-			INVALID_USER: {
-				code: "INVALID_USER",
-				message:
-					"El usuario y contraseña no coinciden, por favor verifique que estas sean correctas y vuelva a intentarlo."
-			},
-			CREATE: {
-				code: "USER_CREATE",
-				message: "El usuario no pudo ser creado, por favor inténtelo de nuevo más tarde."
-			},
-			GET: { code: "USER_GET", message: "El usuario no pudo ser obtenido, por favor inténtelo de nuevo más tarde." },
-			SET_NAME: {
-				code: "DELEGATE_SET_NAME",
-				message: "El delegado no pudo ser verificado, por favor inténtelo de nuevo más tarde."
-			},
-			GET_NAME: {
-				code: "DELEGATE_GET_NAME",
-				message: "El nombre del emisor no pudo ser obtenido, por favor inténtelo de nuevo más tarde."
 			}
 		}
 	},
