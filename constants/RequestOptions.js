@@ -18,7 +18,7 @@ module.exports.postOptions = data => ({
 	body: JSON.stringify(data)
 });
 
-module.exports.postOptionsAuth = (data, token) => ({
+module.exports.postOptionsAuth = (token, data) => ({
 	method: "POST",
 	headers: headersAuth(token),
 	body: JSON.stringify(data)

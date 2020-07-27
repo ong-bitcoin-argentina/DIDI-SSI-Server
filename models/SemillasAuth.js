@@ -21,17 +21,17 @@ module.exports = SemillasAuth;
 
 SemillasAuth.getToken = async function () {
 	try {
-		// const data = SemillasAuth.findOne();
-		// if (data && data.token) {
-		// 	return data.token;
-		// }
-		return await createOrUpdateToken();
+		const data = SemillasAuth.findOne();
+		if (data && data.token) {
+			return data.token;
+		}
+		return await SemillasAuth.createOrUpdateToken();
 	} catch (err) {
 		return Promise.reject(err);
 	}
 };
 
-const createOrUpdateToken = async function () {
+SemillasAuth.createOrUpdateToken = async function () {
 	const query = { token: { $exists: true } };
 	const options = { upsert: true, returnOriginal: false };
 	try {

@@ -105,16 +105,7 @@ module.exports = {
 			FROM: "ai·di <no-responder@didi.org.ar>",
 			SUBJECT: "Validación de correo electrónico en ai·di",
 			MESSAGE: code => {
-				return `¡Hola!
-
-				Te damos la bienvenida desde el Equipo de App ai.di.
-				Para terminar el proceso de darte de alta copiá este código de 6 dígitos: ${code} e ingresalo en la pantalla que aparece en la aplicación ai·di.
-
-				De esta manera garantizamos que esta cuenta de correo te pertenece y protegemos tu información.
-				
-				¡Qué alegría que formes parte!
-				Saludos,
-				Equipo ai.di - Proyecto DIDI`;
+				return `¡Hola!\nTe damos la bienvenida desde el Equipo de App ai.di.\nPara terminar el proceso de darte de alta copiá este código de 6 dígitos: ${code} e ingresalo en la pantalla que aparece en la aplicación ai·di.\n\nDe esta manera garantizamos que esta cuenta de correo te pertenece y protegemos tu información.\n\n¡Qué alegría que formes parte!\n\nSaludos,\nEquipo ai.di - Proyecto DIDI`;
 			}
 		}
 	},
@@ -255,7 +246,7 @@ module.exports = {
 		},
 		VALIDATION: {
 			MESSAGE: code => {
-				return `Ingresá este código ${code} en la app ai.di para darte de alta.`;
+				return `${code} Ingresá este código en la app ai·di para darte de alta.`;
 			}
 		},
 		SUCCESS: {
