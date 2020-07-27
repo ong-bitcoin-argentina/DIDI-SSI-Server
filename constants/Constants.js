@@ -45,7 +45,7 @@ const HASH_SALT = process.env.HASH_SALT;
 const FIREBASE_URL = process.env.FIREBASE_URL;
 const FIREBASE_PRIV_KEY_PATH = process.env.FIREBASE_PRIV_KEY_PATH;
 
-const SEMILLAS_URL = "https://api.staging.semillas.atixlabs.com";
+const SEMILLAS_URL = process.env.SEMILLAS_URL;
 
 module.exports = {
 	DIDI_SERVER_NAME: "Didi Server",
