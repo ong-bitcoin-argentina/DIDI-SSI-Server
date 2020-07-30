@@ -17,7 +17,7 @@ const semillasFetch = async function (url, data) {
 		}
 		return res;
 	} catch (err) {
-		return Promise.reject(err);
+		throw err;
 	}
 };
 
@@ -29,8 +29,7 @@ module.exports.login = async function () {
 		const json = await res.json();
 		return json;
 	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
+		throw err;
 	}
 };
 
@@ -41,21 +40,18 @@ module.exports.sendDIDandDNI = async function ({ dni, did }) {
 		const didi = await res.json();
 		return didi;
 	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
+		throw err;
 	}
 };
 
 module.exports.shareEmail = async function ({ email }) {
 	try {
 		const data = { email };
-		// const token = await getToken();
 		// const res = await semillasFetch(SEMILLAS_URLS.SHARE_EMAIL, data);
 		// const json = await res.json();
 		return data;
 	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
+		throw err;
 	}
 };
 
@@ -65,7 +61,6 @@ module.exports.getPrestadores = async function (token) {
 		// const json = await res.json();
 		return prestadores;
 	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
+		throw err;
 	}
 };

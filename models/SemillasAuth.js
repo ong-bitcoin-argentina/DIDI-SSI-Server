@@ -27,7 +27,7 @@ SemillasAuth.getToken = async function () {
 		}
 		return await SemillasAuth.createOrUpdateToken();
 	} catch (err) {
-		return Promise.reject(err);
+		throw err;
 	}
 };
 
@@ -40,6 +40,6 @@ SemillasAuth.createOrUpdateToken = async function () {
 		const { token } = await SemillasAuth.findOneAndUpdate(query, updateAction, options);
 		return token;
 	} catch (err) {
-		return Promise.reject(err);
+		throw err;
 	}
 };
