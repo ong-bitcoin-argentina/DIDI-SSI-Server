@@ -38,12 +38,18 @@ router.post(
 
 router.post(
 	"/semillas/shareData",
-	validateBody([{ name: "email", validate: [IS_STRING, IS_EMAIL] }]),
+	validateBody([
+		{ name: "email", validate: [IS_STRING, IS_EMAIL] },
+		{ name: "phone", validate: [IS_STRING] },
+		{ name: "Dni Beneficiario", validate: [IS_STRING] },
+		{ name: "Nombre Beneficiario", validate: [IS_STRING] },
+		{ name: "Fecha de Nacimiento", validate: [IS_STRING] }
+	]),
 	checkValidationResult,
 	async function (req, res) {
 		try {
-			const { email } = req.body;
-			const data = await SemillasService.shareEmail({ email });
+			const data = req.body;
+			const data = await SemillasService.shareEmail(data);
 			return ResponseHandler.sendRes(res, SUCCESS.SHARE_DATA);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

@@ -20,26 +20,18 @@ const SemillasAuth = mongoose.model("SemillasAuth", SemillasAuthSchema);
 module.exports = SemillasAuth;
 
 SemillasAuth.getToken = async function () {
-	try {
-		const data = SemillasAuth.findOne();
-		if (data && data.token) {
-			return data.token;
-		}
-		return await SemillasAuth.createOrUpdateToken();
-	} catch (err) {
-		throw err;
+	const data = SemillasAuth.findOne();
+	if (data && data.token) {
+		return data.token;
 	}
+	return await SemillasAuth.createOrUpdateToken();
 };
 
 SemillasAuth.createOrUpdateToken = async function () {
 	const query = { token: { $exists: true } };
 	const options = { upsert: true, returnOriginal: false };
-	try {
-		const data = await SemillasService.login();
-		const updateAction = { $set: { token: data.accessToken, modifiedOn: new Date() } };
-		const { token } = await SemillasAuth.findOneAndUpdate(query, updateAction, options);
-		return token;
-	} catch (err) {
-		throw err;
-	}
+	const data = await SemillasService.login();
+	const updateAction = { $set: { token: data.accessToken, modifiedOn: new Date() } };
+	const { token } = await SemillasAuth.findOneAndUpdate(query, updateAction, options);
+	return token;
 };
