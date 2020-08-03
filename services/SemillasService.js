@@ -18,14 +18,10 @@ const semillasFetch = async function (url, data) {
 };
 
 module.exports.login = async function () {
-	try {
-		const { username, password } = SEMILLAS_LOGIN;
-		const data = { username, password };
-		const res = await fetch(SEMILLAS_URLS.LOGIN, postOptions(data));
-		return await res.json();
-	} catch (err) {
-		throw err;
-	}
+	const { username, password } = SEMILLAS_LOGIN;
+	const data = { username, password };
+	const res = await fetch(SEMILLAS_URLS.LOGIN, postOptions(data));
+	return await res.json();
 };
 
 module.exports.sendDIDandDNI = async function ({ dni, did }) {
