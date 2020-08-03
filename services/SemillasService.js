@@ -36,8 +36,7 @@ module.exports.sendDIDandDNI = async function ({ dni, did }) {
 	return didi;
 };
 
-module.exports.shareEmail = async function ({ email }) {
-	const data = { email };
+module.exports.shareData = async function (data) {
 	// const res = await semillasFetch(SEMILLAS_URLS.SHARE_EMAIL, data);
 	// const json = await res.json();
 	return data;
