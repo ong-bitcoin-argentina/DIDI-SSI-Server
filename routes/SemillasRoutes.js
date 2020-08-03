@@ -50,7 +50,7 @@ router.post(
 	async function (req, res) {
 		try {
 			const data = req.body;
-			const data = await SemillasService.shareEmail(data);
+			const response = await SemillasService.shareEmail(data);
 			return ResponseHandler.sendRes(res, SUCCESS.SHARE_DATA);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
