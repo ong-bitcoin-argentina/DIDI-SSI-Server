@@ -22,8 +22,7 @@ module.exports.login = async function () {
 		const { username, password } = SEMILLAS_LOGIN;
 		const data = { username, password };
 		const res = await fetch(SEMILLAS_URLS.LOGIN, postOptions(data));
-		const json = await res.json();
-		return json;
+		return await res.json();
 	} catch (err) {
 		throw err;
 	}
