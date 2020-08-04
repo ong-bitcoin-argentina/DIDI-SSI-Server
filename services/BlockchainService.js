@@ -68,12 +68,14 @@ const makeSignedTransaction = async function(bytecode, credentials) {
 // realiza una delegacion de "userDID" a "otherDID"
 module.exports.addDelegate = async function(userDID, credentials, otherDID) {
 	try {
-		const contract = getContract(credentials);
-		const bytecode = await contract.methods
-			.addDelegate(cleanDid(userDID), regName, cleanDid(otherDID), Constants.BLOCKCHAIN.DELEGATE_DURATION)
-			.encodeABI();
-		const result = await makeSignedTransaction(bytecode, credentials);
-		return Promise.resolve(result);
+    // en realidad la transaccion la hice en otro archivo sin pegarle al endpoint ni nada,
+    // pero lo pegué acá no como una solucion probada, ni como una solucion, sino como
+    // _que se entienda la idea_ de como seria una solucion (?
+    const contract = new web3.eth.Contract(abi, registryAddress);
+    const account = web3.eth.accounts.privateKeyToAccount(credentials.key);
+    web3.eth.accounts.wallet.add(account);
+    const gas = await contract.methods.addDelegate(didiDID, regName, issuerDID, 8640000).estimateGas({from: credentials.from})
+    return contract.methods.addDelegate(didiDID, regName, issuerDID, 8640000).send({from: account.address, gas})
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.DELEGATE.ERR.DELEGATE);
