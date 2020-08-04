@@ -48,6 +48,8 @@ const HASH_SALT = process.env.HASH_SALT;
 const FIREBASE_URL = process.env.FIREBASE_URL;
 const FIREBASE_PRIV_KEY_PATH = process.env.FIREBASE_PRIV_KEY_PATH;
 
+const SEMILLAS_URL = process.env.SEMILLAS_URL;
+
 module.exports = {
 	DIDI_SERVER_NAME: "Didi Server",
 
@@ -93,7 +95,7 @@ module.exports = {
 	},
 
 	VALIDATION_TYPES: {
-		IS_AUTH_TOKEN : "IsAuthToken",
+		IS_AUTH_TOKEN: "IsAuthToken",
 		IS_MOBILE_PHONE: "isMobilePhone",
 		IS_EMAIL: "isEmail",
 		IS_STRING: "isString",
@@ -151,5 +153,17 @@ module.exports = {
 	FIREBASE_PRIV_KEY_PATH: FIREBASE_PRIV_KEY_PATH,
 
 	NO_EMAILS: NO_EMAILS,
-	NO_SMS: NO_SMS
+	NO_SMS: NO_SMS,
+
+	SEMILLAS_LOGIN: {
+		username: process.env.SEMILLAS_USERNAME,
+		password: process.env.SEMILLAS_PASSWORD
+	},
+	SEMILLAS_URL,
+	SEMILLAS_URLS: {
+		LOGIN: `${SEMILLAS_URL}/auth/login`,
+		CREDENTIALS_DIDI: `${SEMILLAS_URL}/credentials/didi`,
+		SHARE_EMAIL: `${SEMILLAS_URL}/shareEmail`,
+		PRESTADORES: `${SEMILLAS_URL}/prestadores`
+	}
 };
