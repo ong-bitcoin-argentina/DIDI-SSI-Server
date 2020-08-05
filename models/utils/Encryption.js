@@ -1,6 +1,6 @@
 const NodeRSA = require("node-rsa");
 const Constants = require("../../constants/Constants");
-const key = new NodeRSA([Constants.RSA_PRIVATE_KEY, "pkcs1"]);
+const key = new NodeRSA(Constants.RSA_PRIVATE_KEY);
 
 const Hashing = require("./Hashing");
 
