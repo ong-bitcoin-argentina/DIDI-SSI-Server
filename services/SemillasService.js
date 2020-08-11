@@ -31,6 +31,12 @@ module.exports.sendDIDandDNI = async function ({ dni, did }) {
 	return didi;
 };
 
+module.exports.validateDni = async function (data) {
+	// const res = await semillasFetch(SEMILLAS_URLS.VALIDATE_DNI, data);
+	// return await res.json();
+	return data;
+};
+
 module.exports.shareData = async function (data) {
 	// const res = await semillasFetch(SEMILLAS_URLS.SHARE_EMAIL, data);
 	// const json = await res.json();
