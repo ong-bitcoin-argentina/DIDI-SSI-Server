@@ -44,7 +44,6 @@ module.exports.shareData = async function (data) {
 };
 
 module.exports.getPrestadores = async function (token) {
-	// const res = await semillasFetch(SEMILLAS_URLS.PRESTADORES);
-	// const json = await res.json();
-	return prestadores;
+	const res = await semillasFetch(SEMILLAS_URLS.PRESTADORES);
+	return await res.json();
 };
