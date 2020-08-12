@@ -5,6 +5,7 @@ module.exports = [
 		speciality: "Oftalmología",
 		name: "Yellow Scenic",
 		phone: "1860-520",
+		whatsappNumber: "+541122334455",
 		benefit: "10%"
 	},
 	{
@@ -13,6 +14,7 @@ module.exports = [
 		speciality: "Oftalmología",
 		name: "Sunny Walkway",
 		phone: "2631-8557",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -20,7 +22,8 @@ module.exports = [
 		category: "oportunidad",
 		speciality: null,
 		name: "Historic",
-		phone: "61-4018",
+		phone: "4561-4018",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -29,6 +32,7 @@ module.exports = [
 		speciality: null,
 		name: "Yellow Scenic",
 		phone: "2302-2036",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -37,6 +41,7 @@ module.exports = [
 		speciality: null,
 		name: "Biblioteca Jar",
 		phone: "5438-4588",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -45,6 +50,7 @@ module.exports = [
 		speciality: null,
 		name: "Blue Sunny",
 		phone: "2275-4653",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -53,6 +59,7 @@ module.exports = [
 		speciality: null,
 		name: "Zambrano Libros",
 		phone: "8566-6610",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -61,6 +68,7 @@ module.exports = [
 		speciality: "Odontología",
 		name: "Juan Ignacio Parrachini",
 		phone: "1129-8166",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -69,6 +77,7 @@ module.exports = [
 		speciality: "Clínica Médica",
 		name: "Doctor Armando Todo",
 		phone: "2811-3285",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -77,6 +86,7 @@ module.exports = [
 		speciality: null,
 		name: "Yellow Scenic",
 		phone: "989-9348",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -85,6 +95,7 @@ module.exports = [
 		speciality: null,
 		name: "Compro Oro",
 		phone: "4688-2819",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -93,6 +104,7 @@ module.exports = [
 		speciality: "Dermatología",
 		name: "Greeny",
 		phone: "8218-3801",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -101,6 +113,7 @@ module.exports = [
 		speciality: "Otorrinolaringología",
 		name: "Esteban Robles",
 		phone: "1552-1565",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -109,6 +122,7 @@ module.exports = [
 		speciality: null,
 		name: "Blue Sunny",
 		phone: "6525-4608",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -117,6 +131,7 @@ module.exports = [
 		speciality: null,
 		name: "Tarjeta Naranja",
 		phone: "5282-1786",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -125,6 +140,7 @@ module.exports = [
 		speciality: null,
 		name: "Blue Sunny",
 		phone: "3725-9133",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -133,6 +149,7 @@ module.exports = [
 		speciality: "Oftalmología",
 		name: "Sunny Walkway",
 		phone: "8531-149",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -141,6 +158,7 @@ module.exports = [
 		speciality: null,
 		name: "Greeny",
 		phone: "1986-3004",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -149,6 +167,7 @@ module.exports = [
 		speciality: null,
 		name: "Yellow Scenic",
 		phone: "6339-6087",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -157,6 +176,7 @@ module.exports = [
 		speciality: "Otorrinolaringología",
 		name: "Armando Narices",
 		phone: "3441-1465",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -165,6 +185,7 @@ module.exports = [
 		speciality: null,
 		name: "Blue Sunny",
 		phone: "2507-9109",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -173,6 +194,7 @@ module.exports = [
 		speciality: null,
 		name: "Wingardium Leviosa",
 		phone: "7031-8603",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -181,6 +203,7 @@ module.exports = [
 		speciality: null,
 		name: "Historic",
 		phone: "8748-7009",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -189,6 +212,7 @@ module.exports = [
 		speciality: null,
 		name: "Dusty Stream",
 		phone: "4879-2218",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	},
 	{
@@ -197,6 +221,7 @@ module.exports = [
 		speciality: "Odontología",
 		name: "Dental Total",
 		phone: "9611-1916",
+		whatsappNumber: "+541164646464",
 		benefit: "10%"
 	}
 ];

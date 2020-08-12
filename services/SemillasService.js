@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const { postOptions, postOptionsAuth, getOptionsAuth } = require("../constants/RequestOptions");
 const SemillasAuth = require("../models/SemillasAuth");
 
-const prestadores = require("../constants/MockPrestadores");
+// const prestadores = require("../constants/MockPrestadores");
 
 const semillasFetch = async function (url, data) {
 	let token = await SemillasAuth.getToken();
