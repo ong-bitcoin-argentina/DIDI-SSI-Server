@@ -11,7 +11,7 @@ const { IS_STRING, IS_EMAIL } = Constants.VALIDATION_TYPES;
 router.get("/semillas/prestadores", checkValidationResult, async function (req, res) {
 	try {
 		const result = await SemillasService.getPrestadores();
-		return ResponseHandler.sendRes(res, result.data);
+		return ResponseHandler.sendRes(res, result);
 	} catch (err) {
 		return ResponseHandler.sendErr(res, err);
 	}
