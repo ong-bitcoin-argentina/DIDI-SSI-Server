@@ -236,7 +236,8 @@ module.exports = {
 	},
 	SEMILLAS: {
 		SUCCESS: {
-			SHARE_DATA: "Tus datos fueron compartidos de forma correcta!"
+			SHARE_DATA: "Tus datos fueron compartidos de forma correcta!",
+			VALIDATE_DNI: "La solicitud de validación de DNI se registró correctamente."
 		}
 	},
 	SMS: {
