@@ -1,18 +1,17 @@
 const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
-
 const SemillasService = require("../services/SemillasService");
-
-const { checkValidationResult, validateBody } = require("./utils/Validator");
 const Messages = require("../constants/Messages");
-const { SUCCESS } = Messages.SEMILLAS;
 const Constants = require("../constants/Constants");
+const { checkValidationResult, validateBody } = require("./utils/Validator");
+
+const { SUCCESS } = Messages.SEMILLAS;
 const { IS_STRING, IS_EMAIL } = Constants.VALIDATION_TYPES;
 
 router.get("/semillas/prestadores", checkValidationResult, async function (req, res) {
 	try {
-		const prestadores = await SemillasService.getPrestadores();
-		return ResponseHandler.sendRes(res, prestadores);
+		const result = await SemillasService.getPrestadores();
+		return ResponseHandler.sendRes(res, result);
 	} catch (err) {
 		return ResponseHandler.sendErr(res, err);
 	}
@@ -52,6 +51,27 @@ router.post(
 			const data = req.body;
 			const response = await SemillasService.shareData(data);
 			return ResponseHandler.sendRes(res, SUCCESS.SHARE_DATA);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.post(
+	"/semillas/validateDni",
+	validateBody([
+		{ name: "did", validate: [IS_STRING] },
+		{ name: "dni", validate: [IS_STRING] },
+		{ name: "email", validate: [IS_STRING, IS_EMAIL] },
+		{ name: "phoneNumber", validate: [IS_STRING] },
+		{ name: "name", validate: [IS_STRING] },
+		{ name: "lastname", validate: [IS_STRING] }
+	]),
+	checkValidationResult,
+	async function (req, res) {
+		try {
+			const data = await SemillasService.validateDni(req.body);
+			return ResponseHandler.sendRes(res, { data, message: SUCCESS.VALIDATE_DNI });
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}

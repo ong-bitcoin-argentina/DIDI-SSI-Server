@@ -163,7 +163,8 @@ module.exports = {
 	SEMILLAS_URLS: {
 		LOGIN: `${SEMILLAS_URL}/auth/login`,
 		CREDENTIALS_DIDI: `${SEMILLAS_URL}/credentials/didi`,
+		VALIDATE_DNI: `${SEMILLAS_URL}/validateDni`,
 		SHARE_EMAIL: `${SEMILLAS_URL}/shareEmail`,
-		PRESTADORES: `${SEMILLAS_URL}/prestadores`
+		PRESTADORES: `${SEMILLAS_URL}/providers`
 	}
 };
