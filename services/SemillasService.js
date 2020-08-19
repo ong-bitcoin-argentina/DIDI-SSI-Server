@@ -38,9 +38,8 @@ module.exports.validateDni = async function (data) {
 };
 
 module.exports.shareData = async function (data) {
-	// const res = await semillasFetch(SEMILLAS_URLS.SHARE_EMAIL, data);
-	// const json = await res.json();
-	return data;
+	const res = await semillasFetch(SEMILLAS_URLS.SHARE_EMAIL, data);
+	return await res.json();
 };
 
 module.exports.getPrestadores = async function (token) {

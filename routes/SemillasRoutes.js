@@ -6,7 +6,8 @@ const Constants = require("../constants/Constants");
 const { checkValidationResult, validateBody } = require("./utils/Validator");
 
 const { SUCCESS } = Messages.SEMILLAS;
-const { IS_STRING, IS_EMAIL } = Constants.VALIDATION_TYPES;
+const { IS_STRING, IS_EMAIL, IS_DNI, IS_MOBILE_PHONE, IS_NUMBER } = Constants.VALIDATION_TYPES;
+const optional = true;
 
 router.get("/semillas/prestadores", checkValidationResult, async function (req, res) {
 	try {
@@ -38,12 +39,13 @@ router.post(
 router.post(
 	"/semillas/shareData",
 	validateBody([
+		{ name: "did", validate: [IS_STRING] },
 		{ name: "email", validate: [IS_STRING, IS_EMAIL] },
-		{ name: "phoneNumber", validate: [IS_STRING] },
-		{ name: "CERTIFICADO O CURSO", validate: [IS_STRING] },
-		{ name: "Dni Beneficiario", validate: [IS_STRING] },
-		{ name: "Nombre Beneficiario", validate: [IS_STRING] },
-		{ name: "Fecha de Nacimiento", validate: [IS_STRING] }
+		{ name: "phoneNumber", validate: [IS_STRING, IS_MOBILE_PHONE] },
+		{ name: "viewerJWT", validate: [IS_STRING] },
+		{ name: "providerId", validate: [IS_NUMBER], optional },
+		{ name: "customProviderEmail", validate: [IS_EMAIL], optional },
+		{ name: "Dni Beneficiario", validate: [IS_STRING, IS_DNI] }
 	]),
 	checkValidationResult,
 	async function (req, res) {
