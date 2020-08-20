@@ -37,15 +37,15 @@ router.post(
 );
 
 router.post(
-	"/semillas/shareData",
+	"/semillas/credentialShare",
 	validateBody([
 		{ name: "did", validate: [IS_STRING] },
 		{ name: "email", validate: [IS_STRING, IS_EMAIL] },
-		{ name: "phoneNumber", validate: [IS_STRING, IS_MOBILE_PHONE] },
+		{ name: "phone", validate: [IS_STRING, IS_MOBILE_PHONE] },
 		{ name: "viewerJWT", validate: [IS_STRING] },
 		{ name: "providerId", validate: [IS_NUMBER], optional },
 		{ name: "customProviderEmail", validate: [IS_EMAIL], optional },
-		{ name: "Dni Beneficiario", validate: [IS_STRING, IS_DNI] }
+		{ name: "dni", validate: [IS_STRING, IS_DNI] }
 	]),
 	checkValidationResult,
 	async function (req, res) {
