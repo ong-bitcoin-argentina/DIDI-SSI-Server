@@ -9,7 +9,7 @@ const semillasFetch = async function (url, data) {
 	let token = await SemillasAuth.getToken();
 	let options = data ? postOptionsAuth : getOptionsAuth;
 	let res = await fetch(url, options(token, data));
-	// retry because semillas deletes the token when it login in from another side
+	// retry because semillas deletes the token when it's login in from another side
 	if (res.status === 401) {
 		token = await SemillasAuth.createOrUpdateToken();
 		res = await fetch(url, options(token, data));
@@ -38,8 +38,9 @@ module.exports.validateDni = async function (data) {
 };
 
 module.exports.shareData = async function (data) {
-	const res = await semillasFetch(SEMILLAS_URLS.SHARE_EMAIL, data);
-	return await res.json();
+	const res = await semillasFetch(SEMILLAS_URLS.SHARE_DATA, data);
+	// TODO: when semillas returns JSON adjust this to res.json()
+	return res;
 };
 
 module.exports.getPrestadores = async function (token) {
