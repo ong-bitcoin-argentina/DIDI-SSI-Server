@@ -54,7 +54,7 @@ router.post(
 			const response = await SemillasService.shareData(data);
 			return ResponseHandler.sendRes(res, SUCCESS.SHARE_DATA);
 		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
+			return ResponseHandler.sendErrWithStatus(res, err);
 		}
 	}
 );

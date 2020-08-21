@@ -39,8 +39,11 @@ module.exports.validateDni = async function (data) {
 
 module.exports.shareData = async function (data) {
 	const res = await semillasFetch(SEMILLAS_URLS.SHARE_DATA, data);
-	// TODO: when semillas returns JSON adjust this to res.json()
-	return res;
+	const message = await res.text();
+	if (res.ok) {
+		return message;
+	}
+	throw new Error(message);
 };
 
 module.exports.getPrestadores = async function (token) {
