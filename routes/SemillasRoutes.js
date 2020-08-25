@@ -63,19 +63,19 @@ router.post(
 	"/semillas/validateDni",
 	validateBody([
 		{ name: "did", validate: [IS_STRING] },
-		{ name: "dni", validate: [IS_STRING] },
+		{ name: "dni", validate: [IS_STRING, IS_DNI] },
 		{ name: "email", validate: [IS_STRING, IS_EMAIL] },
-		{ name: "phoneNumber", validate: [IS_STRING] },
+		{ name: "phone", validate: [IS_STRING, IS_MOBILE_PHONE] },
 		{ name: "name", validate: [IS_STRING] },
-		{ name: "lastname", validate: [IS_STRING] }
+		{ name: "lastName", validate: [IS_STRING] }
 	]),
 	checkValidationResult,
 	async function (req, res) {
 		try {
-			const data = await SemillasService.validateDni(req.body);
-			return ResponseHandler.sendRes(res, { data, message: SUCCESS.VALIDATE_DNI });
+			const result = await SemillasService.validateDni(req.body);
+			return ResponseHandler.sendRes(res, SUCCESS.VALIDATE_DNI);
 		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
+			return ResponseHandler.sendErrWithStatus(res, err);
 		}
 	}
 );
