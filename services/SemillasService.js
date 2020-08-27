@@ -17,6 +17,14 @@ const semillasFetch = async function (url, data) {
 	return res;
 };
 
+const handleTextResponse = async res => {
+	const message = await res.text();
+	if (res.ok) {
+		return message;
+	}
+	throw new Error(message);
+};
+
 module.exports.login = async function () {
 	const { username, password } = SEMILLAS_LOGIN;
 	const data = { username, password };
@@ -32,18 +40,13 @@ module.exports.sendDIDandDNI = async function ({ dni, did }) {
 };
 
 module.exports.validateDni = async function (data) {
-	// const res = await semillasFetch(SEMILLAS_URLS.VALIDATE_DNI, data);
-	// return await res.json();
-	return data;
+	const res = await semillasFetch(SEMILLAS_URLS.VALIDATE_DNI, data);
+	return await handleTextResponse(res);
 };
 
 module.exports.shareData = async function (data) {
 	const res = await semillasFetch(SEMILLAS_URLS.SHARE_DATA, data);
-	const message = await res.text();
-	if (res.ok) {
-		return message;
-	}
-	throw new Error(message);
+	return await handleTextResponse(res);
 };
 
 module.exports.getPrestadores = async function (token) {
