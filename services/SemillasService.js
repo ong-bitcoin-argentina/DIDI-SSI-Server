@@ -3,8 +3,6 @@ const fetch = require("node-fetch");
 const { postOptions, postOptionsAuth, getOptionsAuth } = require("../constants/RequestOptions");
 const SemillasAuth = require("../models/SemillasAuth");
 
-// const prestadores = require("../constants/MockPrestadores");
-
 const semillasFetch = async function (url, data) {
 	let token = await SemillasAuth.getToken();
 	let options = data ? postOptionsAuth : getOptionsAuth;
@@ -17,26 +15,33 @@ const semillasFetch = async function (url, data) {
 	return res;
 };
 
-const handleTextResponse = async res => {
-	const message = await res.text();
-	if (res.ok) {
-		return message;
+const handleJsonResponse = async res => {
+	const content = await res.json();
+	if (!res.ok) {
+		throw {
+			message: content.userMessage
+		};
 	}
-	throw new Error(message);
+	return content;
+};
+
+const handleTextResponse = async res => {
+	const content = await res.text();
+	if (!res.ok) {
+		throw new Error(content);
+	}
+	return content;
 };
 
 module.exports.login = async function () {
-	const { username, password } = SEMILLAS_LOGIN;
-	const data = { username, password };
-	const res = await fetch(SEMILLAS_URLS.LOGIN, postOptions(data));
+	const res = await fetch(SEMILLAS_URLS.LOGIN, postOptions(SEMILLAS_LOGIN));
 	return await res.json();
 };
 
 module.exports.sendDIDandDNI = async function ({ dni, did }) {
 	const data = { dni, did };
 	const res = await semillasFetch(SEMILLAS_URLS.CREDENTIALS_DIDI, data);
-	const didi = await res.json();
-	return didi;
+	return await res.json();
 };
 
 module.exports.validateDni = async function (data) {
@@ -46,7 +51,7 @@ module.exports.validateDni = async function (data) {
 
 module.exports.shareData = async function (data) {
 	const res = await semillasFetch(SEMILLAS_URLS.SHARE_DATA, data);
-	return await handleTextResponse(res);
+	return await handleJsonResponse(res);
 };
 
 module.exports.getPrestadores = async function (token) {
