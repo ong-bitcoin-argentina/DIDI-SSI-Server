@@ -312,6 +312,9 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
+		if (!process.env.ENABLE_INSECURE_ENDPOINTS) {
+			return ResponseHandler.sendErrWithStatus(res, new Error('Disabled endpoint'), 404);
+		}
 		const did = req.body.did;
 		try {
 			// autorizo en la blockchain
@@ -352,7 +355,9 @@ router.delete(
 	Validator.checkValidationResult,
 	async function (req, res) {
 		const did = req.body.did;
-
+		if (!process.env.ENABLE_INSECURE_ENDPOINTS) {
+			return ResponseHandler.sendErrWithStatus(res, new Error('Disabled endpoint'), 404);
+		}
 		try {
 			// elimino autorizacion en la blockchain
 			await BlockchainService.revokeDelegate(

@@ -5,6 +5,188 @@ const COMMUNICATION_ERROR = {
 
 module.exports = {
 	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+	CERTIFICATE: {
+		ERR: {
+			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada, es necesario generar una nueva." },
+			CREATE: {
+				code: "CERT_CREATE_ERROR",
+				message: "Error al crear la credencial, por favor inténtelo de nuevo más tarde."
+			},
+			VERIFY: {
+				code: "CERT_VERIFY_ERROR",
+				message: "Error al validar la credencial generada, por favor inténtelo de nuevo más tarde."
+			},
+			REVOKE: {
+				code: "CERT_REVOKE_ERROR",
+				message: "Error al dar de baja la credencial, por favor inténtelo de nuevo más tarde."
+			},
+			HASH: {
+				code: "CERT_HASH_ERROR",
+				message: "Error al obtener hash de backup, por favor inténtelo de nuevo más tarde."
+			},
+			SAVE: {
+				code: "CERT_SAVE_ERROR",
+				message: "Error al guardar la creadencial generada, por favor inténtelo de nuevo más tarde."
+			},
+			EXPIRED: { code: "CERT_EXPIRED", message: "Error la credencial ha expirado, es necesario generar una nueva." }
+		},
+		HASH: "Hash obtenido",
+		REVOKED: "Certificado revocado",
+		SAVED: "Certificado guardado",
+		CREATED: "Certificado creado",
+		EXPIRED: "Certificado vencido",
+		VERIFIED: "Certificado validado"
+	},
+	DELEGATE: {
+		ERR: {
+			INVALID_USER: {
+				code: "INVALID_USER",
+				message:
+					"El usuario y contraseña no coinciden, por favor verifique que estas sean correctas y vuelva a intentarlo."
+			},
+			CREATE: {
+				code: "USER_CREATE",
+				message: "El usuario no pudo ser creado, por favor inténtelo de nuevo más tarde."
+			},
+			GET: { code: "USER_GET", message: "El usuario no pudo ser obtenido, por favor inténtelo de nuevo más tarde." },
+			SET_NAME: {
+				code: "DELEGATE_SET_NAME",
+				message: "El delegado no pudo ser verificado, por favor inténtelo de nuevo más tarde."
+			},
+			GET_NAME: {
+				code: "DELEGATE_GET_NAME",
+				message: "El nombre del emisor no pudo ser obtenido, por favor inténtelo de nuevo más tarde."
+			}
+		}
+	},
+	EMAIL: {
+		SENT: "Email sent",
+		SUCCESS: {
+			SENT: {},
+			MATCHED: function (cert) {
+				return { certificate: cert };
+			}
+		},
+		ERR: {
+			CERT: {
+				CREATE: {
+					code: "CERT_CREATE_ERROR",
+					message:
+						"No pudo generarse la credencial vinculando el did y el mail, por favor inténtelo de nuevo más tarde."
+				}
+			},
+			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail." },
+			NO_EMAILCODE_MATCH: {
+				code: "NO_EMAILCODE_MATCH",
+				message:
+					"El código de validacion es incorrecto, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli."
+			},
+			NO_VALIDATIONS_FOR_EMAIL: {
+				code: "NO_VALIDATIONS",
+				message: "No se encontraron pedidos de validacion para ese mail."
+			},
+			ALREADY_EXISTS: {
+				code: "ALREADY_EXISTS",
+				message: "Ese mail ya se encuentra asociado a un usuario, por favor elija otro."
+			},
+			VALIDATION_EXPIRED: {
+				code: "VALIDATION_EXPIRED",
+				message:
+					"El pedido de validacion para ese mail ha expirado, es necesario realizar un nuevo pedido de validacion."
+			},
+			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail." },
+			CREATE: {
+				code: "VALIDATION_CREATE",
+				message: "El pedido de validacion para ese mail no pudo ser creado, por favor inténtelo de nuevo más tarde."
+			},
+			GET: COMMUNICATION_ERROR
+		},
+		VALIDATION: {
+			FROM: "ai·di <no-responder@didi.org.ar>",
+			SUBJECT: "Validación de correo electrónico en ai·di",
+			MESSAGE: code => {
+				return `¡Hola!\nTe damos la bienvenida desde el Equipo de App ai.di.\nPara terminar el proceso de darte de alta copiá este código de 6 dígitos: ${code} e ingresalo en la pantalla que aparece en la aplicación ai·di.\n\nDe esta manera garantizamos que esta cuenta de correo te pertenece y protegemos tu información.\n\n¡Qué alegría que formes parte!\n\nSaludos,\nEquipo ai.di - Proyecto DIDI`;
+			}
+		}
+	},
+	INDEX: {
+		ERR: {
+			CONNECTION: "Error de conexion en la base de datos: "
+		},
+		MSG: {
+			CONNECTING: "conectandose a: ",
+			CONNECTED: "Base de datos conectada.",
+			HELLO_WORLD: "Hola DIDI!",
+			RUNNING_ON: "Ejecutandose en puerto ",
+			STARTING_WORKER: "Arrancando nuevo worker",
+			STARTING_WORKERS: num => {
+				return "Inicializando " + num + " workers";
+			},
+			STARTED_WORKER: pid => {
+				return "Worker " + pid + " inicializado";
+			},
+			ENDED_WORKER: (pid, code, signal) => {
+				return "Worker " + pid + " termino con código: " + code + ", y señal: " + signal;
+			}
+		}
+	},
+	ISSUER: {
+		ERR: {
+			CREATE: {
+				code: "ALREADY_CREATED",
+				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
+			},
+			DELETE: {
+				code: "ISSUER_DELETE",
+				message:
+					"No se pudo revocar la autorización para emisión de certificados, por favor inténtelo de nuevo más tarde."
+			},
+			IS_INVALID: {
+				code: "IS_INVALID",
+				message:
+					"El emisor no esta autorizado para emitir certificados, por favor contacte a un administrador para obtener dicha autorizacion."
+			},
+			CERT_SUB_IS_INVALID: {
+				code: "CERT_SUB_IS_INVALID",
+				message:
+					"No pudo encontrarse ningun usuario registrado en ai·di con ese DID, solo pueden emitirse certificados a usuarios registrados."
+			},
+			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
+			REVOKED: {
+				code: "REVOKED",
+				message: "El certificado ha sido revocado, esta operacion solo esta permitida sobre certificados activos."
+			},
+			NOT_FOUND: {
+				code: "NOT_FOUND",
+				message:
+					"No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas."
+			}
+		},
+		CERT_REVOKED: "El certificado fue revocado.",
+		DELETED: "La autorizacion para emitir certificados fue revocada.",
+		CREATED: "El emisor fue autorizado a emitir certificados.",
+		CERT_SAVED: "El certificado fue guardado.",
+		IS_VALID: "El emisor esta autorizado para emitir certificados"
+	},
+	PUSH: {
+		TYPES: {
+			NEW_CERT: "NEW_CERT",
+			SHARE_REQ: "SHARE_REQ",
+			VALIDATION_REQ: "VALIDATION_REQ"
+		},
+		VALIDATION_REQ: {
+			TITLE: "Pedido de Validacion",
+			MESSAGE: "Tienes un pedido de validacion para un certificado"
+		},
+		SHARE_REQ: {
+			TITLE: "Pedido de Certificado",
+			MESSAGE: "Tienes un pedido de certificado nuevo"
+		},
+		NEW_CERT: {
+			TITLE: undefined,
+			MESSAGE: "Tenés una nueva Credencial disponible para descargar en ai·di"
+		}
+	},
 	RENAPER: {
 		CREATE: {
 			code: "REQ_CREATE",
@@ -52,57 +234,10 @@ module.exports = {
 			message: "Hubo un error al analizar los datos, por favor inténtelo de nuevo más tarde."
 		}
 	},
-	CERTIFICATE: {
-		ERR: {
-			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada, es necesario generar una nueva." },
-			CREATE: {
-				code: "CERT_CREATE_ERROR",
-				message: "Error al crear la credencial, por favor inténtelo de nuevo más tarde."
-			},
-			VERIFY: {
-				code: "CERT_VERIFY_ERROR",
-				message: "Error al validar la credencial generada, por favor inténtelo de nuevo más tarde."
-			},
-			REVOKE: {
-				code: "CERT_REVOKE_ERROR",
-				message: "Error al dar de baja la credencial, por favor inténtelo de nuevo más tarde."
-			},
-			HASH: {
-				code: "CERT_HASH_ERROR",
-				message: "Error al obtener hash de backup, por favor inténtelo de nuevo más tarde."
-			},
-			SAVE: {
-				code: "CERT_SAVE_ERROR",
-				message: "Error al guardar la creadencial generada, por favor inténtelo de nuevo más tarde."
-			},
-			EXPIRED: { code: "CERT_EXPIRED", message: "Error la credencial ha expirado, es necesario generar una nueva." }
-		},
-		HASH: "Hash obtenido",
-		REVOKED: "Certificado revocado",
-		SAVED: "Certificado guardado",
-		CREATED: "Certificado creado",
-		EXPIRED: "Certificado vencido",
-		VERIFIED: "Certificado validado"
-	},
-	INDEX: {
-		ERR: {
-			CONNECTION: "Error de conexion en la base de datos: "
-		},
-		MSG: {
-			CONNECTING: "conectandose a: ",
-			CONNECTED: "Base de datos conectada.",
-			HELLO_WORLD: "Hola DIDI!",
-			RUNNING_ON: "Ejecutandose en puerto ",
-			STARTING_WORKER: "Arrancando nuevo worker",
-			STARTING_WORKERS: num => {
-				return "Inicializando " + num + " workers";
-			},
-			STARTED_WORKER: pid => {
-				return "Worker " + pid + " inicializado";
-			},
-			ENDED_WORKER: (pid, code, signal) => {
-				return "Worker " + pid + " termino con código: " + code + ", y señal: " + signal;
-			}
+	SEMILLAS: {
+		SUCCESS: {
+			SHARE_DATA: "Tus datos fueron compartidos de forma correcta!",
+			VALIDATE_DNI: "La solicitud de validación de DNI se registró correctamente."
 		}
 	},
 	SMS: {
@@ -112,7 +247,7 @@ module.exports = {
 		},
 		VALIDATION: {
 			MESSAGE: code => {
-				return "Este es tu código de validacion para validar tu cuenta de DIDI: " + code;
+				return `${code} Ingresá este código en la app ai·di para darte de alta.`;
 			}
 		},
 		SUCCESS: {
@@ -155,64 +290,6 @@ module.exports = {
 				message: "El pedido de validacion para ese número no pudo ser creado, por favor inténtelo de nuevo más tarde."
 			},
 			GET: COMMUNICATION_ERROR
-		}
-	},
-	EMAIL: {
-		SENT: "Email sent",
-		SUCCESS: {
-			SENT: {},
-			MATCHED: function (cert) {
-				return { certificate: cert };
-			}
-		},
-		ERR: {
-			CERT: {
-				CREATE: {
-					code: "CERT_CREATE_ERROR",
-					message:
-						"No pudo generarse la credencial vinculando el did y el mail, por favor inténtelo de nuevo más tarde."
-				}
-			},
-			EMAIL_SEND_ERROR: { code: "EMAIL_SEND_ERROR", message: "No pudo mandarse el mail." },
-			NO_EMAILCODE_MATCH: {
-				code: "NO_EMAILCODE_MATCH",
-				message:
-					"El código de validacion es incorrecto, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli."
-			},
-			NO_VALIDATIONS_FOR_EMAIL: {
-				code: "NO_VALIDATIONS",
-				message: "No se encontraron pedidos de validacion para ese mail."
-			},
-			ALREADY_EXISTS: {
-				code: "ALREADY_EXISTS",
-				message: "Ese mail ya se encuentra asociado a un usuario, por favor elija otro."
-			},
-			VALIDATION_EXPIRED: {
-				code: "VALIDATION_EXPIRED",
-				message:
-					"El pedido de validacion para ese mail ha expirado, es necesario realizar un nuevo pedido de validacion."
-			},
-			INVALID_DID: { code: "INVALID_DID", message: "El did no se corresponde con ese mail." },
-			CREATE: {
-				code: "VALIDATION_CREATE",
-				message: "El pedido de validacion para ese mail no pudo ser creado, por favor inténtelo de nuevo más tarde."
-			},
-			GET: COMMUNICATION_ERROR
-		},
-		VALIDATION: {
-			FROM: "DIDI <no-responder@didi.org.ar>",
-			SUBJECT: "DIDI - Código de validación",
-			MESSAGE: code => {
-				return (
-					"Hola,\n" +
-					"Este es tu código de validacion para validar tu cuenta de DIDI\n\n" +
-					"CODE: " +
-					code +
-					"\n\n" +
-					"Saludos,\n" +
-					"El equipo de DIDI"
-				);
-			}
 		}
 	},
 	TOKEN: {
@@ -294,85 +371,6 @@ module.exports = {
 			UPDATE: {
 				code: "USER_UPDATE",
 				message: "No se pudo actualizar el usuario, por favor inténtelo de nuevo más tarde."
-			}
-		}
-	},
-	ISSUER: {
-		ERR: {
-			CREATE: {
-				code: "ALREADY_CREATED",
-				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
-			},
-			DELETE: {
-				code: "ISSUER_DELETE",
-				message:
-					"No se pudo revocar la autorización para emisión de certificados, por favor inténtelo de nuevo más tarde."
-			},
-			IS_INVALID: {
-				code: "IS_INVALID",
-				message:
-					"El emisor no esta autorizado para emitir certificados, por favor contacte a un administrador para obtener dicha autorizacion."
-			},
-			CERT_SUB_IS_INVALID: {
-				code: "CERT_SUB_IS_INVALID",
-				message:
-					"No pudo encontrarse ningun usuario registrado en didi con ese DID, solo pueden emitirse certificados a usuarios registrados."
-			},
-			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
-			REVOKED: {
-				code: "REVOKED",
-				message: "El certificado ha sido revocado, esta operacion solo esta permitida sobre certificados activos."
-			},
-			NOT_FOUND: {
-				code: "NOT_FOUND",
-				message:
-					"No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas."
-			}
-		},
-		CERT_REVOKED: "El certificado fue revocado.",
-		DELETED: "La autorizacion para emitir certificados fue revocada.",
-		CREATED: "El emisor fue autorizado a emitir certificados.",
-		CERT_SAVED: "El certificado fue guardado.",
-		IS_VALID: "El emisor esta autorizado para emitir certificados"
-	},
-	PUSH: {
-		TYPES: {
-			NEW_CERT: "NEW_CERT",
-			SHARE_REQ: "SHARE_REQ",
-			VALIDATION_REQ: "VALIDATION_REQ"
-		},
-		VALIDATION_REQ: {
-			TITLE: "Pedido de Validacion",
-			MESSAGE: "Tienes un pedido de validacion para un certificado"
-		},
-		SHARE_REQ: {
-			TITLE: "Pedido de Certificado",
-			MESSAGE: "Tienes un pedido de certificado nuevo"
-		},
-		NEW_CERT: {
-			TITLE: "Nueva Credencial",
-			MESSAGE: "Tenés una nueva Credencial disponible para descargar en DIDI"
-		}
-	},
-	DELEGATE: {
-		ERR: {
-			INVALID_USER: {
-				code: "INVALID_USER",
-				message:
-					"El usuario y contraseña no coinciden, por favor verifique que estas sean correctas y vuelva a intentarlo."
-			},
-			CREATE: {
-				code: "USER_CREATE",
-				message: "El usuario no pudo ser creado, por favor inténtelo de nuevo más tarde."
-			},
-			GET: { code: "USER_GET", message: "El usuario no pudo ser obtenido, por favor inténtelo de nuevo más tarde." },
-			SET_NAME: {
-				code: "DELEGATE_SET_NAME",
-				message: "El delegado no pudo ser verificado, por favor inténtelo de nuevo más tarde."
-			},
-			GET_NAME: {
-				code: "DELEGATE_GET_NAME",
-				message: "El nombre del emisor no pudo ser obtenido, por favor inténtelo de nuevo más tarde."
 			}
 		}
 	},
