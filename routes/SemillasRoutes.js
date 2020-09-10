@@ -74,8 +74,7 @@ router.post(
 		try {
 			const result = await SemillasService.validateDni(req.body);
 			const validation = await SemillasService.generateValidation(req.body.did);
-			return ResponseHandler.sendRes(res, { result, validation });
-			// return ResponseHandler.sendRes(res, SUCCESS.VALIDATE_DNI);
+			return ResponseHandler.sendRes(res, SUCCESS.VALIDATE_DNI);
 		} catch (err) {
 			return ResponseHandler.sendErrWithStatus(res, err);
 		}
