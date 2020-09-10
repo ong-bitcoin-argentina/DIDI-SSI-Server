@@ -477,6 +477,7 @@ module.exports = {
 					message: msgStart + " entre " + min + " y " + max + " caracteres"
 				};
 			}
-		}
+		},
+		DID_NOT_FOUND: did => `El usuario con el DID ${did} no existe.`
 	}
 };

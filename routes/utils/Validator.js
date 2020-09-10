@@ -83,8 +83,8 @@ module.exports.validateBody = function (params) {
 						// campo es un dni
 						regex = /^\d{8}(?:[-\s]\d{4})?$/;
 						validation
-							.isLength({ min: 8, max: 8 })
-							.withMessage(Messages.VALIDATION.LENGTH_INVALID(param.name, 8, 8))
+							.isLength({ min: 7, max: 9 })
+							.withMessage(Messages.VALIDATION.LENGTH_INVALID(param.name, 7, 9))
 							.matches(regex)
 							.withMessage(Messages.VALIDATION.DNI_FORMAT_INVALID(param.name))
 							.isString()

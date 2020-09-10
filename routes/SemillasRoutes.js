@@ -73,11 +73,41 @@ router.post(
 	async function (req, res) {
 		try {
 			const result = await SemillasService.validateDni(req.body);
-			return ResponseHandler.sendRes(res, SUCCESS.VALIDATE_DNI);
+			const validation = await SemillasService.generateValidation(req.body.did);
+			return ResponseHandler.sendRes(res, { result, validation });
+			// return ResponseHandler.sendRes(res, SUCCESS.VALIDATE_DNI);
 		} catch (err) {
 			return ResponseHandler.sendErrWithStatus(res, err);
 		}
 	}
 );
+
+router.patch(
+	"/semillas/identityValidation",
+	validateBody([
+		{ name: "did", validate: [IS_STRING] },
+		{ name: "state", validate: [IS_STRING] }
+	]),
+	checkValidationResult,
+	async function (req, res) {
+		const { did, state } = req.body;
+		try {
+			const result = await SemillasService.updateValidationState(did, state);
+			return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			return ResponseHandler.sendErrWithStatus(res, err);
+		}
+	}
+);
+
+router.get("/semillas/identityValidation/:did", checkValidationResult, async function (req, res) {
+	const { did } = req.params;
+	try {
+		const result = await SemillasService.getValidation(did);
+		return ResponseHandler.sendRes(res, result);
+	} catch (err) {
+		return ResponseHandler.sendErrWithStatus(res, err);
+	}
+});
 
 module.exports = router;
