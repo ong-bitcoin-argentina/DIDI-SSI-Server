@@ -53,7 +53,11 @@ router.post(
 			// crear y guardar pedido de validacion de tel
 			await SmsService.create(phoneNumber, code, undefined);
 
-			// mandar sms con còdigo de validacion
+			// mandar sms con código de validacion
+			if (Constants.NO_SMS) {
+				return ResponseHandler.sendRes(res, { code });
+			}
+
 			await SmsService.sendValidationCode(phoneNumber, code);
 
 			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.SENT);

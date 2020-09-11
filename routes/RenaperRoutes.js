@@ -91,7 +91,7 @@ router.post(
 			console.log(operationId + " executing request for " + did);
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
-			if (Constants.DEBUGG) console.log(userData);
+			// if (Constants.DEBUGG) console.log(userData);
 
 			console.log(operationId + " checking results for " + did);
 			// si no hubo match o no se obtuvo la precision buscada pasar a estado "fallido"

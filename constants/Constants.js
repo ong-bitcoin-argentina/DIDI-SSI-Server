@@ -11,6 +11,9 @@ const PORT = process.env.PORT;
 const SERVER_DID = process.env.SERVER_DID;
 const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
 
+const ISSUER_SERVER_DID = process.env.ISSUER_SERVER_DID; // TODO: quitar cuando se resuelva el problema de los nombres de issuers
+const ISSUER_SERVER_NAME = process.env.ISSUER_SERVER_NAME; // TODO: quitar cuando se resuelva el problema de los nombres de issuers
+
 const MOURO_URL = process.env.MOURO_URL;
 
 const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
@@ -43,6 +46,9 @@ const RSA_PRIVATE_KEY = process.env.RSA_PRIVATE_KEY;
 const HASH_SALT = process.env.HASH_SALT;
 
 const FIREBASE_URL = process.env.FIREBASE_URL;
+const FIREBASE_PRIV_KEY_PATH = process.env.FIREBASE_PRIV_KEY_PATH;
+
+const SEMILLAS_URL = process.env.SEMILLAS_URL;
 
 module.exports = {
 	DIDI_SERVER_NAME: "Didi Server",
@@ -79,6 +85,8 @@ module.exports = {
 	MOURO_URL: MOURO_URL,
 	SERVER_DID: SERVER_DID,
 	SERVER_PRIVATE_KEY: SERVER_PRIVATE_KEY,
+	ISSUER_SERVER_DID: ISSUER_SERVER_DID, // TODO: quitar cuando se resuelva el problema de los nombres de issuers
+	ISSUER_SERVER_NAME: ISSUER_SERVER_NAME, // TODO: quitar cuando se resuelva el problema de los nombres de issuers
 	CREDENTIALS: {
 		TYPES: {
 			VERIFIABLE: "VerifiableCredential"
@@ -87,7 +95,7 @@ module.exports = {
 	},
 
 	VALIDATION_TYPES: {
-		IS_AUTH_TOKEN : "IsAuthToken",
+		IS_AUTH_TOKEN: "IsAuthToken",
 		IS_MOBILE_PHONE: "isMobilePhone",
 		IS_EMAIL: "isEmail",
 		IS_STRING: "isString",
@@ -142,7 +150,21 @@ module.exports = {
 	},
 
 	FIREBASE_URL: FIREBASE_URL,
+	FIREBASE_PRIV_KEY_PATH: FIREBASE_PRIV_KEY_PATH,
 
 	NO_EMAILS: NO_EMAILS,
-	NO_SMS: NO_SMS
+	NO_SMS: NO_SMS,
+
+	SEMILLAS_LOGIN: {
+		username: process.env.SEMILLAS_USERNAME,
+		password: process.env.SEMILLAS_PASSWORD
+	},
+	SEMILLAS_URL,
+	SEMILLAS_URLS: {
+		LOGIN: `${SEMILLAS_URL}/auth/login`,
+		CREDENTIALS_DIDI: `${SEMILLAS_URL}/credentials/didi`,
+		VALIDATE_DNI: `${SEMILLAS_URL}/identityValidationRequests`,
+		SHARE_DATA: `${SEMILLAS_URL}/credentials/share`,
+		PRESTADORES: `${SEMILLAS_URL}/providers`
+	}
 };

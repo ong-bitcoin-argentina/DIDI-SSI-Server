@@ -1,16 +1,22 @@
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const firebaseAdmin = require("firebase-admin");
-const credentialAccount = require("../firebase-admin.json");
 
-firebaseAdmin.initializeApp({
-	credential: firebaseAdmin.credential.cert(credentialAccount),
-	databaseURL: Constants.FIREBASE_URL
-});
+function hasFirebaseInEnv() {
+	return Constants.FIREBASE_URL && Constants.FIREBASE_PRIV_KEY_PATH;
+}
+
+if (hasFirebaseInEnv()) {
+	const credentialAccount = require(Constants.FIREBASE_PRIV_KEY_PATH);
+	firebaseAdmin.initializeApp({
+		credential: firebaseAdmin.credential.cert(credentialAccount),
+		databaseURL: Constants.FIREBASE_URL
+	});
+}
 
 // crear y mandar una push notification
 module.exports.sendPushNotification = async function(title, message, firebaseId, type) {
-	if (!firebaseId) return;
+	if (!hasFirebaseInEnv() || !firebaseId) return;
 
 	const msg = {
 		notification: {

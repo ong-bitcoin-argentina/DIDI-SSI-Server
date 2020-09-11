@@ -1,10 +1,15 @@
 const Mail = require("../models/Mail");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
-const mailgun = require("mailgun-js")({ apiKey: Constants.MAILGUN_API_KEY, domain: Constants.MAILGUN_DOMAIN });
+
+const mailgun = 
+   Constants.MAILGUN_API_KEY ?
+	  require("mailgun-js")({ 
+		  apiKey: Constants.MAILGUN_API_KEY, domain: Constants.MAILGUN_DOMAIN
+	  }) : null;
 
 // obtiene el pedido de validacion a partir del mail
-let getByMail = async function(email) {
+const getByMail = async function(email) {
 	try {
 		const mail = await Mail.getByEmail(email);
 		if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
@@ -15,6 +20,7 @@ let getByMail = async function(email) {
 		return Promise.reject(Messages.COMMUNICATION_ERROR);
 	}
 };
+
 module.exports.getByMail = getByMail;
 
 // realiza el envio de mail con el còdigo de validaciòn usando "Mailgun"
