@@ -47,6 +47,11 @@ SemillasValidation.getByUserDID = async function (userDID) {
 SemillasValidation.updateByUserDID = async function (userDID, state) {
 	const query = { userDID };
 	const action = { $set: { state } };
-	const options = { returnOriginal: false };
+	const options = { new: true, runValidators: true };
 	return await SemillasValidation.findOneAndUpdate(query, action, options);
+};
+
+SemillasValidation.deleteByUserDID = async function (userDID) {
+	const query = { userDID };
+	return await SemillasValidation.findOneAndDelete(query);
 };

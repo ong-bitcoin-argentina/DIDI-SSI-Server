@@ -478,6 +478,9 @@ module.exports = {
 				};
 			}
 		},
-		DID_NOT_FOUND: did => `El usuario con el DID ${did} no existe.`
+		DID_NOT_FOUND: did => ({
+			code: "DID_NOT_FOUND",
+			message: `El usuario con el DID ${did} no existe.`
+		})
 	}
 };
