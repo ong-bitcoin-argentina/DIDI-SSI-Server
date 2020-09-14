@@ -99,6 +99,21 @@ router.patch(
 	}
 );
 
+router.delete(
+	"/semillas/identityValidation",
+	validateBody([{ name: "did", validate: [IS_STRING] }]),
+	checkValidationResult,
+	async function (req, res) {
+		const { did } = req.body;
+		try {
+			const result = await SemillasService.deleteValidationByDid(did);
+			return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			return ResponseHandler.sendErrWithStatus(res, err);
+		}
+	}
+);
+
 router.get("/semillas/identityValidation/:did", checkValidationResult, async function (req, res) {
 	const { did } = req.params;
 	try {

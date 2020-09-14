@@ -68,12 +68,18 @@ module.exports.generateValidation = async function (did) {
 
 module.exports.updateValidationState = async function (did, state) {
 	const validation = await SemillasValidation.updateByUserDID(did, state);
-	if (!validation) throw new Error(DID_NOT_FOUND(did));
+	if (!validation) throw DID_NOT_FOUND(did);
+	return validation;
+};
+
+module.exports.deleteValidationByDid = async function (did) {
+	const validation = await SemillasValidation.deleteByUserDID(did);
+	if (!validation) throw DID_NOT_FOUND(did);
 	return validation;
 };
 
 module.exports.getValidation = async function (did) {
 	const validation = await SemillasValidation.getByUserDID(did);
-	if (!validation) throw new Error(DID_NOT_FOUND(did));
+	if (!validation) throw DID_NOT_FOUND(did);
 	return validation;
 };
