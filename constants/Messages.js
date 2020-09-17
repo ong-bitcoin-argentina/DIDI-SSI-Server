@@ -479,6 +479,10 @@ module.exports = {
 				};
 			}
 		},
+		APP_DID_NOT_FOUND: did => ({
+			code: "APP_DID_NOT_FOUND",
+			message: `La Aplicación con el DID ${did} no esta autorizada.`
+		}),
 		DID_NOT_FOUND: did => ({
 			code: "DID_NOT_FOUND",
 			message: `El usuario con el DID ${did} no existe.`
