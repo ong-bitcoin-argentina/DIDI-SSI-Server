@@ -2,7 +2,6 @@ const Constants = require("../constants/Constants");
 const { delegateTypes } = require("ethr-did-resolver");
 // const regName = delegateTypes.Secp256k1VerificationKey2018;
 const regName = delegateTypes.Secp256k1SignatureAuthentication2018;
-// console.log(regName);
 
 const Messages = require("../constants/Messages");
 

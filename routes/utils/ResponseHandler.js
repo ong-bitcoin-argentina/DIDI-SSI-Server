@@ -10,7 +10,6 @@ module.exports.sendHtml = function(res, data) {
 // mandar respuesta exitosa generica
 module.exports.sendRes = function(res, data) {
 	res.type("application/json; charset=UTF-8");
-	// if (Constants.DEBUGG) console.log(data);
 	return res.json({
 		status: "success",
 		data: data

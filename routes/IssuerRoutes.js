@@ -3,6 +3,7 @@ const ResponseHandler = require("./utils/ResponseHandler");
 
 const Certificate = require("../models/Certificate");
 const MouroService = require("../services/MouroService");
+const CertService = require("../services/CertService");
 const UserService = require("../services/UserService");
 
 const BlockchainService = require("../services/BlockchainService");
@@ -28,36 +29,47 @@ router.post(
 		const jwt = req.body.jwt;
 
 		try {
-			console.log("validating jwt for " + did);
-			// validar certificado y emisor (que este autorizado para emitir)
-			const verified = await MouroService.verifyCertificateAndDid(jwt, undefined, did, Messages.ISSUER.ERR.IS_INVALID);
-			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			console.log("Issuing JWT...");
 
-			// validar sujeto (que este registrado en didi)
-			const sub = verified.payload.sub;
+			// validar certificado y emisor (que este autorizado para emitir)
+			console.log("Verifying JWT...");
+			const cert = await CertService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.IS_INVALID);
+			if (!cert) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
+
+			console.log(`Verifying issuer ${cert.payload.iss}`);
+			// Validar si el emistor es correcto (autorizado a emitir y el mismo que el del certificado)
+			const valid = cert && await CertService.verifyIssuer(cert.payload.iss);
+			if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
+
+			console.log(`Verifying subject ${cert.payload.sub}`);
+			// Validar sujeto (que este registrado en didi)
+			const sub = cert.payload.sub;
 			let subject = await UserService.getByDID(sub);
 			if (!subject) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_SUB_IS_INVALID);
 
-			console.log("creating certificate for " + did);
-			// guardar certificado en mouro
-			const result = await MouroService.saveCertificate(jwt, verified.payload.sub);
+			console.log("Issued successfully!");
 
-			// guardar estado
+			// Guardar certificado en mouro
+			console.log("Storing in mouro...");
+			const result = await MouroService.saveCertificate(jwt, cert.payload.sub);
+
+			// Guardar estado
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
-				verified.payload.sub,
+				cert.payload.sub,
 				Constants.CERTIFICATE_STATUS.UNVERIFIED,
 				result.data,
 				result.hash
 			);
 
-			console.log("getting hash for " + did);
 			// guardar hash de recuperacion (swarm)
-			const hash = await MouroService.getHash(verified.payload.sub);
+			console.log("Asking for hash in mouro...");
+			const hash = await MouroService.getHash(cert.payload.sub);
 			if (hash) subject = await subject.updateHash(hash);
 
 			// enviar push notification
 			if (req.body.sendPush) {
+				console.log(`Sending push notification!`);
 				try {
 					const user = await UserService.getByDID(sub);
 					await FirebaseService.sendPushNotification(
@@ -71,7 +83,6 @@ router.post(
 					console.log(err);
 				}
 			}
-
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -86,28 +97,22 @@ router.post(
 router.post(
 	"/issuer/issueShareRequest",
 	Validator.validateBody([
-		{ name: "delegatorDid", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
 		{ name: "issuerDid", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const delegatorDid = req.body.delegatorDid;
-		const issuerDid = req.body.issuerDid;
 		const did = req.body.did;
 		const jwt = req.body.jwt;
-
 		try {
 			// validar que el emisor sea valido
-			const decoded = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			if (decoded.payload.iss != issuerDid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			await MouroService.verifyIssuerDid(issuerDid, decoded.payload.iss, delegatorDid);
+			const decoded = await CertService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			await CertService.verifyIssuer(decoded.payload.iss);
 
 			// crear el pedido y mandarlo a travez de mouro
-			const shareReq = await MouroService.createShareRequest(did, jwt);
+			const shareReq = await CertService.createShareRequest(did, jwt);
 			const result = await MouroService.saveCertificate(shareReq, did);
-
 			try {
 				// enviar push notification
 				const user = await UserService.getByDID(did);
@@ -121,7 +126,6 @@ router.post(
 				console.log("Error sending push notifications:");
 				console.log(err);
 			}
-
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			console.log(err);
@@ -150,23 +154,36 @@ router.post(
 		const hash = req.body.hash;
 
 		try {
+			console.log("Revoking JWT...");
 			// validar certificado y emisor
-			const verified = await MouroService.verifyCertificateAndDid(jwt, hash, did, Messages.ISSUER.ERR.CERT_IS_INVALID);
-			if (!verified) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			const cert = await CertService.verifyCertificate(jwt, hash, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			if (!cert) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
-			console.log("revoking certificate for " + did);
+			console.log(`Verifying issuer ${did}`);
+			// Validar si el emistor es correcto (autorizado a revocar)
+			const valid = cert && await CertService.verifyIssuer(did);
+			if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
+
+			console.log(`Verifying subject ${sub}`);
+			// Validar sujeto (que este registrado en didi)
+			const subject = await UserService.getByDID(sub);
+			if (!subject) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_SUB_IS_INVALID);
+
 			// revocar certificado
+			console.log("Revoking in Mouro...");
 			await MouroService.revokeCertificate(jwt, hash, sub);
 
 			// actualizar estado
+			console.log("Updating cert status...");
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
-				verified.payload.sub,
+				cert.payload.sub,
 				Constants.CERTIFICATE_STATUS.REVOKED,
 				jwt,
 				hash
 			);
 
+			console.log("Revoked successfully");
 			return ResponseHandler.sendRes(res, Messages.ISSUER.CERT_REVOKED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -191,9 +208,9 @@ router.post(
 		let cert;
 		try {
 			// validar formato y desempaquetar
-			const decripted = await MouroService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			const decripted = await CertService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			const hash = await MouroService.isInMouro(jwt, decripted.payload.sub, Messages.ISSUER.ERR.NOT_FOUND);
-			cert = await MouroService.verifyCertificate(jwt, hash, Messages.ISSUER.ERR.CERT_IS_INVALID);
+			cert = await CertService.verifyCertificate(jwt, hash, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!cert || !cert.payload.vc)
 				return ResponseHandler.sendRes(res, { cert: cert, err: Messages.ISSUER.ERR.CERT_IS_INVALID });
 
@@ -207,7 +224,7 @@ router.post(
 			let did = cert.payload.iss;
 			try {
 				const delegator = cert.payload.delegator;
-				await MouroService.verifyIssuerDid(did, did, delegator);
+				await CertService.verifyIssuer(did);
 
 				// obtener nombre del issuer para el certificado
 				const issuerName = await BlockchainService.getDelegateName(delegator ? delegator : did);
@@ -234,7 +251,7 @@ router.post(
 						const jwt = subcredentials[key];
 
 						// validar formato y desempaquetar
-						verifyCalls.push(MouroService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.CERT_IS_INVALID));
+						verifyCalls.push(CertService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.CERT_IS_INVALID));
 
 						// validar fue emitido y no revocado
 						mouroCalls.push(MouroService.isInMouro(jwt, decripted.payload.sub, Messages.ISSUER.ERR.NOT_FOUND));
@@ -261,7 +278,7 @@ router.post(
 				const sub = firstSubCred.payload.sub;
 				try {
 					const delegator = firstSubCred.payload.delegator;
-					await MouroService.verifyIssuerDid(did, did, delegator);
+					await CertService.verifyIssuer(did);
 				} catch (_) {
 					cert.issuer = false;
 					err = Messages.ISSUER.ERR.IS_INVALID;
@@ -372,21 +389,5 @@ router.delete(
 		}
 	}
 );
-
-/**
- *	Utilitario, permite generar header para hacer llamadas en la consola de mouro a mano
- *	(se recomienda eliminarlo en la version final)
- */
-router.get("/headers/:did/:key", Validator.checkValidationResult, async function (req, res) {
-	const did = req.params.did;
-	const key = req.params.key;
-
-	try {
-		const header = await MouroService.getAuthHeader(did, key);
-		return ResponseHandler.sendRes(res, { Authorization: header });
-	} catch (err) {
-		return ResponseHandler.sendErr(res, err);
-	}
-});
 
 module.exports = router;
