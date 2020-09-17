@@ -9,10 +9,10 @@ const { IS_STRING } = Constants.VALIDATION_TYPES;
 
 router.use("/appAuth", CheckInsecure);
 
-router.delete("/appAuth/:did", checkValidationResult, async function (req, res) {
+router.get("/appAuth/:did", checkValidationResult, async function (req, res) {
 	const { did } = req.params;
 	try {
-		const result = await AppAuthService.deleteApp(did);
+		const result = await AppAuthService.findByDID(did);
 		return sendRes(res, result);
 	} catch (err) {
 		return sendErrWithStatus(res, err);
