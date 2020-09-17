@@ -3,6 +3,7 @@ const ResponseHandler = require("./utils/ResponseHandler");
 
 const Certificate = require("../models/Certificate");
 const MouroService = require("../services/MouroService");
+const CertService = require("../services/CertService");
 const UserService = require("../services/UserService");
 const RenaperService = require("../services/RenaperService");
 const AuthRequestService = require("../services/AuthRequestService");
@@ -118,7 +119,7 @@ router.post(
 			};
 
 			console.log(operationId + " creating certificates for " + did);
-			const generateCert = MouroService.createCertificate(
+			const generateCert = CertService.createCertificate(
 				did,
 				{
 					"Datos Personales": {

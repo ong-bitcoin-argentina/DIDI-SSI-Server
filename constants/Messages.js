@@ -152,6 +152,7 @@ module.exports = {
 					"No pudo encontrarse ningun usuario registrado en ai·di con ese DID, solo pueden emitirse certificados a usuarios registrados."
 			},
 			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
+			ISSUER_IS_INVALID: { code: "ISSUER_IS_INVALID", message: "El issuer es inválido." },
 			REVOKED: {
 				code: "REVOKED",
 				message: "El certificado ha sido revocado, esta operacion solo esta permitida sobre certificados activos."

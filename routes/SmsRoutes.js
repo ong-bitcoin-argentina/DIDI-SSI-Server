@@ -5,6 +5,7 @@ const Certificate = require("../models/Certificate");
 const SmsService = require("../services/SmsService");
 const UserService = require("../services/UserService");
 const MouroService = require("../services/MouroService");
+const CertService = require("../services/CertService");
 
 const Validator = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
@@ -100,8 +101,8 @@ router.post(
 			if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
 
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await MouroService.createPhoneCertificate(did, cellPhoneNumber);
-			await MouroService.verifyCertificatePhoneNumber(cert);
+			let cert = await CertService.createPhoneCertificate(did, cellPhoneNumber);
+			await CertService.verifyCertificatePhoneNumber(cert);
 
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);

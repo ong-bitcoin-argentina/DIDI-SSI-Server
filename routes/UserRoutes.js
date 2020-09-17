@@ -6,6 +6,7 @@ const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
 const SmsService = require("../services/SmsService");
 const MouroService = require("../services/MouroService");
+const CertService = require("../services/CertService");
 const FirebaseService = require("../services/FirebaseService");
 
 const Messages = require("../constants/Messages");
@@ -292,8 +293,8 @@ router.post(
 			let phone = await SmsService.isValid(newPhoneNumber, phoneValidationCode);
 
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await MouroService.createPhoneCertificate(did, newPhoneNumber);
-			await MouroService.verifyCertificatePhoneNumber(cert);
+			let cert = await CertService.createPhoneCertificate(did, newPhoneNumber);
+			await CertService.verifyCertificatePhoneNumber(cert);
 
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
@@ -362,8 +363,8 @@ router.post(
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 
 			// generar certificado validando que ese did le corresponde al dueño del mail
-			let cert = await MouroService.createMailCertificate(did, newEMail);
-			await MouroService.verifyCertificateEmail(cert);
+			let cert = await CertService.createMailCertificate(did, newEMail);
+			await CertService.verifyCertificateEmail(cert);
 
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);
@@ -411,7 +412,7 @@ router.post(
 		const jwt = req.body.jwt;
 
 		try {
-			const decoded = await MouroService.decodeCertificate(jwt, Messages.CERTIFICATE.ERR.VERIFY);
+			const decoded = await CertService.decodeCertificate(jwt, Messages.CERTIFICATE.ERR.VERIFY);
 			const name = Object.keys(decoded.payload.vc.credentialSubject)[0];
 
 			const cb = Constants.ADDRESS + ":" + Constants.PORT + "/api/1.0/didi/verifyCredential";
@@ -424,7 +425,7 @@ router.post(
 				}
 			};
 
-			const petition = await MouroService.createPetition(did, claims, cb);
+			const petition = await CertService.createPetition(did, claims, cb);
 
 			try {
 				// enviar push notification
@@ -458,7 +459,7 @@ router.post(
 	async function (req, res) {
 		const access_token = req.body.access_token;
 
-		const data = await MouroService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
+		const data = await CertService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
 		const jwt = data.payload.verified[0];
 
 		try {
@@ -474,7 +475,7 @@ router.post(
 
 			const certJwt = await cert.getJwt();
 			// decodifico jwt
-			const decoded = await MouroService.decodeCertificate(certJwt, Messages.CERTIFICATE.ERR.VERIFY);
+			const decoded = await CertService.decodeCertificate(certJwt, Messages.CERTIFICATE.ERR.VERIFY);
 
 			const credData = decoded.payload.vc.credentialSubject;
 			const certCategory = Object.keys(credData)[0];
