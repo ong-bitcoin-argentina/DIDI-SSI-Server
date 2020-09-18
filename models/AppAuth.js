@@ -14,7 +14,15 @@ const AppAuthSchema = new mongoose.Schema({
 	createdOn: {
 		type: Date,
 		default: new Date()
+	},
+	modifiedOn: {
+		type: Date
 	}
+});
+
+AppAuthSchema.pre("findOneAndUpdate", function (next) {
+	this.update({}, { modifiedOn: new Date() });
+	next();
 });
 
 const AppAuth = mongoose.model("AppAuth", AppAuthSchema);
