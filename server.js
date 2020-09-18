@@ -11,8 +11,7 @@ const SmsRoutes = require("./routes/SmsRoutes");
 const MailRoutes = require("./routes/MailRoutes");
 const RenaperRoutes = require("./routes/RenaperRoutes");
 const SemillasRoutes = require("./routes/SemillasRoutes");
-const AppAuthRoutes = require("./routes/AppAuthRoutes");
-const UserRondaRoutes = require("./routes/UserRondaRoutes");
+const AppUserAuthRoutes = require("./routes/AppUserAuthRoutes");
 
 // inicializar cluster para workers, uno por cpu disponible
 var cluster = require("cluster");
@@ -86,8 +85,7 @@ app.use(route, SmsRoutes);
 app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
 app.use(route, SemillasRoutes);
-app.use(route, AppAuthRoutes);
-app.use(route, UserRondaRoutes);
+app.use(route, AppUserAuthRoutes);
 
 // forkear workers
 if (cluster.isMaster) {

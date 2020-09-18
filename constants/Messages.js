@@ -487,9 +487,9 @@ module.exports = {
 			code: "DID_NOT_FOUND",
 			message: `El usuario con el DID ${did} no existe.`
 		}),
-		USER_RONDA_NOT_FOUND: did => ({
+		USER_APP_NOT_FOUND: did => ({
 			code: "USER_RONDA_NOT_FOUND",
-			message: `El usuario con el DID ${did} no existe o no tiene cuenta en la aplicación Ronda.`
+			message: `El usuario con el DID ${did} no existe o no tiene cuenta en una aplicación autorizada.`
 		})
 	}
 };
