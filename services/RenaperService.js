@@ -18,7 +18,6 @@ const renaperPost = async function(url, body) {
 		const jsonResp = await response.json();
 		return jsonResp.status === "error" ? Promise.reject(jsonResp) : Promise.resolve(jsonResp);
 	} catch (err) {
-		console.log(err);
 		return Promise.reject(err);
 	}
 };

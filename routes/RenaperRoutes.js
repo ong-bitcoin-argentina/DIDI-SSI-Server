@@ -64,7 +64,6 @@ router.post(
 			// guardar estado como "en progreso y retornar"
 			authRequest = await AuthRequestService.create(operationId, did);
 		} catch (err) {
-			console.log(err);
 			return ResponseHandler.sendErr(res, err);
 		}
 
@@ -91,8 +90,6 @@ router.post(
 			// ejecutar pedido
 			console.log(operationId + " executing request for " + did);
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
-
-			// if (Constants.DEBUGG) console.log(userData);
 
 			console.log(operationId + " checking results for " + did);
 			// si no hubo match o no se obtuvo la precision buscada pasar a estado "fallido"
@@ -176,7 +173,6 @@ router.post(
 				);
 			} catch (err) {
 				console.log("Error sending push notifications:");
-				console.log(err);
 			}
 
 			// agregar info de renaper al usuario
@@ -201,7 +197,6 @@ router.post(
 
 			return;
 		} catch (err) {
-			console.log(err);
 			await authRequest.update(Constants.AUTHENTICATION_REQUEST.FALIED, err.message);
 			return;
 		}
@@ -228,7 +223,6 @@ router.post(
 				message: authRequest.errorMessage
 			});
 		} catch (err) {
-			console.log(err);
 			return ResponseHandler.sendErr(res, err);
 		}
 	}
