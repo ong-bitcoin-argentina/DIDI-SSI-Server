@@ -74,7 +74,7 @@ app.use(function (error, _, _, next) {
 	next();
 });
 
-const route = "/api/" + Constants.API_VERSION + "/didi";
+const route = `/api/${Constants.API_VERSION}/didi`;
 if (Constants.DEBUGG) {
 	console.log("route: " + route);
 }

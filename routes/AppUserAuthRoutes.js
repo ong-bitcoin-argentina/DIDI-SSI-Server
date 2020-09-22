@@ -5,10 +5,13 @@ const AppAuthService = require("../services/AppAuthService");
 const UserAppService = require("../services/UserAppService");
 const Constants = require("../constants/Constants");
 const CheckInsecure = require("../middlewares/Insecure");
+const ValidateJWT = require("../middlewares/ValidateAppJWT");
+const UserApp = require("../models/UserApp");
 
 const { IS_STRING } = Constants.VALIDATION_TYPES;
 
 router.use("/appAuth", CheckInsecure);
+router.use("/userApp/validateUser", ValidateJWT);
 
 router.get("/appAuth/:did", checkValidationResult, async function (req, res) {
 	const { did } = req.params;
@@ -49,16 +52,14 @@ router.get("/userApp/:userDid", checkValidationResult, async function (req, res)
 });
 
 router.post(
-	"/userApp",
-	validateBody([
-		{ name: "userDid", validate: [IS_STRING] },
-		{ name: "appDid", validate: [IS_STRING] }
-	]),
+	"/userApp/validateUser",
+	validateBody([{ name: "userJWT", validate: [IS_STRING] }]),
 	checkValidationResult,
 	async function (req, res) {
-		const { userDid, appDid } = req.body;
+		const { userJWT } = req.body;
+		const appJWT = req.header("Authorization");
 		try {
-			const user = await UserAppService.createUser(userDid, appDid);
+			const user = await UserAppService.createByTokens(userJWT, appJWT);
 			return sendRes(res, user);
 		} catch (err) {
 			return sendErrWithStatus(res, err);
