@@ -4,12 +4,13 @@ const AppAuthService = require("./AppAuthService");
 const { userDTO } = require("../routes/utils/DTOs");
 const { decodeJWT } = require("did-jwt");
 const {
-	VALIDATION: { USER_APP_NOT_FOUND, DID_NOT_FOUND, APP_DID_NOT_FOUND }
+	VALIDATION: { DID_NOT_FOUND, APP_DID_NOT_FOUND },
+	USER_APP: { NOT_FOUND }
 } = require("../constants/Messages");
 
 const findByUserDID = async function (userDid) {
 	const user = await UserApp.getByDID(userDid);
-	if (!user) throw USER_APP_NOT_FOUND(userDid);
+	if (!user) throw NOT_FOUND(userDid);
 	return user;
 };
 
@@ -21,10 +22,10 @@ const createByTokens = async function (userToken, appToken) {
 	const appDid = appPayload.iss;
 
 	const user = await createUser(userDid, appDid);
-	return userDTO(user);
+	return await userDTO(user);
 };
 
-const createUser = async function (userDid, appDid, returnUser = true) {
+const createUser = async function (userDid, appDid) {
 	const user = await UserService.getByDID(userDid);
 	if (!user) throw DID_NOT_FOUND(userDid);
 
@@ -34,8 +35,9 @@ const createUser = async function (userDid, appDid, returnUser = true) {
 	const userId = user._id;
 	const appAuthId = appAuth._id;
 
-	const userApp = await UserApp.create({ userId, appAuthId });
-	return returnUser ? user : userApp;
+	await UserApp.generate(userId, appAuthId);
+
+	return user;
 };
 
 module.exports = {
