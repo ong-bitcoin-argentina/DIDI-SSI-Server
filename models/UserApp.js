@@ -21,14 +21,19 @@ const UserAppSchema = new mongoose.Schema({
 	}
 });
 
-UserAppSchema.pre("findOneAndUpdate", function (next) {
-	this.update({}, { modifiedOn: new Date() });
-	next();
-});
-
 const UserApp = mongoose.model("UserApp", UserAppSchema);
 module.exports = UserApp;
 
 UserApp.getByDID = async function (did) {
-	return await UserApp.find().populate({ path: "userId", match: { did } });
+	const result = await UserApp.find()
+		.populate({ path: "userId", match: { did }, select: "did phoneNumber mail" })
+		.exec();
+	return result[0];
+};
+
+UserApp.generate = async function (userId, appAuthId) {
+	const query = { userId, appAuthId };
+	const action = { $set: { userId, appAuthId } };
+	const options = { upsert: true, new: true };
+	return await UserApp.findOneAndUpdate(query, action, options);
 };

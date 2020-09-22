@@ -6,7 +6,6 @@ const UserAppService = require("../services/UserAppService");
 const Constants = require("../constants/Constants");
 const CheckInsecure = require("../middlewares/Insecure");
 const ValidateJWT = require("../middlewares/ValidateAppJWT");
-const UserApp = require("../models/UserApp");
 
 const { IS_STRING } = Constants.VALIDATION_TYPES;
 
@@ -40,16 +39,6 @@ router.post(
 		}
 	}
 );
-
-router.get("/userApp/:userDid", checkValidationResult, async function (req, res) {
-	const { userDid } = req.params;
-	try {
-		const result = await UserAppService.findByUserDID(userDid);
-		return sendRes(res, result);
-	} catch (err) {
-		return sendErrWithStatus(res, err);
-	}
-});
 
 router.post(
 	"/userApp/validateUser",
