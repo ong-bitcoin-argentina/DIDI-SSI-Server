@@ -1,8 +1,8 @@
 const UserApp = require("../models/UserApp");
 const UserService = require("./UserService");
 const AppAuthService = require("./AppAuthService");
+const { getPayload, verifyToken } = require("./TokenService");
 const { userDTO } = require("../routes/utils/DTOs");
-const { decodeJWT } = require("did-jwt");
 const {
 	VALIDATION: { DID_NOT_FOUND, APP_DID_NOT_FOUND },
 	USER_APP: { NOT_FOUND }
@@ -15,14 +15,17 @@ const findByUserDID = async function (userDid) {
 };
 
 const createByTokens = async function (userToken, appToken) {
-	const userPayload = decodeJWT(userToken).payload;
-	const appPayload = decodeJWT(appToken).payload;
+	await verifyToken(userToken, true);
+
+	const userPayload = getPayload(userToken);
+	const appPayload = getPayload(appToken);
 
 	const userDid = userPayload.iss;
 	const appDid = appPayload.iss;
 
-	const user = await createUser(userDid, appDid);
-	return await userDTO(user);
+	const { user, appAuth } = await createUser(userDid, appDid);
+	const niceUser = await userDTO(user);
+	return { ...niceUser, appName: appAuth.name };
 };
 
 const createUser = async function (userDid, appDid) {
@@ -37,7 +40,7 @@ const createUser = async function (userDid, appDid) {
 
 	await UserApp.generate(userId, appAuthId);
 
-	return user;
+	return { user, appAuth };
 };
 
 module.exports = {
