@@ -1,14 +1,29 @@
-const Messages = require("../constants/Messages");
-const { decodeJWT } = require("did-jwt");
-
+const { decodeJWT, verifyJWT, SimpleSigner, createJWT } = require("did-jwt");
+const { Resolver } = require("did-resolver");
+const { Credentials } = require("uport-credentials");
+const { getResolver } = require("ethr-did-resolver");
 const jwt = require("jsonwebtoken");
+const Messages = require("../constants/Messages");
+const { SERVER_DID } = require("../constants/Constants");
+const {
+	BLOCKCHAIN: { BLOCK_CHAIN_URL, BLOCK_CHAIN_CONTRACT }
+} = require("../constants/Constants");
+const { EXPIRED, INVALID_CODE, EXPIRED_CODE } = Messages.TOKEN;
+
+const resolver = new Resolver(getResolver({ rpcUrl: BLOCK_CHAIN_URL, registry: BLOCK_CHAIN_CONTRACT }));
+
+const serverDid = `did:ethr:${SERVER_DID}`;
+
+const errorMessages = {
+	TokenExpiredError: EXPIRED_CODE()
+};
 
 // validates the token and returns userId
-module.exports.getTokenData = async function (token) {
+const getTokenData = async token => {
 	try {
 		const decoded = await decodeJWT(token);
 		if (!decoded) {
-			return Promise.reject(Messages.TOKEN.INVALID());
+			return Promise.reject(INVALID());
 		}
 
 		return Promise.resolve(decoded);
@@ -16,11 +31,61 @@ module.exports.getTokenData = async function (token) {
 		console.log(err);
 
 		if (err.name == "TokenExpiredError") {
-			return Promise.reject(Messages.TOKEN.EXPIRED());
+			return Promise.reject(EXPIRED());
 		}
 		if (err.name == "JsonWebTokenError") {
-			return Promise.reject(Messages.TOKEN.INVALID());
+			return Promise.reject(INVALID());
 		}
 		return Promise.reject({ name: err.name, message: err.message });
 	}
+};
+
+const getPayload = jwt => {
+	const { payload } = decodeJWT(jwt);
+	return payload;
+};
+
+const verifyToken = async (jwt, isUser = false) => {
+	const options = {
+		resolver,
+		audience: serverDid
+	};
+	try {
+		return await verifyJWT(jwt, options);
+	} catch (error) {
+		const message = errorMessages[error.name] || INVALID_CODE(isUser);
+		throw message;
+	}
+};
+
+// Crea un token, devuelve el mismo con su did, este metodo queda para pruebas futuras
+const createSignedToken = async () => {
+	const serverDid = `did:ethr:${SERVER_DID}`;
+	const { did, privateKey } = Credentials.createIdentity();
+	const signer = SimpleSigner(privateKey);
+
+	const payload = {
+		aud: serverDid,
+		iss: did,
+		name: "Ronda"
+	};
+	const signature = {
+		issuer: did,
+		alg: "ES256K-R",
+		signer
+	};
+
+	const token = await createJWT(payload, signature);
+
+	return {
+		token,
+		did
+	};
+};
+
+module.exports = {
+	createSignedToken,
+	getPayload,
+	getTokenData,
+	verifyToken
 };

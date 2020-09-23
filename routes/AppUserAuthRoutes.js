@@ -48,8 +48,8 @@ router.post(
 		const { userJWT } = req.body;
 		const appJWT = req.header("Authorization");
 		try {
-			const user = await UserAppService.createByTokens(userJWT, appJWT);
-			return sendRes(res, user);
+			const result = await UserAppService.createByTokens(userJWT, appJWT);
+			return sendRes(res, result);
 		} catch (err) {
 			return sendErrWithStatus(res, err);
 		}

@@ -295,7 +295,15 @@ module.exports = {
 	},
 	TOKEN: {
 		INVALID: () => "El token es invalido, por favor verificarlo o loguearse para obtener uno nuevo.",
-		EXPIRED: () => "El token ha expirado, es necesario volver a loguearse."
+		EXPIRED: () => "El token ha expirado, es necesario volver a loguearse.",
+		EXPIRED_CODE: () => ({
+			message: "El token ha expirado.",
+			code: "EXPIRED_TOKEN"
+		}),
+		INVALID_CODE: isUser => ({
+			message: `El token de ${isUser ? "usuario" : "aplicación"} es inválido, por favor verificalo.`,
+			code: "INVALID_TOKEN"
+		})
 	},
 	USER: {
 		SUCCESS: {
