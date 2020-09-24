@@ -57,7 +57,7 @@ mongoose
 		console.log(Messages.INDEX.ERR.CONNECTION + err.message);
 	});
 
-app.get("/", (_, res) => res.send(Messages.INDEX.MSG.HELLO_WORLD));
+app.get("/", (_, res) => res.send(`${Messages.INDEX.MSG.HELLO_WORLD} v${process.env.VERSION}`));
 
 app.use(bodyParser.json());
 
@@ -91,7 +91,7 @@ if (Constants.DEBUGG) {
 	console.log("route: " + route);
 }
 
-app.use(route, IssuerRoutes);
+// app.use(route, IssuerRoutes);
 app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
 app.use(route, MailRoutes);
