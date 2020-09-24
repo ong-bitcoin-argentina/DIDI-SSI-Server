@@ -20,6 +20,8 @@ RUN apk update && apk upgrade && \
         && npm ci \
         && apk del .gyp
 
+FROM builder
+
 # Bundle app source
 COPY . .
 
