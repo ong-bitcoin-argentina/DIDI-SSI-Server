@@ -142,7 +142,7 @@ router.post(
 				country: data.country
 			};
 
-			const generateAditionalCert = MouroService.createCertificate(
+			const generateAditionalCert = CertService.createCertificate(
 				did,
 				{
 					"Domicilio Legal": {
