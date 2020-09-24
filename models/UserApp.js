@@ -25,10 +25,7 @@ const UserApp = mongoose.model("UserApp", UserAppSchema);
 module.exports = UserApp;
 
 UserApp.getByDID = async function (did) {
-	const result = await UserApp.find()
-		.populate({ path: "userId", match: { did }, select: "did phoneNumber mail" })
-		.exec();
-	return result[0];
+	return await UserApp.findOne().populate({ path: "userId", match: { did }, select: "did phoneNumber mail" }).exec();
 };
 
 UserApp.generate = async function (userId, appAuthId) {

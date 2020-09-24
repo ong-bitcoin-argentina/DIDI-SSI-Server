@@ -23,20 +23,20 @@ const getTokenData = async token => {
 	try {
 		const decoded = await decodeJWT(token);
 		if (!decoded) {
-			return Promise.reject(INVALID());
+			throw INVALID();
 		}
 
-		return Promise.resolve(decoded);
+		return decoded;
 	} catch (err) {
 		console.log(err);
 
 		if (err.name == "TokenExpiredError") {
-			return Promise.reject(EXPIRED());
+			throw EXPIRED();
 		}
 		if (err.name == "JsonWebTokenError") {
-			return Promise.reject(INVALID());
+			throw INVALID();
 		}
-		return Promise.reject({ name: err.name, message: err.message });
+		throw { name: err.name, message: err.message };
 	}
 };
 
@@ -66,8 +66,7 @@ const createSignedToken = async () => {
 
 	const payload = {
 		aud: serverDid,
-		iss: did,
-		name: "Ronda"
+		iss: did
 	};
 	const signature = {
 		issuer: did,
