@@ -25,12 +25,17 @@ const UserApp = mongoose.model("UserApp", UserAppSchema);
 module.exports = UserApp;
 
 UserApp.getByDID = async function (did) {
-	return await UserApp.findOne().populate({ path: "userId", match: { did }, select: "did phoneNumber mail" }).exec();
+	return await UserApp.findOne()
+		.populate({ path: "userId", match: { did }, select: "did" })
+		.populate({ path: "appAuthId", select: "name" })
+		.exec();
 };
 
-UserApp.generate = async function (userId, appAuthId) {
-	const query = { userId, appAuthId };
-	const action = { $set: { userId, appAuthId } };
-	const options = { upsert: true, new: true };
-	return await UserApp.findOneAndUpdate(query, action, options);
+UserApp.getOrCreate = async function (userId, appAuthId) {
+	const data = { userId, appAuthId };
+	let userApp = await UserApp.findOne(data);
+	if (!userApp) {
+		userApp = await UserApp.create(data);
+	}
+	return userApp;
 };

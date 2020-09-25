@@ -3,11 +3,9 @@ const { sendErrWithStatus, sendRes } = require("./utils/ResponseHandler");
 const { checkValidationResult, validateBody } = require("./utils/Validator");
 const AppAuthService = require("../services/AppAuthService");
 const UserAppService = require("../services/UserAppService");
-const UserService = require("../services/UserService");
 const Constants = require("../constants/Constants");
 const CheckInsecure = require("../middlewares/Insecure");
 const { ValidateAppJWT } = require("../middlewares/ValidateAppJWT");
-const { userDTO } = require("./utils/DTOs");
 
 const { IS_STRING } = Constants.VALIDATION_TYPES;
 
@@ -45,11 +43,8 @@ router.post(
 router.get("/userApp/:did", async function (req, res) {
 	const { did } = req.params;
 	try {
-		const userApp = await UserAppService.findByUserDID(did);
-		const user = await UserService.getByDID(did);
-		userApp.user = await userDTO(user);
-		console.log(userApp.user);
-		return sendRes(res, userApp);
+		const result = await UserAppService.findByUserDID(did);
+		return sendRes(res, result);
 	} catch (err) {
 		return sendErrWithStatus(res, err);
 	}
