@@ -61,7 +61,8 @@ const verifyToken = async (jwt, isUser = false) => {
 // Crea un token, devuelve el mismo con su did, este metodo queda para pruebas futuras
 const createSignedToken = async () => {
 	const serverDid = `did:ethr:${SERVER_DID}`;
-	const { did, privateKey } = Credentials.createIdentity();
+	const did = "CHANGE_ME";
+	const privateKey = "CHANGE_ME";
 	const signer = SimpleSigner(privateKey);
 
 	const payload = {

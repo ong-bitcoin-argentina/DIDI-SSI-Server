@@ -1,11 +1,13 @@
 const UserApp = require("../models/UserApp");
 const UserService = require("./UserService");
 const AppAuthService = require("./AppAuthService");
-const { getPayload, verifyToken } = require("./TokenService");
+const CertService = require("./CertService");
+const { getPayload } = require("./TokenService");
 const { userDTO } = require("../routes/utils/DTOs");
 const {
 	VALIDATION: { DID_NOT_FOUND, APP_DID_NOT_FOUND },
-	USER_APP: { NOT_FOUND }
+	USER_APP: { NOT_FOUND },
+	TOKEN: { INVALID_CODE }
 } = require("../constants/Messages");
 
 const findByUserDID = async function (userDid) {
@@ -15,7 +17,8 @@ const findByUserDID = async function (userDid) {
 };
 
 const createByTokens = async function (userToken, appToken) {
-	await verifyToken(userToken, true);
+	const verified = await CertService.verifyCertificate(userToken);
+	if (!verified.payload) throw INVALID_CODE(true);
 
 	const userPayload = getPayload(userToken);
 	const appPayload = getPayload(appToken);
@@ -38,9 +41,9 @@ const createUser = async function (userDid, appDid) {
 	const userId = user._id;
 	const appAuthId = appAuth._id;
 
-	await UserApp.generate(userId, appAuthId);
+	const userApp = await UserApp.getOrCreate(userId, appAuthId);
 
-	return { user, appAuth };
+	return { appAuth, user, userApp };
 };
 
 module.exports = {
