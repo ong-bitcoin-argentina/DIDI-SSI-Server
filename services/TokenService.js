@@ -1,8 +1,6 @@
-const { decodeJWT, verifyJWT, SimpleSigner, createJWT } = require("did-jwt");
+const { decodeJWT, verifyJWT } = require("did-jwt");
 const { Resolver } = require("did-resolver");
-const { Credentials } = require("uport-credentials");
 const { getResolver } = require("ethr-did-resolver");
-const jwt = require("jsonwebtoken");
 const Messages = require("../constants/Messages");
 const { SERVER_DID } = require("../constants/Constants");
 const {
@@ -58,33 +56,7 @@ const verifyToken = async (jwt, isUser = false) => {
 	}
 };
 
-// Crea un token, devuelve el mismo con su did, este metodo queda para pruebas futuras
-const createSignedToken = async () => {
-	const serverDid = `did:ethr:${SERVER_DID}`;
-	const did = "CHANGE_ME";
-	const privateKey = "CHANGE_ME";
-	const signer = SimpleSigner(privateKey);
-
-	const payload = {
-		aud: serverDid,
-		iss: did
-	};
-	const signature = {
-		issuer: did,
-		alg: "ES256K-R",
-		signer
-	};
-
-	const token = await createJWT(payload, signature);
-
-	return {
-		token,
-		did
-	};
-};
-
 module.exports = {
-	createSignedToken,
 	getPayload,
 	getTokenData,
 	verifyToken
