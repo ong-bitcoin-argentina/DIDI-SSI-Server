@@ -102,57 +102,6 @@ module.exports.validDelegate = async function(userDID, credentials, otherDID) {
 		return result;
 	} catch (err) {
 		console.log(err);
-		throw Messages.DELEGATE.ERR.GET;
-	}
-};
-
-// modifica el nombre que mostrara el delegado
-module.exports.setDelegateName = async function(issuerDID, credentials, name) {
-	try {
-		credentials.from = cleanDid(credentials.from);
-		const contract = getContract(credentials);
-		const bytecode = await contract.methods
-			.setAttribute(cleanDid(issuerDID), web3.utils.fromAscii("name"), web3.utils.fromAscii(name), 99999999)
-			.encodeABI();
-		const result = await makeSignedTransaction(bytecode, credentials);
-		return Promise.resolve(result);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.SET_NAME);
-	}
-};
-
-// obtiene el nombre que mostrara el delegado
-module.exports.getDelegateName = async function(issuerDID) {
-	try {
-		// TODO: esto genera errores cuando los eventos son muchos.
-		// Debe ser refactorizado.
-
-		const did = cleanDid(issuerDID);
-
-		if (did === Constants.SERVER_DID) return Promise.resolve(Constants.DIDI_SERVER_NAME);
-
-		// HACK TEMPORAL que devuelve el nombre de un ISSUER especificado
-		// por variable de entorno, para que no recorra todos los eventos.
-		if (did === Constants.ISSUER_SERVER_DID) return Promise.resolve(Constants.ISSUER_SERVER_NAME);
-
-		const contract = getContract({ from: did });
-		const events = await contract.getPastEvents("DIDAttributeChanged", { fromBlock: 0, toBlock: "latest" });
-
-		const name = web3.utils.fromAscii("name");
-		let res = "";
-		for (let event of events) {
-			if (
-				event.returnValues.identity.toLowerCase() === did.toLowerCase() &&
-				event.returnValues.validTo !== 0 &&
-				event.returnValues.name.substring(0, name.length) === name
-			) {
-				res = web3.utils.toAscii(event.returnValues.value);
-			}
-		}
-		return Promise.resolve(res);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.GET_NAME);
+		throw Messages.DELEGATE.ERR.GET_DELEGATE;
 	}
 };

@@ -49,6 +49,7 @@ module.exports = {
 				message: "El usuario no pudo ser creado, por favor inténtelo de nuevo más tarde."
 			},
 			GET: { code: "USER_GET", message: "El usuario no pudo ser obtenido, por favor inténtelo de nuevo más tarde." },
+			GET_DELEGATE: { code: "GET_DELEGATE", message: "No pudo validarse la delegación con el did provisto." },
 			SET_NAME: {
 				code: "DELEGATE_SET_NAME",
 				message: "El delegado no pudo ser verificado, por favor inténtelo de nuevo más tarde."
@@ -161,7 +162,22 @@ module.exports = {
 				code: "NOT_FOUND",
 				message:
 					"No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas."
-			}
+			},
+			NAME_EXISTS: {
+				code: "NAME_EXISTS",
+				message:
+					"Ya existe un issuer con ese nombre."
+			},
+			DID_EXISTS: {
+				code: "DID_EXISTS",
+				message:
+					"Ya existe un issuer con ese did."
+			},
+			ALREADY_DELEGATE: {
+				code: "DELEGATE_EXISTS",
+				message:
+					"Ya existe una delegación con ese did."
+			},
 		},
 		CERT_REVOKED: "El certificado fue revocado.",
 		DELETED: "La autorizacion para emitir certificados fue revocada.",

@@ -57,7 +57,7 @@ module.exports.createPetition = async function(did, claims, cb) {
 		const exp = ((new Date().getTime() + 600000) / 1000) | 0;
 
 		const payload = {
-			iss: "did:ethr:" + Constants.ISSUER_SERVER_DID,
+			iss: "did:ethr:" + Constants.SERVER_DID,
 			exp: exp,
 			callback: cb,
 			claims: claims,
@@ -136,7 +136,7 @@ module.exports.verifyCertificatePhoneNumber = async function(jwt, hash) {
 // decodifica el certificado, retornando la info (independientemente de si el certificado es valido o no)
 module.exports.decodeCertificate = async function(jwt, errMsg) {
 	try {
-		let result = await decodeJWT(jwt);
+		const result = await decodeJWT(jwt);
 		return Promise.resolve(result);
 	} catch (err) {
 		console.log(err);
@@ -163,12 +163,13 @@ module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 
 // analiza la validez del emisor del certificado
 module.exports.verifyIssuer = async function(issuerDid) {
+	console.log('Validating delegate...');
 	const delegated = await BlockchainService.validDelegate(
 		Constants.SERVER_DID,
 		{ from: Constants.SERVER_DID },
 		issuerDid
 	);
-
+	console.log('Delegate verified!');
 	if (delegated) return Messages.CERTIFICATE.VERIFIED;
 	throw Messages.ISSUER.ERR.IS_INVALID;
 };
