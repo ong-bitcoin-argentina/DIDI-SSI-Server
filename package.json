@@ -1,5 +1,6 @@
 {
 	"name": "api",
+	"license": "SEE LICENSE IN LICENSE",
 	"version": "2.0.0",
 	"main": "index.js",
 	"scripts": {
