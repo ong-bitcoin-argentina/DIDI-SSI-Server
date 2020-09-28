@@ -91,7 +91,7 @@ if (Constants.DEBUGG) {
 	console.log("route: " + route);
 }
 
-// app.use(route, IssuerRoutes);
+app.use(route, IssuerRoutes);
 app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
 app.use(route, MailRoutes);

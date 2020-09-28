@@ -170,6 +170,5 @@ module.exports.verifyIssuer = async function(issuerDid) {
 	);
 
 	if (delegated) return Messages.CERTIFICATE.VERIFIED;
-
-	throw new Error(Messages.ISSUER.ERR.IS_INVALID);
+	throw Messages.ISSUER.ERR.IS_INVALID;
 };

@@ -99,10 +99,10 @@ module.exports.validDelegate = async function(userDID, credentials, otherDID) {
 		const result = await contract.methods
 			.validDelegate(cleanDid(userDID), regName, cleanDid(otherDID))
 			.call(credentials);
-		return Promise.resolve(result);
+		return result;
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.GET);
+		throw Messages.DELEGATE.ERR.GET;
 	}
 };
 
