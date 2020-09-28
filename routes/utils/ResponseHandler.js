@@ -23,8 +23,8 @@ module.exports.sendErr = function(res, err) {
 	res.type("application/json; charset=UTF-8");
 	return res.json({
 		status: "error",
-		errorCode: err.code,
-		message: err.message
+		errorCode: err && err.code,
+		message: err && err.message
 	});
 };
 

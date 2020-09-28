@@ -98,6 +98,9 @@ app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
 app.use(route, SemillasRoutes);
 app.use(route, AppUserAuthRoutes);
+app.use('*', function(req, res) {
+	res.json({ message: 'route does not exist' });
+});
 
 // forkear workers
 if (cluster.isMaster) {
