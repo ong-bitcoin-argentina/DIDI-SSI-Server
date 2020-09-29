@@ -31,8 +31,7 @@ module.exports.addIssuer = async function (did, name) {
 	const expireOn = new Date();
 	expireOn.setSeconds(expireOn.getSeconds() + Constants.BLOCKCHAIN.DELEGATE_DURATION);
 
-	const issuer = new Issuer({ name, did, expireOn });
-	return await issuer.save();
+	return await Issuer.create({ name, did, expireOn });
 };
 
 module.exports.getIssuerByDID = async function(did) {
