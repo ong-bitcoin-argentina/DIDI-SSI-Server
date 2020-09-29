@@ -98,8 +98,12 @@ app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
 app.use(route, SemillasRoutes);
 app.use(route, AppUserAuthRoutes);
-app.use('*', function(req, res) {
-	res.json({ message: 'route does not exist' });
+app.use("*", function(req, res) {
+	return res.status(404).json({
+		status: "error",
+		errorCode: "INVALID_ROUTE",
+		message: "Route does not exist"
+	});
 });
 
 // forkear workers
