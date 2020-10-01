@@ -11,9 +11,13 @@ const {
 } = require("../constants/Messages");
 
 const findByUserDID = async function (userDid) {
-	const user = await UserApp.getByDID(userDid);
-	if (!user) throw NOT_FOUND(userDid);
-	return user;
+	const user = UserService.getByDID(userDid);
+	if (!user) throw DID_NOT_FOUND(userDid);
+
+	const userApp = await UserApp.getByDID(userDid);
+	if (!userApp) throw NOT_FOUND(userDid);
+
+	return userApp;
 };
 
 const createByTokens = async function (userToken, appToken) {
