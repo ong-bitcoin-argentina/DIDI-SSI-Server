@@ -21,8 +21,10 @@ const app = express();
 var http = require("http");
 var server = http.createServer(app);
 
-const { logger } = require('./services/logger');
-logger.start();
+if (process.env.ENABLE_AZURE_LOGGER) {
+	const { logger } = require('./services/logger');
+	logger.start();	
+}
 
 // sobreescribir log para agregarle el timestamp
 const log = console.log;
@@ -68,21 +70,25 @@ app.use(function (req, _, next) {
 		process.stdout.write("body: ");
 		console.log(req.body);
 	}
-	logger.defaultClient.trackEvent({name: "request", properties: {
-		method: req.method,
-		url: req.originalUrl,
-	}});
+	if (process.env.ENABLE_AZURE_LOGGER) {
+		logger.defaultClient.trackEvent({name: "request", properties: {
+			method: req.method,
+			url: req.originalUrl,
+		}});
+	}
 	next();
 });
 
 // loggear errores
 app.use(function(error, req, _, next) {
 	console.log(error);
-	logger.defaultClient.trackEvent({name: "error", properties: {
-		value: "error",
-		method: req.method,
-		url: req.originalUrl,
-	}});
+	if (process.env.ENABLE_AZURE_LOGGER) {
+		logger.defaultClient.trackEvent({name: "error", properties: {
+			value: "error",
+			method: req.method,
+			url: req.originalUrl,
+		}});	
+	}
 	next();
 });
 
