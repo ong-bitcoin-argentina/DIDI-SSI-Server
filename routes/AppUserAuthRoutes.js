@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { sendErrWithStatus, sendRes } = require("./utils/ResponseHandler");
-const { checkValidationResult, validateBody } = require("./utils/Validator");
+const { checkValidationResult, validateBody, validateParams } = require("./utils/Validator");
 const AppAuthService = require("../services/AppAuthService");
 const UserAppService = require("../services/UserAppService");
 const Constants = require("../constants/Constants");
@@ -40,12 +40,13 @@ router.post(
 	}
 );
 
-router.get("/userApp/:did", async function (req, res) {
-	const { did } = req.params;
+router.get("/userApp/:did", validateParams, async function (req, res) {
 	try {
+		const { did } = req.params;
 		const result = await UserAppService.findByUserDID(did);
 		return sendRes(res, result);
 	} catch (err) {
+		console.log(err);
 		return sendErrWithStatus(res, err);
 	}
 });
