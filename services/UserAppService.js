@@ -5,13 +5,13 @@ const CertService = require("./CertService");
 const { getPayload } = require("./TokenService");
 const { userDTO } = require("../routes/utils/DTOs");
 const {
-	VALIDATION: { DID_NOT_FOUND, APP_DID_NOT_FOUND },
+	VALIDATION: { DID_NOT_FOUND, APP_DID_NOT_FOUND, DOES_NOT_EXIST },
 	USER_APP: { NOT_FOUND },
 	TOKEN: { INVALID_CODE }
 } = require("../constants/Messages");
 
 const findByUserDID = async function (userDid) {
-	const user = UserService.getByDID(userDid);
+	const user = await UserService.getByDID(userDid);
 	if (!user) throw DID_NOT_FOUND(userDid);
 
 	const userApp = await UserApp.getByDID(userDid);
