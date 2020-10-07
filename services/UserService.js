@@ -83,14 +83,23 @@ let telTaken = async function (tel, exceptionDid) {
 module.exports.telTaken = telTaken;
 
 // crear un usuario, siempre que este no exista uno asociado al did
-module.exports.create = async function (did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId) {
+module.exports.create = async function (
+	did,
+	privateKeySeed,
+	userMail,
+	phoneNumber,
+	userPass,
+	firebaseId,
+	name,
+	lastname
+) {
 	try {
 		// validar si ya existe un usuario asociado a ese did
 		let user = await getByDID(did);
 		if (user) return Promise.reject(Messages.USER.ERR.USER_ALREADY_EXIST);
 
 		// crear usuario
-		user = await User.generate(did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId);
+		user = await User.generate(did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId, name, lastname);
 		if (!user) return Promise.reject(Messages.USER.ERR.CREATE);
 		return Promise.resolve(user);
 	} catch (err) {
