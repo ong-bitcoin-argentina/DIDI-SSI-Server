@@ -8,7 +8,17 @@ const HashedData = require("./dataTypes/HashedData");
 const UserSchema = new mongoose.Schema({
 	did: {
 		type: String,
-		required: true,
+		required: true
+	},
+
+	name: {
+		type: String,
+		required: true
+	},
+
+	lastname: {
+		type: String,
+		required: true
 	},
 
 	mail: EncryptedData,
@@ -20,37 +30,37 @@ const UserSchema = new mongoose.Schema({
 	seed: EncryptedData,
 
 	backupHash: {
-		type: String,
+		type: String
 	},
 	firebaseId: {
-		type: String,
+		type: String
 	},
 	password: HashedData,
 	deleted: {
 		type: Boolean,
-		default: false,
+		default: false
 	},
 	createdOn: {
 		type: Date,
-		default: Date.now(),
+		default: Date.now()
 	},
 	modifiedOn: {
 		type: Date,
-		default: Date.now(),
-	},
+		default: Date.now()
+	}
 });
 
 UserSchema.index(
 	{ did: 1, deleted: 1 },
 	{
-		unique: true,
+		unique: true
 	}
 );
 
 UserSchema.index(
 	{ "mail.encrypted": 1, deleted: 1 },
 	{
-		unique: true,
+		unique: true
 	}
 );
 
@@ -84,7 +94,7 @@ UserSchema.methods.updatePassword = async function (password) {
 	// actualizar clave
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { password: hashData, modifiedOn: new Date() },
+		$set: { password: hashData, modifiedOn: new Date() }
 	};
 
 	try {
@@ -101,7 +111,7 @@ UserSchema.methods.updatePhoneNumber = async function (newPhoneNumber, firebaseI
 	const oldPhone = {
 		encrypted: this.phoneNumber.encrypted,
 		// salt: this.phoneNumber.salt,
-		hash: this.phoneNumber.hash,
+		hash: this.phoneNumber.hash
 	};
 
 	// encriptar numero
@@ -113,7 +123,7 @@ UserSchema.methods.updatePhoneNumber = async function (newPhoneNumber, firebaseI
 	const updateQuery = { _id: this._id };
 	const updateAction = {
 		$set: { phoneNumber: this.phoneNumber, firebaseId: firebaseId, modifiedOn: new Date() },
-		$push: { oldPhoneNumbers: oldPhone },
+		$push: { oldPhoneNumbers: oldPhone }
 	};
 
 	try {
@@ -130,7 +140,7 @@ UserSchema.methods.updateFirebaseId = async function (firebaseId) {
 	// actualizar firebaseId
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { firebaseId: firebaseId, modifiedOn: new Date() },
+		$set: { firebaseId: firebaseId, modifiedOn: new Date() }
 	};
 
 	try {
@@ -147,7 +157,7 @@ UserSchema.methods.updateEmail = async function (newEmail) {
 	const oldMail = {
 		encrypted: this.mail.encrypted,
 		// salt: this.mail.salt,
-		hash: this.mail.hash,
+		hash: this.mail.hash
 	};
 
 	// encriptar mail
@@ -159,7 +169,7 @@ UserSchema.methods.updateEmail = async function (newEmail) {
 	const updateQuery = { _id: this._id };
 	const updateAction = {
 		$set: { mail: this.mail, modifiedOn: new Date() },
-		$push: { oldEmails: oldMail },
+		$push: { oldEmails: oldMail }
 	};
 
 	try {
@@ -175,7 +185,7 @@ UserSchema.methods.updateEmail = async function (newEmail) {
 UserSchema.methods.updateHash = async function (hash) {
 	const updateQuery = { _id: this._id };
 	const updateAction = {
-		$set: { backupHash: hash, modifiedOn: new Date() },
+		$set: { backupHash: hash, modifiedOn: new Date() }
 	};
 
 	try {
@@ -209,7 +219,7 @@ User.emailTaken = async function (mail, exceptionDid) {
 	try {
 		const hashData = await Hashing.hash(mail);
 		const repeatedMailQuery = {
-			$or: [{ "mail.hash": hashData.hash }, { "oldEmails.hash": hashData.hash }],
+			$or: [{ "mail.hash": hashData.hash }, { "oldEmails.hash": hashData.hash }]
 		};
 		if (exceptionDid) repeatedMailQuery["did"] = { $ne: exceptionDid };
 
@@ -224,7 +234,7 @@ User.telTaken = async function (tel, exceptionDid) {
 	try {
 		const hashData = await Hashing.hash(tel);
 		const repeatedPhoneQuery = {
-			$or: [{ "phoneNumber.hash": hashData.hash }, { "oldPhoneNumbers.hash": hashData.hash }],
+			$or: [{ "phoneNumber.hash": hashData.hash }, { "oldPhoneNumbers.hash": hashData.hash }]
 		};
 		if (exceptionDid) repeatedPhoneQuery["did"] = { $ne: exceptionDid };
 
@@ -236,7 +246,7 @@ User.telTaken = async function (tel, exceptionDid) {
 };
 
 // crear nuevo usuario
-User.generate = async function (did, seed, mail, phoneNumber, pass, firebaseId) {
+User.generate = async function (did, seed, mail, phoneNumber, pass, firebaseId, name, lastname) {
 	try {
 		user = new User();
 		user.oldEmails = [];
@@ -246,6 +256,8 @@ User.generate = async function (did, seed, mail, phoneNumber, pass, firebaseId) 
 		user.deleted = false;
 		user.did = did;
 		user.firebaseId = firebaseId;
+		user.name = name;
+		user.lastname = lastname;
 		await Encrypt.setEncryptedData(user, "phoneNumber", phoneNumber);
 		await Encrypt.setEncryptedData(user, "mail", mail);
 		await Encrypt.setEncryptedData(user, "seed", seed);

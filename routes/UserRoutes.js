@@ -13,6 +13,8 @@ const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
 
+const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATION_TYPES;
+
 /**
  *	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
  *	tanto el mail como el telèfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
@@ -20,33 +22,31 @@ const Validator = require("./utils/Validator");
 router.post(
 	"/registerUser",
 	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
+		{ name: "name", validate: [IS_STRING] },
+		{ name: "lastname", validate: [IS_STRING] },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "phoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+			validate: [IS_STRING, IS_MOBILE_PHONE]
 		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
+		{ name: "privateKeySeed", validate: [IS_STRING] },
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
+		const { password, phoneNumber, did, privateKeySeed, name, lastname } = req.body;
 		const eMail = req.body.eMail.toLowerCase();
-		const password = req.body.password;
-		const phoneNumber = req.body.phoneNumber;
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
-
-		const did = req.body.did;
-		const privateKeySeed = req.body.privateKeySeed;
 
 		try {
 			await UserService.emailTaken(eMail);
@@ -61,7 +61,7 @@ router.post(
 			if (!phoneValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.PHONE_NOT_VALIDATED);
 
 			// crear usuario
-			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password, firebaseId);
+			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password, firebaseId, name, lastname);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -104,15 +104,15 @@ router.post(
 router.post(
 	"/recoverAccount",
 	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			optional: true
 		}
 	]),
@@ -139,16 +139,16 @@ router.post(
 router.post(
 	"/userLogin",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			optional: true
 		}
 	]),
@@ -177,15 +177,15 @@ router.post(
 router.post(
 	"/recoverPassword",
 	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
 		{
 			name: "eMailValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
 		{
 			name: "newPass",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		}
 	]),
@@ -221,15 +221,15 @@ router.post(
 router.post(
 	"/changePassword",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
 		{
 			name: "oldPass",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "newPass",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		}
 	]),
@@ -256,24 +256,24 @@ router.post(
 router.post(
 	"/changePhoneNumber",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
 		{
 			name: "newPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+			validate: [IS_STRING, IS_MOBILE_PHONE]
 		},
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "phoneValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			optional: true
 		}
 	]),
@@ -333,17 +333,17 @@ router.post(
 router.post(
 	"/changeEmail",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
 
-		{ name: "newEMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "newEMail", validate: [IS_STRING, IS_EMAIL] },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "eMailValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		}
 	]),
@@ -403,8 +403,8 @@ router.post(
 router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "did", validate: [IS_STRING] },
+		{ name: "jwt", validate: [IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -454,7 +454,7 @@ router.post(
  */
 router.post(
 	"/verifyCredential",
-	Validator.validateBody([{ name: "access_token", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([{ name: "access_token", validate: [IS_STRING] }]),
 	Validator.checkValidationResult,
 	async function (req, res) {
 		const access_token = req.body.access_token;
