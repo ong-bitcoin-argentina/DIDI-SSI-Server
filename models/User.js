@@ -8,7 +8,8 @@ const HashedData = require("./dataTypes/HashedData");
 const UserSchema = new mongoose.Schema({
 	did: {
 		type: String,
-		required: true
+		required: true,
+		unique: true
 	},
 
 	name: {
@@ -307,4 +308,11 @@ User.getByTel = async function (phoneNumber) {
 		console.log(err);
 		return Promise.reject(err);
 	}
+};
+
+User.findByDidAndUpdate = async (did, data) => {
+	const query = { did };
+	const action = { $set: data };
+	const options = { new: true };
+	return await User.findOneAndUpdate(query, action, options);
 };

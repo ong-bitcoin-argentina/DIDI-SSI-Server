@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const Messages = require("../constants/Messages");
 
+const { DID_NOT_FOUND } = Messages.VALIDATION;
+
 // obtener usuario
 let getByDID = async function (did) {
 	try {
@@ -12,6 +14,21 @@ let getByDID = async function (did) {
 	}
 };
 module.exports.getByDID = getByDID;
+
+// creado porque getByDID no retorna error en caso de no existir (y puede que algun endpoint este esperando ese resultado)
+const findByDid = async did => {
+	const user = await User.getByDID(did);
+	if (!user) throw DID_NOT_FOUND(did);
+	return user;
+};
+module.exports.findByDid = findByDid;
+
+const findByDidAndUpdate = async (did, data) => {
+	const user = await User.findByDidAndUpdate(did, data);
+	if (!user) throw DID_NOT_FOUND(did);
+	return user;
+};
+module.exports.findByDidAndUpdate = findByDidAndUpdate;
 
 // obtener usuario con ese mail
 let getByEmail = async function (email) {
