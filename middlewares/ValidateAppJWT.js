@@ -5,7 +5,7 @@ const {
 	TOKEN: { INVALID_CODE }
 } = require("../constants/Messages");
 
-module.exports.ValidateAppJWT = async (req, res, next) => {
+const handleValidateAppJWT = async req => {
 	const jwt = req.header("Authorization");
 	const did = getPayload(jwt).iss;
 	const authorizatedApp = AppAuthService.findByDID(did);
@@ -13,5 +13,14 @@ module.exports.ValidateAppJWT = async (req, res, next) => {
 
 	const verified = await verifyToken(jwt);
 	if (!verified.payload) throw INVALID_CODE();
+};
+
+const ValidateAppJWT = async (req, res, next) => {
+	await handleValidateAppJWT(req);
 	next();
+};
+
+module.exports = {
+	handleValidateAppJWT,
+	ValidateAppJWT
 };

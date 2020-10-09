@@ -12,8 +12,12 @@ const FirebaseService = require("../services/FirebaseService");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
+const { userDTO } = require("./utils/DTOs");
+const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
 
 const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATION_TYPES;
+
+router.use("/user/", validateAppOrUserJWT);
 
 /**
  *	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
@@ -499,6 +503,49 @@ router.post(
 			return ResponseHandler.sendRes(res, {});
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
+ *	Obtiene informacion sobre el usuario
+ */
+router.post(
+	"/user/:did",
+	Validator.validateBody([{ name: "userJWT", validate: [IS_STRING] }]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	async function (req, res) {
+		try {
+			const { did } = req.params;
+			const user = await UserService.findByDid(did);
+			const result = await userDTO(user);
+			return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
+ *	Edita nombre y apellido, usado para migrar usuarios
+ */
+router.post(
+	"/user/:did/edit",
+	Validator.validateBody([
+		{ name: "name", validate: [IS_STRING] },
+		{ name: "lastname", validate: [IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	async function (req, res) {
+		try {
+			const { did } = req.params;
+			const { name, lastname } = req.body;
+			const result = await UserService.findByDidAndUpdate(did, { name, lastname });
+			return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			return ResponseHandler.sendErrWithStatus(res, err);
 		}
 	}
 );

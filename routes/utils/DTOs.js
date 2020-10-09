@@ -4,7 +4,9 @@ const userDTO = async user => {
 	return {
 		mail,
 		phoneNumber,
-		did: user.did
+		did: user.did,
+		name: user.name,
+		lastname: user.lastname
 	};
 };
 
