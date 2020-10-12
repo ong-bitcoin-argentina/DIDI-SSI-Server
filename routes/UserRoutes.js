@@ -512,7 +512,8 @@ router.post(
  */
 router.post(
 	"/user/:did",
-	Validator.validateBody([{ name: "userJWT", validate: [IS_STRING] }]),
+	// TODO fix: userJWT is optional
+	// Validator.validateBody([{ name: "userJWT", validate: [IS_STRING] }]),
 	Validator.checkValidationResult,
 	Validator.validateParams,
 	async function (req, res) {
