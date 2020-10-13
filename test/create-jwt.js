@@ -10,7 +10,8 @@ async function logCreateJWT() {
 		{ aud: ISSUER_SERVER_DID, exp: 1957463421, name: "Semillas" },
 		{ alg: "ES256K-R", issuer: ISSUER_SERVER_DID, signer }
     );
-    console.log(JSON.stringify(response));
+		console.log(JSON.stringify(response));
+		console.log(didJWT.decodeJWT(response));
 }
 
 logCreateJWT();
