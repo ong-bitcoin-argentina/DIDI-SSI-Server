@@ -37,9 +37,10 @@ const handleTextResponse = async res => {
 	return content;
 };
 
-module.exports.getPrestadores = async function (token) {
+module.exports.getPrestadores = async function () {
 	const res = await semillasFetch(SEMILLAS_URLS.PRESTADORES);
-	return await res.json();
+	// TODO: hack, because semillas does not support filtering by active field
+	return (await res.json()).filter(p => p.active);
 };
 
 module.exports.login = async function () {
