@@ -12,6 +12,7 @@ const MailRoutes = require("./routes/MailRoutes");
 const RenaperRoutes = require("./routes/RenaperRoutes");
 const SemillasRoutes = require("./routes/SemillasRoutes");
 const AppUserAuthRoutes = require("./routes/AppUserAuthRoutes");
+const AdminRoutes = require("./routes/AdminRoutes");
 
 // inicializar cluster para workers, uno por cpu disponible
 var cluster = require("cluster");
@@ -104,6 +105,7 @@ app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
 app.use(route, SemillasRoutes);
 app.use(route, AppUserAuthRoutes);
+app.use(route, AdminRoutes);
 app.use("*", function(req, res) {
 	return res.status(404).json({
 		status: "error",
