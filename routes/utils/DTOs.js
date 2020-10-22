@@ -1,4 +1,4 @@
-const userDTO = async user => {
+const userDTO = async (user, extra = {}) => {
 	const mail = await user.getMail();
 	const phoneNumber = await user.getPhoneNumber();
 	return {
@@ -6,7 +6,8 @@ const userDTO = async user => {
 		phoneNumber,
 		did: user.did,
 		name: user.name,
-		lastname: user.lastname
+		lastname: user.lastname,
+		...extra
 	};
 };
 

@@ -11,10 +11,17 @@ const handleValidateAdminJWT = async (req, res) => {
 	const did = getPayload(jwt).iss;
 
 	const admin = await Admin.getByDID(did);
-	if(!admin) throw ADMIN_DID_NOT_MATCH(did);
+	if (!admin) throw ADMIN_DID_NOT_MATCH(did);
+
+	// check cache for performance purposes
+	if (admin.jwt === jwt) return;
 
 	const verified = await verifyToken(jwt);
 	if (!verified.payload) throw INVALID_CODE();
+
+	// cache for performance purposes
+	admin.jwt = jwt;
+	await admin.save();
 };
 
 const validateAdminJWT = async (req, res, next) => {
