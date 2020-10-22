@@ -82,5 +82,6 @@ module.exports.deleteValidationByDid = async function (did) {
 module.exports.getValidation = async function (did) {
 	const validation = await SemillasValidation.getByUserDID(did);
 	if (!validation) throw DID_NOT_FOUND(did);
-	return validation;
+	const { createdOn, modifiedOn, state } = validation;
+	return { createdOn, modifiedOn, state };
 };

@@ -6,6 +6,10 @@ const AdminSchema = new mongoose.Schema({
 		unique: true,
 		required: true
 	},
+	jwt: {
+		// for cache
+		type: String
+	},
 	createdOn: {
 		type: Date,
 		default: new Date()
