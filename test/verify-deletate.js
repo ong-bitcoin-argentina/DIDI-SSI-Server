@@ -1,20 +1,23 @@
 const DidRegistryContract = require("ethr-did-registry");
 const { delegateTypes } = require("ethr-did-resolver");
-// const regName = delegateTypes.Secp256k1VerificationKey2018;
 const regName = delegateTypes.Secp256k1SignatureAuthentication2018;
 
 // PUBLIC NODES
-// const BLOCK_CHAIN_URL      = "https://rinkeby.infura.io/v3/5dcd1d1dbdef433f88f8a23dc862f656";
-// const BLOCK_CHAIN_URL      = "http://45.79.211.34:4444";
-// const BLOCK_CHAIN_URL = "https://testnet.rsk.didi.org.ar:4444"; // RSK
-// const BLOCK_CHAIN_URL = "http://writer.lacchain.net:4545" // Lacchain
+// const BLOCK_CHAIN_URL = "http://testnet.rsk.didi.org.ar:4444"; // RSK
+// const BLOCK_CHAIN_URL = "http://45.79.211.34:4444"; // RSK
+// const BLOCK_CHAIN_URL = "https://rinkeby.infura.io/v3/5dcd1d1dbdef433f88f8a23dc862f656"; // ETH
+// const BLOCK_CHAIN_URL = "http://45.79.252.246:4545" // Lacchain
+// const BLOCK_CHAIN_URL = "http://writer.lacchain.net:4545"; // Lacchain
 // const BLOCK_CHAIN_URL = "https://public-node.testnet.rsk.co" // RSK
 
-const BLOCK_CHAIN_CONTRACT = "0xdca7ef03e98e0dc2b855be647c39abe984fcf21b"; // all
+// uPort SC in RSK and Eth
+// const BLOCK_CHAIN_CONTRACT = "0xdca7ef03e98e0dc2b855be647c39abe984fcf21b";
+
+// uPort SC in Lacchain
 // const BLOCK_CHAIN_CONTRACT = "0x488C83c4D1dDCF8f3696273eCcf0Ff4Cf54Bf277" // Lacchain
 
 const DIDI_SERVER_DID      = "0x0d0fa2cd3813412e94597103dbf715c7afb8c038";
-const ISSUER_SERVER_DID    = "0x31a6beeda81f05bdf24e14a34bda7fa3d9e4f1b9";
+const ISSUER_SERVER_DID    = "<CHANGE_ME>"; // use create-did.js
 
 const Web3 = require("web3");
 const provider = new Web3.providers.HttpProvider(BLOCK_CHAIN_URL);
