@@ -8,6 +8,7 @@ const SmsService = require("../services/SmsService");
 const MouroService = require("../services/MouroService");
 const CertService = require("../services/CertService");
 const FirebaseService = require("../services/FirebaseService");
+const PhoneNormalization = require("./utils/PhoneNormalization");
 
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
@@ -48,7 +49,8 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const { password, phoneNumber, did, privateKeySeed, name, lastname } = req.body;
+		const { password, did, privateKeySeed, name, lastname } = req.body;
+		const phoneNumber = PhoneNormalization.normalizePhone(req.body.phoneNumber);
 		const eMail = req.body.eMail.toLowerCase();
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
@@ -285,7 +287,7 @@ router.post(
 	async function (req, res) {
 		const did = req.body.did;
 		const phoneValidationCode = req.body.phoneValidationCode;
-		const newPhoneNumber = req.body.newPhoneNumber;
+		const newPhoneNumber = PhoneNormalization.normalizePhone(req.body.newPhoneNumber);
 		const password = req.body.password;
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 

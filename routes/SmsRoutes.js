@@ -9,6 +9,7 @@ const CertService = require("../services/CertService");
 
 const Validator = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
+const PhoneNormalization = require("./utils/PhoneNormalization");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
@@ -35,7 +36,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const phoneNumber = req.body.cellPhoneNumber;
+		const phoneNumber = PhoneNormalization.normalizePhone(req.body.cellPhoneNumber);
 		const did = req.body.did;
 		const password = req.body.password;
 		const unique = req.body.unique;
@@ -88,7 +89,7 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const cellPhoneNumber = req.body.cellPhoneNumber;
+		const cellPhoneNumber = PhoneNormalization.normalizePhone(req.body.cellPhoneNumber);
 		const validationCode = req.body.validationCode;
 		const did = req.body.did;
 
