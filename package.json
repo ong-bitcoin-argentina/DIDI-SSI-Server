@@ -33,6 +33,7 @@
 		"express": "4.17.1",
 		"express-validator": "6.4.0",
 		"firebase-admin": "9.1.1",
+		"google-libphonenumber": "3.2.14",
 		"graphql": "14.6.0",
 		"graphql-tag": "2.10.3",
 		"mailgun-js": "0.22.0",
