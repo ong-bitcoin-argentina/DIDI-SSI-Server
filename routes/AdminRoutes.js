@@ -22,6 +22,8 @@ router.get("/admin/user/did/:did", Validator.checkValidationResult, Validator.va
 	try {
 		const { did } = req.params;
 		const user = await UserService.findByDid(did);
+		if (!user) return ResponseHandler.sendErrWithStatus(res, { message: "User does not exist" }, 404);
+		
 		const renaper = await AuthRequestService.getByDID(did);
 
 		let semillas;
@@ -32,6 +34,24 @@ router.get("/admin/user/did/:did", Validator.checkValidationResult, Validator.va
 		}
 
 		const result = await userDTO(user, { renaper, semillas });
+		return ResponseHandler.sendRes(res, result);
+	} catch (err) {
+		return ResponseHandler.sendErrWithStatus(res, err, 500);
+	}
+});
+
+/**
+ *	Obtiene informacion confidencial sobre el usuario usando el teléfono
+ */
+router.post("/admin/user/phone", Validator.checkValidationResult, Validator.validateParams, async function (
+	req,
+	res
+) {
+	try {
+		const { phone } = req.body;
+		const user = await UserService.getByTel(phone);
+		if (!user) return ResponseHandler.sendErrWithStatus(res, { message: "User does not exist" }, 404);
+		const result = await userDTO(user);
 		return ResponseHandler.sendRes(res, result);
 	} catch (err) {
 		return ResponseHandler.sendErrWithStatus(res, err, 500);
