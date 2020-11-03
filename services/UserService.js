@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Messages = require("../constants/Messages");
+const PhoneNormalization = require("../routes/utils/PhoneNormalization");
 
 const { DID_NOT_FOUND } = Messages.VALIDATION;
 
@@ -240,3 +241,8 @@ module.exports.recoverPassword = async function (eMail, newPass) {
 		return Promise.reject(Messages.USER.ERR.UPDATE);
 	}
 };
+
+module.exports.normalizePhone = async function (phone) {
+	const user = await getByTel(phone);
+	return user ? phone : PhoneNormalization.normalizePhone(phone);
+}
