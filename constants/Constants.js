@@ -161,5 +161,7 @@ module.exports = {
 		VALIDATE_DNI: `${SEMILLAS_URL}/identityValidationRequests`,
 		SHARE_DATA: `${SEMILLAS_URL}/credentials/share`,
 		PRESTADORES: `${SEMILLAS_URL}/providers`
-	}
+	},
+
+	MAX_MB: 3
 };

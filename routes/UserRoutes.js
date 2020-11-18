@@ -511,21 +511,16 @@ router.post(
 /**
  *	Obtiene informacion sobre el usuario
  */
-router.post(
-	"/user/:did",
-	Validator.checkValidationResult,
-	Validator.validateParams,
-	async function (req, res) {
-		try {
-			const { did } = req.params;
-			const user = await UserService.findByDid(did);
-			const result = await userDTO(user);
-			return ResponseHandler.sendRes(res, result);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
+router.post("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
+	try {
+		const { did } = req.params;
+		const user = await UserService.findByDid(did);
+		const result = await userDTO(user);
+		return ResponseHandler.sendRes(res, result);
+	} catch (err) {
+		return ResponseHandler.sendErr(res, err);
 	}
-);
+});
 
 /**
  *	Edita nombre y apellido, usado para migrar usuarios
@@ -546,6 +541,48 @@ router.post(
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			return ResponseHandler.sendErrWithStatus(res, err);
+		}
+	}
+);
+
+/**
+ *	Agrega una imagen de perfil al usuario
+ */
+router.post(
+	"/user/:did/image",
+	Validator.validateBody([]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	async function (req, res) {
+		try {
+			const { path, mimetype, size } = req.file;
+			const { did } = req.params;
+
+			if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
+
+			const { _id } = await UserService.saveImage(did, mimetype, path);
+			const image_url = `${Constants.ADDRESS}:${Constants.PORT}/api/${Constants.API_VERSION}/didi/image/${_id}`;
+
+			return ResponseHandler.sendRes(res, image_url);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.get(
+	"/image/:id",
+	Validator.validateBody([]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	async function (req, res) {
+		try {
+			const id = req.params.id;
+			const { img, contentType } = await UserService.getImage(id);
+			res.type(contentType);
+			return res.send(img);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
 		}
 	}
 );

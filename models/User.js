@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
 	phoneNumber: EncryptedData,
 	oldPhoneNumbers: [EncryptedData],
 
+	imageId: {
+		type: String
+	},
+
 	seed: EncryptedData,
 
 	backupHash: {
@@ -211,6 +215,22 @@ UserSchema.methods.getPhoneNumber = async function () {
 // retornar did asociado al usuario
 UserSchema.methods.getDid = async function () {
 	return (this.did = did);
+};
+
+// actualiza su foto de perfil
+UserSchema.methods.updateImage = async function (imageId) {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { imageId }
+	};
+
+	try {
+		await User.findOneAndUpdate(updateQuery, updateAction);
+		this.imageId = imageId;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
 };
 
 const User = mongoose.model("User", UserSchema);

@@ -14,6 +14,8 @@ const SemillasRoutes = require("./routes/SemillasRoutes");
 const AppUserAuthRoutes = require("./routes/AppUserAuthRoutes");
 const AdminRoutes = require("./routes/AdminRoutes");
 
+const multer = require("multer");
+
 // inicializar cluster para workers, uno por cpu disponible
 var cluster = require("cluster");
 var numCPUs = require("os").cpus().length;
@@ -23,8 +25,8 @@ var http = require("http");
 var server = http.createServer(app);
 
 if (process.env.ENABLE_AZURE_LOGGER) {
-	const { logger } = require('./services/logger');
-	logger.start();	
+	const { logger } = require("./services/logger");
+	logger.start();
 }
 
 // sobreescribir log para agregarle el timestamp
@@ -72,23 +74,29 @@ app.use(function (req, _, next) {
 		console.log(req.body);
 	}
 	if (process.env.ENABLE_AZURE_LOGGER) {
-		logger.defaultClient.trackEvent({name: "request", properties: {
-			method: req.method,
-			url: req.originalUrl,
-		}});
+		logger.defaultClient.trackEvent({
+			name: "request",
+			properties: {
+				method: req.method,
+				url: req.originalUrl
+			}
+		});
 	}
 	next();
 });
 
 // loggear errores
-app.use(function(error, req, _, next) {
+app.use(function (error, req, _, next) {
 	console.log(error);
 	if (process.env.ENABLE_AZURE_LOGGER) {
-		logger.defaultClient.trackEvent({name: "error", properties: {
-			value: "error",
-			method: req.method,
-			url: req.originalUrl,
-		}});	
+		logger.defaultClient.trackEvent({
+			name: "error",
+			properties: {
+				value: "error",
+				method: req.method,
+				url: req.originalUrl
+			}
+		});
 	}
 	next();
 });
@@ -98,6 +106,15 @@ if (Constants.DEBUGG) {
 	console.log("route: " + route);
 }
 
+app.use(
+	multer({
+		dest: "./uploads/",
+		rename: function (fieldname, filename) {
+			return filename;
+		}
+	}).single("file")
+);
+
 app.use(route, IssuerRoutes);
 app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
@@ -106,7 +123,7 @@ app.use(route, RenaperRoutes);
 app.use(route, SemillasRoutes);
 app.use(route, AppUserAuthRoutes);
 app.use(route, AdminRoutes);
-app.use("*", function(req, res) {
+app.use("*", function (req, res) {
 	return res.status(404).json({
 		status: "error",
 		errorCode: "INVALID_ROUTE",
