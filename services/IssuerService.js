@@ -10,14 +10,6 @@ module.exports.addIssuer = async function (did, name) {
 	const byDIDExist = await Issuer.getByDID(did);
 	if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 
-	// Verificar que el did no figure como delegado actualmente
-	const alreadyDelegated = await BlockchainService.validDelegate(
-		Constants.SERVER_DID,
-		{ from: Constants.SERVER_DID },
-		did
-	);
-	if (alreadyDelegated) throw Messages.ISSUER.ERR.ALREADY_DELEGATE;
-
 	await BlockchainService.addDelegate(
 		Constants.SERVER_DID,
 		{ from: Constants.SERVER_DID, key: Constants.SERVER_PRIVATE_KEY },
