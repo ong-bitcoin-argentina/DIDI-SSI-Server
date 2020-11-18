@@ -250,7 +250,7 @@ module.exports.normalizePhone = async function (phone) {
 };
 
 // obtener usuario y actualizar imagen
-module.exports.saveImage = async function (did, buffer, contentType, path) {
+module.exports.saveImage = async function (did, contentType, path) {
 	try {
 		// obtener usuario
 		let user = await getByDID(did);
@@ -269,16 +269,17 @@ module.exports.saveImage = async function (did, buffer, contentType, path) {
 		return Promise.resolve(_id);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.ERR.UPDATE);
+		return Promise.reject(Messages.IMAGE.ERR.CREATE);
 	}
 };
 
 module.exports.getImage = async function (id) {
 	try {
 		image = await Image.getById(id);
+		if (!image) return Promise.reject(Messages.IMAGE.ERR.GET);
 		return Promise.resolve(image);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.ERR.EDIT);
+		return Promise.reject(Messages.IMAGE.ERR.GET);
 	}
 };

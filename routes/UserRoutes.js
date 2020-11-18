@@ -558,9 +558,9 @@ router.post(
 			const { path, mimetype, size } = req.file;
 			const { did } = req.params;
 
-			if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
+			if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
 
-			const { _id } = await UserService.saveImage(did, buffer, mimetype, path);
+			const { _id } = await UserService.saveImage(did, mimetype, path);
 			const image_url = `${Constants.ADDRESS}:${Constants.PORT}/api/${Constants.API_VERSION}/didi/image/${_id}`;
 
 			return ResponseHandler.sendRes(res, image_url);
@@ -572,7 +572,7 @@ router.post(
 
 router.get(
 	"/image/:id",
-	Validator.validate([]),
+	Validator.validateBody([]),
 	Validator.checkValidationResult,
 	Validator.validateParams,
 	async function (req, res) {

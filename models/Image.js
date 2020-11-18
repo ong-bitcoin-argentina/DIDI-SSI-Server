@@ -9,14 +9,12 @@ const Image = mongoose.model("Image", ImageSchema);
 module.exports = Image;
 
 Image.generate = async function (buffer, contentType) {
-	let image;
 	try {
-		image = new Image();
+		const image = new Image();
 		image.img = buffer;
 		image.contentType = contentType;
 
-		image = await image.save();
-		return Promise.resolve(image);
+		return await image.save();
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
@@ -26,8 +24,7 @@ Image.generate = async function (buffer, contentType) {
 Image.getById = async function (id) {
 	try {
 		const query = { _id: id };
-		const image = await Image.findOne(query);
-		return Promise.resolve(image);
+		return await Image.findOne(query);
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);

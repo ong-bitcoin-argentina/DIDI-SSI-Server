@@ -165,19 +165,16 @@ module.exports = {
 			},
 			NAME_EXISTS: {
 				code: "NAME_EXISTS",
-				message:
-					"Ya existe un issuer con ese nombre."
+				message: "Ya existe un issuer con ese nombre."
 			},
 			DID_EXISTS: {
 				code: "DID_EXISTS",
-				message:
-					"Ya existe un issuer con ese did."
+				message: "Ya existe un issuer con ese did."
 			},
 			ALREADY_DELEGATE: {
 				code: "DELEGATE_EXISTS",
-				message:
-					"Ya existe una delegación con ese did."
-			},
+				message: "Ya existe una delegación con ese did."
+			}
 		},
 		CERT_REVOKED: "El certificado fue revocado.",
 		DELETED: "La autorizacion para emitir certificados fue revocada.",
@@ -320,6 +317,22 @@ module.exports = {
 			message: `El token de ${isUser ? "usuario" : "aplicación"} es inválido, por favor verificalo.`,
 			code: "INVALID_TOKEN"
 		})
+	},
+	IMAGE: {
+		ERR: {
+			INVALID_SIZE: {
+				code: "INVALID_SIZE",
+				message: "El tamaño de la imagen supera el limite permitido de 3 MB."
+			},
+			GET: {
+				code: "IMAGE_GET",
+				message: "No se pudo obtener la imagen, por favor inténtelo de nuevo más tarde."
+			},
+			CREATE: {
+				code: "IMAGE_CREATE",
+				message: "Hubo un error al durante la creación  de la imagen, por favor inténtelo de nuevo más tarde."
+			}
+		}
 	},
 	USER: {
 		SUCCESS: {
