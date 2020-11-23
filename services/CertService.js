@@ -13,9 +13,7 @@ const { createVerifiableCredential, verifyCredential } = require("did-jwt-vc");
 const { Resolver } = require("did-resolver");
 const { getResolver } = require("ethr-did-resolver");
 
-const resolver = new Resolver(
-	getResolver({ rpcUrl: Constants.BLOCKCHAIN.BLOCK_CHAIN_URL, registry: Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT })
-);
+const resolver = new Resolver(getResolver(Constants.BLOCKCHAIN.PROVIDER_CONFIG));
 
 // genera un certificado que certifique la propiedad del numero de telefono por parte del dueño del did
 module.exports.createPhoneCertificate = async function(did, phoneNumber) {
@@ -164,11 +162,7 @@ module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 // analiza la validez del emisor del certificado
 module.exports.verifyIssuer = async function(issuerDid) {
 	console.log('Validating delegate...');
-	const delegated = await BlockchainService.validDelegate(
-		Constants.SERVER_DID,
-		{ from: Constants.SERVER_DID },
-		issuerDid
-	);
+	const delegated = await BlockchainService.validDelegate(issuerDid);
 	console.log('Delegate verified!');
 	if (delegated) return Messages.CERTIFICATE.VERIFIED;
 	throw Messages.ISSUER.ERR.IS_INVALID;

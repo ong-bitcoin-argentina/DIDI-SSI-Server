@@ -294,12 +294,7 @@ router.delete(
 		}
 		try {
 			// elimino autorizacion en la blockchain
-			await BlockchainService.revokeDelegate(
-				Constants.SERVER_DID,
-				{ from: Constants.SERVER_DID, key: Constants.SERVER_PRIVATE_KEY },
-				did
-			);
-
+			await BlockchainService.revokeDelegate(did);
 			return ResponseHandler.sendRes(res, Messages.ISSUER.DELETED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);

@@ -10,11 +10,12 @@ module.exports.addIssuer = async function (did, name) {
 	const byDIDExist = await Issuer.getByDID(did);
 	if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 
-	await BlockchainService.addDelegate(
-		Constants.SERVER_DID,
-		{ from: Constants.SERVER_DID, key: Constants.SERVER_PRIVATE_KEY },
-		did
-	);
+	try {
+		const res = await BlockchainService.addDelegate(did);
+		console.log(res);	
+	} catch (e) {
+		throw Messages.ISSUER.ERR.COULDNT_PERSIST;
+	}
 
 	const expireOn = new Date();
 	if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
