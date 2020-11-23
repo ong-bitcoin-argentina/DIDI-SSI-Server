@@ -171,6 +171,10 @@ module.exports = {
 				code: "DID_EXISTS",
 				message: "Ya existe un issuer con ese did."
 			},
+			COULDNT_PERSIST: {
+				code: "COULDNT_PERSIST",
+				message: "No se pudo persistir la delegación en blockchain."
+			},
 			ALREADY_DELEGATE: {
 				code: "DELEGATE_EXISTS",
 				message: "Ya existe una delegación con ese did."
