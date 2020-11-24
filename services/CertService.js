@@ -162,6 +162,9 @@ module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 // analiza la validez del emisor del certificado
 module.exports.verifyIssuer = async function(issuerDid) {
 	console.log('Validating delegate...');
+	if (issuerDid === Constants.SERVER_DID) {
+		return true;
+	}
 	const delegated = await BlockchainService.validDelegate(issuerDid);
 	console.log('Delegate verified!');
 	if (delegated) return Messages.CERTIFICATE.VERIFIED;
