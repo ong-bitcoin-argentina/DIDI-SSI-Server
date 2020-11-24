@@ -162,7 +162,6 @@ module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 // analiza la validez del emisor del certificado
 module.exports.verifyIssuer = async function(issuerDid) {
 	console.log('Validating delegate...');
-	console.log(issuerDid);
 	if (issuerDid === `did:ethr:${Constants.SERVER_DID}`) {
 		return true;
 	}
