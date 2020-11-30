@@ -58,30 +58,29 @@ const BLOCKCHAIN_CONTRACT_BFA = process.env.BLOCKCHAIN_CONTRACT_BFA; // BFA
 // RSK ==> did:ethr:rsk:
 // LACCHAIN ==> did:ethr:lacchain:
 const PROVIDER_CONFIG = {
-  networks: [
-    {
-      name: "mainnet",
-      rpcUrl: BLOCKCHAIN_URL_MAIN,
-      registry: BLOCKCHAIN_CONTRACT_MAIN,
-    },
-    {
-      name: "lacchain",
-      rpcUrl: BLOCKCHAIN_URL_LAC,
-      registry: BLOCKCHAIN_CONTRACT_LAC,
-    },
-    {
-      name: "bfa",
-      rpcUrl: BLOCKCHAIN_URL_BFA,
-      registry: BLOCKCHAIN_CONTRACT_BFA,
-    },
-    {
-      name: "rsk",
-      rpcUrl: BLOCKCHAIN_URL_RSK,
-      registry: BLOCKCHAIN_CONTRACT_RSK,
-    },
-  ],
+	networks: [
+		{
+			name: "mainnet",
+			rpcUrl: BLOCKCHAIN_URL_MAIN,
+			registry: BLOCKCHAIN_CONTRACT_MAIN
+		},
+		{
+			name: "lacchain",
+			rpcUrl: BLOCKCHAIN_URL_LAC,
+			registry: BLOCKCHAIN_CONTRACT_LAC
+		},
+		{
+			name: "bfa",
+			rpcUrl: BLOCKCHAIN_URL_BFA,
+			registry: BLOCKCHAIN_CONTRACT_BFA
+		},
+		{
+			name: "rsk",
+			rpcUrl: BLOCKCHAIN_URL_RSK,
+			registry: BLOCKCHAIN_CONTRACT_RSK
+		}
+	]
 };
-
 
 const RSA_PRIVATE_KEY = process.env.RSA_PRIVATE_KEY;
 const HASH_SALT = process.env.HASH_SALT;
@@ -185,7 +184,7 @@ module.exports = {
 	BLOCKCHAIN: {
 		PROVIDER_CONFIG: PROVIDER_CONFIG,
 		GAS_INCREMENT: GAS_INCREMENT,
-		DELEGATE_DURATION: DELEGATE_DURATION,
+		DELEGATE_DURATION: DELEGATE_DURATION
 	},
 
 	FIREBASE_URL: FIREBASE_URL,
@@ -207,5 +206,9 @@ module.exports = {
 		PRESTADORES: `${SEMILLAS_URL}/providers`
 	},
 
-	MAX_MB: 3
+	MAX_MB: 3,
+	STATUS: {
+		DONE: "Creado",
+		ERROR: "Error"
+	}
 };
