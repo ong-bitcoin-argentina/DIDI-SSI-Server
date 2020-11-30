@@ -15,6 +15,8 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
+const { ERROR, DONE } = Constants.STATUS;
+
 /**
  *	Valida y envia a mouro el certificado generado por el issuer para ser guardado
  */
@@ -37,7 +39,7 @@ router.post(
 
 			console.log(`Verifying issuer ${cert.payload.iss}`);
 			// Validar si el emistor es correcto (autorizado a emitir y el mismo que el del certificado)
-			const valid = cert && await CertService.verifyIssuer(cert.payload.iss);
+			const valid = cert && (await CertService.verifyIssuer(cert.payload.iss));
 			if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
 
 			// Validar sujeto (que este registrado en didi)
@@ -160,7 +162,7 @@ router.post(
 
 			console.log(`Verifying issuer ${did}`);
 			// Validar si el emistor es correcto (autorizado a revocar)
-			const valid = cert && await CertService.verifyIssuer(did);
+			const valid = cert && (await CertService.verifyIssuer(did));
 			if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
 
 			console.log(`Verifying subject ${sub}`);
@@ -196,9 +198,7 @@ router.post(
  */
 router.post(
 	"/issuer/verifyCertificate",
-	Validator.validateBody([
-		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
-	]),
+	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	async function (req, res) {
 		const jwt = req.body.jwt;
 		try {
@@ -233,9 +233,7 @@ router.post(
  */
 router.post(
 	"/issuer/verify",
-	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
-	]),
+	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	async function (req, res) {
 		try {
 			const did = req.body.did;
@@ -250,6 +248,10 @@ router.post(
 		}
 	}
 );
+
+const exCallback = async (callbackUrl, did, token, status = ERROR, expireOn = "-") => {
+	if (callbackUrl && token) await IssuerService.callback(callbackUrl, did, expireOn, status, token);
+};
 
 /**
  *	Autorizar un issuer para la emision de certificados
@@ -269,11 +271,17 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
+		const { did, name, callbackUrl, token } = req.body;
 		try {
-			const issuer = await IssuerService.addIssuer(req.body.did, req.body.name);
+			const issuer = await IssuerService.addIssuer(did, name);
+
+			exCallback(callbackUrl, did, token, DONE, issuer.expireOn);
+
 			return ResponseHandler.sendRes(res, issuer);
 		} catch (err) {
 			console.log(err);
+
+			exCallback(callbackUrl, did, token);
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}
