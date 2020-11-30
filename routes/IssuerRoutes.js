@@ -249,8 +249,8 @@ router.post(
 	}
 );
 
-const exCallback = async (callbackUrl, did, token, status = ERROR, expireOn = "-") => {
-	if (callbackUrl && token) await IssuerService.callback(callbackUrl, did, expireOn, status, token);
+const exCallback = async (callbackUrl, did, token, status = ERROR, expireOn = "-", blockHash) => {
+	if (callbackUrl && token) await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash });
 };
 
 /**
@@ -274,8 +274,9 @@ router.post(
 		const { did, name, callbackUrl, token } = req.body;
 		try {
 			const issuer = await IssuerService.addIssuer(did, name);
+			const { blockHash, expireOn } = issuer;
 
-			exCallback(callbackUrl, did, token, DONE, issuer.expireOn);
+			exCallback(callbackUrl, did, token, DONE, expireOn, blockHash);
 
 			return ResponseHandler.sendRes(res, issuer);
 		} catch (err) {

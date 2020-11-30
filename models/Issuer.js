@@ -10,6 +10,10 @@ const IssuerSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	blockHash: {
+		type: String,
+		required: true
+	},
 	expireOn: {
 		type: Date,
 		required: true
