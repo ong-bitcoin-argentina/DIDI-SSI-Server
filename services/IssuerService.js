@@ -38,7 +38,7 @@ module.exports.callback = async function (url, did, token, data) {
 		const response = await fetch(`${url}/${did}`, putOptionsAuth(token, data));
 		const jsonResp = await response.json();
 
-		if (jsonResp.status === "errpr") throw jsonResp;
+		if (jsonResp.status === "error") throw jsonResp;
 
 		return jsonResp;
 	} catch (err) {
