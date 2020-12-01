@@ -15,15 +15,15 @@ module.exports.addIssuer = async function (did, name) {
 	if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 
 	try {
-		const { blockHash, ...rest } = await BlockchainService.addDelegate(did);
-		console.log({ blockHash, ...rest });
+		const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
+		console.log({ transactionHash, ...rest });
 
 		const expireOn = new Date();
 		if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
 			expireOn.setSeconds(expireOn.getSeconds() + Number(Constants.BLOCKCHAIN.DELEGATE_DURATION));
 		}
 
-		return await Issuer.create({ name, did, expireOn, blockHash });
+		return await Issuer.create({ name, did, expireOn, blockHash: transactionHash });
 	} catch (e) {
 		throw Messages.ISSUER.ERR.COULDNT_PERSIST;
 	}
@@ -38,7 +38,9 @@ module.exports.callback = async function (url, did, token, data) {
 		const response = await fetch(`${url}/${did}`, putOptionsAuth(token, data));
 		const jsonResp = await response.json();
 
-		return jsonResp.status === "error" ? Promise.reject(jsonResp) : Promise.resolve(jsonResp);
+		if (jsonResp.status === "errpr") throw jsonResp;
+
+		return jsonResp;
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);
