@@ -22,6 +22,15 @@ const ShareRequestSchema = new mongoose.Schema({
 	}
 });
 
+ShareRequestSchema.methods.delete = async function () {
+	try {
+		return await ShareRequest.findByIdAndDelete({ _id: this._id });
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
 const ShareRequest = mongoose.model("ShareRequest", ShareRequestSchema);
 module.exports = ShareRequest;
 
@@ -33,4 +42,11 @@ ShareRequest.generate = async function ({ jwt, ...rest }) {
 		console.log(err);
 		return Promise.reject(err);
 	}
+};
+
+ShareRequest.getById = async function (_id) {
+	const shareRequest = await ShareRequest.findOne({ _id });
+	const jwtDecripted = await Encrypt.decript(shareRequest.jwt);
+	shareRequest.jwt = jwtDecripted;
+	return shareRequest;
 };
