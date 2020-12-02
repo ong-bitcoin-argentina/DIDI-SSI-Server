@@ -7,7 +7,12 @@ module.exports = {
 	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
 	SHAREREQUEST: {
 		ERR: {
-			CREATE: { code: "SHARE_REQUEST_ERROR", message: "Error al crear el Share Request" }
+			CREATE: { code: "SHARE_REQUEST_ERROR", message: "Error al crear el Share Request". },
+			NOT_FOUND: {
+				code: "SHARE_REQUEST_NOT_FOUND",
+				message: "No se encuentra el Share Request, es probable que haya expirado."
+			},
+			GET: { code: "SHARE_REQUEST_GET", message: "El Share Request no puedo ser obtenido." }
 		}
 	},
 	CERTIFICATE: {
