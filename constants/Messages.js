@@ -5,6 +5,11 @@ const COMMUNICATION_ERROR = {
 
 module.exports = {
 	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+	SHAREREQUEST: {
+		ERR: {
+			CREATE: { code: "SHARE_REQUEST_ERROR", message: "Error al crear el Share Request" }
+		}
+	},
 	CERTIFICATE: {
 		ERR: {
 			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada, es necesario generar una nueva." },
