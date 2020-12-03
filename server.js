@@ -14,7 +14,6 @@ const SemillasRoutes = require("./routes/SemillasRoutes");
 const AppUserAuthRoutes = require("./routes/AppUserAuthRoutes");
 const AdminRoutes = require("./routes/AdminRoutes");
 const ShareRequestRoutes = require("./routes/ShareRequestRoutes");
-const PresentationRoutes = require("./routes/PresentationRoutes");
 
 const multer = require("multer");
 
