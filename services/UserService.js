@@ -275,7 +275,7 @@ module.exports.saveImage = async function (did, contentType, path) {
 
 module.exports.getImage = async function (id) {
 	try {
-		image = await Image.getById(id);
+		const image = await Image.getById(id);
 		if (!image) return Promise.reject(Messages.IMAGE.ERR.GET);
 		return Promise.resolve(image);
 	} catch (err) {
