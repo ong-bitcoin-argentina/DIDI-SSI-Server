@@ -22,15 +22,6 @@ const ShareRequestSchema = new mongoose.Schema({
 	}
 });
 
-ShareRequestSchema.methods.delete = async function () {
-	try {
-		return await ShareRequest.findByIdAndDelete({ _id: this._id });
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(err);
-	}
-};
-
 const ShareRequest = mongoose.model("ShareRequest", ShareRequestSchema);
 module.exports = ShareRequest;
 

@@ -8,10 +8,12 @@ const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
 
 const { IS_STRING } = Constants.VALIDATION_TYPES;
 
+const BASE_URL = "/shareRequest";
+
 router.use("/shareRequest", validateAppOrUserJWT);
 
 router.post(
-	"/shareRequest",
+	BASE_URL,
 	Validator.validateBody([{ name: "jwt", validate: [IS_STRING] }]),
 	Validator.checkValidationResult,
 	Validator.validateParams,
@@ -25,14 +27,16 @@ router.post(
 	}
 );
 
-router.get(
-	"/shareRequest",
-	Validator.validateBody([{ name: "id", validate: [IS_STRING] }]),
+router.post(
+	`${BASE_URL}/:id`,
+	Validator.validateBody([]),
 	Validator.checkValidationResult,
 	Validator.validateParams,
 	async function (req, res) {
 		try {
-			const jwt = await getShareRequestById(req.body);
+			const { id } = req.params;
+			const { userJWT } = req.body;
+			const jwt = await getShareRequestById({ id, userJWT });
 			res.type("text");
 			return res.send(jwt);
 		} catch (err) {
