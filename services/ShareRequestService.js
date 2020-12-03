@@ -26,8 +26,6 @@ module.exports.getShareRequestById = async function ({ id, userJWT }) {
 
 		if (iss !== aud) return Promise.reject(USER_NOT_VALID);
 
-		// Borro el share request
-		await shareRequest.remove();
 		return jwt;
 	} catch (e) {
 		console.log(e);
