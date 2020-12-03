@@ -2,11 +2,17 @@ const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
 const Messages = require("../constants/Messages");
 const Validator = require("./utils/Validator");
+const Constants = require("../constants/Constants");
 const { saveShareRequest, getShareRequestById } = require("../services/ShareRequestService");
+const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
+
+const { IS_STRING } = Constants.VALIDATION_TYPES;
+
+router.use("/shareRequest", validateAppOrUserJWT);
 
 router.post(
 	"/shareRequest",
-	Validator.validateBody(["jwt"]),
+	Validator.validateBody([{ name: "jwt", validate: [IS_STRING] }]),
 	Validator.checkValidationResult,
 	Validator.validateParams,
 	async function (req, res) {
@@ -21,7 +27,7 @@ router.post(
 
 router.get(
 	"/shareRequest",
-	Validator.validateBody(["id"]),
+	Validator.validateBody([{ name: "id", validate: [IS_STRING] }]),
 	Validator.checkValidationResult,
 	Validator.validateParams,
 	async function (req, res) {

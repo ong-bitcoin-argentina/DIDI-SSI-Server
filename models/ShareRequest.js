@@ -18,7 +18,7 @@ const ShareRequestSchema = new mongoose.Schema({
 		type: Date,
 		required: true,
 		default: Date.now,
-		index: { expires: "40m" }
+		index: { expires: "60m" }
 	}
 });
 
@@ -45,8 +45,10 @@ ShareRequest.generate = async function ({ jwt, ...rest }) {
 };
 
 ShareRequest.getById = async function (_id) {
-	const shareRequest = await ShareRequest.findOne({ _id });
-	const jwtDecripted = await Encrypt.decript(shareRequest.jwt);
-	shareRequest.jwt = jwtDecripted;
+	const shareRequest = await ShareRequest.findById(_id);
+	if (shareRequest) {
+		const jwtDecripted = await Encrypt.decript(shareRequest.jwt);
+		shareRequest.jwt = jwtDecripted;
+	}
 	return shareRequest;
 };
