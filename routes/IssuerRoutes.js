@@ -249,7 +249,7 @@ router.post(
 	}
 );
 
-const exCallback = async (callbackUrl, did, token, status = ERROR, expireOn = "-", blockHash) => {
+const exCallback = async (callbackUrl, did, token, status = ERROR, expireOn, blockHash) => {
 	if (callbackUrl && token) await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash });
 };
 
@@ -281,7 +281,6 @@ router.post(
 			return ResponseHandler.sendRes(res, issuer);
 		} catch (err) {
 			console.log(err);
-
 			exCallback(callbackUrl, did, token);
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
