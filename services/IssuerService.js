@@ -29,6 +29,18 @@ module.exports.addIssuer = async function (did, name) {
 	}
 };
 
+module.exports.editName = async function (did, name) {
+	try {
+		const issuer = await Issuer.getByDID(did);
+		if (!issuer) throw Messages.ISSUER.ERR.IS_INVALID;
+
+		return await issuer.editName(name);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
 module.exports.getIssuerByDID = async function (did) {
 	return await Issuer.getByDID(did);
 };

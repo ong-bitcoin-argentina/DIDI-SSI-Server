@@ -32,6 +32,20 @@ IssuerSchema.pre("findOneAndUpdate", function (next) {
 	next();
 });
 
+IssuerSchema.methods.editName = async function (name) {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { name }
+	};
+
+	try {
+		return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
 const Issuer = mongoose.model("Issuer", IssuerSchema);
 module.exports = Issuer;
 
