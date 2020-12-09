@@ -48,6 +48,14 @@ module.exports = {
 		EXPIRED: "Certificado vencido",
 		VERIFIED: "Certificado validado"
 	},
+	PRESENTATION: {
+		ERR: {
+			GET: { code: "GET_PRESENTATION", message: "Error al obtener la presentacion." },
+			CREATE: { code: "CREATE_PRESENTATION", message: "Error al crear la presentacion." },
+			EXPIRED: { code: "PRESENTATION_EXPIRED", message: "La presentacion expiró." },
+			NOT_FOUND: { code: "NOT_FOUND_PRESENTATION", message: "No se pudo encontrar la presentacion." }
+		}
+	},
 	DELEGATE: {
 		ERR: {
 			INVALID_USER: {

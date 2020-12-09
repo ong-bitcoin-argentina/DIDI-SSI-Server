@@ -210,5 +210,7 @@ module.exports = {
 	STATUS: {
 		DONE: "Creado",
 		ERROR: "Error"
-	}
+	},
+
+	EXPIRE_IN_MINUTES: 60
 };
