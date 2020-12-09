@@ -14,6 +14,7 @@ const SemillasRoutes = require("./routes/SemillasRoutes");
 const AppUserAuthRoutes = require("./routes/AppUserAuthRoutes");
 const AdminRoutes = require("./routes/AdminRoutes");
 const PresentationRoutes = require("./routes/PresentationRoutes");
+const ShareRequestRoutes = require("./routes/ShareRequestRoutes");
 
 const multer = require("multer");
 
@@ -125,6 +126,7 @@ app.use(route, SemillasRoutes);
 app.use(route, AppUserAuthRoutes);
 app.use(route, AdminRoutes);
 app.use(route, PresentationRoutes);
+app.use(route, ShareRequestRoutes);
 app.use("*", function (req, res) {
 	return res.status(404).json({
 		status: "error",

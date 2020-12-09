@@ -5,6 +5,17 @@ const COMMUNICATION_ERROR = {
 
 module.exports = {
 	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+	SHAREREQUEST: {
+		ERR: {
+			CREATE: { code: "SHARE_REQUEST_ERROR", message: "Error al crear el Share Request." },
+			NOT_FOUND: {
+				code: "SHARE_REQUEST_NOT_FOUND",
+				message: "No se encuentra el Share Request, es probable que haya expirado."
+			},
+			GET: { code: "SHARE_REQUEST_GET", message: "El Share Request no puedo ser obtenido." },
+			USER_NOT_VALID: { code: "USER_NOT_VALID", message: "El Usuario no tiene permiso para ver este Share Request" }
+		}
+	},
 	CERTIFICATE: {
 		ERR: {
 			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada, es necesario generar una nueva." },

@@ -249,7 +249,7 @@ router.post(
 	}
 );
 
-const exCallback = async (callbackUrl, did, token, status = ERROR, expireOn = "-", blockHash) => {
+const exCallback = async (callbackUrl, did, token, status = ERROR, expireOn, blockHash) => {
 	if (callbackUrl && token) await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash });
 };
 
@@ -281,7 +281,6 @@ router.post(
 			return ResponseHandler.sendRes(res, issuer);
 		} catch (err) {
 			console.log(err);
-
 			exCallback(callbackUrl, did, token);
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
@@ -325,5 +324,26 @@ router.get("/issuer/:did", async function (req, res) {
 		return ResponseHandler.sendErr(res, err);
 	}
 });
+
+/**
+ *	Editar el nombre de un emisor autorizado a partir de su did
+ */
+router.put(
+	"/issuer/:did",
+	Validator.validateBody([{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		try {
+			const { did } = req.params;
+			const { name } = req.body;
+
+			const issuer = await IssuerService.editName(did, name);
+
+			return ResponseHandler.sendRes(res, issuer.name);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
 
 module.exports = router;
