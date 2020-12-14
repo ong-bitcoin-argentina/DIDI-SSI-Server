@@ -14,6 +14,10 @@ const IssuerSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	deleted: {
+		type: Boolean,
+		default: false
+	},
 	expireOn: {
 		type: Date,
 		required: true
@@ -31,6 +35,21 @@ IssuerSchema.pre("findOneAndUpdate", function (next) {
 	this.update({}, { modifiedOn: new Date() });
 	next();
 });
+
+IssuerSchema.methods.delete = async function () {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { deleted: true }
+	};
+
+	try {
+		await Issuer.findOneAndUpdate(updateQuery, updateAction);
+		this.deleted = true;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+};
 
 IssuerSchema.methods.editName = async function (name) {
 	const updateQuery = { _id: this._id };
