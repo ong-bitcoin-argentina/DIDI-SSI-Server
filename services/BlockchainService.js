@@ -1,7 +1,9 @@
 const Constants = require("../constants/Constants");
 const { BlockchainManager } = require("@proyecto-didi/didi-blockchain-manager");
+const IssuerService = require("../services/IssuerService");
 
 const Messages = require("../constants/Messages");
+const { SERVER_PRIVATE_KEY, SERVER_DID } = require("../constants/Constants");
 
 //Instanciate Blockchain Manager
 const config = {
@@ -26,10 +28,13 @@ module.exports.addDelegate = async function (issuerDID) {
 };
 
 // anula la delegacion de "userDID" a "otherDID" de existir esta
-// TODO: implement with blockchain manager
 module.exports.revokeDelegate = async function (otherDID) {
 	try {
-		return Promise.resolve(null);
+		const issuer = await IssuerService.getIssuerByDID(otherDID);
+
+		if (!issuer) Promise.reject(Messages.ISSUER.ERR.NOT_FOUND);
+		await blockchainManager.revokeDelegate({ did: SERVER_DID, privateKey: SERVER_PRIVATE_KEY }, otherDID);
+		return await issuer.delete();
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.DELEGATE.ERR.DELETE);
