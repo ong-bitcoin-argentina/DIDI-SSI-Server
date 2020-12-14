@@ -25,7 +25,7 @@ module.exports.addIssuer = async function (did, name) {
 
 		return await Issuer.create({ name, did, expireOn, blockHash: transactionHash });
 	} catch (e) {
-		throw Messages.ISSUER.ERR.COULDNT_PERSIST;
+		throw e;
 	}
 };
 

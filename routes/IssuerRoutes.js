@@ -249,8 +249,9 @@ router.post(
 	}
 );
 
-const exCallback = async (callbackUrl, did, token, status = ERROR, expireOn, blockHash) => {
-	if (callbackUrl && token) await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash });
+const exCallback = async ({ callbackUrl, did, token, status = ERROR, expireOn, blockHash, messageError }) => {
+	if (callbackUrl && token)
+		await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash, messageError });
 };
 
 /**
@@ -276,12 +277,12 @@ router.post(
 			const issuer = await IssuerService.addIssuer(did, name);
 			const { blockHash, expireOn } = issuer;
 
-			exCallback(callbackUrl, did, token, DONE, expireOn, blockHash);
+			exCallback({ callbackUrl, did, token, status: DONE, expireOn, blockHash });
 
 			return ResponseHandler.sendRes(res, issuer);
 		} catch (err) {
 			console.log(err);
-			exCallback(callbackUrl, did, token);
+			exCallback({ callbackUrl, did, token, messageError: err });
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}
