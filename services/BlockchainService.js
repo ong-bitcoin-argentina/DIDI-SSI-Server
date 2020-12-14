@@ -7,17 +7,14 @@ const { SERVER_PRIVATE_KEY, SERVER_DID } = require("../constants/Constants");
 
 //Instanciate Blockchain Manager
 const config = {
-  gasPrice: 10000,
-  providerConfig: Constants.BLOCKCHAIN.PROVIDER_CONFIG, // for multiblockchain
+	gasPrice: 10000,
+	providerConfig: Constants.BLOCKCHAIN.PROVIDER_CONFIG // for multiblockchain
 };
 
-const blockchainManager = new BlockchainManager(
-  config,
-  Constants.BLOCKCHAIN.GAS_INCREMENT
-);
+const blockchainManager = new BlockchainManager(config, Constants.BLOCKCHAIN.GAS_INCREMENT);
 
 // realiza una delegacion de "serverDID" a "issuer"
-module.exports.addDelegate = async function(issuerDID) {
+module.exports.addDelegate = async function (issuerDID) {
 	try {
 		const credentials = {
 			did: Constants.SERVER_DID,
@@ -31,12 +28,7 @@ module.exports.addDelegate = async function(issuerDID) {
 };
 
 // anula la delegacion de "userDID" a "otherDID" de existir esta
-<<<<<<< Updated upstream
-// TODO: implement with blockchain manager
-module.exports.revokeDelegate = async function(otherDID) {
-=======
 module.exports.revokeDelegate = async function (otherDID) {
->>>>>>> Stashed changes
 	try {
 		const issuer = await IssuerService.getIssuerByDID(otherDID);
 
@@ -50,7 +42,7 @@ module.exports.revokeDelegate = async function (otherDID) {
 };
 
 // retorna true si "userDID" realizo una delegacion de DID a "otherDID"
-module.exports.validDelegate = async function(issuerDID) {
+module.exports.validDelegate = async function (issuerDID) {
 	try {
 		return await blockchainManager.validateDelegate(Constants.SERVER_DID, issuerDID);
 	} catch (err) {
