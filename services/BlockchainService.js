@@ -23,7 +23,7 @@ module.exports.addDelegate = async function (issuerDID) {
 		return await blockchainManager.addDelegate(credentials, issuerDID, Constants.BLOCKCHAIN.DELEGATE_DURATION);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.DELEGATE);
+		return Promise.reject(err.toString());
 	}
 };
 
