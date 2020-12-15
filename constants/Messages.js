@@ -5,6 +5,17 @@ const COMMUNICATION_ERROR = {
 
 module.exports = {
 	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+	SHAREREQUEST: {
+		ERR: {
+			CREATE: { code: "SHARE_REQUEST_ERROR", message: "Error al crear el Share Request." },
+			NOT_FOUND: {
+				code: "SHARE_REQUEST_NOT_FOUND",
+				message: "No se encuentra el Share Request, es probable que haya expirado."
+			},
+			GET: { code: "SHARE_REQUEST_GET", message: "El Share Request no puedo ser obtenido." },
+			USER_NOT_VALID: { code: "USER_NOT_VALID", message: "El Usuario no tiene permiso para ver este Share Request" }
+		}
+	},
 	CERTIFICATE: {
 		ERR: {
 			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada, es necesario generar una nueva." },
@@ -36,6 +47,14 @@ module.exports = {
 		CREATED: "Certificado creado",
 		EXPIRED: "Certificado vencido",
 		VERIFIED: "Certificado validado"
+	},
+	PRESENTATION: {
+		ERR: {
+			GET: { code: "GET_PRESENTATION", message: "Error al obtener la presentacion." },
+			CREATE: { code: "CREATE_PRESENTATION", message: "Error al crear la presentacion." },
+			EXPIRED: { code: "PRESENTATION_EXPIRED", message: "La presentacion expiró." },
+			NOT_FOUND: { code: "NOT_FOUND_PRESENTATION", message: "No se pudo encontrar la presentacion." }
+		}
 	},
 	DELEGATE: {
 		ERR: {
@@ -170,6 +189,10 @@ module.exports = {
 			DID_EXISTS: {
 				code: "DID_EXISTS",
 				message: "Ya existe un issuer con ese did."
+			},
+			COULDNT_PERSIST: {
+				code: "COULDNT_PERSIST",
+				message: "No se pudo persistir la delegación en blockchain."
 			},
 			ALREADY_DELEGATE: {
 				code: "DELEGATE_EXISTS",

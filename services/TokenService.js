@@ -3,12 +3,10 @@ const { Resolver } = require("did-resolver");
 const { getResolver } = require("ethr-did-resolver");
 const Messages = require("../constants/Messages");
 const { SERVER_DID } = require("../constants/Constants");
-const {
-	BLOCKCHAIN: { BLOCK_CHAIN_URL, BLOCK_CHAIN_CONTRACT }
-} = require("../constants/Constants");
+const Constants = require("../constants/Constants");
 const { EXPIRED, INVALID_CODE, EXPIRED_CODE } = Messages.TOKEN;
 
-const resolver = new Resolver(getResolver({ rpcUrl: BLOCK_CHAIN_URL, registry: BLOCK_CHAIN_CONTRACT }));
+const resolver = new Resolver(getResolver(Constants.BLOCKCHAIN.PROVIDER_CONFIG));
 
 const serverDid = `did:ethr:${SERVER_DID}`;
 

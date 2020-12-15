@@ -14,6 +14,7 @@ const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
 const { userDTO } = require("./utils/DTOs");
 const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
+const { getImageUrl } = require("./utils/Helpers");
 
 const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATION_TYPES;
 
@@ -558,10 +559,11 @@ router.post(
 			const { path, mimetype, size } = req.file;
 			const { did } = req.params;
 
+			// MAX_MB * 1000000 da la cantidad exacta de los MB permitidos
 			if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
 
 			const { _id } = await UserService.saveImage(did, mimetype, path);
-			const image_url = `${Constants.ADDRESS}:${Constants.PORT}/api/${Constants.API_VERSION}/didi/image/${_id}`;
+			const image_url = getImageUrl(_id);
 
 			return ResponseHandler.sendRes(res, image_url);
 		} catch (err) {
