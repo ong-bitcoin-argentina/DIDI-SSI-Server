@@ -51,6 +51,20 @@ IssuerSchema.methods.delete = async function () {
 	}
 };
 
+IssuerSchema.methods.edit = async function (data) {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: data
+	};
+
+	try {
+		return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
 IssuerSchema.methods.editName = async function (name) {
 	const updateQuery = { _id: this._id };
 	const updateAction = {
