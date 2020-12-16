@@ -190,6 +190,10 @@ module.exports = {
 				code: "DID_EXISTS",
 				message: "Ya existe un issuer con ese did."
 			},
+			DID_NOT_EXISTS: {
+				code: "DID_NOT_EXISTS",
+				message: "No existe el issuer con ese did."
+			},
 			COULDNT_PERSIST: {
 				code: "COULDNT_PERSIST",
 				message: "No se pudo persistir la delegación en blockchain."

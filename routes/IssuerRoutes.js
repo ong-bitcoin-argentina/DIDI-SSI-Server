@@ -15,7 +15,7 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-const { ERROR, DONE } = Constants.STATUS;
+const { ERROR, DONE, ERROR_RENEW } = Constants.STATUS;
 
 /**
  *	Valida y envia a mouro el certificado generado por el issuer para ser guardado
@@ -282,7 +282,8 @@ router.post(
 			return ResponseHandler.sendRes(res, issuer);
 		} catch (err) {
 			console.log(err);
-			exCallback({ callbackUrl, did, token, messageError: err });
+			const messageError = err.message ? err.message : err;
+			exCallback({ callbackUrl, did, token, messageError });
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}
@@ -343,6 +344,36 @@ router.put(
 			return ResponseHandler.sendRes(res, issuer.name);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
+ *	Editar el nombre de un emisor autorizado a partir de su did
+ */
+router.post(
+	"/issuer/:did/refresh",
+	Validator.validateBody([
+		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "callbackUrl", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		try {
+			const { did } = req.params;
+			const { token, callbackUrl } = req.body;
+
+			const issuer = await IssuerService.refresh(did);
+			const { blockHash, expireOn } = issuer;
+
+			exCallback({ callbackUrl, did, token, status: DONE, expireOn, blockHash });
+
+			return ResponseHandler.sendRes(res, issuer);
+		} catch (err) {
+			console.log(err);
+			const messageError = err.message ? err.message : err;
+			exCallback({ callbackUrl, did, token, messageError, status: ERROR_RENEW });
+			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}
 );

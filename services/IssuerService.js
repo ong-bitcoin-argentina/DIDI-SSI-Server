@@ -41,6 +41,28 @@ module.exports.editName = async function (did, name) {
 	}
 };
 
+module.exports.refresh = async function (did) {
+	const byDIDExist = await Issuer.getByDID(did);
+	if (!byDIDExist || byDIDExist.deleted) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
+
+	try {
+		const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
+		console.log({ transactionHash, ...rest });
+
+		const expireOn = new Date();
+		if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
+			expireOn.setSeconds(expireOn.getSeconds() + Number(Constants.BLOCKCHAIN.DELEGATE_DURATION));
+		}
+
+		await byDIDExist.edit({ expireOn, blockHash: transactionHash });
+
+		return { ...byDIDExist, expireOn, blockHash: transactionHash };
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
 module.exports.getIssuerByDID = async function (did) {
 	return await Issuer.getByDID(did);
 };

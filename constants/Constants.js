@@ -209,7 +209,8 @@ module.exports = {
 	MAX_MB: 3,
 	STATUS: {
 		DONE: "Creado",
-		ERROR: "Error"
+		ERROR: "Error",
+		ERROR_RENEW: "Error al Renovar"
 	},
 
 	EXPIRE_IN_MINUTES: 60
