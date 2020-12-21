@@ -135,3 +135,11 @@ module.exports.validateBody = function (params) {
 	});
 	return validations;
 };
+
+module.exports.validateParams = function (req, res, next) {
+	const { params } = req;
+	const keys = Object.keys(params);
+	const invalidKey = keys.find(key => !params[key] || params[key] === "undefined");
+	if (invalidKey) return ResponseHandler.sendErrWithStatus(res, Messages.VALIDATION.DOES_NOT_EXIST(invalidKey));
+	return next();
+};

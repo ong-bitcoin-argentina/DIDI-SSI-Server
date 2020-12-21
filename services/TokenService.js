@@ -1,26 +1,61 @@
+const { decodeJWT, verifyJWT } = require("did-jwt");
+const { Resolver } = require("did-resolver");
+const { getResolver } = require("ethr-did-resolver");
 const Messages = require("../constants/Messages");
-const { decodeJWT } = require("did-jwt");
+const { SERVER_DID } = require("../constants/Constants");
+const Constants = require("../constants/Constants");
+const { EXPIRED, INVALID_CODE, EXPIRED_CODE } = Messages.TOKEN;
 
-const jwt = require("jsonwebtoken");
+const resolver = new Resolver(getResolver(Constants.BLOCKCHAIN.PROVIDER_CONFIG));
+
+const serverDid = `did:ethr:${SERVER_DID}`;
+
+const errorMessages = {
+	TokenExpiredError: EXPIRED_CODE()
+};
 
 // validates the token and returns userId
-module.exports.getTokenData = async function (token) {
+const getTokenData = async token => {
 	try {
 		const decoded = await decodeJWT(token);
 		if (!decoded) {
-			return Promise.reject(Messages.TOKEN.INVALID());
+			throw INVALID();
 		}
 
-		return Promise.resolve(decoded);
+		return decoded;
 	} catch (err) {
 		console.log(err);
 
 		if (err.name == "TokenExpiredError") {
-			return Promise.reject(Messages.TOKEN.EXPIRED());
+			throw EXPIRED();
 		}
 		if (err.name == "JsonWebTokenError") {
-			return Promise.reject(Messages.TOKEN.INVALID());
+			throw INVALID();
 		}
-		return Promise.reject({ name: err.name, message: err.message });
+		throw { name: err.name, message: err.message };
 	}
+};
+
+const getPayload = jwt => {
+	const { payload } = decodeJWT(jwt);
+	return payload;
+};
+
+const verifyToken = async (jwt, isUser = false) => {
+	const options = {
+		resolver,
+		audience: serverDid
+	};
+	try {
+		return await verifyJWT(jwt, options);
+	} catch (error) {
+		const message = errorMessages[error.name] || INVALID_CODE(isUser);
+		throw message;
+	}
+};
+
+module.exports = {
+	getPayload,
+	getTokenData,
+	verifyToken
 };

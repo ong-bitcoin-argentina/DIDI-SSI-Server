@@ -11,9 +11,6 @@ const PORT = process.env.PORT;
 const SERVER_DID = process.env.SERVER_DID;
 const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
 
-const ISSUER_SERVER_DID = process.env.ISSUER_SERVER_DID; // TODO: quitar cuando se resuelva el problema de los nombres de issuers
-const ISSUER_SERVER_NAME = process.env.ISSUER_SERVER_NAME; // TODO: quitar cuando se resuelva el problema de los nombres de issuers
-
 const MOURO_URL = process.env.MOURO_URL;
 
 const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
@@ -38,9 +35,52 @@ const FINGER_PRINT_DATA = process.env.FINGER_PRINT_DATA;
 const NO_EMAILS = process.env.NO_EMAILS === "true";
 const NO_SMS = process.env.NO_SMS === "true";
 
-const BLOCK_CHAIN_URL = process.env.BLOCK_CHAIN_URL;
-const BLOCK_CHAIN_CONTRACT = process.env.BLOCK_CHAIN_CONTRACT;
 const DELEGATE_DURATION = process.env.BLOCK_CHAIN_DELEGATE_DURATION || 1300000;
+const GAS_INCREMENT = process.env.GAS_INCREMENT || "1.1";
+
+// ======================================================================================================
+
+const BLOCKCHAIN_URL_MAIN = process.env.BLOCKCHAIN_URL_MAIN; // RSK
+const BLOCKCHAIN_URL_RSK = process.env.BLOCKCHAIN_URL_RSK; // RSK
+const BLOCKCHAIN_URL_LAC = process.env.BLOCKCHAIN_URL_LAC; // Lacchain
+const BLOCKCHAIN_URL_BFA = process.env.BLOCKCHAIN_URL_BFA; // BFA testnet
+
+// uPort SC ON
+const BLOCKCHAIN_CONTRACT_MAIN = process.env.BLOCKCHAIN_CONTRACT_MAIN; // RSK
+const BLOCKCHAIN_CONTRACT_RSK = process.env.BLOCKCHAIN_CONTRACT_RSK; // RSK
+const BLOCKCHAIN_CONTRACT_LAC = process.env.BLOCKCHAIN_CONTRACT_LAC; // Lacchain
+const BLOCKCHAIN_CONTRACT_BFA = process.env.BLOCKCHAIN_CONTRACT_BFA; // BFA
+
+// Provider
+// MAINNET SHOULD BE THE FIRST NETWORK
+// DID ROUTE EXAMPLE PREFIX:
+// MAINNET ==> did:ethr:
+// RSK ==> did:ethr:rsk:
+// LACCHAIN ==> did:ethr:lacchain:
+const PROVIDER_CONFIG = {
+	networks: [
+		{
+			name: "mainnet",
+			rpcUrl: BLOCKCHAIN_URL_MAIN,
+			registry: BLOCKCHAIN_CONTRACT_MAIN
+		},
+		{
+			name: "lacchain",
+			rpcUrl: BLOCKCHAIN_URL_LAC,
+			registry: BLOCKCHAIN_CONTRACT_LAC
+		},
+		{
+			name: "bfa",
+			rpcUrl: BLOCKCHAIN_URL_BFA,
+			registry: BLOCKCHAIN_CONTRACT_BFA
+		},
+		{
+			name: "rsk",
+			rpcUrl: BLOCKCHAIN_URL_RSK,
+			registry: BLOCKCHAIN_CONTRACT_RSK
+		}
+	]
+};
 
 const RSA_PRIVATE_KEY = process.env.RSA_PRIVATE_KEY;
 const HASH_SALT = process.env.HASH_SALT;
@@ -85,8 +125,6 @@ module.exports = {
 	MOURO_URL: MOURO_URL,
 	SERVER_DID: SERVER_DID,
 	SERVER_PRIVATE_KEY: SERVER_PRIVATE_KEY,
-	ISSUER_SERVER_DID: ISSUER_SERVER_DID, // TODO: quitar cuando se resuelva el problema de los nombres de issuers
-	ISSUER_SERVER_NAME: ISSUER_SERVER_NAME, // TODO: quitar cuando se resuelva el problema de los nombres de issuers
 	CREDENTIALS: {
 		TYPES: {
 			VERIFIABLE: "VerifiableCredential"
@@ -144,8 +182,8 @@ module.exports = {
 	},
 
 	BLOCKCHAIN: {
-		BLOCK_CHAIN_URL: BLOCK_CHAIN_URL,
-		BLOCK_CHAIN_CONTRACT: BLOCK_CHAIN_CONTRACT,
+		PROVIDER_CONFIG: PROVIDER_CONFIG,
+		GAS_INCREMENT: GAS_INCREMENT,
 		DELEGATE_DURATION: DELEGATE_DURATION
 	},
 
@@ -166,5 +204,14 @@ module.exports = {
 		VALIDATE_DNI: `${SEMILLAS_URL}/identityValidationRequests`,
 		SHARE_DATA: `${SEMILLAS_URL}/credentials/share`,
 		PRESTADORES: `${SEMILLAS_URL}/providers`
-	}
+	},
+
+	MAX_MB: 3,
+	STATUS: {
+		DONE: "Creado",
+		ERROR: "Error",
+		ERROR_RENEW: "Error al Renovar"
+	},
+
+	EXPIRE_IN_MINUTES: 60
 };

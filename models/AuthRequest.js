@@ -85,3 +85,10 @@ AuthRequest.findByOperationId = async function(operationId) {
 		return Promise.reject(err);
 	}
 };
+
+// retorna el pedido buscandolo por 'did' y successful
+AuthRequest.findByDid = async function(did) {
+	const query = { userDID: did, status: "Successful" };
+	const request = await AuthRequest.findOne(query);
+	return request;
+};

@@ -6,6 +6,7 @@ const Certificate = require("../models/Certificate");
 const MailService = require("../services/MailService");
 const UserService = require("../services/UserService");
 const MouroService = require("../services/MouroService");
+const CertService = require("../services/CertService");
 
 const Validator = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
@@ -117,8 +118,8 @@ router.post(
 			if (user) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.ALREADY_EXISTS);
 
 			// generar certificado validando que ese did le corresponde al dueño del mail
-			let cert = await MouroService.createMailCertificate(did, eMail);
-			await MouroService.verifyCertificateEmail(cert);
+			let cert = await CertService.createMailCertificate(did, eMail);
+			await CertService.verifyCertificateEmail(cert);
 
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);

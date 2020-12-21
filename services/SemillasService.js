@@ -37,9 +37,10 @@ const handleTextResponse = async res => {
 	return content;
 };
 
-module.exports.getPrestadores = async function (token) {
+module.exports.getPrestadores = async function () {
 	const res = await semillasFetch(SEMILLAS_URLS.PRESTADORES);
-	return await res.json();
+	// TODO: hack, because semillas does not support filtering by active field
+	return (await res.json()).filter(p => p.active);
 };
 
 module.exports.login = async function () {
@@ -68,12 +69,19 @@ module.exports.generateValidation = async function (did) {
 
 module.exports.updateValidationState = async function (did, state) {
 	const validation = await SemillasValidation.updateByUserDID(did, state);
-	if (!validation) throw new Error(DID_NOT_FOUND(did));
+	if (!validation) throw DID_NOT_FOUND(did);
+	return validation;
+};
+
+module.exports.deleteValidationByDid = async function (did) {
+	const validation = await SemillasValidation.deleteByUserDID(did);
+	if (!validation) throw DID_NOT_FOUND(did);
 	return validation;
 };
 
 module.exports.getValidation = async function (did) {
 	const validation = await SemillasValidation.getByUserDID(did);
-	if (!validation) throw new Error(DID_NOT_FOUND(did));
-	return validation;
+	if (!validation) throw DID_NOT_FOUND(did);
+	const { createdOn, modifiedOn, state } = validation;
+	return { createdOn, modifiedOn, state };
 };

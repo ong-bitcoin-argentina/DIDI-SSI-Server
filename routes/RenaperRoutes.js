@@ -3,6 +3,7 @@ const ResponseHandler = require("./utils/ResponseHandler");
 
 const Certificate = require("../models/Certificate");
 const MouroService = require("../services/MouroService");
+const CertService = require("../services/CertService");
 const UserService = require("../services/UserService");
 const RenaperService = require("../services/RenaperService");
 const AuthRequestService = require("../services/AuthRequestService");
@@ -63,7 +64,6 @@ router.post(
 			// guardar estado como "en progreso y retornar"
 			authRequest = await AuthRequestService.create(operationId, did);
 		} catch (err) {
-			console.log(err);
 			return ResponseHandler.sendErr(res, err);
 		}
 
@@ -91,8 +91,6 @@ router.post(
 			console.log(operationId + " executing request for " + did);
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
-			// if (Constants.DEBUGG) console.log(userData);
-
 			console.log(operationId + " checking results for " + did);
 			// si no hubo match o no se obtuvo la precision buscada pasar a estado "fallido"
 			if (!userData || !userData.confidence || userData.confidence < Constants.RENAPER_SCORE_TRESHOULD) {
@@ -118,7 +116,7 @@ router.post(
 			};
 
 			console.log(operationId + " creating certificates for " + did);
-			const generateCert = MouroService.createCertificate(
+			const generateCert = CertService.createCertificate(
 				did,
 				{
 					"Datos Personales": {
@@ -144,7 +142,7 @@ router.post(
 				country: data.country
 			};
 
-			const generateAditionalCert = MouroService.createCertificate(
+			const generateAditionalCert = CertService.createCertificate(
 				did,
 				{
 					"Domicilio Legal": {
@@ -175,7 +173,6 @@ router.post(
 				);
 			} catch (err) {
 				console.log("Error sending push notifications:");
-				console.log(err);
 			}
 
 			// agregar info de renaper al usuario
@@ -200,7 +197,6 @@ router.post(
 
 			return;
 		} catch (err) {
-			console.log(err);
 			await authRequest.update(Constants.AUTHENTICATION_REQUEST.FALIED, err.message);
 			return;
 		}
@@ -227,7 +223,6 @@ router.post(
 				message: authRequest.errorMessage
 			});
 		} catch (err) {
-			console.log(err);
 			return ResponseHandler.sendErr(res, err);
 		}
 	}

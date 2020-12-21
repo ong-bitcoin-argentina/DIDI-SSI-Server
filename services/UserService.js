@@ -1,5 +1,10 @@
 const User = require("../models/User");
 const Messages = require("../constants/Messages");
+const PhoneNormalization = require("../routes/utils/PhoneNormalization");
+const fs = require("fs");
+const Image = require("../models/Image");
+
+const { DID_NOT_FOUND } = Messages.VALIDATION;
 
 // obtener usuario
 let getByDID = async function (did) {
@@ -12,6 +17,21 @@ let getByDID = async function (did) {
 	}
 };
 module.exports.getByDID = getByDID;
+
+// creado porque getByDID no retorna error en caso de no existir (y puede que algun endpoint este esperando ese resultado)
+const findByDid = async did => {
+	const user = await User.getByDID(did);
+	if (!user) throw DID_NOT_FOUND(did);
+	return user;
+};
+module.exports.findByDid = findByDid;
+
+const findByDidAndUpdate = async (did, data) => {
+	const user = await User.findByDidAndUpdate(did, data);
+	if (!user) throw DID_NOT_FOUND(did);
+	return user;
+};
+module.exports.findByDidAndUpdate = findByDidAndUpdate;
 
 // obtener usuario con ese mail
 let getByEmail = async function (email) {
@@ -83,14 +103,23 @@ let telTaken = async function (tel, exceptionDid) {
 module.exports.telTaken = telTaken;
 
 // crear un usuario, siempre que este no exista uno asociado al did
-module.exports.create = async function (did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId) {
+module.exports.create = async function (
+	did,
+	privateKeySeed,
+	userMail,
+	phoneNumber,
+	userPass,
+	firebaseId,
+	name,
+	lastname
+) {
 	try {
 		// validar si ya existe un usuario asociado a ese did
 		let user = await getByDID(did);
 		if (user) return Promise.reject(Messages.USER.ERR.USER_ALREADY_EXIST);
 
 		// crear usuario
-		user = await User.generate(did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId);
+		user = await User.generate(did, privateKeySeed, userMail, phoneNumber, userPass, firebaseId, name, lastname);
 		if (!user) return Promise.reject(Messages.USER.ERR.CREATE);
 		return Promise.resolve(user);
 	} catch (err) {
@@ -212,5 +241,45 @@ module.exports.recoverPassword = async function (eMail, newPass) {
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.USER.ERR.UPDATE);
+	}
+};
+
+module.exports.normalizePhone = async function (phone) {
+	const user = await getByTel(phone);
+	return user ? phone : PhoneNormalization.normalizePhone(phone);
+};
+
+// obtener usuario y actualizar imagen
+module.exports.saveImage = async function (did, contentType, path) {
+	try {
+		// obtener usuario
+		let user = await getByDID(did);
+		if (!user) return Promise.reject(Messages.USER.ERR.GET);
+
+		// creo la imagen
+		const image = fs.readFileSync(path);
+		const encode_image = image.toString("base64");
+		const buffer = Buffer.from(encode_image, "base64");
+
+		const { _id } = await Image.generate(buffer, contentType);
+
+		// guardo el id de la imagen en usuario
+		await user.updateImage(_id);
+
+		return Promise.resolve(_id);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.IMAGE.ERR.CREATE);
+	}
+};
+
+module.exports.getImage = async function (id) {
+	try {
+		const image = await Image.getById(id);
+		if (!image) return Promise.reject(Messages.IMAGE.ERR.GET);
+		return Promise.resolve(image);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.IMAGE.ERR.GET);
 	}
 };

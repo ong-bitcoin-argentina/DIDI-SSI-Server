@@ -11,6 +11,12 @@ const SmsRoutes = require("./routes/SmsRoutes");
 const MailRoutes = require("./routes/MailRoutes");
 const RenaperRoutes = require("./routes/RenaperRoutes");
 const SemillasRoutes = require("./routes/SemillasRoutes");
+const AppUserAuthRoutes = require("./routes/AppUserAuthRoutes");
+const AdminRoutes = require("./routes/AdminRoutes");
+const PresentationRoutes = require("./routes/PresentationRoutes");
+const ShareRequestRoutes = require("./routes/ShareRequestRoutes");
+
+const multer = require("multer");
 
 // inicializar cluster para workers, uno por cpu disponible
 var cluster = require("cluster");
@@ -19,6 +25,11 @@ var numCPUs = require("os").cpus().length;
 const app = express();
 var http = require("http");
 var server = http.createServer(app);
+
+if (process.env.ENABLE_AZURE_LOGGER) {
+	const { logger } = require("./services/logger");
+	logger.start();
+}
 
 // sobreescribir log para agregarle el timestamp
 const log = console.log;
@@ -53,7 +64,7 @@ mongoose
 		console.log(Messages.INDEX.ERR.CONNECTION + err.message);
 	});
 
-app.get("/", (_, res) => res.send(Messages.INDEX.MSG.HELLO_WORLD));
+app.get("/", (_, res) => res.send(`${Messages.INDEX.MSG.HELLO_WORLD} v${process.env.VERSION}`));
 
 app.use(bodyParser.json());
 
@@ -64,19 +75,47 @@ app.use(function (req, _, next) {
 		process.stdout.write("body: ");
 		console.log(req.body);
 	}
+	if (process.env.ENABLE_AZURE_LOGGER) {
+		logger.defaultClient.trackEvent({
+			name: "request",
+			properties: {
+				method: req.method,
+				url: req.originalUrl
+			}
+		});
+	}
 	next();
 });
 
 // loggear errores
-app.use(function (error, _, _, next) {
+app.use(function (error, req, _, next) {
 	console.log(error);
+	if (process.env.ENABLE_AZURE_LOGGER) {
+		logger.defaultClient.trackEvent({
+			name: "error",
+			properties: {
+				value: "error",
+				method: req.method,
+				url: req.originalUrl
+			}
+		});
+	}
 	next();
 });
 
-const route = "/api/" + Constants.API_VERSION + "/didi";
+const route = `/api/${Constants.API_VERSION}/didi`;
 if (Constants.DEBUGG) {
 	console.log("route: " + route);
 }
+
+app.use(
+	multer({
+		dest: "./uploads/",
+		rename: function (fieldname, filename) {
+			return filename;
+		}
+	}).single("file")
+);
 
 app.use(route, IssuerRoutes);
 app.use(route, UserRoutes);
@@ -84,6 +123,17 @@ app.use(route, SmsRoutes);
 app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
 app.use(route, SemillasRoutes);
+app.use(route, AppUserAuthRoutes);
+app.use(route, AdminRoutes);
+app.use(route, PresentationRoutes);
+app.use(route, ShareRequestRoutes);
+app.use("*", function (req, res) {
+	return res.status(404).json({
+		status: "error",
+		errorCode: "INVALID_ROUTE",
+		message: "Route does not exist"
+	});
+});
 
 // forkear workers
 if (cluster.isMaster) {

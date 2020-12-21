@@ -23,3 +23,12 @@ module.exports.postOptionsAuth = (token, data) => ({
 	headers: headersAuth(token),
 	body: JSON.stringify(data)
 });
+
+module.exports.putOptionsAuth = (token, data) => ({
+	method: "PUT",
+	headers: {
+		"Content-Type": "application/json",
+		token
+	},
+	body: JSON.stringify(data)
+});

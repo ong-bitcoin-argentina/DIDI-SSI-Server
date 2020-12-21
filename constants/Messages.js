@@ -5,6 +5,17 @@ const COMMUNICATION_ERROR = {
 
 module.exports = {
 	COMMUNICATION_ERROR: COMMUNICATION_ERROR,
+	SHAREREQUEST: {
+		ERR: {
+			CREATE: { code: "SHARE_REQUEST_ERROR", message: "Error al crear el Share Request." },
+			NOT_FOUND: {
+				code: "SHARE_REQUEST_NOT_FOUND",
+				message: "No se encuentra el Share Request, es probable que haya expirado."
+			},
+			GET: { code: "SHARE_REQUEST_GET", message: "El Share Request no puedo ser obtenido." },
+			USER_NOT_VALID: { code: "USER_NOT_VALID", message: "El Usuario no tiene permiso para ver este Share Request" }
+		}
+	},
 	CERTIFICATE: {
 		ERR: {
 			REVOKED: { code: "CERT_REVOKED", message: "Error, la credencial fue revocada, es necesario generar una nueva." },
@@ -37,6 +48,14 @@ module.exports = {
 		EXPIRED: "Certificado vencido",
 		VERIFIED: "Certificado validado"
 	},
+	PRESENTATION: {
+		ERR: {
+			GET: { code: "GET_PRESENTATION", message: "Error al obtener la presentacion." },
+			CREATE: { code: "CREATE_PRESENTATION", message: "Error al crear la presentacion." },
+			EXPIRED: { code: "PRESENTATION_EXPIRED", message: "La presentacion expiró." },
+			NOT_FOUND: { code: "NOT_FOUND_PRESENTATION", message: "No se pudo encontrar la presentacion." }
+		}
+	},
 	DELEGATE: {
 		ERR: {
 			INVALID_USER: {
@@ -49,6 +68,7 @@ module.exports = {
 				message: "El usuario no pudo ser creado, por favor inténtelo de nuevo más tarde."
 			},
 			GET: { code: "USER_GET", message: "El usuario no pudo ser obtenido, por favor inténtelo de nuevo más tarde." },
+			GET_DELEGATE: { code: "GET_DELEGATE", message: "No pudo validarse la delegación con el did provisto." },
 			SET_NAME: {
 				code: "DELEGATE_SET_NAME",
 				message: "El delegado no pudo ser verificado, por favor inténtelo de nuevo más tarde."
@@ -152,6 +172,7 @@ module.exports = {
 					"No pudo encontrarse ningun usuario registrado en ai·di con ese DID, solo pueden emitirse certificados a usuarios registrados."
 			},
 			CERT_IS_INVALID: { code: "CERT_IS_INVALID", message: "El certificado es inválido." },
+			ISSUER_IS_INVALID: { code: "ISSUER_IS_INVALID", message: "El issuer es inválido." },
 			REVOKED: {
 				code: "REVOKED",
 				message: "El certificado ha sido revocado, esta operacion solo esta permitida sobre certificados activos."
@@ -160,6 +181,26 @@ module.exports = {
 				code: "NOT_FOUND",
 				message:
 					"No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas."
+			},
+			NAME_EXISTS: {
+				code: "NAME_EXISTS",
+				message: "Ya existe un issuer con ese nombre."
+			},
+			DID_EXISTS: {
+				code: "DID_EXISTS",
+				message: "Ya existe un issuer con ese did."
+			},
+			DID_NOT_EXISTS: {
+				code: "DID_NOT_EXISTS",
+				message: "No existe el issuer con ese did."
+			},
+			COULDNT_PERSIST: {
+				code: "COULDNT_PERSIST",
+				message: "No se pudo persistir la delegación en blockchain."
+			},
+			ALREADY_DELEGATE: {
+				code: "DELEGATE_EXISTS",
+				message: "Ya existe una delegación con ese did."
 			}
 		},
 		CERT_REVOKED: "El certificado fue revocado.",
@@ -294,7 +335,31 @@ module.exports = {
 	},
 	TOKEN: {
 		INVALID: () => "El token es invalido, por favor verificarlo o loguearse para obtener uno nuevo.",
-		EXPIRED: () => "El token ha expirado, es necesario volver a loguearse."
+		EXPIRED: () => "El token ha expirado, es necesario volver a loguearse.",
+		EXPIRED_CODE: () => ({
+			message: "El token ha expirado.",
+			code: "EXPIRED_TOKEN"
+		}),
+		INVALID_CODE: isUser => ({
+			message: `El token de ${isUser ? "usuario" : "aplicación"} es inválido, por favor verificalo.`,
+			code: "INVALID_TOKEN"
+		})
+	},
+	IMAGE: {
+		ERR: {
+			INVALID_SIZE: {
+				code: "INVALID_SIZE",
+				message: "El tamaño de la imagen supera el limite permitido de 3 MB."
+			},
+			GET: {
+				code: "IMAGE_GET",
+				message: "No se pudo obtener la imagen, por favor inténtelo de nuevo más tarde."
+			},
+			CREATE: {
+				code: "IMAGE_CREATE",
+				message: "Hubo un error al durante la creación  de la imagen, por favor inténtelo de nuevo más tarde."
+			}
+		}
 	},
 	USER: {
 		SUCCESS: {
@@ -478,6 +543,23 @@ module.exports = {
 				};
 			}
 		},
-		DID_NOT_FOUND: did => `El usuario con el DID ${did} no existe.`
+		APP_DID_NOT_FOUND: did => ({
+			code: "APP_DID_NOT_FOUND",
+			message: `La Aplicación con el DID ${did} no esta autorizada.`
+		}),
+		ADMIN_DID_NOT_MATCH: did => ({
+			code: "ADMIN_DID_NOT_MATCH",
+			message: `El DID ${did} provisto no coincide con ningún admin.`
+		}),
+		DID_NOT_FOUND: did => ({
+			code: "DID_NOT_FOUND",
+			message: `El usuario con el DID ${did} no existe.`
+		})
+	},
+	USER_APP: {
+		NOT_FOUND: did => ({
+			code: "USER_APP_NOT_FOUND",
+			message: `El usuario con el DID ${did} no existe o no tiene cuenta en una aplicación autorizada.`
+		})
 	}
 };

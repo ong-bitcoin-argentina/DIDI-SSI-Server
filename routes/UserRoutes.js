@@ -6,11 +6,19 @@ const UserService = require("../services/UserService");
 const MailService = require("../services/MailService");
 const SmsService = require("../services/SmsService");
 const MouroService = require("../services/MouroService");
+const CertService = require("../services/CertService");
 const FirebaseService = require("../services/FirebaseService");
 
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
+const { userDTO } = require("./utils/DTOs");
+const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
+const { getImageUrl } = require("./utils/Helpers");
+
+const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATION_TYPES;
+
+router.use("/user/", validateAppOrUserJWT);
 
 /**
  *	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
@@ -19,33 +27,32 @@ const Validator = require("./utils/Validator");
 router.post(
 	"/registerUser",
 	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
+		{ name: "name", validate: [IS_STRING] },
+		{ name: "lastname", validate: [IS_STRING] },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "phoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+			validate: [IS_STRING, IS_MOBILE_PHONE]
 		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "privateKeySeed", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
+		{ name: "privateKeySeed", validate: [IS_STRING] },
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			optional: true
 		}
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
+		const { password, did, privateKeySeed, name, lastname } = req.body;
+		const phoneNumber = await UserService.normalizePhone(req.body.phoneNumber);
 		const eMail = req.body.eMail.toLowerCase();
-		const password = req.body.password;
-		const phoneNumber = req.body.phoneNumber;
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
-
-		const did = req.body.did;
-		const privateKeySeed = req.body.privateKeySeed;
 
 		try {
 			await UserService.emailTaken(eMail);
@@ -60,7 +67,7 @@ router.post(
 			if (!phoneValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.PHONE_NOT_VALIDATED);
 
 			// crear usuario
-			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password, firebaseId);
+			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password, firebaseId, name, lastname);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -103,15 +110,15 @@ router.post(
 router.post(
 	"/recoverAccount",
 	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			optional: true
 		}
 	]),
@@ -138,16 +145,16 @@ router.post(
 router.post(
 	"/userLogin",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			optional: true
 		}
 	]),
@@ -176,15 +183,15 @@ router.post(
 router.post(
 	"/recoverPassword",
 	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
 		{
 			name: "eMailValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
 		{
 			name: "newPass",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		}
 	]),
@@ -220,15 +227,15 @@ router.post(
 router.post(
 	"/changePassword",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
 		{
 			name: "oldPass",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "newPass",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		}
 	]),
@@ -255,24 +262,24 @@ router.post(
 router.post(
 	"/changePhoneNumber",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
 		{
 			name: "newPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE]
+			validate: [IS_STRING, IS_MOBILE_PHONE]
 		},
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "phoneValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
 		{
 			name: "firebaseId",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			optional: true
 		}
 	]),
@@ -280,7 +287,7 @@ router.post(
 	async function (req, res) {
 		const did = req.body.did;
 		const phoneValidationCode = req.body.phoneValidationCode;
-		const newPhoneNumber = req.body.newPhoneNumber;
+		const newPhoneNumber = await UserService.normalizePhone(req.body.newPhoneNumber);
 		const password = req.body.password;
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
@@ -292,8 +299,8 @@ router.post(
 			let phone = await SmsService.isValid(newPhoneNumber, phoneValidationCode);
 
 			// generar certificado validando que ese did le corresponde al dueño del telèfono
-			let cert = await MouroService.createPhoneCertificate(did, newPhoneNumber);
-			await MouroService.verifyCertificatePhoneNumber(cert);
+			let cert = await CertService.createPhoneCertificate(did, newPhoneNumber);
+			await CertService.verifyCertificatePhoneNumber(cert);
 
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
@@ -332,17 +339,17 @@ router.post(
 router.post(
 	"/changeEmail",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] },
 
-		{ name: "newEMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
+		{ name: "newEMail", validate: [IS_STRING, IS_EMAIL] },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH }
 		},
 		{
 			name: "eMailValidationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
+			validate: [IS_STRING],
 			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		}
 	]),
@@ -362,8 +369,8 @@ router.post(
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 
 			// generar certificado validando que ese did le corresponde al dueño del mail
-			let cert = await MouroService.createMailCertificate(did, newEMail);
-			await MouroService.verifyCertificateEmail(cert);
+			let cert = await CertService.createMailCertificate(did, newEMail);
+			await CertService.verifyCertificateEmail(cert);
 
 			// revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);
@@ -402,8 +409,8 @@ router.post(
 router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+		{ name: "did", validate: [IS_STRING] },
+		{ name: "jwt", validate: [IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -411,7 +418,7 @@ router.post(
 		const jwt = req.body.jwt;
 
 		try {
-			const decoded = await MouroService.decodeCertificate(jwt, Messages.CERTIFICATE.ERR.VERIFY);
+			const decoded = await CertService.decodeCertificate(jwt, Messages.CERTIFICATE.ERR.VERIFY);
 			const name = Object.keys(decoded.payload.vc.credentialSubject)[0];
 
 			const cb = Constants.ADDRESS + ":" + Constants.PORT + "/api/1.0/didi/verifyCredential";
@@ -424,7 +431,7 @@ router.post(
 				}
 			};
 
-			const petition = await MouroService.createPetition(did, claims, cb);
+			const petition = await CertService.createPetition(did, claims, cb);
 
 			try {
 				// enviar push notification
@@ -453,12 +460,12 @@ router.post(
  */
 router.post(
 	"/verifyCredential",
-	Validator.validateBody([{ name: "access_token", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([{ name: "access_token", validate: [IS_STRING] }]),
 	Validator.checkValidationResult,
 	async function (req, res) {
 		const access_token = req.body.access_token;
 
-		const data = await MouroService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
+		const data = await CertService.decodeCertificate(access_token, Messages.CERTIFICATE.ERR.VERIFY);
 		const jwt = data.payload.verified[0];
 
 		try {
@@ -474,7 +481,7 @@ router.post(
 
 			const certJwt = await cert.getJwt();
 			// decodifico jwt
-			const decoded = await MouroService.decodeCertificate(certJwt, Messages.CERTIFICATE.ERR.VERIFY);
+			const decoded = await CertService.decodeCertificate(certJwt, Messages.CERTIFICATE.ERR.VERIFY);
 
 			const credData = decoded.payload.vc.credentialSubject;
 			const certCategory = Object.keys(credData)[0];
@@ -496,6 +503,86 @@ router.post(
 			// marco macrocredencial como validada
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
+ *	Obtiene informacion sobre el usuario
+ */
+router.post("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
+	try {
+		const { did } = req.params;
+		const user = await UserService.findByDid(did);
+		const result = await userDTO(user);
+		return ResponseHandler.sendRes(res, result);
+	} catch (err) {
+		return ResponseHandler.sendErr(res, err);
+	}
+});
+
+/**
+ *	Edita nombre y apellido, usado para migrar usuarios
+ */
+router.post(
+	"/user/:did/edit",
+	Validator.validateBody([
+		{ name: "name", validate: [IS_STRING] },
+		{ name: "lastname", validate: [IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	async function (req, res) {
+		try {
+			const { did } = req.params;
+			const { name, lastname } = req.body;
+			const result = await UserService.findByDidAndUpdate(did, { name, lastname });
+			return ResponseHandler.sendRes(res, result);
+		} catch (err) {
+			return ResponseHandler.sendErrWithStatus(res, err);
+		}
+	}
+);
+
+/**
+ *	Agrega una imagen de perfil al usuario
+ */
+router.post(
+	"/user/:did/image",
+	Validator.validateBody([]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	async function (req, res) {
+		try {
+			const { path, mimetype, size } = req.file;
+			const { did } = req.params;
+
+			// MAX_MB * 1000000 da la cantidad exacta de los MB permitidos
+			if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
+
+			const { _id } = await UserService.saveImage(did, mimetype, path);
+			const image_url = getImageUrl(_id);
+
+			return ResponseHandler.sendRes(res, image_url);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.get(
+	"/image/:id",
+	Validator.validateBody([]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	async function (req, res) {
+		try {
+			const id = req.params.id;
+			const { img, contentType } = await UserService.getImage(id);
+			res.type(contentType);
+			return res.send(img);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}

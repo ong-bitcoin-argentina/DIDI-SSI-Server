@@ -1,92 +1,40 @@
 const Constants = require("../constants/Constants");
-const { delegateTypes } = require("ethr-did-resolver");
-// const regName = delegateTypes.Secp256k1VerificationKey2018;
-const regName = delegateTypes.Secp256k1SignatureAuthentication2018;
-// console.log(regName);
+const { BlockchainManager } = require("@proyecto-didi/didi-blockchain-manager");
+const IssuerService = require("../services/IssuerService");
 
 const Messages = require("../constants/Messages");
+const { SERVER_PRIVATE_KEY, SERVER_DID } = require("../constants/Constants");
 
-const DidRegistryContract = require("ethr-did-registry");
-var Tx = require("ethereumjs-tx");
-
-var Web3 = require("web3");
-const provider = new Web3.providers.HttpProvider(Constants.BLOCKCHAIN.BLOCK_CHAIN_URL);
-const web3 = new Web3(provider);
-
-// obtiene el contrato (ethr-did-registry)
-const getContract = function(credentials) {
-	return new web3.eth.Contract(DidRegistryContract.abi, Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT, {
-		from: credentials.from,
-		gasLimit: 3000000
-	});
+//Instanciate Blockchain Manager
+const config = {
+	gasPrice: 10000,
+	providerConfig: Constants.BLOCKCHAIN.PROVIDER_CONFIG // for multiblockchain
 };
 
-// quita la extension "did:ethr:"
-const cleanDid = function(did) {
-	let cleanDid = did.split(":");
-	cleanDid = cleanDid[cleanDid.length - 1];
-	return cleanDid;
-};
+const blockchainManager = new BlockchainManager(config, Constants.BLOCKCHAIN.GAS_INCREMENT);
 
-// realiza una transaccion generica a un contrato ethereum
-const makeSignedTransaction = async function(bytecode, credentials) {
-	const getNonce = async function(web3, senderAddress) {
-		var result = await web3.eth.getTransactionCount(senderAddress, "pending");
-		return result;
-	};
-
-	const getGasPrice = async function(web3) {
-		var block = await web3.eth.getBlock("latest");
-		if (block.minimumGasPrice <= 21000) {
-			return 21000;
-		} else {
-			return parseInt(block.minimumGasPrice);
-		}
-	};
-
-	const rawTx = {
-		nonce: await getNonce(web3, credentials.from),
-		gasPrice: await getGasPrice(web3),
-		gas: await web3.eth.estimateGas({
-			to: Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT,
-			from: credentials.from,
-			data: bytecode
-		}),
-		data: bytecode,
-		to: Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT
-	};
-
-	if (Constants.DEBUGG) console.log(rawTx);
-
-	var tx = new Tx(rawTx);
-	tx.sign(Buffer.from(credentials.key, "hex"));
-	var serializedTx = tx.serialize();
-	const res = await web3.eth.sendSignedTransaction("0x" + serializedTx.toString("hex"));
-	return res;
-};
-
-// realiza una delegacion de "userDID" a "otherDID"
-module.exports.addDelegate = async function(userDID, credentials, otherDID) {
+// realiza una delegacion de "serverDID" a "issuer"
+module.exports.addDelegate = async function (issuerDID) {
 	try {
-		const contract = getContract(credentials);
-		const bytecode = await contract.methods
-			.addDelegate(cleanDid(userDID), regName, cleanDid(otherDID), Constants.BLOCKCHAIN.DELEGATE_DURATION)
-			.encodeABI();
-		const result = await makeSignedTransaction(bytecode, credentials);
-		return Promise.resolve(result);
+		const credentials = {
+			did: Constants.SERVER_DID,
+			privateKey: Constants.SERVER_PRIVATE_KEY
+		};
+		return await blockchainManager.addDelegate(credentials, issuerDID, Constants.BLOCKCHAIN.DELEGATE_DURATION);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.DELEGATE);
+		return Promise.reject(err.toString());
 	}
 };
 
 // anula la delegacion de "userDID" a "otherDID" de existir esta
-module.exports.revokeDelegate = async function(userDID, credentials, otherDID) {
+module.exports.revokeDelegate = async function (otherDID) {
 	try {
-		const contract = getContract(credentials);
-		const bytecode = await contract.methods.revokeDelegate(cleanDid(userDID), regName, cleanDid(otherDID)).encodeABI();
-		const result = await makeSignedTransaction(bytecode, credentials);
-		return Promise.resolve(result);
+		const issuer = await IssuerService.getIssuerByDID(otherDID);
+
+		if (!issuer) Promise.reject(Messages.ISSUER.ERR.NOT_FOUND);
+		await blockchainManager.revokeDelegate({ did: SERVER_DID, privateKey: SERVER_PRIVATE_KEY }, otherDID);
+		return await issuer.delete();
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.DELEGATE.ERR.DELETE);
@@ -94,66 +42,11 @@ module.exports.revokeDelegate = async function(userDID, credentials, otherDID) {
 };
 
 // retorna true si "userDID" realizo una delegacion de DID a "otherDID"
-module.exports.validDelegate = async function(userDID, credentials, otherDID) {
+module.exports.validDelegate = async function (issuerDID) {
 	try {
-		const contract = getContract(credentials);
-		const result = await contract.methods
-			.validDelegate(cleanDid(userDID), regName, cleanDid(otherDID))
-			.call(credentials);
-		return Promise.resolve(result);
+		return await blockchainManager.validateDelegate(Constants.SERVER_DID, issuerDID);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.GET);
-	}
-};
-
-// modifica el nombre que mostrara el delegado
-module.exports.setDelegateName = async function(issuerDID, credentials, name) {
-	try {
-		credentials.from = cleanDid(credentials.from);
-		const contract = getContract(credentials);
-		const bytecode = await contract.methods
-			.setAttribute(cleanDid(issuerDID), web3.utils.fromAscii("name"), web3.utils.fromAscii(name), 99999999)
-			.encodeABI();
-		const result = await makeSignedTransaction(bytecode, credentials);
-		return Promise.resolve(result);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.SET_NAME);
-	}
-};
-
-// obtiene el nombre que mostrara el delegado
-module.exports.getDelegateName = async function(issuerDID) {
-	try {
-		// TODO: esto genera errores cuando los eventos son muchos.
-		// Debe ser refactorizado.
-
-		const did = cleanDid(issuerDID);
-
-		if (did === Constants.SERVER_DID) return Promise.resolve(Constants.DIDI_SERVER_NAME);
-
-		// HACK TEMPORAL que devuelve el nombre de un ISSUER especificado
-		// por variable de entorno, para que no recorra todos los eventos.
-		if (did === Constants.ISSUER_SERVER_DID) return Promise.resolve(Constants.ISSUER_SERVER_NAME);
-
-		const contract = getContract({ from: did });
-		const events = await contract.getPastEvents("DIDAttributeChanged", { fromBlock: 0, toBlock: "latest" });
-
-		const name = web3.utils.fromAscii("name");
-		let res = "";
-		for (let event of events) {
-			if (
-				event.returnValues.identity.toLowerCase() === did.toLowerCase() &&
-				event.returnValues.validTo !== 0 &&
-				event.returnValues.name.substring(0, name.length) === name
-			) {
-				res = web3.utils.toAscii(event.returnValues.value);
-			}
-		}
-		return Promise.resolve(res);
-	} catch (err) {
-		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.GET_NAME);
+		throw Messages.DELEGATE.ERR.GET_DELEGATE;
 	}
 };
