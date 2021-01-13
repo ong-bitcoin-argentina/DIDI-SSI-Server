@@ -156,6 +156,10 @@ module.exports = {
 				code: "ALREADY_CREATED",
 				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
 			},
+			DID_IS_INVALID: {
+				code: "DID_IS_INVALID",
+				message: "El did es invalido"
+			},
 			DELETE: {
 				code: "ISSUER_DELETE",
 				message:
