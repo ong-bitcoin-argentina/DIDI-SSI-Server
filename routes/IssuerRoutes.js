@@ -15,7 +15,7 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-const { ERROR, DONE, ERROR_RENEW } = Constants.STATUS;
+const { CREATE, REFRESH } = Constants.DELEGATE_ACTIONS;
 
 /**
  *	Valida y envia a mouro el certificado generado por el issuer para ser guardado
@@ -249,11 +249,6 @@ router.post(
 	}
 );
 
-const exCallback = async ({ callbackUrl, did, token, status = ERROR, expireOn, blockHash, messageError }) => {
-	if (callbackUrl && token)
-		await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash, messageError });
-};
-
 /**
  *	Autorizar un issuer para la emision de certificados
  *	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
@@ -274,16 +269,17 @@ router.post(
 	async function (req, res) {
 		const { did, name, callbackUrl, token } = req.body;
 		try {
-			const issuer = await IssuerService.addIssuer(did, name);
-			const { blockHash, expireOn } = issuer;
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				name,
+				callbackUrl,
+				token,
+				action: CREATE
+			});
 
-			exCallback({ callbackUrl, did, token, status: DONE, expireOn, blockHash });
-
-			return ResponseHandler.sendRes(res, issuer);
+			return ResponseHandler.sendRes(res, delegateTransaction);
 		} catch (err) {
 			console.log(err);
-			const messageError = err.message ? err.message : err;
-			exCallback({ callbackUrl, did, token, messageError });
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}
@@ -363,16 +359,16 @@ router.post(
 			const { did } = req.params;
 			const { token, callbackUrl } = req.body;
 
-			const issuer = await IssuerService.refresh(did);
-			const { blockHash, expireOn } = issuer;
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				callbackUrl,
+				token,
+				action: REFRESH
+			});
 
-			exCallback({ callbackUrl, did, token, status: DONE, expireOn, blockHash });
-
-			return ResponseHandler.sendRes(res, issuer);
+			return ResponseHandler.sendRes(res, delegateTransaction);
 		} catch (err) {
 			console.log(err);
-			const messageError = err.message ? err.message : err;
-			exCallback({ callbackUrl, did, token, messageError, status: ERROR_RENEW });
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}

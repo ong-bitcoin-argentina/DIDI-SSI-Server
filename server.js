@@ -15,6 +15,7 @@ const AppUserAuthRoutes = require("./routes/AppUserAuthRoutes");
 const AdminRoutes = require("./routes/AdminRoutes");
 const PresentationRoutes = require("./routes/PresentationRoutes");
 const ShareRequestRoutes = require("./routes/ShareRequestRoutes");
+const { permanentJob } = require("./jobs/jobs");
 
 const multer = require("multer");
 
@@ -138,6 +139,7 @@ app.use("*", function (req, res) {
 // forkear workers
 if (cluster.isMaster) {
 	console.log(Messages.INDEX.MSG.STARTING_WORKERS(numCPUs));
+	permanentJob();
 
 	for (var i = 0; i < numCPUs; i++) {
 		cluster.fork();

@@ -24,6 +24,7 @@
 		"applicationinsights-native-metrics": "0.0.5",
 		"bcrypt": "5.0.0",
 		"body-parser": "1.19.0",
+		"cron": "1.8.2",
 		"cross-fetch": "3.0.4",
 		"did-jwt": "4.0.0",
 		"did-jwt-vc": "0.1.3",

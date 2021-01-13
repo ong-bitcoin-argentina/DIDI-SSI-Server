@@ -8,6 +8,7 @@ const Messages = require("../constants/Messages");
 const fetch = require("node-fetch");
 const { putOptionsAuth } = require("../constants/RequestOptions");
 const { encrypt } = require("../models/utils/Encryption");
+const DelegateTransaction = require("../models/DelegateTransaction");
 
 module.exports.addIssuer = async function (did, name) {
 	// Verificar que el issuer no exista
@@ -75,6 +76,15 @@ module.exports.callback = async function (url, did, token, data) {
 		if (jsonResp.status === "error") throw jsonResp;
 
 		return jsonResp;
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+module.exports.createDelegateTransaction = async function ({ did, name, callbackUrl, token, action }) {
+	try {
+		return await DelegateTransaction.create({ did, name, callbackUrl, token, action });
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(err);

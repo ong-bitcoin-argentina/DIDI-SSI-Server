@@ -213,5 +213,11 @@ module.exports = {
 		ERROR_RENEW: "Error al Renovar"
 	},
 
+	DELEGATE_ACTIONS: {
+		CREATE: "CREATE",
+		REVOKE: "REVOKE",
+		REFRESH: "REFRESH"
+	},
+
 	EXPIRE_IN_MINUTES: 60
 };
