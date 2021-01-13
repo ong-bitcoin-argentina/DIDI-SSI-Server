@@ -8,10 +8,13 @@ const UserService = require("../services/UserService");
 const MouroService = require("../services/MouroService");
 const CertService = require("../services/CertService");
 
-const Validator = require("./utils/Validator");
+const { validateBody, checkValidationResult } = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
+const { halfHourLimiter } = require("../policies/RateLimit");
+
+const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_BOOLEAN } = Constants.VALIDATION_TYPES;
 
 /**
  *	Validación del email. El usuario debe envia su mail personal para poder
@@ -20,18 +23,19 @@ const Constants = require("../constants/Constants");
  */
 router.post(
 	"/sendMailValidator",
-	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
+	validateBody([
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
+		{ name: "did", validate: [IS_STRING], optional: true },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH },
-			optional: true,
+			optional: true
 		},
-		{ name: "unique", validate: [Constants.VALIDATION_TYPES.IS_BOOLEAN], optional: true },
+		{ name: "unique", validate: [IS_BOOLEAN], optional: true }
 	]),
-	Validator.checkValidationResult,
+	checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 		const did = req.body.did;
@@ -64,14 +68,12 @@ router.post(
 );
 
 /**
- *	Reenviar Validación del email. 
+ *	Reenviar Validación del email.
  */
 router.post(
 	"/reSendMailValidator",
-	Validator.validateBody([
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] }
-	]),
-	Validator.checkValidationResult,
+	validateBody([{ name: "eMail", validate: [IS_STRING, IS_EMAIL] }]),
+	checkValidationResult,
 	async function (req, res) {
 		const eMail = req.body.eMail.toLowerCase();
 
@@ -94,16 +96,16 @@ router.post(
  */
 router.post(
 	"/verifyMailCode",
-	Validator.validateBody([
+	validateBody([
 		{
 			name: "validationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
+			validate: [IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
-		{ name: "eMail", validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_EMAIL] },
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "eMail", validate: [IS_STRING, IS_EMAIL] },
+		{ name: "did", validate: [IS_STRING] }
 	]),
-	Validator.checkValidationResult,
+	checkValidationResult,
 	async function (req, res) {
 		const validationCode = req.body.validationCode;
 		const eMail = req.body.eMail.toLowerCase();
