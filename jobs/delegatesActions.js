@@ -7,33 +7,24 @@ const exCallback = async ({ callbackUrl, did, token, status = ERROR, expireOn, b
 	await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash, messageError });
 };
 
-const catchError = async (next, dataError) => {
+const handleError = async (err, dataError) => {
+	console.log(err);
+	const messageError = err.message || err;
+	exCallback({ ...dataError, messageError });
+};
+
+const funcToDone = async (next, data, statusError) => {
 	try {
-		await next();
-	} catch (err) {
-		console.log(err);
-		const messageError = err.message ? err.message : err;
-		exCallback({ ...dataError, messageError });
+		const { blockHash, expireOn } = await next(data);
+		exCallback({ ...data, status: DONE, expireOn, blockHash });
+	} catch (error) {
+		handleError(error, { ...data, status: statusError });
 	}
 };
 
-const funcToDone = (next, data, statusError) => {
-	catchError(
-		async () => {
-			const { blockHash, expireOn } = await next(data);
-			exCallback({ ...data, status: DONE, expireOn, blockHash });
-		},
-		{ ...data, status: statusError }
-	);
-};
+const createAction = data => funcToDone(async ({ did, name }) => await IssuerService.addIssuer(did, name), data, ERROR);
 
-const createAction = data => {
-	funcToDone(async ({ did, name }) => await IssuerService.addIssuer(did, name), data, ERROR);
-};
-
-const refreshAction = data => {
-	funcToDone(async ({ did }) => await IssuerService.refresh(did), data, ERROR_RENEW);
-};
+const refreshAction = data => funcToDone(async ({ did }) => await IssuerService.refresh(did), data, ERROR_RENEW);
 
 const revokeAction = async ({ did }) => {
 	try {

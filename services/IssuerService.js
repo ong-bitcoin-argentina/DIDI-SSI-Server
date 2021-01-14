@@ -87,6 +87,6 @@ module.exports.createDelegateTransaction = async function ({ did, name, callback
 		return await DelegateTransaction.create({ did, name, callbackUrl, token, action });
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		throw new Error(err);
 	}
 };

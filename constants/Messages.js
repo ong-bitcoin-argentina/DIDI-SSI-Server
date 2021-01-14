@@ -158,7 +158,7 @@ module.exports = {
 			},
 			DID_IS_INVALID: {
 				code: "DID_IS_INVALID",
-				message: "El did es invalido"
+				message: "El did es inválido"
 			},
 			DELETE: {
 				code: "ISSUER_DELETE",
