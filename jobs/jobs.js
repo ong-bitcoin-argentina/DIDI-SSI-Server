@@ -21,18 +21,15 @@ exports.permanentJob = () => {
 		REFILL_DAY_OF_WEEL
 	].join(" ");
 
-	console.log("-- SE CREA EL CRON JOB. --");
 	new CronJob(
 		frequency,
 		async () => {
 			if (enabled) {
-				console.log("-- INICIA EL CRON JOB. --");
 				enabled = false;
 
 				const delegateTransactions = await DelegateTransaction.find({});
 				const count = delegateTransactions.length;
 
-				console.log(`-- ${count} DELEGACIONES PENDIENTES. --`);
 				for (const transaction of delegateTransactions) {
 					const { _id, action } = transaction;
 					try {
@@ -43,8 +40,6 @@ exports.permanentJob = () => {
 					}
 				}
 				enabled = true;
-			} else {
-				console.log("-- EL CRON JOB PASADO TODAVIA NO TERMINO. --");
 			}
 		},
 		null,
