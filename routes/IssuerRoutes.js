@@ -15,7 +15,7 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
-const { CREATE, REFRESH } = Constants.DELEGATE_ACTIONS;
+const { CREATE, REFRESH, REVOKE } = Constants.DELEGATE_ACTIONS;
 
 /**
  *	Valida y envia a mouro el certificado generado por el issuer para ser guardado
@@ -291,14 +291,22 @@ router.post(
  */
 router.delete(
 	"/issuer",
-	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "callbackUrl", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const did = req.body.did;
-		if (!process.env.ENABLE_INSECURE_ENDPOINTS) {
-			return ResponseHandler.sendErrWithStatus(res, new Error("Disabled endpoint"), 404);
-		}
+		const { did, callbackUrl, token } = req.body;
 		try {
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				callbackUrl,
+				token,
+				action: REVOKE
+			});
+
 			// elimino autorizacion en la blockchain
 			await BlockchainService.revokeDelegate(did);
 			return ResponseHandler.sendRes(res, Messages.ISSUER.DELETED);

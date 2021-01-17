@@ -1,6 +1,7 @@
 const Constants = require("../constants/Constants");
 const IssuerService = require("../services/IssuerService");
-const { ERROR, DONE, ERROR_RENEW } = Constants.STATUS;
+const BlockchainService = require("../services/BlockchainService");
+const { ERROR, DONE, ERROR_RENEW, REVOKE: REVOKE_STATUS } = Constants.STATUS;
 const { CREATE, REFRESH, REVOKE } = Constants.DELEGATE_ACTIONS;
 
 const exCallback = async ({ callbackUrl, did, token, status = ERROR, expireOn, blockHash, messageError }) => {
@@ -26,11 +27,13 @@ const createAction = data => funcToDone(async ({ did, name }) => await IssuerSer
 
 const refreshAction = data => funcToDone(async ({ did }) => await IssuerService.refresh(did), data, ERROR_RENEW);
 
-const revokeAction = async ({ did }) => {
+const revokeAction = async data => {
 	try {
-		await BlockchainService.revokeDelegate(did);
-	} catch (err) {
-		console.log(err);
+		await BlockchainService.revokeDelegate(data.did);
+		exCallback({ ...data, status: REVOKE_STATUS });
+	} catch (error) {
+		console.log(error);
+		handleError(error, { ...data, status: ERROR });
 	}
 };
 
