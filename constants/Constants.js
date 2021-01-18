@@ -211,7 +211,7 @@ module.exports = {
 		DONE: "Creado",
 		ERROR: "Error",
 		ERROR_RENEW: "Error al Renovar",
-		REVOKE: "Revocado"
+		REVOKED: "Revocado"
 	},
 
 	DELEGATE_ACTIONS: {
