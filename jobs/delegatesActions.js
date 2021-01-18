@@ -32,7 +32,6 @@ const revokeAction = async data => {
 		await BlockchainService.revokeDelegate(data.did);
 		exCallback({ ...data, status: REVOKE_STATUS });
 	} catch (error) {
-		console.log(error);
 		handleError(error, { ...data, status: ERROR });
 	}
 };
