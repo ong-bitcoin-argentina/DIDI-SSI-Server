@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Messages = require("../constants/Messages");
-const PhoneNormalization = require("../routes/utils/PhoneNormalization");
+const PhoneNormalization = require("./utils/PhoneNormalization");
 const fs = require("fs");
 const Image = require("../models/Image");
 
