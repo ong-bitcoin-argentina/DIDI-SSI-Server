@@ -33,7 +33,7 @@ module.exports.addIssuer = async function (did, name) {
 module.exports.editName = async function (did, name) {
 	try {
 		const issuer = await Issuer.getByDID(did);
-		if (!issuer) throw Messages.ISSUER.ERR.IS_INVALID;
+		if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
 		return await issuer.editName(name);
 	} catch (err) {
