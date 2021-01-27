@@ -17,11 +17,11 @@ module.exports.create = async function (operationId, userDID) {
 module.exports.getByOperationId = async function (operationId) {
 	try {
 		const authRequest = await AuthRequest.findByOperationId(operationId);
-		if (!authRequest) return Promise.reject(Messages.RENAPER.GET);
-		return Promise.resolve(authRequest);
+		if (!authRequest) throw Messages.RENAPER.GET;
+		return authRequest;
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.COMMUNICATION_ERROR);
+		throw Messages.COMMUNICATION_ERROR;
 	}
 };
 
