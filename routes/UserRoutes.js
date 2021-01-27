@@ -513,7 +513,7 @@ router.post(
 /**
  *	Obtiene informacion sobre el usuario
  */
-router.post("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
+router.get("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
 	try {
 		const { did } = req.params;
 		const user = await UserService.findByDid(did);
