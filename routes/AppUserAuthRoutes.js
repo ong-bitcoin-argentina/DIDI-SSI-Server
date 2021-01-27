@@ -12,6 +12,7 @@ const { IS_STRING } = Constants.VALIDATION_TYPES;
 router.use("/appAuth", CheckInsecure);
 router.use("/userApp/validateUser", ValidateAppJWT);
 
+// Obtiene una aplicación autorizada segun su did
 router.get("/appAuth/:did", checkValidationResult, async function (req, res) {
 	const { did } = req.params;
 	try {
@@ -22,6 +23,8 @@ router.get("/appAuth/:did", checkValidationResult, async function (req, res) {
 	}
 });
 
+// Crea una aplicación para volverla autorizada por DIDI
+// Solo disponible para QA
 router.post(
 	"/appAuth",
 	validateBody([
@@ -40,6 +43,7 @@ router.post(
 	}
 );
 
+// Obtiene un usuario cuya relación [user - app autorizada] fue establecida
 router.get("/userApp/:did", validateParams, async function (req, res) {
 	try {
 		const { did } = req.params;
@@ -51,6 +55,7 @@ router.get("/userApp/:did", validateParams, async function (req, res) {
 	}
 });
 
+// Crea y valida la relacion user - app autorizada
 router.post(
 	"/userApp/validateUser",
 	validateBody([{ name: "userJWT", validate: [IS_STRING] }]),
