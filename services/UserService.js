@@ -93,11 +93,11 @@ module.exports.emailTaken = emailTaken;
 let telTaken = async function (tel, exceptionDid) {
 	try {
 		const taken = await User.telTaken(tel, exceptionDid);
-		if (taken) return Promise.reject(Messages.USER.ERR.TEL_TAKEN);
-		return Promise.resolve();
+		if (taken) throw Messages.USER.ERR.TEL_TAKEN;
+		return;
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.VALIDATE);
+		throw Messages.USER.VALIDATE;
 	}
 };
 module.exports.telTaken = telTaken;
