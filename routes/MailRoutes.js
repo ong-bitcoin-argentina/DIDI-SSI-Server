@@ -45,7 +45,7 @@ router.post(
 
 		try {
 			// validar que el mail no este en uso
-			if (unique) await UserService.emailTaken(eMail);
+			if (unique) await UserService.emailTaken(eMail, did);
 
 			// se ingresò contraseña, validarla
 			if (did && password) await UserService.getAndValidate(did, password);

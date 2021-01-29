@@ -46,7 +46,7 @@ router.post(
 
 		try {
 			// validar que el telefono no este en uso
-			if (unique) await UserService.telTaken(phoneNumber);
+			if (unique) await UserService.telTaken(phoneNumber, did);
 
 			// se ingresò contraseña, validarla
 			if (password && did) await UserService.getAndValidate(did, password);
