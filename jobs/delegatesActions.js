@@ -1,23 +1,20 @@
 const Constants = require("../constants/Constants");
 const IssuerService = require("../services/IssuerService");
 const BlockchainService = require("../services/BlockchainService");
+const CallbackTask = require("../models/CallbackTask");
 const { ERROR, DONE, ERROR_RENEW, REVOKED } = Constants.STATUS;
 const { CREATE, REFRESH, REVOKE } = Constants.DELEGATE_ACTIONS;
-
-const exCallback = async ({ callbackUrl, did, token, status = ERROR, expireOn, blockHash, messageError }) => {
-	await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash, messageError });
-};
 
 const handleError = async (err, dataError) => {
 	console.log(err);
 	const messageError = err.message || err;
-	exCallback({ ...dataError, messageError });
+	CallbackTask.create({ ...dataError, messageError });
 };
 
 const funcToDone = async (next, data, statusError) => {
 	try {
 		const { blockHash, expireOn } = await next(data);
-		exCallback({ ...data, status: DONE, expireOn, blockHash });
+		CallbackTask.create({ ...data, status: DONE, expireOn, blockHash });
 	} catch (error) {
 		handleError(error, { ...data, status: statusError });
 	}
@@ -30,7 +27,7 @@ const refreshAction = data => funcToDone(async ({ did }) => await IssuerService.
 const revokeAction = async data => {
 	try {
 		await BlockchainService.revokeDelegate(data.did);
-		exCallback({ ...data, status: REVOKED });
+		CallbackTask.create({ ...data, status: REVOKED });
 	} catch (error) {
 		handleError(error, { ...data, status: ERROR });
 	}

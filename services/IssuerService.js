@@ -78,7 +78,7 @@ module.exports.callback = async function (url, did, token, data) {
 		return jsonResp;
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		throw new Error(err);
 	}
 };
 
