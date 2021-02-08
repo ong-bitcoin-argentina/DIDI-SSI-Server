@@ -21,7 +21,6 @@ const delegateJob = frequency => {
 				enabled = false;
 
 				const delegateTransactions = await DelegateTransaction.find({});
-				const count = delegateTransactions.length;
 
 				for (const transaction of delegateTransactions) {
 					const { _id, action } = transaction;
@@ -48,7 +47,6 @@ const callbackTaskJob = frequency => {
 		frequency,
 		async () => {
 			const callbackTasks = await CallbackTask.find({});
-			const count = callbackTasks.length;
 
 			for (const callbackTask of callbackTasks) {
 				const { _id, callbackUrl, did, token, status, expireOn, blockHash, messageError } = callbackTask;
