@@ -37,7 +37,7 @@ module.exports.revokeDelegate = async function (otherDID) {
 		return await issuer.delete();
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.DELEGATE.ERR.DELETE);
+		return Promise.reject(err.toString());
 	}
 };
 
