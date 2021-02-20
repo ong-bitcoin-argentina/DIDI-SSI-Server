@@ -15,6 +15,8 @@ const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
+const { CREATE, REFRESH, REVOKE } = Constants.DELEGATE_ACTIONS;
+
 /**
  *	Valida y envia a mouro el certificado generado por el issuer para ser guardado
  */
@@ -37,7 +39,7 @@ router.post(
 
 			console.log(`Verifying issuer ${cert.payload.iss}`);
 			// Validar si el emistor es correcto (autorizado a emitir y el mismo que el del certificado)
-			const valid = cert && await CertService.verifyIssuer(cert.payload.iss);
+			const valid = cert && (await CertService.verifyIssuer(cert.payload.iss));
 			if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
 
 			// Validar sujeto (que este registrado en didi)
@@ -160,7 +162,7 @@ router.post(
 
 			console.log(`Verifying issuer ${did}`);
 			// Validar si el emistor es correcto (autorizado a revocar)
-			const valid = cert && await CertService.verifyIssuer(did);
+			const valid = cert && (await CertService.verifyIssuer(did));
 			if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
 
 			console.log(`Verifying subject ${sub}`);
@@ -196,9 +198,7 @@ router.post(
  */
 router.post(
 	"/issuer/verifyCertificate",
-	Validator.validateBody([
-		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
-	]),
+	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	async function (req, res) {
 		const jwt = req.body.jwt;
 		try {
@@ -233,9 +233,7 @@ router.post(
  */
 router.post(
 	"/issuer/verify",
-	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
-	]),
+	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
 	async function (req, res) {
 		try {
 			const did = req.body.did;
@@ -269,9 +267,17 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
+		const { did, name, callbackUrl, token } = req.body;
 		try {
-			const issuer = await IssuerService.addIssuer(req.body.did, req.body.name);
-			return ResponseHandler.sendRes(res, issuer);
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				name,
+				callbackUrl,
+				token,
+				action: CREATE
+			});
+
+			return ResponseHandler.sendRes(res, delegateTransaction);
 		} catch (err) {
 			console.log(err);
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
@@ -285,21 +291,24 @@ router.post(
  */
 router.delete(
 	"/issuer",
-	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "callbackUrl", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const did = req.body.did;
-		if (!process.env.ENABLE_INSECURE_ENDPOINTS) {
-			return ResponseHandler.sendErrWithStatus(res, new Error("Disabled endpoint"), 404);
-		}
+		const { did, callbackUrl, token } = req.body;
 		try {
-			// elimino autorizacion en la blockchain
-			await BlockchainService.revokeDelegate(
-				Constants.SERVER_DID,
-				{ from: Constants.SERVER_DID, key: Constants.SERVER_PRIVATE_KEY },
-				did
-			);
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				callbackUrl,
+				token,
+				action: REVOKE
+			});
 
+			// elimino autorizacion en la blockchain
+			await BlockchainService.revokeDelegate(did);
 			return ResponseHandler.sendRes(res, Messages.ISSUER.DELETED);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
@@ -321,5 +330,56 @@ router.get("/issuer/:did", async function (req, res) {
 		return ResponseHandler.sendErr(res, err);
 	}
 });
+
+/**
+ *	Editar el nombre de un emisor autorizado a partir de su did
+ */
+router.put(
+	"/issuer/:did",
+	Validator.validateBody([{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		try {
+			const { did } = req.params;
+			const { name } = req.body;
+
+			const issuer = await IssuerService.editName(did, name);
+
+			return ResponseHandler.sendRes(res, issuer.name);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
+ *	Editar el nombre de un emisor autorizado a partir de su did
+ */
+router.post(
+	"/issuer/:did/refresh",
+	Validator.validateBody([
+		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "callbackUrl", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		try {
+			const { did } = req.params;
+			const { token, callbackUrl } = req.body;
+
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				callbackUrl,
+				token,
+				action: REFRESH
+			});
+
+			return ResponseHandler.sendRes(res, delegateTransaction);
+		} catch (err) {
+			console.log(err);
+			return ResponseHandler.sendErrWithStatus(res, err, 403);
+		}
+	}
+);
 
 module.exports = router;

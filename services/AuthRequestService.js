@@ -2,7 +2,7 @@ const Messages = require("../constants/Messages");
 const AuthRequest = require("../models/AuthRequest");
 
 // crear y guardar pedido de validacion de identidad
-module.exports.create = async function(operationId, userDID) {
+module.exports.create = async function (operationId, userDID) {
 	try {
 		let authRequest = await AuthRequest.generate(operationId, userDID);
 		if (!authRequest) return Promise.reject(Messages.RENAPER.CREATE);
@@ -14,19 +14,32 @@ module.exports.create = async function(operationId, userDID) {
 };
 
 // obtiene el pedido de validacion a partir del codigo de operacion
-module.exports.getByOperationId = async function(operationId) {
+module.exports.getByOperationId = async function (operationId) {
 	try {
 		const authRequest = await AuthRequest.findByOperationId(operationId);
-		if (!authRequest) return Promise.reject(Messages.RENAPER.GET);
-		return Promise.resolve(authRequest);
+		if (!authRequest) throw Messages.RENAPER.GET;
+		return authRequest;
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.COMMUNICATION_ERROR);
+		throw Messages.COMMUNICATION_ERROR;
+	}
+};
+
+// indica si posee una solicitud exitosa contra renaper
+module.exports.getByDID = async function (did) {
+	try {
+		const result = await AuthRequest.findByDid(did);
+		if (!result) return null;
+		const { createdOn, operationId, status } = result;
+		return { createdOn, operationId, status };
+	} catch (err) {
+		console.log(err);
+		throw Messages.COMMUNICATION_ERROR;
 	}
 };
 
 // actualiza el pedido de validacion
-module.exports.update = async function(status, errMsg) {
+module.exports.update = async function (status, errMsg) {
 	try {
 		let authRequest = await AuthRequest.findByOperationId(operationId);
 		if (!authRequest) return Promise.reject(Messages.RENAPER.GET);

@@ -14,6 +14,12 @@ const MailRoutes = require("./routes/MailRoutes");
 const RenaperRoutes = require("./routes/RenaperRoutes");
 const SemillasRoutes = require("./routes/SemillasRoutes");
 const AppUserAuthRoutes = require("./routes/AppUserAuthRoutes");
+const AdminRoutes = require("./routes/AdminRoutes");
+const PresentationRoutes = require("./routes/PresentationRoutes");
+const ShareRequestRoutes = require("./routes/ShareRequestRoutes");
+const { permanentJob } = require("./jobs/jobs");
+
+const multer = require("multer");
 
 // inicializar cluster para workers, uno por cpu disponible
 var cluster = require("cluster");
@@ -72,7 +78,7 @@ app.use(function (req, _, next) {
 });
 
 // loggear errores
-app.use(function(error, req, _, next) {
+app.use(function (error, req, _, next) {
 	console.log(error);
 	next();
 });
@@ -82,6 +88,15 @@ if (Constants.DEBUGG) {
 	console.log("route: " + route);
 }
 
+app.use(
+	multer({
+		dest: "./uploads/",
+		rename: function (fieldname, filename) {
+			return filename;
+		}
+	}).single("file")
+);
+
 app.use(route, IssuerRoutes);
 app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
@@ -89,7 +104,10 @@ app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
 app.use(route, SemillasRoutes);
 app.use(route, AppUserAuthRoutes);
-app.use("*", function(req, res) {
+app.use(route, AdminRoutes);
+app.use(route, PresentationRoutes);
+app.use(route, ShareRequestRoutes);
+app.use("*", function (req, res) {
 	return res.status(404).json({
 		status: "error",
 		errorCode: "INVALID_ROUTE",
@@ -100,6 +118,7 @@ app.use("*", function(req, res) {
 // forkear workers
 if (cluster.isMaster) {
 	console.log(Messages.INDEX.MSG.STARTING_WORKERS(numCPUs));
+	permanentJob();
 
 	for (var i = 0; i < numCPUs; i++) {
 		cluster.fork();

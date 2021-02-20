@@ -7,18 +7,16 @@ const BlockchainService = require("./BlockchainService");
 const { Credentials } = require("uport-credentials");
 
 const EthrDID = require("ethr-did");
-const { decodeJWT, createJWT } = require("did-jwt");
+const { decodeJWT, createJWT, SimpleSigner } = require("did-jwt");
 const { createVerifiableCredential, verifyCredential } = require("did-jwt-vc");
 
 const { Resolver } = require("did-resolver");
 const { getResolver } = require("ethr-did-resolver");
 
-const resolver = new Resolver(
-	getResolver({ rpcUrl: Constants.BLOCKCHAIN.BLOCK_CHAIN_URL, registry: Constants.BLOCKCHAIN.BLOCK_CHAIN_CONTRACT })
-);
+const resolver = new Resolver(getResolver(Constants.BLOCKCHAIN.PROVIDER_CONFIG));
 
 // genera un certificado que certifique la propiedad del numero de telefono por parte del dueño del did
-module.exports.createPhoneCertificate = async function(did, phoneNumber) {
+module.exports.createPhoneCertificate = async function (did, phoneNumber) {
 	const subject = {
 		Phone: {
 			preview: {
@@ -35,7 +33,7 @@ module.exports.createPhoneCertificate = async function(did, phoneNumber) {
 };
 
 // genera un certificado que certifique la propiedad del mail por parte del dueño del did
-module.exports.createMailCertificate = async function(did, email) {
+module.exports.createMailCertificate = async function (did, email) {
 	const subject = {
 		Email: {
 			preview: {
@@ -52,7 +50,7 @@ module.exports.createMailCertificate = async function(did, email) {
 };
 
 // genera un certificado pidiendo info a determinado usuario
-module.exports.createPetition = async function(did, claims, cb) {
+module.exports.createPetition = async function (did, claims, cb) {
 	try {
 		const exp = ((new Date().getTime() + 600000) / 1000) | 0;
 
@@ -76,14 +74,15 @@ module.exports.createPetition = async function(did, claims, cb) {
 };
 
 // genera un certificado pidiendo info a determinado usuario
-module.exports.createShareRequest = async function(did, jwt) {
+module.exports.createShareRequest = async function (did, jwt) {
+	const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
 	const payload = { sub: did, disclosureRequest: jwt };
 	const token = await createJWT(payload, { alg: "ES256K-R", issuer: "did:ethr:" + Constants.SERVER_DID, signer });
 	return token;
 };
 
 // genera un certificado asociando la informaciòn recibida en "subject" con el did
-module.exports.createCertificate = async function(did, subject, expDate, errMsg) {
+module.exports.createCertificate = async function (did, subject, expDate, errMsg) {
 	const vcissuer = new EthrDID({
 		address: Constants.SERVER_DID,
 		privateKey: Constants.SERVER_PRIVATE_KEY
@@ -114,27 +113,19 @@ module.exports.createCertificate = async function(did, subject, expDate, errMsg)
 };
 
 // analiza la validez del certificado para el certificado de numero de mail
-module.exports.verifyCertificateEmail = async function(jwt, hash) {
-	const result = await module.exports.verifyCertificate(
-		jwt,
-		hash,
-		Messages.CERTIFICATE.ERR.VERIFY
-	);
+module.exports.verifyCertificateEmail = async function (jwt, hash) {
+	const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
 	return result;
 };
 
 // analiza la validez del certificado para el certificado de numero de telefono
-module.exports.verifyCertificatePhoneNumber = async function(jwt, hash) {
-	const result = await module.exports.verifyCertificate(
-		jwt,
-		hash,
-		Messages.CERTIFICATE.ERR.VERIFY
-	);
+module.exports.verifyCertificatePhoneNumber = async function (jwt, hash) {
+	const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
 	return result;
 };
 
 // decodifica el certificado, retornando la info (independientemente de si el certificado es valido o no)
-module.exports.decodeCertificate = async function(jwt, errMsg) {
+module.exports.decodeCertificate = async function (jwt, errMsg) {
 	try {
 		const result = await decodeJWT(jwt);
 		return Promise.resolve(result);
@@ -146,7 +137,7 @@ module.exports.decodeCertificate = async function(jwt, errMsg) {
 
 // Analiza la validez del certificado, su formato, emisor, etc
 // retorna la info del certificado y su estado
-module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
+module.exports.verifyCertificate = async function (jwt, hash, errMsg) {
 	try {
 		const result = await verifyCredential(jwt, resolver);
 		result.status = Constants.CERTIFICATE_STATUS.UNVERIFIED;
@@ -162,14 +153,13 @@ module.exports.verifyCertificate = async function(jwt, hash, errMsg) {
 };
 
 // analiza la validez del emisor del certificado
-module.exports.verifyIssuer = async function(issuerDid) {
-	console.log('Validating delegate...');
-	const delegated = await BlockchainService.validDelegate(
-		Constants.SERVER_DID,
-		{ from: Constants.SERVER_DID },
-		issuerDid
-	);
-	console.log('Delegate verified!');
+module.exports.verifyIssuer = async function (issuerDid) {
+	console.log("Validating delegate...");
+	if (issuerDid === `did:ethr:${Constants.SERVER_DID}`) {
+		return true;
+	}
+	const delegated = await BlockchainService.validDelegate(issuerDid);
+	console.log("Delegate verified!");
 	if (delegated) return Messages.CERTIFICATE.VERIFIED;
 	throw Messages.ISSUER.ERR.IS_INVALID;
 };

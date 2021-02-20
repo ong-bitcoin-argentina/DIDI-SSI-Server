@@ -8,8 +8,15 @@ const IssuerSchema = new mongoose.Schema({
 	},
 	name: {
 		type: String,
-		unique: true,
 		required: true
+	},
+	blockHash: {
+		type: String,
+		required: true
+	},
+	deleted: {
+		type: Boolean,
+		default: false
 	},
 	expireOn: {
 		type: Date,
@@ -28,6 +35,49 @@ IssuerSchema.pre("findOneAndUpdate", function (next) {
 	this.update({}, { modifiedOn: new Date() });
 	next();
 });
+
+IssuerSchema.methods.delete = async function () {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { deleted: true }
+	};
+
+	try {
+		await Issuer.findOneAndUpdate(updateQuery, updateAction);
+		this.deleted = true;
+		return Promise.resolve(this);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+};
+
+IssuerSchema.methods.edit = async function (data) {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: data
+	};
+
+	try {
+		return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
+
+IssuerSchema.methods.editName = async function (name) {
+	const updateQuery = { _id: this._id };
+	const updateAction = {
+		$set: { name }
+	};
+
+	try {
+		return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(err);
+	}
+};
 
 const Issuer = mongoose.model("Issuer", IssuerSchema);
 module.exports = Issuer;

@@ -23,3 +23,13 @@ module.exports.postOptionsAuth = (token, data) => ({
 	headers: headersAuth(token),
 	body: JSON.stringify(data)
 });
+
+// Se utiliza para comunicarse con Issuer Back, por eso tiene una autentifización diferente
+module.exports.putOptionsAuth = (token, data) => ({
+	method: "PUT",
+	headers: {
+		"Content-Type": "application/json",
+		token
+	},
+	body: JSON.stringify(data)
+});

@@ -1,5 +1,8 @@
 const User = require("../models/User");
 const Messages = require("../constants/Messages");
+const PhoneNormalization = require("./utils/PhoneNormalization");
+const fs = require("fs");
+const Image = require("../models/Image");
 
 const { DID_NOT_FOUND } = Messages.VALIDATION;
 
@@ -90,11 +93,11 @@ module.exports.emailTaken = emailTaken;
 let telTaken = async function (tel, exceptionDid) {
 	try {
 		const taken = await User.telTaken(tel, exceptionDid);
-		if (taken) return Promise.reject(Messages.USER.ERR.TEL_TAKEN);
-		return Promise.resolve();
+		if (taken) throw Messages.USER.ERR.TEL_TAKEN;
+		return;
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(Messages.USER.VALIDATE);
+		throw Messages.USER.VALIDATE;
 	}
 };
 module.exports.telTaken = telTaken;
@@ -238,5 +241,45 @@ module.exports.recoverPassword = async function (eMail, newPass) {
 	} catch (err) {
 		console.log(err);
 		return Promise.reject(Messages.USER.ERR.UPDATE);
+	}
+};
+
+module.exports.normalizePhone = async function (phone) {
+	const user = await getByTel(phone);
+	return user ? phone : PhoneNormalization.normalizePhone(phone);
+};
+
+// obtener usuario y actualizar imagen
+module.exports.saveImage = async function (did, contentType, path) {
+	try {
+		// obtener usuario
+		let user = await getByDID(did);
+		if (!user) return Promise.reject(Messages.USER.ERR.GET);
+
+		// creo la imagen
+		const image = fs.readFileSync(path);
+		const encode_image = image.toString("base64");
+		const buffer = Buffer.from(encode_image, "base64");
+
+		const { _id } = await Image.generate(buffer, contentType);
+
+		// guardo el id de la imagen en usuario
+		await user.updateImage(_id);
+
+		return Promise.resolve(_id);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.IMAGE.ERR.CREATE);
+	}
+};
+
+module.exports.getImage = async function (id) {
+	try {
+		const image = await Image.getById(id);
+		if (!image) return Promise.reject(Messages.IMAGE.ERR.GET);
+		return Promise.resolve(image);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(Messages.IMAGE.ERR.GET);
 	}
 };

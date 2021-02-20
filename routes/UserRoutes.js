@@ -14,6 +14,8 @@ const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
 const { userDTO } = require("./utils/DTOs");
 const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
+const { getImageUrl } = require("./utils/Helpers");
+const { halfHourLimiter } = require("../policies/RateLimit");
 
 const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATION_TYPES;
 
@@ -48,7 +50,8 @@ router.post(
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const { password, phoneNumber, did, privateKeySeed, name, lastname } = req.body;
+		const { password, did, privateKeySeed, name, lastname } = req.body;
+		const phoneNumber = await UserService.normalizePhone(req.body.phoneNumber);
 		const eMail = req.body.eMail.toLowerCase();
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
@@ -285,7 +288,7 @@ router.post(
 	async function (req, res) {
 		const did = req.body.did;
 		const phoneValidationCode = req.body.phoneValidationCode;
-		const newPhoneNumber = req.body.newPhoneNumber;
+		const newPhoneNumber = await UserService.normalizePhone(req.body.newPhoneNumber);
 		const password = req.body.password;
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
@@ -510,23 +513,16 @@ router.post(
 /**
  *	Obtiene informacion sobre el usuario
  */
-router.post(
-	"/user/:did",
-	// TODO fix: userJWT is optional
-	// Validator.validateBody([{ name: "userJWT", validate: [IS_STRING] }]),
-	Validator.checkValidationResult,
-	Validator.validateParams,
-	async function (req, res) {
-		try {
-			const { did } = req.params;
-			const user = await UserService.findByDid(did);
-			const result = await userDTO(user);
-			return ResponseHandler.sendRes(res, result);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
+router.get("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
+	try {
+		const { did } = req.params;
+		const user = await UserService.findByDid(did);
+		const result = await userDTO(user);
+		return ResponseHandler.sendRes(res, result);
+	} catch (err) {
+		return ResponseHandler.sendErr(res, err);
 	}
-);
+});
 
 /**
  *	Edita nombre y apellido, usado para migrar usuarios
@@ -547,6 +543,50 @@ router.post(
 			return ResponseHandler.sendRes(res, result);
 		} catch (err) {
 			return ResponseHandler.sendErrWithStatus(res, err);
+		}
+	}
+);
+
+/**
+ *	Agrega una imagen de perfil al usuario
+ */
+router.post(
+	"/user/:did/image",
+	Validator.validateBody([]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	halfHourLimiter,
+	async function (req, res) {
+		try {
+			const { path, mimetype, size } = req.file;
+			const { did } = req.params;
+
+			// MAX_MB * 1000000 da la cantidad exacta de los MB permitidos
+			if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
+
+			const { _id } = await UserService.saveImage(did, mimetype, path);
+			const image_url = getImageUrl(_id);
+
+			return ResponseHandler.sendRes(res, image_url);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+router.get(
+	"/image/:id",
+	Validator.validateBody([]),
+	Validator.checkValidationResult,
+	Validator.validateParams,
+	async function (req, res) {
+		try {
+			const id = req.params.id;
+			const { img, contentType } = await UserService.getImage(id);
+			res.type(contentType);
+			return res.send(img);
+		} catch (err) {
+			return ResponseHandler.sendErr(res, err);
 		}
 	}
 );
