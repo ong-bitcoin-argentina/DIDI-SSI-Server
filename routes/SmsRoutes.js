@@ -7,10 +7,13 @@ const UserService = require("../services/UserService");
 const MouroService = require("../services/MouroService");
 const CertService = require("../services/CertService");
 
-const Validator = require("./utils/Validator");
+const { validateBody, checkValidationResult } = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
+const { halfHourLimiter } = require("../policies/RateLimit");
+
+const { IS_STRING, IS_MOBILE_PHONE, IS_PASSWORD, IS_BOOLEAN } = Constants.VALIDATION_TYPES;
 
 /**
  *	Validación de teléfono. El usuario debe envia su numero de celular para
@@ -19,21 +22,22 @@ const Constants = require("../constants/Constants");
  */
 router.post(
 	"/sendSmsValidator",
-	Validator.validateBody([
+	validateBody([
 		{
 			name: "cellPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
+			validate: [IS_STRING, IS_MOBILE_PHONE]
 		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
+		{ name: "did", validate: [IS_STRING], optional: true },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH },
-			optional: true,
+			optional: true
 		},
-		{ name: "unique", validate: [Constants.VALIDATION_TYPES.IS_BOOLEAN], optional: true },
+		{ name: "unique", validate: [IS_BOOLEAN], optional: true }
 	]),
-	Validator.checkValidationResult,
+	checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const phoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
 		const did = req.body.did;
@@ -42,7 +46,7 @@ router.post(
 
 		try {
 			// validar que el telefono no este en uso
-			if (unique) await UserService.telTaken(phoneNumber);
+			if (unique) await UserService.telTaken(phoneNumber, did);
 
 			// se ingresò contraseña, validarla
 			if (password && did) await UserService.getAndValidate(did, password);
@@ -74,19 +78,19 @@ router.post(
  */
 router.post(
 	"/verifySmsCode",
-	Validator.validateBody([
+	validateBody([
 		{
 			name: "cellPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
+			validate: [IS_STRING, IS_MOBILE_PHONE]
 		},
 		{
 			name: "validationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
+			validate: [IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] }
 	]),
-	Validator.checkValidationResult,
+	checkValidationResult,
 	async function (req, res) {
 		const cellPhoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
 

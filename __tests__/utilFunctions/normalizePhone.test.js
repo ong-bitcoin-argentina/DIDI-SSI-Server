@@ -1,4 +1,4 @@
-const { normalizePhone }  = require("../../routes/utils/PhoneNormalization");
+const { normalizePhone }  = require("../../services/utils/PhoneNormalization");
 
 describe('Normalize phone', () => {
   const NORMALIZED_NUMBER = "+542491234567";

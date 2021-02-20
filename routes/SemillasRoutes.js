@@ -9,6 +9,7 @@ const { SUCCESS } = Messages.SEMILLAS;
 const { IS_STRING, IS_EMAIL, IS_DNI, IS_MOBILE_PHONE, IS_NUMBER } = Constants.VALIDATION_TYPES;
 const optional = true;
 
+// Obtiene los prestadores de semillas
 router.get("/semillas/prestadores", checkValidationResult, async function (req, res) {
 	try {
 		const result = await SemillasService.getPrestadores();
@@ -18,6 +19,8 @@ router.get("/semillas/prestadores", checkValidationResult, async function (req, 
 	}
 });
 
+// Notifica a semillas el did y dni del usuario para que luego se le envien las credenciales de semillas identidad y beneficio
+// En resumen: Solicita las credenciales de semillas
 router.post(
 	"/semillas/credentials",
 	validateBody([
@@ -36,6 +39,7 @@ router.post(
 	}
 );
 
+// Usuario comparte sus credenciales al prestador para solicitar su servicio
 router.post(
 	"/semillas/credentialShare",
 	validateBody([
@@ -59,6 +63,7 @@ router.post(
 	}
 );
 
+// Solicitud de validación de identidad a semillas
 router.post(
 	"/semillas/validateDni",
 	validateBody([
@@ -81,6 +86,7 @@ router.post(
 	}
 );
 
+// Actualización del estado de la solicitud de validación de identidad
 router.patch(
 	"/semillas/identityValidation",
 	validateBody([
@@ -99,6 +105,7 @@ router.patch(
 	}
 );
 
+// Elimina una solicitud de validación de identidad desde semillas
 router.delete(
 	"/semillas/identityValidation",
 	validateBody([{ name: "did", validate: [IS_STRING] }]),
@@ -114,6 +121,7 @@ router.delete(
 	}
 );
 
+// Obtiene el estado de validacion de identidad desde semillas
 router.get("/semillas/identityValidation/:did", checkValidationResult, async function (req, res) {
 	const { did } = req.params;
 	try {

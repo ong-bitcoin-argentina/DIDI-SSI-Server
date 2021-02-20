@@ -156,6 +156,10 @@ module.exports = {
 				code: "ALREADY_CREATED",
 				message: "Ese usuario ya se encontraba autorizado para emitir certificados."
 			},
+			DID_IS_INVALID: {
+				code: "DID_IS_INVALID",
+				message: "El did es inválido"
+			},
 			DELETE: {
 				code: "ISSUER_DELETE",
 				message:
@@ -189,6 +193,10 @@ module.exports = {
 			DID_EXISTS: {
 				code: "DID_EXISTS",
 				message: "Ya existe un issuer con ese did."
+			},
+			DID_NOT_EXISTS: {
+				code: "DID_NOT_EXISTS",
+				message: "No existe el issuer con ese did."
 			},
 			COULDNT_PERSIST: {
 				code: "COULDNT_PERSIST",

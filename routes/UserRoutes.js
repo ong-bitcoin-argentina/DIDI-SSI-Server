@@ -15,6 +15,7 @@ const Validator = require("./utils/Validator");
 const { userDTO } = require("./utils/DTOs");
 const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
 const { getImageUrl } = require("./utils/Helpers");
+const { halfHourLimiter } = require("../policies/RateLimit");
 
 const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATION_TYPES;
 
@@ -512,7 +513,7 @@ router.post(
 /**
  *	Obtiene informacion sobre el usuario
  */
-router.post("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
+router.get("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
 	try {
 		const { did } = req.params;
 		const user = await UserService.findByDid(did);
@@ -554,6 +555,7 @@ router.post(
 	Validator.validateBody([]),
 	Validator.checkValidationResult,
 	Validator.validateParams,
+	halfHourLimiter,
 	async function (req, res) {
 		try {
 			const { path, mimetype, size } = req.file;
