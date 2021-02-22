@@ -1,3 +1,14 @@
+/**
+ * La normalización es
+ * Simbolo inicial: +
+ * Indicativo país (CC): 54
+ * Indicativo nacional de destino (NDC): No incluye 9 ni 0. 
+ *   Ejemplos: 249 Tandil, 11 CABA 
+ * Número de abonado (SN): 
+ *   Ejemplos: 1234567 Tandil, 12345678 CABA
+ * Número normalizado: +542491234567
+*/
+
 const phoneUtil = require("google-libphonenumber").PhoneNumberUtil.getInstance();
 const PNF = require("google-libphonenumber").PhoneNumberFormat;
 
