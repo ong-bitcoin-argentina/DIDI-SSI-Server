@@ -1,4 +1,4 @@
-const { loggerManager } = require('./services/logger');
+require('./services/logger');
 
 const mongoose = require("mongoose");
 const express = require("express");
