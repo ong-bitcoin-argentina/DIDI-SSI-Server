@@ -2,10 +2,14 @@ const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const firebaseAdmin = require("firebase-admin");
 
+
+/**
+ * Comprobar existencia de variables de entorno necesarias,
+ * luego inicializar Firebase
+ */
 function hasFirebaseInEnv() {
 	return Constants.FIREBASE_URL && Constants.FIREBASE_PRIV_KEY_PATH;
 }
-
 if (hasFirebaseInEnv()) {
 	const credentialAccount = require(Constants.FIREBASE_PRIV_KEY_PATH);
 	firebaseAdmin.initializeApp({
@@ -14,7 +18,9 @@ if (hasFirebaseInEnv()) {
 	});
 }
 
-// crear y mandar una push notification
+/**
+ *  Crear y mandar una push notification
+ */
 module.exports.sendPushNotification = async function(title, message, firebaseId, type) {
 	if (!hasFirebaseInEnv() || !firebaseId) return;
 

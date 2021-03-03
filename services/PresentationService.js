@@ -5,6 +5,9 @@ const { INVALID } = Messages.TOKEN;
 
 const { GET, NOT_FOUND, EXPIRED } = Messages.PRESENTATION.ERR;
 
+/**
+ *  Crea una nueva presentacion dado un jwt
+ */
 module.exports.savePresentation = async function ({ jwts }) {
 	try {
 		const jwtsParsed = JSON.parse(jwts);
@@ -21,14 +24,17 @@ module.exports.savePresentation = async function ({ jwts }) {
 	}
 };
 
+/**
+ *  Retorna una presentación a partir de un id
+ */
 module.exports.getPresentation = async function ({ id }) {
 	try {
 		const presentation = await Presentation.getById(id);
 
-		// Valido que la presentacion exista
+		// Validar que la presentación exista
 		if (!presentation) return Promise.reject(NOT_FOUND);
 
-		// Valido que no haya expirado
+		// Validar que no haya expirado
 		const { expireOn } = presentation;
 		if (new Date(expireOn) < new Date()) return Promise.reject(EXPIRED);
 

@@ -251,6 +251,7 @@ User.emailTaken = async function (mail, exceptionDid) {
 	}
 };
 
+// verificar si el teléfono está en uso
 User.telTaken = async function (tel, exceptionDid) {
 	try {
 		const hashData = await Hashing.hash(tel);
@@ -330,6 +331,7 @@ User.getByTel = async function (phoneNumber) {
 	}
 };
 
+// obtener usuario a partir del did y actualizarlo
 User.findByDidAndUpdate = async (did, data) => {
 	const query = { did };
 	const action = { $set: data };

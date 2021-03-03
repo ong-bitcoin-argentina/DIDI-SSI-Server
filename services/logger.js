@@ -1,6 +1,8 @@
 const { LoggerManager, AzureLogger } = require("@proyecto-didi/didi-ssi-logger");
 
-
+/**
+ * LogIn en Azure
+ */
 const loggerManager = new LoggerManager();
 const azureLogger = new AzureLogger({
     aiCloudRole: process.env.NAME,

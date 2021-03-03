@@ -6,7 +6,9 @@ const ApolloClient = require("apollo-boost").default;
 const gql = require("graphql-tag");
 const fetch = require("node-fetch");
 
-// agrega token a pedidos para indicar a mouro que es el didi-server quien realiza los llamados
+/**
+ *  Agrega token a pedidos para indicar a mouro que es el didi-server quien realiza los llamados
+ */
 async function getAuthHeader(did, key) {
 	const signer = SimpleSigner(key);
 	const token = await createJWT({ exp: new Date().getTime() / 1000 + 500 }, { alg: "ES256K-R", issuer: did, signer });
@@ -29,7 +31,9 @@ let getClient = async function() {
 	});
 };
 
-// recupera el hash de backup para swarm
+/**
+ *  Recupera el hash de backup para swarm
+ */
 module.exports.getHash = async function(did) {
 	try {
 		let result = await (await getClient()).query({
@@ -51,7 +55,9 @@ module.exports.getHash = async function(did) {
 	}
 };
 
-// recibe el certificado y lo envia a mouro para ser guardado
+/**
+ *  Recibe el certificado y lo envia a mouro para ser guardado
+ */ 
 module.exports.saveCertificate = async function(cert, did) {
 	try {
 		let result = await (await getClient()).mutate({
@@ -80,7 +86,9 @@ module.exports.saveCertificate = async function(cert, did) {
 	}
 };
 
-// marca como revocado un certificado de mouro
+/**
+ *  Marca como revocado un certificado de mouro
+ */ 
 module.exports.revokeCertificate = async function(jwt, hash, did) {
 	try {
 		let result = await (await getClient()).mutate({
@@ -102,8 +110,10 @@ module.exports.revokeCertificate = async function(jwt, hash, did) {
 	}
 };
 
-// realiza llamado a mouro pidiendo el jwt para ver si este existe en mouro
-// retorna el hash interno en mouro
+/**
+ *  Realiza llamado a mouro pidiendo el jwt para verificar su existencia
+ *  en caso de encontrarlo, retorna el hash interno en mouro
+ */
 module.exports.isInMouro = async function(jwt, did, errMsg) {
 	try {
 		let result = await (await getClient()).query({

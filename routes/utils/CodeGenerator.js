@@ -1,4 +1,4 @@
-// genera un còdigo de validaciòn de mail/tel
+// Genera un código de validación de mail/tel
 module.exports.generateCode = function(length) {
 	var text = "";
 	var possible = "0123456789";

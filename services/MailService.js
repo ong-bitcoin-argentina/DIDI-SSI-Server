@@ -8,7 +8,9 @@ const mailgun =
 		  apiKey: Constants.MAILGUN_API_KEY, domain: Constants.MAILGUN_DOMAIN
 	  }) : null;
 
-// obtiene el pedido de validacion a partir del mail
+/**
+ * Obtiene el pedido de validación a partir del mail
+ */
 const getByMail = async function(email) {
 	try {
 		const mail = await Mail.getByEmail(email);
@@ -23,7 +25,9 @@ const getByMail = async function(email) {
 
 module.exports.getByMail = getByMail;
 
-// realiza el envio de mail con el còdigo de validaciòn usando "Mailgun"
+/**
+ * Realiza el envío de mail con el código de validación usando "Mailgun"
+ */ 
 module.exports.sendValidationCode = async function(eMail, code) {
 	const data = {
 		from: Messages.EMAIL.VALIDATION.FROM,
@@ -32,10 +36,10 @@ module.exports.sendValidationCode = async function(eMail, code) {
 		text: Messages.EMAIL.VALIDATION.MESSAGE(code)
 	};
 
-	// imprimir codigo por pantalla sin enviar mail si se seteo "NO_EMAILS"
+	// En caso de seteo en "NO_EMAILS", finaliza
 	if (Constants.NO_EMAILS) return Promise.resolve(code);
 
-	// en caso cotrario enviar sms
+	// En caso cotrario enviar un sms
 	try {
 		const result = await mailgun.messages().send(data);
 		if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
@@ -46,7 +50,9 @@ module.exports.sendValidationCode = async function(eMail, code) {
 	}
 };
 
-// crear y guardar pedido de validacion de mail
+/**
+ *  Crear y guardar pedido de validación de mail
+ */ 
 module.exports.create = async function(email, code, did) {
 	try {
 		let mail = await Mail.generate(email, code, did);
@@ -58,10 +64,12 @@ module.exports.create = async function(email, code, did) {
 	}
 };
 
-// marca el pedido como validado
+/**
+ *  Valida email según el did
+ */ 
 module.exports.validateMail = async function(mail, did) {
 	try {
-		// validar mail
+		// Validar mail
 		mail = await mail.validateMail(did);
 		return Promise.resolve(mail);
 	} catch (err) {
@@ -70,7 +78,9 @@ module.exports.validateMail = async function(mail, did) {
 	}
 };
 
-// obtiene y compara el codigo de validacion
+/**
+ *  Obtiene y verifica que el código de validación sea correcto
+ */ 
 module.exports.isValid = async function(email, code) {
 	try {
 		let mail = await getByMail(email);
@@ -83,7 +93,9 @@ module.exports.isValid = async function(email, code) {
 	}
 };
 
-// indica si el pedido de validaciòn de mail fue validado
+/**
+ *  Indica si un mail a sido validado según el did
+ */ 
 module.exports.isValidated = async function(did, email) {
 	try {
 		let isValidated = await Mail.isValidated(did, email);
