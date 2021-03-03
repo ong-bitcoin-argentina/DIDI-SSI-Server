@@ -139,7 +139,6 @@ router.post(
 
 /**
  *	Permite revocar un certificado previamente almacenado en mouro
- *	(La revocación no está implementada en mouro)
  */
 router.post(
 	"/issuer/revokeCertificate",
@@ -230,7 +229,8 @@ router.post(
 );
 
 /**
- *	Verifica la existencia del emisor según el didObtiene y verifica que el código de validación sea correcto
+ *	Verifica la existencia del emisor según el did
+ *  Obtiene y verifica que el código de validación sea correcto
  */
 router.post(
 	"/issuer/verify",
@@ -318,7 +318,7 @@ router.delete(
 );
 
 /**
- *	Reiniciar autorización de un emisor para emitir certificados
+ *	Refrescar autorización de un emisor para emitir certificados
  */
 router.post(
 	"/issuer/:did/refresh",

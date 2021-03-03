@@ -74,8 +74,8 @@ router.post(
 
 /**
  *	Validación del código de 6 digitos enviado por SMS.  
- *	El usuario debe ingresar su el código de validacion,
- *  el cuàl debe haberse mandado previamènte con "/sendSmsValidator".
+ *	El usuario debe ingresar el código de validacion,
+ *  el cuál debe haberse mandado previamente con "/sendSmsValidator".
  */
 router.post(
 	"/verifySmsCode",

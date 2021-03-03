@@ -50,7 +50,7 @@ module.exports.editName = async function (did, name) {
 
 
 /**
- *  Re-inicializar issuer (nueva fecha de expiración y hash)
+ *  Refrescar issuer (nueva fecha de expiración y hash)
  */
 module.exports.refresh = async function (did) {
 	// Verificar que el issuer no exista o haya sido borrado

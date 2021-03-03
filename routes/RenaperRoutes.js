@@ -155,10 +155,10 @@ router.post(
 				Messages.CERTIFICATE.ERR.CREATE
 			);
 
-			// Crear certificados en //
+			// Crear certificados en paralelo
 			const [cert, aditionalCert] = await Promise.all([generateCert, generateAditionalCert]);
 
-			// Enviar en // certificados a mouro para ser guardados
+			// Enviar en paralelo certificados a mouro para ser guardados
 			const saveCert = MouroService.saveCertificate(cert, did);
 			const saveAditionalCert = MouroService.saveCertificate(aditionalCert, did);
 			const [resCert, resAditionalCert] = await Promise.all([saveCert, saveAditionalCert]);

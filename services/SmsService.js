@@ -31,7 +31,7 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 		from: Constants.TWILIO_PHONE_NUMBER
 	};
 
-	// En caso de "NO_SMS", imprimir codigo por pantalla sin enviar sms
+	// En caso de "NO_SMS", finaliza
 	if (Constants.NO_SMS) return Promise.resolve(code);
 
 	// En caso cotrario enviar sms

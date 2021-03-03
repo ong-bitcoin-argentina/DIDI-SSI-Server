@@ -16,7 +16,7 @@ const blockchainManager = new BlockchainManager(config, Constants.BLOCKCHAIN.GAS
 
 
 /**
- *  Realiza una delegación de "serverDID" a "issuer"
+ *  Realiza una delegación de "DIDI Server" a "issuer"
  */
 module.exports.addDelegate = async function (issuerDID) {
 	try {

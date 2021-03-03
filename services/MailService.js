@@ -36,7 +36,7 @@ module.exports.sendValidationCode = async function(eMail, code) {
 		text: Messages.EMAIL.VALIDATION.MESSAGE(code)
 	};
 
-	// Imprimir código por pantalla sin enviar mail si se seteo "NO_EMAILS"
+	// En caso de seteo en "NO_EMAILS", finaliza
 	if (Constants.NO_EMAILS) return Promise.resolve(code);
 
 	// En caso cotrario enviar un sms

@@ -126,7 +126,7 @@ module.exports.createCertificate = async function (did, subject, expDate, errMsg
 };
 
 /**
- *  Analiza la validez del certificado para el certificado de número de mail
+ *  Verifica la validez del certificado para el certificado de número de mail
  */
 module.exports.verifyCertificateEmail = async function (jwt, hash) {
 	const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
@@ -134,7 +134,7 @@ module.exports.verifyCertificateEmail = async function (jwt, hash) {
 };
 
 /**
- *  Analiza la validez del certificado para el certificado de número de teléfono
+ *  Verifica la validez del certificado para el certificado de número de teléfono
  */
 module.exports.verifyCertificatePhoneNumber = async function (jwt, hash) {
 	const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
