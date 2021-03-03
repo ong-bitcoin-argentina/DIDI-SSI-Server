@@ -16,8 +16,8 @@ const { halfHourLimiter } = require("../policies/RateLimit");
 const { IS_STRING, IS_MOBILE_PHONE, IS_PASSWORD, IS_BOOLEAN } = Constants.VALIDATION_TYPES;
 
 /**
- *	Validación de teléfono. El usuario debe envia su numero de celular para
- *	poder generar una validación a través de SMS.
+ *	Validación de teléfono. 
+ *	El usuario debe proveer su número de celular para poder generar una validación a través de SMS.
  *	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
  */
 router.post(
@@ -45,20 +45,20 @@ router.post(
 		const unique = req.body.unique;
 
 		try {
-			// validar que el telefono no este en uso
+			// Validar que el teléfono no esté en uso
 			if (unique) await UserService.telTaken(phoneNumber, did);
 
-			// se ingresò contraseña, validarla
+			// Si se ingresó contraseña, validarla
 			if (password && did) await UserService.getAndValidate(did, password);
 
-			// generar còdigo de validacion
+			// Generar código de validación
 			let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
 			if (Constants.DEBUGG) console.log(code);
 
-			// crear y guardar pedido de validacion de tel
+			// Crear y guardar pedido de validación de teléfono
 			await SmsService.create(phoneNumber, code, undefined);
 
-			// mandar sms con código de validacion
+			// Mandar sms con el código de validacion
 			if (Constants.NO_SMS) {
 				return ResponseHandler.sendRes(res, { code });
 			}
@@ -73,8 +73,9 @@ router.post(
 );
 
 /**
- *	Validación del código de 6 digitos enviado por SMS.  El usuario debe ingresar
- *	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendSmsValidator".
+ *	Validación del código de 6 digitos enviado por SMS.  
+ *	El usuario debe ingresar su el código de validacion,
+ *  el cuàl debe haberse mandado previamènte con "/sendSmsValidator".
  */
 router.post(
 	"/verifySmsCode",
@@ -98,18 +99,18 @@ router.post(
 		const did = req.body.did;
 
 		try {
-			// validar codigo
+			// Validar código
 			let phone = await SmsService.isValid(cellPhoneNumber, validationCode);
 
-			// validar que no existe un usuario con ese mail
+			// Validar que no existe un usuario con ese mail
 			const user = await UserService.getByTel(cellPhoneNumber);
 			if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
 
-			// generar certificado validando que ese did le corresponde al dueño del telèfono
+			// Generar certificado validando que ese did le corresponde al dueño del teléfono
 			let cert = await CertService.createPhoneCertificate(did, cellPhoneNumber);
 			await CertService.verifyCertificatePhoneNumber(cert);
 
-			// revocar certificado anterior
+			// Revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
@@ -117,10 +118,10 @@ router.post(
 				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
-			// mandar certificado a mouro
+			// Mandar certificado a mouro
 			const jwt = await MouroService.saveCertificate(cert, did);
 
-			// validar codigo y actualizar pedido de validacion de mail
+			// Validar código y actualizar pedido de validación de teléfono
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.TEL,
 				did,

@@ -12,7 +12,9 @@ const BASE_URL = "/shareRequest";
 
 router.use("/shareRequest", validateAppOrUserJWT);
 
-// Guarda un ShareRequest (credencial a compartir por QR)
+/**
+ * Guarda un ShareRequest (Credencial a compartir por QR)
+ */
 router.post(
 	BASE_URL,
 	Validator.validateBody([{ name: "jwt", validate: [IS_STRING] }]),
@@ -28,7 +30,9 @@ router.post(
 	}
 );
 
-// Obtiene un ShareRequest (devuelve un JWT con las credenciales previamente guardadas)
+/**
+ * Obtiene un ShareRequest según id (Devuelve un JWT con las credenciales previamente guardadas)
+ */
 router.post(
 	`${BASE_URL}/:id`,
 	Validator.validateBody([]),
