@@ -15,7 +15,10 @@ const { getResolver } = require("ethr-did-resolver");
 
 const resolver = new Resolver(getResolver(Constants.BLOCKCHAIN.PROVIDER_CONFIG));
 
-// genera un certificado que certifique la propiedad del numero de telefono por parte del dueño del did
+/**
+ *  Crea un nuevo certificado que valida la propiedad
+ *  del número de teléfono por parte del dueño del did
+ */ 
 module.exports.createPhoneCertificate = async function (did, phoneNumber) {
 	const subject = {
 		Phone: {
@@ -32,7 +35,10 @@ module.exports.createPhoneCertificate = async function (did, phoneNumber) {
 	return module.exports.createCertificate(did, subject, undefined, Messages.SMS.ERR.CERT.CREATE);
 };
 
-// genera un certificado que certifique la propiedad del mail por parte del dueño del did
+/**
+ *  Crea un nuevo certificado que valida la propiedad
+ *  del del mail por parte del dueño del did
+ */
 module.exports.createMailCertificate = async function (did, email) {
 	const subject = {
 		Email: {
@@ -49,7 +55,10 @@ module.exports.createMailCertificate = async function (did, email) {
 	return module.exports.createCertificate(did, subject, undefined, Messages.EMAIL.ERR.CERT.CREATE);
 };
 
-// genera un certificado pidiendo info a determinado usuario
+
+/**
+ *  Genera un certificado pidiendo info a determinado usuario
+ */
 module.exports.createPetition = async function (did, claims, cb) {
 	try {
 		const exp = ((new Date().getTime() + 600000) / 1000) | 0;
@@ -73,7 +82,9 @@ module.exports.createPetition = async function (did, claims, cb) {
 	}
 };
 
-// genera un certificado pidiendo info a determinado usuario
+/**
+ *  Genera un token a partir de un did y su información
+ */ 
 module.exports.createShareRequest = async function (did, jwt) {
 	const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
 	const payload = { sub: did, disclosureRequest: jwt };
@@ -81,7 +92,9 @@ module.exports.createShareRequest = async function (did, jwt) {
 	return token;
 };
 
-// genera un certificado asociando la informaciòn recibida en "subject" con el did
+/**
+ *  Genera un certificado asociando la información recibida en "subject" con el did
+ */
 module.exports.createCertificate = async function (did, subject, expDate, errMsg) {
 	const vcissuer = new EthrDID({
 		address: Constants.SERVER_DID,
@@ -112,19 +125,26 @@ module.exports.createCertificate = async function (did, subject, expDate, errMsg
 	}
 };
 
-// analiza la validez del certificado para el certificado de numero de mail
+/**
+ *  Analiza la validez del certificado para el certificado de número de mail
+ */
 module.exports.verifyCertificateEmail = async function (jwt, hash) {
 	const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
 	return result;
 };
 
-// analiza la validez del certificado para el certificado de numero de telefono
+/**
+ *  Analiza la validez del certificado para el certificado de número de teléfono
+ */
 module.exports.verifyCertificatePhoneNumber = async function (jwt, hash) {
 	const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
 	return result;
 };
 
-// decodifica el certificado, retornando la info (independientemente de si el certificado es valido o no)
+/**
+ *  Decodifica el certificado, retornando la info 
+ *  (independientemente de si el certificado es válido o no)
+ */ 
 module.exports.decodeCertificate = async function (jwt, errMsg) {
 	try {
 		const result = await decodeJWT(jwt);
@@ -135,8 +155,10 @@ module.exports.decodeCertificate = async function (jwt, errMsg) {
 	}
 };
 
-// Analiza la validez del certificado, su formato, emisor, etc
-// retorna la info del certificado y su estado
+/**
+ *  Analiza la validez del certificado, su formato, emisor, etc
+ *  retorna la info del certificado y su estado
+ */ 
 module.exports.verifyCertificate = async function (jwt, hash, errMsg) {
 	try {
 		const result = await verifyCredential(jwt, resolver);
@@ -152,7 +174,9 @@ module.exports.verifyCertificate = async function (jwt, hash, errMsg) {
 	}
 };
 
-// analiza la validez del emisor del certificado
+/**
+ * Dado un emisor de un certificado, verifica su validez
+ */ 
 module.exports.verifyIssuer = async function (issuerDid) {
 	console.log("Validating delegate...");
 	if (issuerDid === `did:ethr:${Constants.SERVER_DID}`) {

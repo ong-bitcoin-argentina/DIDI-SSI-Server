@@ -2,7 +2,9 @@ const Constants = require("../constants/Constants");
 const fetch = require("node-fetch");
 const Messages = require("../constants/Messages");
 
-// realizar un post al servicio de renaper con la url interna y el body recibidos
+/**
+ *  Realiza un post al servicio de renaper con la url interna y el body recibidos
+ */
 const renaperPost = async function(url, body) {
 	try {
 		var response = await fetch(Constants.RENAPER_API, {
@@ -22,7 +24,9 @@ const renaperPost = async function(url, body) {
 	}
 };
 
-// realizar un post al servicio de renaper cargando la info del codigo de barras
+/**
+ *  Realiza un post al servicio de renaper cargando la info del codigo de barras
+ */
 module.exports.scanBarcode = async function(file) {
 	try {
 		var result = await renaperPost(
@@ -37,7 +41,9 @@ module.exports.scanBarcode = async function(file) {
 	}
 };
 
-// realizar un post al servicio de renaper iniciando todo el proceso de validacion
+/**
+ *  Realiza un post al servicio de renaper iniciando todo el proceso de validación
+ */
 module.exports.newOpperation = async function(dni, gender, deviceIp, fingerprintData) {
 	try {
 		var result = await renaperPost(
@@ -56,7 +62,9 @@ module.exports.newOpperation = async function(dni, gender, deviceIp, fingerprint
 	}
 };
 
-// realizar un post al servicio de renaper agregando frente del dni
+/**
+ *  Realiza un post al servicio de renaper agregando frente del dni
+ */
 module.exports.addFront = async function(dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr) {
 	try {
 		var result = await renaperPost(
@@ -76,7 +84,9 @@ module.exports.addFront = async function(dni, gender, operationId, frontImage, a
 	}
 };
 
-// realizar un post al servicio de renaper agregando dorso del dni
+/**
+ *  Realiza un post al servicio de renaper agregando dorso del dni
+ */
 module.exports.addBack = async function(dni, gender, operationId, backImage, analyzeAnomalies, analyzeOcr) {
 	try {
 		var result = await renaperPost(
@@ -96,7 +106,9 @@ module.exports.addBack = async function(dni, gender, operationId, backImage, ana
 	}
 };
 
-// realizar un post al servicio de renaper agregando selfie
+/**
+ *  Realiza un post al servicio de renaper agregando selfie
+ */
 module.exports.addSelfie = async function(dni, gender, operationId, selfie) {
 	try {
 		var result = await renaperPost(
@@ -114,7 +126,9 @@ module.exports.addSelfie = async function(dni, gender, operationId, selfie) {
 	}
 };
 
-// realizar un post al servicio de renaper agregando codigo de barras
+/**
+ *  Realiza un post al servicio de renaper agregando código de barras
+ */
 module.exports.addBarcode = async function(dni, gender, operationId, name, lastName, birthDate, order) {
 	const document = {
 		names: name,
@@ -141,7 +155,10 @@ module.exports.addBarcode = async function(dni, gender, operationId, name, lastN
 	}
 };
 
-// realizar un post al servicio de renaper ejecutando el proceso con toda la informacion previamente cargada
+/**
+ *  Realiza un post al servicio de renaper ejecutando 
+ *  el proceso con toda la información previamente cargada
+ */
 module.exports.endOperation = async function(dni, gender, operationId) {
 	try {
 		var result = await renaperPost(

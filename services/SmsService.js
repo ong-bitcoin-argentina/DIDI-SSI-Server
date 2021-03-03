@@ -5,7 +5,9 @@ const Constants = require("../constants/Constants");
 
 const twilio = require("twilio");
 
-// obtiene el pedido de validacion a partir del tel
+/**
+ *  Obtiene el pedido de validación a partir del número de teléfono
+ */
 let getByPhoneNumber = async function(phoneNumber) {
 	try {
 		const phone = await Phone.getByPhoneNumber(phoneNumber);
@@ -19,7 +21,9 @@ let getByPhoneNumber = async function(phoneNumber) {
 };
 module.exports.getByPhoneNumber = getByPhoneNumber;
 
-// realiza el envio de sms con el còdigo de validaciòn usando "Twillio"
+/**
+ *  Realiza el envío de sms con el código de validación usando "Twillio"
+ */
 module.exports.sendValidationCode = async function(phoneNumber, code) {
 	const data = {
 		body: Messages.SMS.VALIDATION.MESSAGE(code),
@@ -27,10 +31,10 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 		from: Constants.TWILIO_PHONE_NUMBER
 	};
 
-	// imprimir codigo por pantalla sin enviar sms si se seteo "NO_SMS"
+	// En caso de "NO_SMS", imprimir codigo por pantalla sin enviar sms
 	if (Constants.NO_SMS) return Promise.resolve(code);
 
-	// en caso cotrario enviar sms
+	// En caso cotrario enviar sms
 	var client = twilio(Constants.TWILIO_SID, Constants.TWILIO_TOKEN);
 	if (Constants.DEBUGG) console.log(Messages.SMS.SENDING(data.to));
 
@@ -44,7 +48,9 @@ module.exports.sendValidationCode = async function(phoneNumber, code) {
 	}
 };
 
-// crear y guardar pedido de validacion de tel
+/**
+ *  Crear y guardar pedido de validación del número de teléfono
+ */
 module.exports.create = async function(phoneNumber, code, did) {
 	try {
 		let phone = await Phone.generate(phoneNumber, code, did);
@@ -57,7 +63,9 @@ module.exports.create = async function(phoneNumber, code, did) {
 	}
 };
 
-// marca el pedido como validado
+/**
+ *  Valida número de teléfono según el did
+ */
 module.exports.validatePhone = async function(phone, did) {
 	try {
 		// validar tel
@@ -69,7 +77,9 @@ module.exports.validatePhone = async function(phone, did) {
 	}
 };
 
-// obtiene y compara el codigo de validacion
+/**
+ *  Obtiene y compara el código de validación
+ */
 module.exports.isValid = async function(phoneNumber, code) {
 	try {
 		let phone = await getByPhoneNumber(phoneNumber);
@@ -82,7 +92,9 @@ module.exports.isValid = async function(phoneNumber, code) {
 	}
 };
 
-// indica si el pedido de tel de mail fue validado
+/**
+ *  Indica si un número de teléfono a sido validado según el did
+ */ 
 module.exports.isValidated = async function(did, phoneNumber) {
 	try {
 		let isValidated = await Phone.isValidated(did, phoneNumber);
