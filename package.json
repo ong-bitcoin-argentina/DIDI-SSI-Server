@@ -18,14 +18,15 @@
 		"express"
 	],
 	"dependencies": {
-		"@proyecto-didi/didi-ssi-logger": "0.0.6",
 		"@proyecto-didi/didi-blockchain-manager": "1.1.5",
+		"@proyecto-didi/didi-ssi-logger": "0.0.6",
 		"apollo-boost": "0.4.7",
 		"apollo-cache-inmemory": "1.6.5",
 		"bcrypt": "5.0.0",
 		"body-parser": "1.19.0",
 		"cron": "1.8.2",
 		"cross-fetch": "3.0.4",
+		"cz-jira-smart-commit": "^3.0.0",
 		"did-jwt": "4.0.0",
 		"did-jwt-vc": "0.1.3",
 		"ethereumjs-tx": "1.3.7",
