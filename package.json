@@ -18,8 +18,8 @@
 		"express"
 	],
 	"dependencies": {
-		"@proyecto-didi/didi-ssi-logger": "0.0.6",
 		"@proyecto-didi/didi-blockchain-manager": "1.1.5",
+		"@proyecto-didi/didi-ssi-logger": "0.0.6",
 		"apollo-boost": "0.4.7",
 		"apollo-cache-inmemory": "1.6.5",
 		"bcrypt": "5.0.0",
@@ -51,7 +51,9 @@
 		"web3": "1.2.6"
 	},
 	"devDependencies": {
+		"commitizen": "^4.2.3",
 		"coveralls": "^3.1.0",
+		"cz-jira-smart-commit": "^3.0.0",
 		"jest": "^26.6.3"
 	}
 }
