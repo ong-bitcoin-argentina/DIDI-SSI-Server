@@ -1,16 +1,18 @@
-const { json } = require("body-parser");
 const { decodeJWT } = require("did-jwt");
 const Messages = require("../constants/Messages");
 const Presentation = require("../models/Presentation");
 const { INVALID } = Messages.TOKEN;
 
-const { GET, CREATE, NOT_FOUND, EXPIRED } = Messages.PRESENTATION.ERR;
+const { GET, NOT_FOUND, EXPIRED } = Messages.PRESENTATION.ERR;
 
+/**
+ *  Crea una nueva presentacion dado un jwt
+ */
 module.exports.savePresentation = async function ({ jwts }) {
 	try {
 		const jwtsParsed = JSON.parse(jwts);
 		for (const jwt of jwtsParsed) {
-			const decoded = await decodeJWT();
+			const decoded = decodeJWT(jwt);
 			if (!decoded) {
 				throw INVALID();
 			}
@@ -22,14 +24,17 @@ module.exports.savePresentation = async function ({ jwts }) {
 	}
 };
 
+/**
+ *  Retorna una presentación a partir de un id
+ */
 module.exports.getPresentation = async function ({ id }) {
 	try {
 		const presentation = await Presentation.getById(id);
 
-		// Valido que la presentacion exista
+		// Validar que la presentación exista
 		if (!presentation) return Promise.reject(NOT_FOUND);
 
-		// Valido que no haya expirado
+		// Validar que no haya expirado
 		const { expireOn } = presentation;
 		if (new Date(expireOn) < new Date()) return Promise.reject(EXPIRED);
 

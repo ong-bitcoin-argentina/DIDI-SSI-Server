@@ -10,7 +10,9 @@ const {
 	TOKEN: { INVALID_CODE }
 } = require("../constants/Messages");
 
-// Obtiene un usuario de una app autorizada por su did
+/**
+ *  Obtiene un usuario de una app autorizada por su did
+ */
 const findByUserDID = async function (userDid) {
 	const user = await UserService.getByDID(userDid);
 	if (!user) throw DID_NOT_FOUND(userDid);
@@ -21,7 +23,9 @@ const findByUserDID = async function (userDid) {
 	return userApp;
 };
 
-// Crea un usuario asociandolo con una app autorizada verificando los tokens
+/**
+ *  Crea un usuario asociándolo con una app autorizada verificando los tokens
+ */
 const createByTokens = async function (userToken, appToken) {
 	const verified = await CertService.verifyCertificate(userToken);
 	if (!verified.payload) throw INVALID_CODE(true);
@@ -37,7 +41,9 @@ const createByTokens = async function (userToken, appToken) {
 	return { ...niceUser, appName: appAuth.name };
 };
 
-// Crea y guarda el usuario de app autorizada en base de datos
+/**
+ *  Crea y guarda el usuario de app autorizada en base de datos
+ */
 const createUser = async function (userDid, appDid) {
 	const user = await UserService.getByDID(userDid);
 	if (!user) throw DID_NOT_FOUND(userDid);

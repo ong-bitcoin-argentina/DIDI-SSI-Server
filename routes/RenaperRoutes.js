@@ -55,54 +55,54 @@ router.post(
 
 		let operationId, authRequest;
 		try {
-			// obtener usuario
+			// Obtener usuario a partir de un did
 			user = await UserService.getByDID(did);
 
-			// iniciar pedido de validacion de identidad con el renaper
+			// Iniciar pedido de validación de identidad con el renaper
 			operationId = await RenaperService.newOpperation(dni, gender, deviceIp, fingerPrintData);
 
-			// guardar estado como "en progreso y retornar"
+			// Guardar estado como "en progreso y retornar"
 			authRequest = await AuthRequestService.create(operationId, did);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
 
-		// retonrar el codigo de operacion para que la APP android pueda consultar el estado de la misma y continuar procesando
+		// Retornar el código de operación para que la APP android pueda consultar el estado de la misma y continuar procesando
 		ResponseHandler.sendRes(res, { status: authRequest.status, operationId: authRequest.operationId });
 
 		try {
-			// agregar frente del dni al pedido
+			// Agregar frente del dni al pedido
 			console.log(operationId + " adding dni front data for " + did);
 			await RenaperService.addFront(dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr);
 
-			// agregar dorso del dni al pedido
+			// Agregar dorso del dni al pedido
 			console.log(operationId + " adding dni back data for " + did);
 			await RenaperService.addBack(dni, gender, operationId, backImage, analyzeAnomalies, analyzeOcr);
 
-			// agregar selfie al pedido
+			// Agregar selfie al pedido
 			console.log(operationId + " adding selfie data for " + did);
 			await RenaperService.addSelfie(dni, gender, operationId, selfieImage);
 
-			// agregar codigo de barras al pedido
+			// Agregar código de barras al pedido
 			console.log(operationId + " adding bar code data for " + did);
 			await RenaperService.addBarcode(dni, gender, operationId, name, lastName, birthDate, order);
 
-			// ejecutar pedido
+			// Ejecutar pedido
 			console.log(operationId + " executing request for " + did);
 			const userData = await RenaperService.endOperation(dni, gender, operationId);
 
+			// Si no hubo match o no se obtuvo la precisión buscada pasar a estado "fallido"
+			// Actualizar estado del pedido para que la APP android sepa que la sincronización no fue exitosa
 			console.log(operationId + " checking results for " + did);
-			// si no hubo match o no se obtuvo la precision buscada pasar a estado "fallido"
 			if (!userData || !userData.confidence || userData.confidence < Constants.RENAPER_SCORE_TRESHOULD) {
-				// actualizar estado del pedido para que la APP android sepa que la sincronizacion no fue exitosa
 				await authRequest.update(Constants.AUTHENTICATION_REQUEST.FALIED, Messages.RENAPER.WEAK_MATCH.message);
 				return;
 			}
 
-			// generar certificados con esa info
+			// Generar certificados con la información obtenida
 			const data = JSON.parse(userData.personData.person);
 
-			// cert#1 info personal
+			// Cert #1 - Información personal
 			const personData = {
 				dni: data.number,
 				//"gender": data.gender === "M" ? "Hombre" : "Mujer",
@@ -129,7 +129,7 @@ router.post(
 				Messages.CERTIFICATE.ERR.CREATE
 			);
 
-			// cert#2 direccion
+			// Cert #2 - Dirección
 			const addressData = {
 				streetAddress: data.streetAddress,
 				numberStreet: data.numberStreet,
@@ -155,16 +155,16 @@ router.post(
 				Messages.CERTIFICATE.ERR.CREATE
 			);
 
-			// crear certificados en //
+			// Crear certificados en paralelo
 			const [cert, aditionalCert] = await Promise.all([generateCert, generateAditionalCert]);
 
-			// enviar en // certificados a mouro para ser guardados
+			// Enviar en paralelo certificados a mouro para ser guardados
 			const saveCert = MouroService.saveCertificate(cert, did);
 			const saveAditionalCert = MouroService.saveCertificate(aditionalCert, did);
 			const [resCert, resAditionalCert] = await Promise.all([saveCert, saveAditionalCert]);
 
 			try {
-				// enviar push notification
+				// Enviar push notification
 				await FirebaseService.sendPushNotification(
 					Messages.PUSH.NEW_CERT.TITLE,
 					Messages.PUSH.NEW_CERT.MESSAGE,
@@ -175,7 +175,7 @@ router.post(
 				console.log("Error sending push notifications:");
 			}
 
-			// agregar info de renaper al usuario
+			// Agregar info de renaper al usuario
 			const addCert = Certificate.generate(
 				Constants.CERTIFICATE_NAMES.USER_INFO,
 				did,
@@ -192,7 +192,7 @@ router.post(
 			);
 			await Promise.all([addCert, addAditionalCert]);
 
-			// actualizar estado del pedido para que la APP android sepa que la sincronizacion fue exitosa
+			// Actualizar estado del pedido para que la APP android sepa que la sincronización fue exitosa
 			await authRequest.update(Constants.AUTHENTICATION_REQUEST.SUCCESSFUL);
 
 			return;

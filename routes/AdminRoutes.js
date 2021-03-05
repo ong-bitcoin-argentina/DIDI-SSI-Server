@@ -13,7 +13,8 @@ const Validator = require("./utils/Validator");
 router.use("/admin/", validateAdminJWT);
 
 /**
- *	Obtiene informacion confidencial sobre el usuario (incluye status de renaper y de semillas)
+ *	Obtiene informacion confidencial sobre el usuario según su did
+ *  (Incluye status de renaper y de semillas)
  */
 router.get("/admin/user/did/:did", Validator.checkValidationResult, Validator.validateParams, async function (
 	req,
@@ -41,7 +42,7 @@ router.get("/admin/user/did/:did", Validator.checkValidationResult, Validator.va
 });
 
 /**
- *	Obtiene informacion confidencial sobre el usuario usando el teléfono
+ *	Obtiene informacion confidencial sobre el usuario según su numero de teléfono
  */
 router.post("/admin/user/phone", Validator.checkValidationResult, Validator.validateParams, async function (
 	req,

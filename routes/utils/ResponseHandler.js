@@ -1,13 +1,17 @@
 const Constants = require("../../constants/Constants");
 
-// mandar respuesta html generica
+/**
+ *  Mandar respuesta html genérica
+ */
 module.exports.sendHtml = function(res, data) {
 	res.type("text/html; charset=UTF-8");
 	res.write(data);
 	return res.end();
 };
 
-// mandar respuesta exitosa generica
+/**
+ *  Mandar respuesta exitosa genérica
+ */
 module.exports.sendRes = function(res, data) {
 	res.type("application/json; charset=UTF-8");
 	return res.json({
@@ -16,7 +20,9 @@ module.exports.sendRes = function(res, data) {
 	});
 };
 
-// mandar respuesta de error generica
+/**
+ *  Mandar respuesta de error genérica
+ */
 module.exports.sendErr = function(res, err) {
 	if (Constants.DEBUGG && err) console.log(err);
 
@@ -28,7 +34,9 @@ module.exports.sendErr = function(res, err) {
 	});
 };
 
-// mandar respuesta de error con status custom
+/**
+ *  Mandar respuesta de error con status custom
+ */
 module.exports.sendErrWithStatus = function(res, err, status = 500) {
 	if (Constants.DEBUGG && err) console.log(err);
 	return res.status(status).json({

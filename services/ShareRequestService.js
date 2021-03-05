@@ -4,6 +4,9 @@ const ShareRequest = require("../models/ShareRequest");
 
 const { CREATE, NOT_FOUND, GET, USER_NOT_VALID } = Messages.SHAREREQUEST.ERR;
 
+/**
+ * Guarda un ShareRequest (Credencial a compartir por QR)
+ */
 module.exports.saveShareRequest = async function ({ jwt }) {
 	try {
 		const { aud, iss } = getPayload(jwt);
@@ -13,6 +16,9 @@ module.exports.saveShareRequest = async function ({ jwt }) {
 	}
 };
 
+/**
+ * Obtiene un ShareRequest según id (Devuelve un JWT con las credenciales previamente guardadas)
+ */
 module.exports.getShareRequestById = async function ({ id, userJWT }) {
 	try {
 		const shareRequest = await ShareRequest.getById(id);

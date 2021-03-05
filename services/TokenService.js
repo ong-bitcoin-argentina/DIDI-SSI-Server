@@ -14,7 +14,9 @@ const errorMessages = {
 	TokenExpiredError: EXPIRED_CODE()
 };
 
-// validates the token and returns userId
+/**
+ *  Valida el token y devuelve el userId
+ */
 const getTokenData = async token => {
 	try {
 		const decoded = await decodeJWT(token);
@@ -36,11 +38,17 @@ const getTokenData = async token => {
 	}
 };
 
+/**
+ *  Devuelve un payload a partir del jwt
+ */
 const getPayload = jwt => {
 	const { payload } = decodeJWT(jwt);
 	return payload;
 };
 
+/**
+ *  Verificar jwt
+ */
 const verifyToken = async (jwt, isUser = false) => {
 	const options = {
 		resolver,
