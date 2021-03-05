@@ -18,7 +18,6 @@
 		"express"
 	],
 	"dependencies": {
-		"@digitalroute/cz-conventional-changelog-for-jira": "^6.3.0",
 		"@proyecto-didi/didi-blockchain-manager": "1.1.5",
 		"@proyecto-didi/didi-ssi-logger": "0.0.6",
 		"apollo-boost": "0.4.7",
