@@ -1,15 +1,15 @@
 const DelegateTransaction = require("../models/DelegateTransaction");
 const { actions } = require("./delegatesActions");
+const { actions: actionsCallback } = require("./callbackActions");
 const CallbackTask = require("../models/CallbackTask");
 const CronJob = require("cron").CronJob;
-const IssuerService = require("../services/IssuerService");
 
-const REFILL_SECONDS = "0";
-const REFILL_MINUTES = "*/2";
-const REFILL_HOURS = "*";
-const REFILL_DAY_OF_MONTH = "*";
-const REFILL_MONTH = "*";
-const REFILL_DAY_OF_WEEL = "*";
+const SECONDS = "0";
+const MINUTES = "*/2";
+const HOURS = "*";
+const DAY_OF_MONTH = "*";
+const MONTH = "*";
+const DAY_OF_WEEL = "*";
 
 let enabled = true;
 
@@ -46,12 +46,13 @@ const callbackTaskJob = frequency => {
 	new CronJob(
 		frequency,
 		async () => {
-			const callbackTasks = await CallbackTask.find({});
+			// Se ejecutan de a 5
+			const callbackTasks = await CallbackTask.find({}).sort({ createdOn: -1 }).limit(5);
+			console.log({ callbackTasks });
 
 			for (const callbackTask of callbackTasks) {
-				const { _id, callbackUrl, did, token, status, expireOn, blockHash, messageError } = callbackTask;
 				try {
-					await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash, messageError });
+					await actionsCallback[callbackTask.actionTag](callbackTask.toObject());
 					await CallbackTask.deleteOne({ _id });
 				} catch (error) {
 					console.log(error);
@@ -67,14 +68,7 @@ const callbackTaskJob = frequency => {
 };
 
 exports.permanentJob = () => {
-	const frequency = [
-		REFILL_SECONDS,
-		REFILL_MINUTES,
-		REFILL_HOURS,
-		REFILL_DAY_OF_MONTH,
-		REFILL_MONTH,
-		REFILL_DAY_OF_WEEL
-	].join(" ");
+	const frequency = [SECONDS, MINUTES, HOURS, DAY_OF_MONTH, MONTH, DAY_OF_WEEL].join(" ");
 
 	delegateJob(frequency);
 	callbackTaskJob(frequency);

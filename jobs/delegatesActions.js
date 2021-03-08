@@ -8,13 +8,13 @@ const { CREATE, REFRESH, REVOKE } = Constants.DELEGATE_ACTIONS;
 const handleError = async (err, dataError) => {
 	console.log(err);
 	const messageError = err.message || err;
-	CallbackTask.create({ ...dataError, messageError });
+	await CallbackTask.create({ ...dataError, messageError });
 };
 
 const funcToDone = async (next, data, statusError) => {
 	try {
 		const { blockHash, expireOn } = await next(data);
-		CallbackTask.create({ ...data, status: DONE, expireOn, blockHash });
+		await CallbackTask.create({ ...data, status: DONE, expireOn, blockHash });
 	} catch (error) {
 		handleError(error, { ...data, status: statusError });
 	}
@@ -27,7 +27,7 @@ const refreshAction = data => funcToDone(async ({ did }) => await IssuerService.
 const revokeAction = async data => {
 	try {
 		await BlockchainService.revokeDelegate(data.did);
-		CallbackTask.create({ ...data, status: REVOKED });
+		await CallbackTask.create({ ...data, status: REVOKED });
 	} catch (error) {
 		handleError(error, { ...data, status: ERROR });
 	}

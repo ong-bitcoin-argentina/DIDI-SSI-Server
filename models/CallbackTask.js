@@ -5,6 +5,10 @@ const CallbackTaskSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	actionTag: {
+		type: String,
+		default: "Post"
+	},
 	callbackUrl: {
 		type: String,
 		required: true
@@ -16,6 +20,10 @@ const CallbackTaskSchema = new mongoose.Schema({
 	token: {
 		type: String,
 		required: true
+	},
+	createdOn: {
+		type: Date,
+		default: new Date()
 	},
 	expireOn: String,
 	blockHash: String,
