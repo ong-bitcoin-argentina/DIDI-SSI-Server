@@ -8,7 +8,7 @@ const { DID_NOT_FOUND } = Messages.VALIDATION;
 
 /**
  * Obtener usuario a partir de un did
- */ 
+ */
 let getByDID = async function (did) {
 	try {
 		let user = await User.getByDID(did);
@@ -21,7 +21,7 @@ let getByDID = async function (did) {
 module.exports.getByDID = getByDID;
 
 /**
- * Creado porque getByDID no retorna error en caso de no existir 
+ * Creado porque getByDID no retorna error en caso de no existir
  * (puede que algun endpoint este esperando ese resultado)
  */
 const findByDid = async did => {
@@ -33,7 +33,7 @@ module.exports.findByDid = findByDid;
 
 /**
  * Obtener usuario a partir de un did y actualizar su información
- */ 
+ */
 const findByDidAndUpdate = async (did, data) => {
 	const user = await User.findByDidAndUpdate(did, data);
 	if (!user) throw DID_NOT_FOUND(did);
@@ -71,7 +71,7 @@ module.exports.getByTel = getByTel;
 
 /**
  * Obtener usuario y validar contraseña
- */ 
+ */
 let getAndValidate = async function (did, pass, email) {
 	try {
 		// Obtener usuario
@@ -113,7 +113,7 @@ module.exports.emailTaken = emailTaken;
 let telTaken = async function (tel, exceptionDid) {
 	try {
 		const taken = await User.telTaken(tel, exceptionDid);
-		if (taken) throw Messages.USER.ERR.TEL_TAKEN;
+		if (taken) return Promise.reject(Messages.USER.ERR.TEL_TAKEN);
 		return;
 	} catch (err) {
 		console.log(err);
