@@ -12,7 +12,7 @@ const FirebaseService = require("../services/FirebaseService");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
-const { userDTO } = require("./utils/DTOs");
+const { userDTO } = require("../utils/DTOs");
 const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
 const { getImageUrl } = require("./utils/Helpers");
 const { halfHourLimiter } = require("../policies/RateLimit");
@@ -496,7 +496,7 @@ router.post(
 						Messages.ISSUER.ERR.NOT_FOUND
 					);
 					if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
-					
+
 					// Validación de microcredencial
 					const microCert = await Certificate.findByHash(hash);
 					microCert.update(Constants.CERTIFICATE_STATUS.VERIFIED);

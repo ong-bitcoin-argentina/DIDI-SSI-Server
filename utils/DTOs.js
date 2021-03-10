@@ -1,4 +1,4 @@
-const { getImageUrl } = require("./Helpers");
+const { getImageUrl } = require("../routes/utils/Helpers");
 
 /**
  * DTO: Data Transfer Object

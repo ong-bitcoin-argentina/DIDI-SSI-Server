@@ -3,7 +3,7 @@ const UserService = require("./UserService");
 const AppAuthService = require("./AppAuthService");
 const CertService = require("./CertService");
 const { getPayload } = require("./TokenService");
-const { userDTO } = require("../routes/utils/DTOs");
+const { userDTO } = require("../utils/DTOs");
 const {
 	VALIDATION: { DID_NOT_FOUND, APP_DID_NOT_FOUND },
 	USER_APP: { NOT_FOUND },
