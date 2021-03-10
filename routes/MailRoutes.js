@@ -91,7 +91,7 @@ router.post(
 );
 
 /**
- *	Validación del código de 6 digitos enviado por Mail. 
+ *	Validación del código de 6 digitos enviado por Mail.
  *	El usuario debe ingresar el código de validacion previamente mandado con "/sendMailValidator".
  */
 router.post(
@@ -106,6 +106,7 @@ router.post(
 		{ name: "did", validate: [IS_STRING] }
 	]),
 	checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const validationCode = req.body.validationCode;
 		const eMail = req.body.eMail.toLowerCase();

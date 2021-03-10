@@ -14,6 +14,7 @@ const FirebaseService = require("../services/FirebaseService");
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
+const { halfHourLimiter } = require("../policies/RateLimit");
 
 const { CREATE, REFRESH, REVOKE } = Constants.DELEGATE_ACTIONS;
 
@@ -27,6 +28,7 @@ router.post(
 		{ name: "sendPush", validate: [Constants.VALIDATION_TYPES.IS_BOOLEAN], optional: true }
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const jwt = req.body.jwt;
 		try {
@@ -103,6 +105,7 @@ router.post(
 		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const jwt = req.body.jwt;
@@ -149,6 +152,7 @@ router.post(
 		{ name: "hash", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const sub = req.body.sub;
@@ -200,6 +204,7 @@ router.post(
 router.post(
 	"/issuer/verifyCertificate",
 	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	halfHourLimiter,
 	async function (req, res) {
 		const jwt = req.body.jwt;
 		try {
@@ -235,6 +240,7 @@ router.post(
 router.post(
 	"/issuer/verify",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	halfHourLimiter,
 	async function (req, res) {
 		try {
 			const did = req.body.did;
