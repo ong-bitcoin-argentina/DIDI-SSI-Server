@@ -22,12 +22,12 @@ router.get("/semillas/prestadores", checkValidationResult, async function (req, 
 });
 
 /**
- * Notifica a semillas el did y el dni del usuario 
+ * Notifica a semillas el did y el dni del usuario
  * Para que luego se le envíen las credenciales de semillas, identidad y beneficio
  * En resumen: Solicita las credenciales de semillas
- */	
+ */
 router.post(
-	"/semillas/credentials",
+	"/semillas/notifyDniDid",
 	validateBody([
 		{ name: "did", validate: [IS_STRING] },
 		{ name: "dni", validate: [IS_STRING] }
