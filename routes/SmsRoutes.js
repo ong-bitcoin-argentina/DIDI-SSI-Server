@@ -16,7 +16,7 @@ const { halfHourLimiter } = require("../policies/RateLimit");
 const { IS_STRING, IS_MOBILE_PHONE, IS_PASSWORD, IS_BOOLEAN } = Constants.VALIDATION_TYPES;
 
 /**
- *	Validación de teléfono. 
+ *	Validación de teléfono.
  *	El usuario debe proveer su número de celular para poder generar una validación a través de SMS.
  *	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
  */
@@ -73,7 +73,7 @@ router.post(
 );
 
 /**
- *	Validación del código de 6 digitos enviado por SMS.  
+ *	Validación del código de 6 digitos enviado por SMS.
  *	El usuario debe ingresar el código de validacion,
  *  el cuál debe haberse mandado previamente con "/sendSmsValidator".
  */
@@ -92,6 +92,7 @@ router.post(
 		{ name: "did", validate: [IS_STRING] }
 	]),
 	checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const cellPhoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
 

@@ -160,6 +160,7 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const password = req.body.password;
@@ -284,6 +285,7 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const phoneValidationCode = req.body.phoneValidationCode;
@@ -354,6 +356,7 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const eMailValidationCode = req.body.eMailValidationCode;
@@ -496,7 +499,7 @@ router.post(
 						Messages.ISSUER.ERR.NOT_FOUND
 					);
 					if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
-					
+
 					// Validación de microcredencial
 					const microCert = await Certificate.findByHash(hash);
 					microCert.update(Constants.CERTIFICATE_STATUS.VERIFIED);

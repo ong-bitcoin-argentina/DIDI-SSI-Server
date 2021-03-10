@@ -3,6 +3,7 @@ const Messages = require("../constants/Messages");
 const PhoneNormalization = require("./utils/PhoneNormalization");
 const fs = require("fs");
 const Image = require("../models/Image");
+const sanitize = require("mongo-sanitize");
 
 const { DID_NOT_FOUND } = Messages.VALIDATION;
 
@@ -296,7 +297,8 @@ module.exports.saveImage = async function (did, contentType, path) {
 		if (!user) return Promise.reject(Messages.USER.ERR.GET);
 
 		// Crear imagen
-		const image = fs.readFileSync(path);
+		const cleanedPath = sanitize(path);
+		const image = fs.readFileSync(cleanedPath);
 		const encode_image = image.toString("base64");
 		const buffer = Buffer.from(encode_image, "base64");
 
