@@ -44,10 +44,9 @@ module.exports.editName = async function (did, name) {
 		return await issuer.editName(name);
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		throw err;
 	}
 };
-
 
 /**
  *  Refrescar issuer (nueva fecha de expiración y hash)
@@ -71,7 +70,7 @@ module.exports.refresh = async function (did) {
 		return { ...byDIDExist, expireOn, blockHash: transactionHash };
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		throw err;
 	}
 };
 
@@ -95,7 +94,7 @@ module.exports.callback = async function (url, did, token, data) {
 		return jsonResp;
 	} catch (err) {
 		console.log(err);
-		return Promise.reject(err);
+		throw err;
 	}
 };
 
@@ -107,6 +106,6 @@ module.exports.createDelegateTransaction = async function ({ did, name, callback
 		return await DelegateTransaction.create({ did, name, callbackUrl, token, action });
 	} catch (err) {
 		console.log(err);
-		throw new Error(err);
+		throw err;
 	}
 };
