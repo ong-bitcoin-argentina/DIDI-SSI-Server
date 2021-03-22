@@ -301,7 +301,6 @@ router.delete(
 	Validator.validateBody([
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "callbackUrl", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
@@ -313,10 +312,7 @@ router.delete(
 				token,
 				action: REVOKE
 			});
-
-			// elimino autorizacion en la blockchain
-			await BlockchainService.revokeDelegate(did);
-			return ResponseHandler.sendRes(res, Messages.ISSUER.DELETED);
+			return ResponseHandler.sendRes(res, delegateTransaction);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
