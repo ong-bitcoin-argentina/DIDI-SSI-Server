@@ -8,7 +8,6 @@ const UserService = require("../services/UserService");
 
 const IssuerService = require("../services/IssuerService");
 
-const BlockchainService = require("../services/BlockchainService");
 const FirebaseService = require("../services/FirebaseService");
 
 const Validator = require("./utils/Validator");
