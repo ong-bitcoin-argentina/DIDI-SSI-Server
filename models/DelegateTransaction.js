@@ -12,11 +12,9 @@ const DelegateTransactionSchema = new mongoose.Schema({
 	},
 	token: {
 		type: String,
-		required: true
 	},
 	callbackUrl: {
 		type: String,
-		required: true
 	}
 });
 

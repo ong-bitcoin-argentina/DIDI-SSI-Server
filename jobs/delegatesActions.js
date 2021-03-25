@@ -14,20 +14,26 @@ const handleError = async (err, dataError) => {
 const funcToDone = async (next, data, statusError) => {
 	try {
 		const { blockHash, expireOn } = await next(data);
-		await CallbackTask.create({ ...data, status: DONE, expireOn, blockHash });
+		if (data.callbackUrl) await CallbackTask.create({ ...data, status: DONE, expireOn, blockHash });
 	} catch (error) {
 		handleError(error, { ...data, status: statusError });
 	}
 };
 
-const createAction = data => funcToDone(async ({ did, name }) => await IssuerService.addIssuer(did, name), data, ERROR);
+const createAction = data => funcToDone(
+	async ({ did, name }) => await IssuerService.addIssuer(did, name), 
+	data, 
+	ERROR);
 
-const refreshAction = data => funcToDone(async ({ did }) => await IssuerService.refresh(did), data, ERROR_RENEW);
+const refreshAction = data => funcToDone(
+	async ({ did }) => await IssuerService.refresh(did), 
+	data, 
+	ERROR_RENEW);
 
 const revokeAction = async data => {
 	try {
 		await BlockchainService.revokeDelegate(data.did);
-		await CallbackTask.create({ ...data, status: REVOKED });
+		if (data.callbackUrl) await CallbackTask.create({ ...data, status: REVOKED });
 	} catch (error) {
 		handleError(error, { ...data, status: ERROR });
 	}
