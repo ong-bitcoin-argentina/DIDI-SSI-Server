@@ -1,8 +1,9 @@
+const CronJob = require("cron").CronJob;
 const DelegateTransaction = require("../models/DelegateTransaction");
 const { actions: actionsDelegate } = require("./delegatesActions");
 const { actions: actionsCallback } = require("./callbackActions");
 const CallbackTask = require("../models/CallbackTask");
-const CronJob = require("cron").CronJob;
+const { JOBS } = require("../constants/Constants");
 
 const SECONDS = "0";
 const MINUTES = "*/2";
@@ -18,7 +19,8 @@ const processDelegateTx = async () => {
 		enabled = false;
 
 		const delegateTransactions = await DelegateTransaction.find({});
-
+		console.log({delegateTransactions})
+		
 		for (const transaction of delegateTransactions) {
 			const { _id, action } = transaction;
 			try {
@@ -46,7 +48,13 @@ const delegateJob = frequency => {
 
 const processCallbackTask = async () => {
 	// Se ejecutan de a 5
-	const callbackTasks = await CallbackTask.find({}).sort({ createdOn: -1 }).limit(5);
+	const callbackTasks = await CallbackTask.find({
+			status: { 
+				"$ne": JOBS.CANCEL_CALLBACK 
+			},
+		})
+		.sort({ createdOn: -1 })
+		.limit(5);
 	console.log({ callbackTasks });
 
 	for (const callbackTask of callbackTasks) {
@@ -54,6 +62,7 @@ const processCallbackTask = async () => {
 			await actionsCallback[callbackTask.actionTag](callbackTask.toObject());
 			await CallbackTask.deleteOne({ _id });
 		} catch (error) {
+			await callbackTask.addAttempt();
 			console.log(error);
 		}
 	}
