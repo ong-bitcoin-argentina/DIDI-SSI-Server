@@ -220,5 +220,10 @@ module.exports = {
 		REFRESH: "REFRESH"
 	},
 
-	EXPIRE_IN_MINUTES: 60
+	EXPIRE_IN_MINUTES: 60,
+
+	JOBS: {
+		CANCEL_CALLBACK: 'DEFINITIVE FAIL',
+	}
+
 };

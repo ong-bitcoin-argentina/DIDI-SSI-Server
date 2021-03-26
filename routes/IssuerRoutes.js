@@ -275,6 +275,8 @@ router.post(
 	async function (req, res) {
 		const { did, name, callbackUrl, token } = req.body;
 		try {
+			const didExist = await IssuerService.getIssuerByDID(did);
+			if (didExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 			const delegateTransaction = await IssuerService.createDelegateTransaction({
 				did,
 				name,
