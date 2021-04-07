@@ -1,5 +1,12 @@
-const { getImageUrl } = require("./Helpers");
+const { getImageUrl } = require("../routes/utils/Helpers");
 
+/**
+ * DTO: Data Transfer Object
+ */
+
+/**
+ * Selecciona las propiedades del usuario que se pueden exponer y las retorna
+ */
 const userDTO = async (user, extra = {}) => {
 	const mail = await user.getMail();
 	const phoneNumber = await user.getPhoneNumber();

@@ -210,8 +210,20 @@ module.exports = {
 	STATUS: {
 		DONE: "Creado",
 		ERROR: "Error",
-		ERROR_RENEW: "Error al Renovar"
+		ERROR_RENEW: "Error al Renovar",
+		REVOKED: "Revocado"
 	},
 
-	EXPIRE_IN_MINUTES: 60
+	DELEGATE_ACTIONS: {
+		CREATE: "CREATE",
+		REVOKE: "REVOKE",
+		REFRESH: "REFRESH"
+	},
+
+	EXPIRE_IN_MINUTES: 60,
+
+	JOBS: {
+		CANCEL_CALLBACK: 'DEFINITIVE FAIL',
+	}
+
 };

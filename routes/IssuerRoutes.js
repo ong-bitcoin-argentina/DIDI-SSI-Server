@@ -8,17 +8,17 @@ const UserService = require("../services/UserService");
 
 const IssuerService = require("../services/IssuerService");
 
-const BlockchainService = require("../services/BlockchainService");
 const FirebaseService = require("../services/FirebaseService");
 
 const Validator = require("./utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
+const { halfHourLimiter } = require("../policies/RateLimit");
 
-const { ERROR, DONE, ERROR_RENEW } = Constants.STATUS;
+const { CREATE, REFRESH, REVOKE } = Constants.DELEGATE_ACTIONS;
 
 /**
- *	Valida y envia a mouro el certificado generado por el issuer para ser guardado
+ *	Valida el certificado generado por el issuer y lo envia a mouro para ser guardado
  */
 router.post(
 	"/issuer/issueCertificate",
@@ -27,6 +27,7 @@ router.post(
 		{ name: "sendPush", validate: [Constants.VALIDATION_TYPES.IS_BOOLEAN], optional: true }
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const jwt = req.body.jwt;
 		try {
@@ -37,8 +38,8 @@ router.post(
 			const cert = await CertService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.IS_INVALID);
 			if (!cert || !cert.payload) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
-			console.log(`Verifying issuer ${cert.payload.iss}`);
 			// Validar si el emistor es correcto (autorizado a emitir y el mismo que el del certificado)
+			console.log(`Verifying issuer ${cert.payload.iss}`);
 			const valid = cert && (await CertService.verifyIssuer(cert.payload.iss));
 			if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
 
@@ -63,12 +64,12 @@ router.post(
 				result.hash
 			);
 
-			// guardar hash de recuperacion (swarm)
+			// Guardar hash de recuperacion (swarm)
 			console.log("Asking for hash in mouro...");
 			const hash = await MouroService.getHash(cert.payload.sub);
 			if (hash) subject = await subject.updateHash(hash);
 
-			// enviar push notification
+			// Enviar push notification
 			if (req.body.sendPush) {
 				console.log(`Sending push notification!`);
 				try {
@@ -92,8 +93,8 @@ router.post(
 );
 
 /**
- *	Permite pedir al usuario dueño del did, uno o mas certificados para obtener la informacion de los mismos
- *	(genera un shareRequest y lo envia via mouro para que el usuario envie la informacion)
+ *	Permite al usuario dueño del did, pedir uno o más certificados para obtener la información de los mismos
+ *	(genera un shareRequest y lo envia via mouro para que el usuario envíe la información)
  */
 router.post(
 	"/issuer/issueShareRequest",
@@ -103,19 +104,22 @@ router.post(
 		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const jwt = req.body.jwt;
 		try {
-			// validar que el emisor sea valido
+			// Comprobar que el emisor sea valido
 			const decoded = await CertService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			await CertService.verifyIssuer(decoded.payload.iss);
 
-			// crear el pedido y mandarlo a travez de mouro
+			// Crear el pedido
 			const shareReq = await CertService.createShareRequest(did, jwt);
+
+			// Mandar el pedido a mouro para ser guardado
 			const result = await MouroService.saveCertificate(shareReq, did);
 			try {
-				// enviar push notification
+				// Enviar push notification
 				const user = await UserService.getByDID(did);
 				await FirebaseService.sendPushNotification(
 					Messages.PUSH.SHARE_REQ.TITLE,
@@ -137,7 +141,6 @@ router.post(
 
 /**
  *	Permite revocar un certificado previamente almacenado en mouro
- *	(la revocacion no esta implementada en mouro)
  */
 router.post(
 	"/issuer/revokeCertificate",
@@ -148,6 +151,7 @@ router.post(
 		{ name: "hash", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const sub = req.body.sub;
@@ -155,26 +159,26 @@ router.post(
 		const hash = req.body.hash;
 
 		try {
+			// Validar certificado y emisor
 			console.log("Revoking JWT...");
-			// validar certificado y emisor
 			const cert = await CertService.verifyCertificate(jwt, hash, Messages.ISSUER.ERR.CERT_IS_INVALID);
 			if (!cert) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
 
-			console.log(`Verifying issuer ${did}`);
 			// Validar si el emistor es correcto (autorizado a revocar)
+			console.log(`Verifying issuer ${did}`);
 			const valid = cert && (await CertService.verifyIssuer(did));
 			if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
 
+			// Validar que el sujeto este registrado en didi
 			console.log(`Verifying subject ${sub}`);
-			// Validar sujeto (que este registrado en didi)
 			const subject = await UserService.getByDID(sub);
 			if (!subject) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_SUB_IS_INVALID);
 
-			// revocar certificado
+			// Revocar certificado
 			console.log("Revoking in Mouro...");
 			await MouroService.revokeCertificate(jwt, hash, sub);
 
-			// actualizar estado
+			// Actualizar estado
 			console.log("Updating cert status...");
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.GENERIC,
@@ -199,6 +203,7 @@ router.post(
 router.post(
 	"/issuer/verifyCertificate",
 	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	halfHourLimiter,
 	async function (req, res) {
 		const jwt = req.body.jwt;
 		try {
@@ -228,12 +233,13 @@ router.post(
 );
 
 /**
- *	Permite validar un certificado a partir del jwt
- *	(utilizado principalmente por el viewer)
+ *	Verifica la existencia del emisor según el did
+ *  Obtiene y verifica que el código de validación sea correcto
  */
 router.post(
 	"/issuer/verify",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	halfHourLimiter,
 	async function (req, res) {
 		try {
 			const did = req.body.did;
@@ -248,11 +254,6 @@ router.post(
 		}
 	}
 );
-
-const exCallback = async ({ callbackUrl, did, token, status = ERROR, expireOn, blockHash, messageError }) => {
-	if (callbackUrl && token)
-		await IssuerService.callback(callbackUrl, did, token, { status, expireOn, blockHash, messageError });
-};
 
 /**
  *	Autorizar un issuer para la emision de certificados
@@ -274,40 +275,77 @@ router.post(
 	async function (req, res) {
 		const { did, name, callbackUrl, token } = req.body;
 		try {
-			const issuer = await IssuerService.addIssuer(did, name);
-			const { blockHash, expireOn } = issuer;
+			const didExist = await IssuerService.getIssuerByDID(did);
+			if (didExist) throw Messages.ISSUER.ERR.DID_EXISTS;
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				name,
+				callbackUrl,
+				token,
+				action: CREATE
+			});
 
-			exCallback({ callbackUrl, did, token, status: DONE, expireOn, blockHash });
-
-			return ResponseHandler.sendRes(res, issuer);
+			return ResponseHandler.sendRes(res, delegateTransaction);
 		} catch (err) {
 			console.log(err);
-			const messageError = err.message ? err.message : err;
-			exCallback({ callbackUrl, did, token, messageError });
 			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}
 );
 
 /**
- *	Revocar autorizacion de un emisor para emitir certificados
+ *	Revocar autorización de un emisor para emitir certificados
  *	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
  */
 router.delete(
 	"/issuer",
-	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+	]),
 	Validator.checkValidationResult,
 	async function (req, res) {
-		const did = req.body.did;
-		if (!process.env.ENABLE_INSECURE_ENDPOINTS) {
-			return ResponseHandler.sendErrWithStatus(res, new Error("Disabled endpoint"), 404);
-		}
+		const { did, callbackUrl, token } = req.body;
 		try {
-			// elimino autorizacion en la blockchain
-			await BlockchainService.revokeDelegate(did);
-			return ResponseHandler.sendRes(res, Messages.ISSUER.DELETED);
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				callbackUrl,
+				token,
+				action: REVOKE
+			});
+			return ResponseHandler.sendRes(res, delegateTransaction);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
+ *	Refrescar autorización de un emisor para emitir certificados
+ */
+router.post(
+	"/issuer/:did/refresh",
+	Validator.validateBody([
+		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "callbackUrl", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
+	]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		try {
+			const { did } = req.params;
+			const { token, callbackUrl } = req.body;
+
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				callbackUrl,
+				token,
+				action: REFRESH
+			});
+
+			return ResponseHandler.sendRes(res, delegateTransaction);
+		} catch (err) {
+			console.log(err);
+			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}
 );
@@ -344,36 +382,6 @@ router.put(
 			return ResponseHandler.sendRes(res, issuer.name);
 		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
-		}
-	}
-);
-
-/**
- *	Editar el nombre de un emisor autorizado a partir de su did
- */
-router.post(
-	"/issuer/:did/refresh",
-	Validator.validateBody([
-		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "callbackUrl", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
-	]),
-	Validator.checkValidationResult,
-	async function (req, res) {
-		try {
-			const { did } = req.params;
-			const { token, callbackUrl } = req.body;
-
-			const issuer = await IssuerService.refresh(did);
-			const { blockHash, expireOn } = issuer;
-
-			exCallback({ callbackUrl, did, token, status: DONE, expireOn, blockHash });
-
-			return ResponseHandler.sendRes(res, issuer);
-		} catch (err) {
-			console.log(err);
-			const messageError = err.message ? err.message : err;
-			exCallback({ callbackUrl, did, token, messageError, status: ERROR_RENEW });
-			return ResponseHandler.sendErrWithStatus(res, err, 403);
 		}
 	}
 );

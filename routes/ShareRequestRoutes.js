@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const ResponseHandler = require("./utils/ResponseHandler");
-const Messages = require("../constants/Messages");
 const Validator = require("./utils/Validator");
 const Constants = require("../constants/Constants");
 const { saveShareRequest, getShareRequestById } = require("../services/ShareRequestService");
@@ -10,8 +9,11 @@ const { IS_STRING } = Constants.VALIDATION_TYPES;
 
 const BASE_URL = "/shareRequest";
 
-router.use("/shareRequest", validateAppOrUserJWT);
+router.use(BASE_URL, validateAppOrUserJWT);
 
+/**
+ * Guarda un ShareRequest (Credencial a compartir por QR)
+ */
 router.post(
 	BASE_URL,
 	Validator.validateBody([{ name: "jwt", validate: [IS_STRING] }]),
@@ -27,6 +29,9 @@ router.post(
 	}
 );
 
+/**
+ * Obtiene un ShareRequest según id (Devuelve un JWT con las credenciales previamente guardadas)
+ */
 router.post(
 	`${BASE_URL}/:id`,
 	Validator.validateBody([]),

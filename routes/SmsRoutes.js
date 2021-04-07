@@ -7,33 +7,37 @@ const UserService = require("../services/UserService");
 const MouroService = require("../services/MouroService");
 const CertService = require("../services/CertService");
 
-const Validator = require("./utils/Validator");
+const { validateBody, checkValidationResult } = require("./utils/Validator");
 const CodeGenerator = require("./utils/CodeGenerator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
+const { halfHourLimiter } = require("../policies/RateLimit");
+
+const { IS_STRING, IS_MOBILE_PHONE, IS_PASSWORD, IS_BOOLEAN } = Constants.VALIDATION_TYPES;
 
 /**
- *	Validación de teléfono. El usuario debe envia su numero de celular para
- *	poder generar una validación a través de SMS.
+ *	Validación de teléfono.
+ *	El usuario debe proveer su número de celular para poder generar una validación a través de SMS.
  *	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
  */
 router.post(
 	"/sendSmsValidator",
-	Validator.validateBody([
+	validateBody([
 		{
 			name: "cellPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
+			validate: [IS_STRING, IS_MOBILE_PHONE]
 		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
+		{ name: "did", validate: [IS_STRING], optional: true },
 		{
 			name: "password",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_PASSWORD],
+			validate: [IS_STRING, IS_PASSWORD],
 			length: { min: Constants.PASSWORD_MIN_LENGTH },
-			optional: true,
+			optional: true
 		},
-		{ name: "unique", validate: [Constants.VALIDATION_TYPES.IS_BOOLEAN], optional: true },
+		{ name: "unique", validate: [IS_BOOLEAN], optional: true }
 	]),
-	Validator.checkValidationResult,
+	checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const phoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
 		const did = req.body.did;
@@ -41,20 +45,20 @@ router.post(
 		const unique = req.body.unique;
 
 		try {
-			// validar que el telefono no este en uso
-			if (unique) await UserService.telTaken(phoneNumber);
+			// Validar que el teléfono no esté en uso
+			if (unique) await UserService.telTaken(phoneNumber, did);
 
-			// se ingresò contraseña, validarla
+			// Si se ingresó contraseña, validarla
 			if (password && did) await UserService.getAndValidate(did, password);
 
-			// generar còdigo de validacion
+			// Generar código de validación
 			let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
 			if (Constants.DEBUGG) console.log(code);
 
-			// crear y guardar pedido de validacion de tel
+			// Crear y guardar pedido de validación de teléfono
 			await SmsService.create(phoneNumber, code, undefined);
 
-			// mandar sms con código de validacion
+			// Mandar sms con el código de validacion
 			if (Constants.NO_SMS) {
 				return ResponseHandler.sendRes(res, { code });
 			}
@@ -69,24 +73,26 @@ router.post(
 );
 
 /**
- *	Validación del código de 6 digitos enviado por SMS.  El usuario debe ingresar
- *	su el código de validacion, el cuàl debe haberse mandado previamènte con "/sendSmsValidator".
+ *	Validación del código de 6 digitos enviado por SMS.
+ *	El usuario debe ingresar el código de validacion,
+ *  el cuál debe haberse mandado previamente con "/sendSmsValidator".
  */
 router.post(
 	"/verifySmsCode",
-	Validator.validateBody([
+	validateBody([
 		{
 			name: "cellPhoneNumber",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING, Constants.VALIDATION_TYPES.IS_MOBILE_PHONE],
+			validate: [IS_STRING, IS_MOBILE_PHONE]
 		},
 		{
 			name: "validationCode",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
+			validate: [IS_STRING],
+			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
 		},
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "did", validate: [IS_STRING] }
 	]),
-	Validator.checkValidationResult,
+	checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const cellPhoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
 
@@ -94,18 +100,18 @@ router.post(
 		const did = req.body.did;
 
 		try {
-			// validar codigo
+			// Validar código
 			let phone = await SmsService.isValid(cellPhoneNumber, validationCode);
 
-			// validar que no existe un usuario con ese mail
+			// Validar que no existe un usuario con ese mail
 			const user = await UserService.getByTel(cellPhoneNumber);
 			if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
 
-			// generar certificado validando que ese did le corresponde al dueño del telèfono
+			// Generar certificado validando que ese did le corresponde al dueño del teléfono
 			let cert = await CertService.createPhoneCertificate(did, cellPhoneNumber);
 			await CertService.verifyCertificatePhoneNumber(cert);
 
-			// revocar certificado anterior
+			// Revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
@@ -113,10 +119,10 @@ router.post(
 				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
-			// mandar certificado a mouro
+			// Mandar certificado a mouro
 			const jwt = await MouroService.saveCertificate(cert, did);
 
-			// validar codigo y actualizar pedido de validacion de mail
+			// Validar código y actualizar pedido de validación de teléfono
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.TEL,
 				did,

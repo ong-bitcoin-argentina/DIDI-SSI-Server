@@ -12,17 +12,18 @@ const FirebaseService = require("../services/FirebaseService");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const Validator = require("./utils/Validator");
-const { userDTO } = require("./utils/DTOs");
+const { userDTO } = require("../utils/DTOs");
 const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
 const { getImageUrl } = require("./utils/Helpers");
+const { halfHourLimiter } = require("../policies/RateLimit");
 
 const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATION_TYPES;
 
 router.use("/user/", validateAppOrUserJWT);
 
 /**
- *	Generaciòn de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
- *	tanto el mail como el telèfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
+ *	Generación de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
+ *	tanto el mail como el teléfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
  */
 router.post(
 	"/registerUser",
@@ -58,15 +59,15 @@ router.post(
 			await UserService.emailTaken(eMail);
 			await UserService.telTaken(phoneNumber);
 
-			// chequear que el mail haya sido validado
+			// Verificar que el mail haya sido validado
 			let mailValidated = await MailService.isValidated(did, eMail);
 			if (!mailValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.MAIL_NOT_VALIDATED);
 
-			// chequear que el tel haya sido validado
+			// Verificar que el teléfono haya sido validado
 			let phoneValidated = await SmsService.isValidated(did, phoneNumber);
 			if (!phoneValidated) return ResponseHandler.sendErr(res, Messages.USER.ERR.PHONE_NOT_VALIDATED);
 
-			// crear usuario
+			// Crear usuario
 			await UserService.create(did, privateKeySeed, eMail, phoneNumber, password, firebaseId, name, lastname);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.REGISTERED);
 		} catch (err) {
@@ -92,7 +93,7 @@ router.post(
 		const firebaseId = req.context.tokenData.firebaseId;
 
 		try {
-			//renueva el firebaseId
+			// Renueva el firebaseId
 			const user = await UserService.getByDID(did);
 			if (!user) return ResponseHandler.sendErr(res, Messages.USER.ERR.GET);
 
@@ -105,7 +106,7 @@ router.post(
 );
 
 /**
- *	Retorna la clave privada que sirve para recuperar la cuenta de didi.
+ *	Retorna la clave privada que sirve para recuperar la cuenta de didi
  */
 router.post(
 	"/recoverAccount",
@@ -129,7 +130,7 @@ router.post(
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		try {
-			// compara contraseña y retorna clave privada
+			// Compara contraseña y retorna clave privada
 			const seed = await UserService.recoverAccount(eMail, password, firebaseId);
 			return ResponseHandler.sendRes(res, { privateKeySeed: seed });
 		} catch (err) {
@@ -140,7 +141,7 @@ router.post(
 
 /**
  *	Valida que la contraseña se corresponda con la del usuario que tiene el did ingresado,
- *	no genera ningùn token ni informaciòn ùtil.
+ *	no genera ningún token ni informaciún útil.
  */
 router.post(
 	"/userLogin",
@@ -159,6 +160,7 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const password = req.body.password;
@@ -166,7 +168,7 @@ router.post(
 		const firebaseId = req.body.firebaseId;
 
 		try {
-			// validar la contraseña y retornar un boolean
+			// Validar la contraseña y retornar un boolean
 			const user = await UserService.login(did, eMail, password);
 			if (firebaseId) await user.updateFirebaseId(firebaseId);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.LOGGED_IN);
@@ -177,8 +179,8 @@ router.post(
 );
 
 /**
- *	Permite cambiar la contraseña a partir de la cuènta de mail asociada al usuario (caso, me olvidè la contraseña),
- *	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
+ *	Permite cambiar la contraseña a partir de la cuenta de mail asociada al usuario (caso, me olvidé la contraseña),
+ *	require que se haya validado el mail ("/sendMailValidator") antes de usarse.
  */
 router.post(
 	"/recoverPassword",
@@ -202,16 +204,15 @@ router.post(
 		const newPass = req.body.newPass;
 
 		try {
-			// validar codigo
+			// Validar código
 			let mail = await MailService.isValid(eMail, eMailValidationCode);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 
-			// actualizar contraseña
+			// Actualizar contraseña
 			await UserService.recoverPassword(eMail, newPass);
 
-			// actualizar pedido de validacion de mail
+			// Actualizar pedido de validación de mail
 			console.log(await mail.getDid());
-
 			mail = await MailService.validateMail(mail, await mail.getDid());
 
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
@@ -222,7 +223,7 @@ router.post(
 );
 
 /**
- *	Permite cambiar la contarseña del usuario en el caso que el usuario conoce el mail y contraseña anterior.
+ *	Renovar la contraseña, dado el mail y contraseña anterior
  */
 router.post(
 	"/changePassword",
@@ -246,7 +247,7 @@ router.post(
 		const newPass = req.body.newPass;
 
 		try {
-			// validar contraseña y actualizarla
+			// Validar contraseña y actualizarla
 			await UserService.changePassword(did, oldPass, newPass);
 			return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
 		} catch (err) {
@@ -256,8 +257,8 @@ router.post(
 );
 
 /**
- *	Permite cambiar el nùmero de tel asociado al usuario,
- *	require que se haya mandado un còdigo de validaciòn con "/sendSmsValidator" antes de usarse.
+ *	Permite cambiar el número de teléfono asociado al usuario,
+ *	require que se haya validado el teléfono ("/sendSmsValidator") antes de usarse
  */
 router.post(
 	"/changePhoneNumber",
@@ -284,6 +285,7 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const phoneValidationCode = req.body.phoneValidationCode;
@@ -292,17 +294,17 @@ router.post(
 		const firebaseId = req.body.firebaseId ? req.body.firebaseId : "";
 
 		try {
-			// validar telefono nuevo en uso
+			// Validar telefono nuevo en uso
 			await UserService.telTaken(newPhoneNumber, did);
 
-			// validar codigo
+			// Validar codigo
 			let phone = await SmsService.isValid(newPhoneNumber, phoneValidationCode);
 
-			// generar certificado validando que ese did le corresponde al dueño del telèfono
+			// Generar certificado validando que ese did le corresponde al dueño del teléfono
 			let cert = await CertService.createPhoneCertificate(did, newPhoneNumber);
 			await CertService.verifyCertificatePhoneNumber(cert);
 
-			// revocar certificado anterior
+			// Revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
@@ -313,10 +315,10 @@ router.post(
 			// mandar certificado a mouro
 			const jwt = await MouroService.saveCertificate(cert, did);
 
-			// actualizar tel
+			// Actualizar numero de teléfono
 			await UserService.changePhoneNumber(did, newPhoneNumber, password, firebaseId);
 
-			// validar codigo y actualizar pedido de validacion de mail
+			// Validar código y actualizar pedido de validación de mail
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.TEL,
 				did,
@@ -334,7 +336,7 @@ router.post(
 
 /**
  *	Permite cambiar el mail asociado al usuario,
- *	require que se haya mandado un còdigo de validaciòn con "/sendMailValidator" antes de usarse.
+ *	require que se haya validado el mail ("/sendMailValidator") antes de usarse.
  */
 router.post(
 	"/changeEmail",
@@ -354,6 +356,7 @@ router.post(
 		}
 	]),
 	Validator.checkValidationResult,
+	halfHourLimiter,
 	async function (req, res) {
 		const did = req.body.did;
 		const eMailValidationCode = req.body.eMailValidationCode;
@@ -361,18 +364,18 @@ router.post(
 		const password = req.body.password;
 
 		try {
-			// validar mail nuevo en uso
+			// Validar mail nuevo en uso
 			await UserService.emailTaken(newEMail, did);
 
-			// validar codigo
+			// Validar codigo
 			let mail = await MailService.isValid(newEMail, eMailValidationCode);
 			if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 
-			// generar certificado validando que ese did le corresponde al dueño del mail
+			// Generar certificado validando que ese did le corresponde al dueño del mail
 			let cert = await CertService.createMailCertificate(did, newEMail);
 			await CertService.verifyCertificateEmail(cert);
 
-			// revocar certificado anterior
+			// Revocar certificado anterior
 			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);
 			for (let elem of old) {
 				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
@@ -380,13 +383,13 @@ router.post(
 				await MouroService.revokeCertificate(jwt, elem.hash, did);
 			}
 
-			// mandar certificado a mouro
+			// Mandar certificado a mouro
 			const jwt = await MouroService.saveCertificate(cert, did);
 
-			// actualizar mail
+			// Actualizar mail
 			await UserService.changeEmail(did, newEMail, password);
 
-			// validar codigo y actualizar pedido de validacion de mail
+			// Validar código y actualizar pedido de validación de mail
 			await Certificate.generate(
 				Constants.CERTIFICATE_NAMES.EMAIL,
 				did,
@@ -434,7 +437,7 @@ router.post(
 			const petition = await CertService.createPetition(did, claims, cb);
 
 			try {
-				// enviar push notification
+				// Enviar push notification
 				const user = await UserService.getByDID(did);
 				await FirebaseService.sendPushNotification(
 					Messages.PUSH.VALIDATION_REQ.TITLE,
@@ -456,7 +459,7 @@ router.post(
 );
 
 /**
- *	Recibe la respuesta al pedido de '/verifyCredentialRequest', marcando al certificado como validado
+ *	Recibe la respuesta al pedido de "/verifyCredentialRequest", marcando al certificado como validado
  */
 router.post(
 	"/verifyCredential",
@@ -469,25 +472,26 @@ router.post(
 		const jwt = data.payload.verified[0];
 
 		try {
-			// valido que el certificado este en mouro
+			// Validar que el certificado este en mouro
 			const hash = await MouroService.isInMouro(jwt, data.payload.iss, Messages.ISSUER.ERR.NOT_FOUND);
 			if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
 
-			// obtengo el certificado
+			// Obtener el certificado según el hash de mouro
 			const cert = await Certificate.findByHash(hash);
 			const certDid = await cert.getDid();
-			// valido que el emisor sea el correcto
+
+			// Verificar que el emisor sea el correcto
 			if (certDid !== data.payload.iss) return ResponseHandler.sendErr(res, Messages.USER.ERR.VALIDATE_DID_ERROR);
 
+			// Obtener y decodificar jwt
 			const certJwt = await cert.getJwt();
-			// decodifico jwt
 			const decoded = await CertService.decodeCertificate(certJwt, Messages.CERTIFICATE.ERR.VERIFY);
 
+			// Si existen, se marca cada microcredencial como validada
 			const credData = decoded.payload.vc.credentialSubject;
 			const certCategory = Object.keys(credData)[0];
 			const wrappedIndex = Object.keys(credData[certCategory]).indexOf("wrapped");
 			if (wrappedIndex >= 0) {
-				// de haberlas, marco microcredenciales como validadas
 				for (let key of Object.keys(credData[certCategory].wrapped)) {
 					const hash = await MouroService.isInMouro(
 						credData[certCategory].wrapped[key],
@@ -496,11 +500,12 @@ router.post(
 					);
 					if (!hash) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.NOT_FOUND);
 
+					// Validación de microcredencial
 					const microCert = await Certificate.findByHash(hash);
 					microCert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 				}
 			}
-			// marco macrocredencial como validada
+			// Se marca el certificado como validado
 			cert.update(Constants.CERTIFICATE_STATUS.VERIFIED);
 			return ResponseHandler.sendRes(res, {});
 		} catch (err) {
@@ -512,7 +517,7 @@ router.post(
 /**
  *	Obtiene informacion sobre el usuario
  */
-router.post("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
+router.get("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
 	try {
 		const { did } = req.params;
 		const user = await UserService.findByDid(did);
@@ -524,7 +529,8 @@ router.post("/user/:did", Validator.checkValidationResult, Validator.validatePar
 });
 
 /**
- *	Edita nombre y apellido, usado para migrar usuarios
+ *	Edita nombre y apellido,
+ *  usado para migrar usuarios
  */
 router.post(
 	"/user/:did/edit",
@@ -554,6 +560,7 @@ router.post(
 	Validator.validateBody([]),
 	Validator.checkValidationResult,
 	Validator.validateParams,
+	halfHourLimiter,
 	async function (req, res) {
 		try {
 			const { path, mimetype, size } = req.file;
@@ -572,6 +579,9 @@ router.post(
 	}
 );
 
+/**
+ * Devuelve la imagen de usuario según un id
+ */
 router.get(
 	"/image/:id",
 	Validator.validateBody([]),
