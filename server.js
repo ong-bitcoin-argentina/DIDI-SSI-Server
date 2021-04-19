@@ -3,6 +3,9 @@ require('./services/logger');
 const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
+const multer = require("multer");
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const Constants = require("./constants/Constants");
 const Messages = require("./constants/Messages");
@@ -19,7 +22,6 @@ const PresentationRoutes = require("./routes/PresentationRoutes");
 const ShareRequestRoutes = require("./routes/ShareRequestRoutes");
 const { permanentJob } = require("./jobs/jobs");
 
-const multer = require("multer");
 
 // inicializar cluster para workers, uno por cpu disponible
 var cluster = require("cluster");
@@ -62,6 +64,27 @@ mongoose
 	.catch(err => {
 		console.log(Messages.INDEX.ERR.CONNECTION + err.message);
 	});
+
+
+/**
+ * Config de Swagger
+ */
+const options = {
+	definition: {
+	  api: '1.0.0',
+	  info: {
+		title: 'DIDI-Server API',
+		version: '1.0.0',
+	  },
+	},
+	apis: ['./*.js'], // files containing annotations as above
+};
+
+swaggerJsdoc(options)
+  .then(apiSpecification => {
+    console.log(apiSpecification)
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(apiSpecification));
+  });
 
 app.get("/", (_, res) => res.send(`${Messages.INDEX.MSG.HELLO_WORLD} v${process.env.VERSION}`));
 
