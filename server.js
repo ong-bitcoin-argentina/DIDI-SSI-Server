@@ -1,3 +1,4 @@
+require('dotenv').config();
 require('./services/logger');
 
 const mongoose = require("mongoose");
@@ -71,21 +72,36 @@ mongoose
  */
 const options = {
 	definition: {
-	  api: '1.0.0',
+	  openapi: '3.0.0',
 	  info: {
-		title: 'DIDI-Server API',
-		version: '1.0.0',
+		"title": process.env.NAME,
+		"description": `Environment: ${process.env.ENVIRONMENT}`,
+		"version": `${process.env.VERSION}`,
 	  },
 	},
-	apis: ['./*.js'], // files containing annotations as above
+	apis: ['./*.js', './routes/*.js'], // files containing annotations as above
 };
+const apiSpecification = swaggerJsdoc(options);
+/**
+ * @openapi
+ * /api-docs:
+ *   get:
+ *     description: Welcome to the jungle!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious webpage.
+ */
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(apiSpecification));
 
-swaggerJsdoc(options)
-  .then(apiSpecification => {
-    console.log(apiSpecification)
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(apiSpecification));
-  });
-
+/**
+ * @openapi
+ * /:
+ *   get:
+ *     description: Bienvenido a DIDI Server!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */
 app.get("/", (_, res) => res.send(`${Messages.INDEX.MSG.HELLO_WORLD} v${process.env.VERSION}`));
 
 app.use(bodyParser.json());
