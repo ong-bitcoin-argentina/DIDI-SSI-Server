@@ -1,8 +1,12 @@
+require('dotenv').config();
 require('./services/logger');
 
 const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
+const multer = require("multer");
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const Constants = require("./constants/Constants");
 const Messages = require("./constants/Messages");
@@ -19,7 +23,6 @@ const PresentationRoutes = require("./routes/PresentationRoutes");
 const ShareRequestRoutes = require("./routes/ShareRequestRoutes");
 const { permanentJob } = require("./jobs/jobs");
 
-const multer = require("multer");
 
 // inicializar cluster para workers, uno por cpu disponible
 var cluster = require("cluster");
@@ -63,6 +66,42 @@ mongoose
 		console.log(Messages.INDEX.ERR.CONNECTION + err.message);
 	});
 
+
+/**
+ * Config de Swagger
+ */
+const options = {
+	definition: {
+	  openapi: '3.0.0',
+	  info: {
+		"title": process.env.NAME,
+		"description": `Environment: ${process.env.ENVIRONMENT}`,
+		"version": process.env.VERSION,
+	  },
+	},
+	apis: ['./*.js', './routes/*.js'], // files containing annotations as above
+};
+const apiSpecification = swaggerJsdoc(options);
+/**
+ * @openapi
+ * /api-docs:
+ *   get:
+ *     description: Welcome to the jungle!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious webpage.
+ */
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(apiSpecification));
+
+/**
+ * @openapi
+ * /:
+ *   get:
+ *     description: Bienvenido a DIDI Server!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */
 app.get("/", (_, res) => res.send(`${Messages.INDEX.MSG.HELLO_WORLD} v${process.env.VERSION}`));
 
 app.use(bodyParser.json());
