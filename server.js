@@ -76,7 +76,7 @@ const options = {
 	  info: {
 		"title": process.env.NAME,
 		"description": `Environment: ${process.env.ENVIRONMENT}`,
-		"version": `${process.env.VERSION}`,
+		"version": process.env.VERSION,
 	  },
 	},
 	apis: ['./*.js', './routes/*.js'], // files containing annotations as above
