@@ -88,12 +88,6 @@ services:
       - BLOCKCHAIN_CONTRACT_BFA=${BLOCKCHAIN_CONTRACT_BFA}
     ports: 
       - "127.0.0.1:3000:${MOURO_PORT}"
-    labels: 
-      - "traefik.enable=true"
-      - "traefik.http.routers.mouro-gql.rule=Host(`mouro.${ENVIRONMENT}.didi.org.ar`)"
-      - "traefik.http.routers.mouro-gql.entrypoints=web-secure"
-      - "traefik.http.routers.mouro-gql.tls=true"
-      - "traefik.http.routers.mouro-gql.tls.certresolver=le"
     volumes:
       - "/didi/mouro-data:/database"
   db:
