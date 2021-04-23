@@ -3,3 +3,7 @@ node_modules/
 data/
 .env
 coverage/
+docker-compose/db-data
+docker-compose/var
+docker-compose/didi
+services/didi-next-00-firebase-adminsdk-iev7z-d7cc5b46ef.json
