@@ -56,8 +56,8 @@ services:
     ports:
       - "8089:${DIDI_SERVER_PORT}"
     volumes:
-      - "/var/log/didi:/var/log/didi"
-      - "/configs:/configs"
+      - "./var/log/didi:/var/log/didi"
+      - "./configs:/configs"
   mouro-gql:
     image: aidi00.azurecr.io/didi-mouro:dev
     environment:
@@ -83,7 +83,7 @@ services:
     ports: 
       - "127.0.0.1:3000:${MOURO_PORT}"
     volumes:
-      - "/didi/mouro-data:/database"
+      - "./didi/mouro-data:/database"
   db:
     image: mongo:4.4.0
     environment:
