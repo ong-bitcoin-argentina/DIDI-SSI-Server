@@ -55,12 +55,6 @@ services:
       - db
     ports:
       - "8089:${DIDI_SERVER_PORT}"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.didi-server.rule=Host(`server.${ENVIRONMENT}.didi.org.ar`)"
-      - "traefik.http.routers.didi-server.entrypoints=web-secure"
-      - "traefik.http.routers.didi-server.tls=true"
-      - "traefik.http.routers.didi-server.tls.certresolver=le"
     volumes:
       - "/var/log/didi:/var/log/didi"
       - "/configs:/configs"
