@@ -14,7 +14,58 @@ const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 
 /**
- *	Permite validar la identidad de un usuario contra renaper
+ * @openapi
+ * 	 /renaper/valdateDni:
+ *   post:
+ *     summary: Permite validar la identidad de un usuario contra renaper
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - dni
+ *         - gender
+ *         - name
+ *         - lastName
+ *         - birthDate
+ *         - order      
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               dni:
+ *                 type: string
+ *               gender:
+ *                 type: string
+ *                 description: M para Masculino y F para femenino
+ *               name:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               birthDate: 
+ *                 type: string
+ *               order:
+ *                 type: string
+ *               selfieImage:
+ *                 type: string
+ *                 format: binary
+ *               frontImage:
+ *                 type: string
+ *                 format: binary
+ *               backImage:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: OK
+ *       401: 
+ *         description: Acción no autorizada
+ *       404:
+ *         description: No existe la ruta
+ *       500:
+ *         description: Error interno del servidor
+ * 
  */
 router.post(
 	"/renaper/validateDni",
@@ -204,7 +255,30 @@ router.post(
 );
 
 /**
- *	Retorna el estado del pedido realizado en "/validateDni"
+ * @openapi
+ * 	 /renaper/validateDniState:
+ *   post:
+ *     summary: Retorna el estado de un pedido realizado en "/validateDni"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               operationId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: OK
+ *       401: 
+ *         description: Acción no autorizada
+ *       404:
+ *         description: No existe la ruta
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post(
 	"/renaper/validateDniState",
