@@ -61,8 +61,6 @@ const Constants = require("../constants/Constants");
  *         description: OK
  *       401: 
  *         description: Acción no autorizada
- *       404:
- *         description: No existe la ruta
  *       500:
  *         description: Error interno del servidor
  * 
@@ -275,8 +273,6 @@ router.post(
  *         description: OK
  *       401: 
  *         description: Acción no autorizada
- *       404:
- *         description: No existe la ruta
  *       500:
  *         description: Error interno del servidor
  */
