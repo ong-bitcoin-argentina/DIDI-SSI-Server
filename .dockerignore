@@ -4,5 +4,7 @@ test
 .vscode
 .github
 .prettierrc
+docker-compose
+__tests__
 Didi-server-api.pdf
 Didi-server.pdf
