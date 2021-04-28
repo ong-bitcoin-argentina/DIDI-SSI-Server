@@ -39,7 +39,6 @@ router.post(
 	Validator.validateParams,
 	async function (req, res) {
 		try {
-			console.log(req.body)
 			const { _id } = await savePresentation(req.body);
 			return ResponseHandler.sendRes(res, _id);
 		} catch (err) {
