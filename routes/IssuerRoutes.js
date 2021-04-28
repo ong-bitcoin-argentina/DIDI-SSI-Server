@@ -18,8 +18,31 @@ const { halfHourLimiter } = require("../policies/RateLimit");
 const { CREATE, REFRESH, REVOKE } = Constants.DELEGATE_ACTIONS;
 
 /**
- *	Valida el certificado generado por el issuer y lo envia a mouro para ser guardado
+ * @openapi
+ *   /issuer/issueCertificate:
+ *   post:
+ *     summary: Valida el certificado generado por el issuer y lo envia a mouro para ser guardado.
+ *     requestBody:
+ *       required:
+ *         - jwt
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               jwt:
+ *                 type: string
+ *               sendPush:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/issuer/issueCertificate",
 	Validator.validateBody([
@@ -93,9 +116,36 @@ router.post(
 );
 
 /**
- *	Permite al usuario dueño del did, pedir uno o más certificados para obtener la información de los mismos
- *	(genera un shareRequest y lo envia via mouro para que el usuario envíe la información)
+ * @openapi
+ *   /issuer/issueShareRequest:
+ *   post:
+ *     summary: Permite al usuario dueño del did, pedir uno o más certificados para obtener la información de los mismos.
+ *     description: Genera un shareRequest y lo envia via mouro para que el usuario envíe la información
+ *     requestBody:
+ *       required:
+ *         - issuerDid
+ *         - did
+ *         - jwt
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               issuerDid:
+ *                 type: string
+ *               did:
+ *                 type: string
+ *               jwt:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/issuer/issueShareRequest",
 	Validator.validateBody([
@@ -140,8 +190,38 @@ router.post(
 );
 
 /**
- *	Permite revocar un certificado previamente almacenado en mouro
+ * @openapi
+ *   /issuer/revokeCertificate:
+ *   post:
+ *     summary: Permite revocar un certificado previamente almacenado en mouro.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - sub
+ *         - jwt
+ *         - hash
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               sub:
+ *                 type: string
+ *               jwt:
+ *                 type: string
+ *               hash:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/issuer/revokeCertificate",
 	Validator.validateBody([
@@ -196,10 +276,31 @@ router.post(
 	}
 );
 
-/**
- *	Permite validar un certificado a partir del jwt
- *	(utilizado principalmente por el viewer)
+ /**
+ * @openapi
+ *   /issuer/verifyCertificate:
+ *   post:
+ *     summary: Permite validar un certificado a partir del jwt.
+ *     description: Utilizado principalmente por el viewer.
+ *     requestBody:
+ *       required:
+ *         - jwt
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               jwt:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/issuer/verifyCertificate",
 	Validator.validateBody([{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -233,9 +334,30 @@ router.post(
 );
 
 /**
- *	Verifica la existencia del emisor según el did
- *  Obtiene y verifica que el código de validación sea correcto
+ * @openapi
+ *   /issuer/verify:
+ *   post:
+ *     summary: Verifica la existencia del emisor según el did.
+ *     description: Obtiene y verifica que el código de validación sea correcto.
+ *     requestBody:
+ *       required:
+ *         - did
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/issuer/verify",
 	Validator.validateBody([{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
@@ -256,73 +378,40 @@ router.post(
 );
 
 /**
- *	Autorizar un issuer para la emision de certificados
- *	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
+ * @openapi
+ *   /issuer/:{did}/refresh:
+ *   post:
+ *     summary: Refresca la autorización de un emisor para emitir certificados.
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     requestBody:
+ *       required:
+ *         - token
+ *         - callbackUrl
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               callbackUrl:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       403: 
+ *         description: Acción denegada
+ *       500:
+ *         description: Error interno del servidor
  */
-router.post(
-	"/issuer",
-	Validator.validateBody([
-		{
-			name: "did",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING]
-		},
-		{
-			name: "name",
-			validate: [Constants.VALIDATION_TYPES.IS_STRING]
-		}
-	]),
-	Validator.checkValidationResult,
-	async function (req, res) {
-		const { did, name, callbackUrl, token } = req.body;
-		try {
-			const didExist = await IssuerService.getIssuerByDID(did);
-			if (didExist) throw Messages.ISSUER.ERR.DID_EXISTS;
-			const delegateTransaction = await IssuerService.createDelegateTransaction({
-				did,
-				name,
-				callbackUrl,
-				token,
-				action: CREATE
-			});
 
-			return ResponseHandler.sendRes(res, delegateTransaction);
-		} catch (err) {
-			console.log(err);
-			return ResponseHandler.sendErrWithStatus(res, err, 403);
-		}
-	}
-);
-
-/**
- *	Revocar autorización de un emisor para emitir certificados
- *	(inseguro: cualquiera puede llamarlo, se recomienda eliminarlo en la version final)
- */
-router.delete(
-	"/issuer",
-	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-	]),
-	Validator.checkValidationResult,
-	async function (req, res) {
-		const { did, callbackUrl, token } = req.body;
-		try {
-			const delegateTransaction = await IssuerService.createDelegateTransaction({
-				did,
-				callbackUrl,
-				token,
-				action: REVOKE
-			});
-			return ResponseHandler.sendRes(res, delegateTransaction);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-	}
-);
-
-/**
- *	Refrescar autorización de un emisor para emitir certificados
- */
 router.post(
 	"/issuer/:did/refresh",
 	Validator.validateBody([
@@ -351,8 +440,25 @@ router.post(
 );
 
 /**
- *	Obtener nombre de un emisor autorizado a partir de su did
+ * @openapi
+ *   /issuer/:{did}:
+ *   get:
+ *     summary: Obtiene el nombre de un emisor autorizado a partir de su did.
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.get("/issuer/:did", async function (req, res) {
 	const did = req.params.did;
 
@@ -366,8 +472,35 @@ router.get("/issuer/:did", async function (req, res) {
 });
 
 /**
- *	Editar el nombre de un emisor autorizado a partir de su did
+ * @openapi
+ *   /issuer/:{did}:
+ *   put:
+ *     summary: Edita el nombre de un emisor autorizado a partir de su did.
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     requestBody:
+ *       required:
+ *         - name
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.put(
 	"/issuer/:did",
 	Validator.validateBody([{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
