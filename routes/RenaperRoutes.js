@@ -37,8 +37,9 @@ const Constants = require("../constants/Constants");
  *               dni:
  *                 type: string
  *               gender:
- *                 type: string
- *                 description: M para Masculino y F para femenino
+ *                  enum:
+ *                    - M
+ *                    - F
  *               name:
  *                 type: string
  *               lastName:
