@@ -259,7 +259,9 @@ router.post(
  *   post:
  *     summary: Retorna el estado de un pedido realizado en "/validateDni"
  *     requestBody:
- *       required: true
+ *       required:
+ *         - did
+ *         - operationId
  *       content:
  *         multipart/form-data:
  *           schema:
