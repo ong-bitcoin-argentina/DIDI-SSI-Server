@@ -58,7 +58,7 @@ const Constants = require("../constants/Constants");
  *                 format: binary
  *     responses:
  *       200:
- *         description: OK
+ *         description: Puede devolver ok o error en algun parametro
  *       401: 
  *         description: Acción no autorizada
  *       500:
@@ -270,7 +270,7 @@ router.post(
  *                 type: string
  *     responses:
  *       200:
- *         description: OK
+ *         description: Puede devolver ok o error en algun parametro
  *       401: 
  *         description: Acción no autorizada
  *       500:
