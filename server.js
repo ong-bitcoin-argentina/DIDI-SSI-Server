@@ -74,7 +74,7 @@ const options = {
 	  openapi: '3.0.0',
 	  info: {
 		"title": process.env.NAME,
-		"description": `Corriendo en el ambiente: ${process.env.ENVIRONMENT}. Para más información, visite la [documentación](https://didi-ssi-docs-git-master-ong-bitcoin-argentina.vercel.app/).`,
+		"description": `Corriendo en el ambiente: ${process.env.ENVIRONMENT}. Para más información, visite la [documentación](https://docs.didi.org.ar/).`,
 		"version": process.env.VERSION,
 	  },
 	  servers: [{
