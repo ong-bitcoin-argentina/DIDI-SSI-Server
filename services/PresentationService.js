@@ -6,7 +6,7 @@ const { INVALID } = Messages.TOKEN;
 const { GET, NOT_FOUND, EXPIRED } = Messages.PRESENTATION.ERR;
 
 /**
- *  Crea una nueva presentacion dado un jwt
+ *  Crea una nueva presentacion dado un array de jwts
  */
 module.exports.savePresentation = async function ({ jwts }) {
 	try {
