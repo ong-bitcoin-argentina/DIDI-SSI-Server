@@ -10,7 +10,27 @@ const BASE_URL = "/presentation";
  */
 
 /**
- * Guarda una presentación (que luego será accedida a través de un link en viewer)
+ * @openapi
+ * 	 /presentation:
+ *   post:
+ *     summary: Guarda una presentación
+ *     description: Se podra acceder a esta presentacion a través de un link en Validator Viewer.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               jwts:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post(
 	BASE_URL,
@@ -27,8 +47,24 @@ router.post(
 	}
 );
 
-/** 
- * Obtiene una presentación dado un id
+/**
+ * @openapi
+ *   /presentation/:{id}:
+ *   get:
+ *     summary: Obtiene una presentación dado un id
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */ 	
 router.get(
 	`${BASE_URL}/:id`,
