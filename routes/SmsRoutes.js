@@ -16,9 +16,34 @@ const { halfHourLimiter } = require("../policies/RateLimit");
 const { IS_STRING, IS_MOBILE_PHONE, IS_PASSWORD, IS_BOOLEAN } = Constants.VALIDATION_TYPES;
 
 /**
- *	Validación de teléfono.
- *	El usuario debe proveer su número de celular para poder generar una validación a través de SMS.
- *	Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
+ * @openapi
+ *   /sendSmsValidator:
+ *   post:
+ *     summary: Validación de teléfono
+ *     description: El usuario debe proveer su número de celular para poder generar una validación a través de SMS. Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
+ *     requestBody:
+ *       required:
+ *         - cellPhoneNumber
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cellPhoneNumber:
+ *                 type: string
+ *               did:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               unique:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post(
 	"/sendSmsValidator",
@@ -73,9 +98,34 @@ router.post(
 );
 
 /**
- *	Validación del código de 6 digitos enviado por SMS.
- *	El usuario debe ingresar el código de validacion,
- *  el cuál debe haberse mandado previamente con "/sendSmsValidator".
+ * @openapi
+ *   /verifySmsCode:
+ *   post:
+ *     summary: Validación del código de 6 digitos enviado por SMS
+ *     description: El usuario debe ingresar el código de validacion, el cuál debe haberse mandado previamente con "/sendSmsValidator".
+ *     requestBody:
+ *       required:
+ *         - cellPhoneNumber
+ *         - validationCode
+ *         - did
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cellPhoneNumber:
+ *                 type: string
+ *               validationCode:
+ *                 type: string
+ *               did:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post(
 	"/verifySmsCode",
