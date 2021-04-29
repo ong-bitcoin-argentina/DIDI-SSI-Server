@@ -116,9 +116,6 @@ router.get("/userApp/:did", validateParams, async function (req, res) {
 });
 
 /**
- * Crea y valida la relacion user - app autorizada
- */
-/**
  * @openapi
  * 	 /userApp/validateUser:
  *   post:
