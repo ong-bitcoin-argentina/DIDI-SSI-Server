@@ -29,6 +29,8 @@ router.use("/admin/", validateAdminJWT);
  *         description: Puede devolver ok o error en algun parametro
  *       401: 
  *         description: Acción no autorizada
+ *       404: 
+ *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
  */
@@ -80,6 +82,8 @@ router.get(
  *         description: Puede devolver ok o error en algun parametro
  *       401: 
  *         description: Acción no autorizada
+ *       404: 
+ *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
  */
