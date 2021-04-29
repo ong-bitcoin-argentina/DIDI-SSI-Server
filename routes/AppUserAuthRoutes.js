@@ -13,8 +13,24 @@ router.use("/appAuth", CheckInsecure);
 router.use("/userApp/validateUser", ValidateAppJWT);
 
 /**
- *  Obtiene una aplicación autorizada según su did
- */ 
+ * @openapi
+ *   /appAuth/:{did}:
+ *   get:
+ *     summary: Obtiene una aplicación autorizada según su did
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get("/appAuth/:did", checkValidationResult, async function (req, res) {
 	const { did } = req.params;
 	try {
@@ -26,9 +42,31 @@ router.get("/appAuth/:did", checkValidationResult, async function (req, res) {
 });
 
 /**
-*  Crea una aplicación para volverla autorizada por DIDI
-*  (Solo disponible para QA)
-*/
+ * @openapi
+ * 	 /appAuth:
+ *   post:
+ *     summary: Crea una aplicación para volverla autorizada por DIDI
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - name
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.post(
 	"/appAuth",
 	validateBody([
@@ -48,8 +86,24 @@ router.post(
 );
 
 /**
- *  Obtiene un usuario según su did, cuya relación [user - app autorizada] fue establecida
- */ 
+ * @openapi
+ *   /userApp/:{did}:
+ *   get:
+ *     summary: Obtiene un usuario según su did, cuya relación [user - app autorizada] fue establecida
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get("/userApp/:did", validateParams, async function (req, res) {
 	try {
 		const { did } = req.params;
@@ -63,6 +117,29 @@ router.get("/userApp/:did", validateParams, async function (req, res) {
 
 /**
  * Crea y valida la relacion user - app autorizada
+ */
+/**
+ * @openapi
+ * 	 /userApp/validateUser:
+ *   post:
+ *     summary: Crea y valida la relacion user - app autorizada
+ *     requestBody:
+ *       required:
+ *         - userJWT
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userJWT:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post(
 	"/userApp/validateUser",

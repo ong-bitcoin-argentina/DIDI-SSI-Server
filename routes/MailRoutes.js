@@ -99,7 +99,7 @@ router.post(
  * @openapi
  * 	 /reSendMailValidator:
  *   post:
- *     summary: Reenviar Validación del email
+ *     summary: Reenviar validación del email
  *     requestBody:
  *       required:
  *         - eMail  
