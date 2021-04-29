@@ -12,7 +12,32 @@ const BASE_URL = "/shareRequest";
 router.use(BASE_URL, validateAppOrUserJWT);
 
 /**
- * Guarda un ShareRequest (Credencial a compartir por QR)
+ * @openapi
+ * 	 /shareRequest:
+ *   post:
+ *     summary: Guarda un ShareRequest
+ *     description: Credencial a compartir por QR
+ *     requestBody:
+ *       required:
+ *         - userJWT
+ *         - jwt
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userJWT:
+ *                 type: string
+ *               jwt:
+ *                 type: string
+ *  
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post(
 	BASE_URL,
@@ -30,7 +55,33 @@ router.post(
 );
 
 /**
- * Obtiene un ShareRequest según id (Devuelve un JWT con las credenciales previamente guardadas)
+ * @openapi
+ *   /shareRequest/:{id}:
+ *   post:
+ *     summary: Obtiene un ShareRequest según id
+ *     description: Devuelve un JWT con las credenciales previamente guardadas
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userJWT:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post(
 	`${BASE_URL}/:id`,
