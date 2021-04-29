@@ -123,7 +123,6 @@ router.post(
  *     description: Genera un shareRequest y lo envia via mouro para que el usuario envíe la información
  *     requestBody:
  *       required:
- *         - issuerDid
  *         - did
  *         - jwt
  *       content:
@@ -131,8 +130,6 @@ router.post(
  *           schema:
  *             type: object
  *             properties:
- *               issuerDid:
- *                 type: string
  *               did:
  *                 type: string
  *               jwt:
@@ -149,7 +146,6 @@ router.post(
 router.post(
 	"/issuer/issueShareRequest",
 	Validator.validateBody([
-		{ name: "issuerDid", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 		{ name: "jwt", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
@@ -372,6 +368,125 @@ router.post(
 			return ResponseHandler.sendRes(res, { did, name, expireOn });
 		} catch (err) {
 			console.log(err);
+			return ResponseHandler.sendErr(res, err);
+		}
+	}
+);
+
+/**
+ * @openapi
+ *   /issuer:
+ *   post:
+ *     summary: Autorizar un issuer para la emision de certificados.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - name
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               callbackUrl:
+ *                 type: string
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       403: 
+ *         description: Acción denegada
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+router.post(
+	"/issuer",
+	Validator.validateBody([
+		{
+			name: "did",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING]
+		},
+		{
+			name: "name",
+			validate: [Constants.VALIDATION_TYPES.IS_STRING]
+		}
+	]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		const { did, name, callbackUrl, token } = req.body;
+		try {
+			const didExist = await IssuerService.getIssuerByDID(did);
+			if (didExist) throw Messages.ISSUER.ERR.DID_EXISTS;
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				name,
+				callbackUrl,
+				token,
+				action: CREATE
+			});
+
+			return ResponseHandler.sendRes(res, delegateTransaction);
+		} catch (err) {
+			console.log(err);
+			return ResponseHandler.sendErrWithStatus(res, err, 403);
+		}
+	}
+);
+
+/**
+ * @openapi
+ *   /issuer:
+ *   delete:
+ *     summary: Revocar autorización de un emisor para emitir certificados.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - token
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               callbackUrl:
+ *                 type: string
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+router.delete(
+	"/issuer",
+	Validator.validateBody([
+		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+		{ name: "token", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+	]),
+	Validator.checkValidationResult,
+	async function (req, res) {
+		const { did, callbackUrl, token } = req.body;
+		try {
+			const delegateTransaction = await IssuerService.createDelegateTransaction({
+				did,
+				callbackUrl,
+				token,
+				action: REVOKE
+			});
+			return ResponseHandler.sendRes(res, delegateTransaction);
+		} catch (err) {
 			return ResponseHandler.sendErr(res, err);
 		}
 	}
