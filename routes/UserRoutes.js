@@ -888,6 +888,12 @@ router.post(
  *         required: true
  *         schema:
  *           type : string
+ *     requestBody:
+ *       content:
+ *         image/png:
+ *           schema:
+ *             type: string
+ *             format: binary
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
