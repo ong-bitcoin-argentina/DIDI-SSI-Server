@@ -122,7 +122,7 @@ router.get("/userApp/:did", validateParams, async function (req, res) {
  *     summary: Crea y valida la relacion user - app autorizada
  *     parameters:
  *       - in: header
- *         name: appJWT
+ *         name: Authorization
  *         schema:
  *           type: string
  *         required: true
