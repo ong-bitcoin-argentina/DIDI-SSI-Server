@@ -45,7 +45,7 @@ router.get("/appAuth/:did", checkValidationResult, async function (req, res) {
  * @openapi
  * 	 /appAuth:
  *   post:
- *     summary: Crea una aplicación para volverla autorizada por DIDI
+ *     summary: Autoriza una aplicación para sincronizar con DIDI
  *     requestBody:
  *       required:
  *         - did
@@ -120,6 +120,12 @@ router.get("/userApp/:did", validateParams, async function (req, res) {
  * 	 /userApp/validateUser:
  *   post:
  *     summary: Crea y valida la relacion user - app autorizada
+ *     parameters:
+ *       - in: header
+ *         name: appJWT
+ *         schema:
+ *           type: string
+ *         required: true
  *     requestBody:
  *       required:
  *         - userJWT
