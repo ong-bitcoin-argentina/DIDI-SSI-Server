@@ -22,9 +22,50 @@ const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATI
 router.use("/user/", validateAppOrUserJWT);
 
 /**
- *	Generación de usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi,
- *	tanto el mail como el teléfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode"
+ * @openapi
+ *   /registerUser:
+ *   post:
+ *     summary: Genera usuario con su backup ('privateKeySeed') para recuperar la cuenta de didi.
+ *     description: Tanto el mail como el teléfono tienen que haber sido validados previamente con "/verifySmsCode" y "/verifyMailCode".
+ *     requestBody:
+ *       required:
+ *         - eMail
+ *         - name
+ *         - lastname
+ *         - password
+ *         - phoneNumber
+ *         - did
+ *         - privateKeySeed
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               eMail:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               lastname:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *               did:
+ *                 type: string
+ *               privateKeySeed:
+ *                 type: string
+ *               firebaseId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/registerUser",
 	Validator.validateBody([
@@ -77,8 +118,29 @@ router.post(
 );
 
 /**
- *	Renueva el token de firebase
+ * @openapi
+ *   /renewFirebaseToken:
+ *   post:
+ *     summary: Renueva el token de firebase.
+ *     requestBody:
+ *       required:
+ *         - token
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/renewFirebaseToken",
 	Validator.validateBody([
@@ -106,8 +168,34 @@ router.post(
 );
 
 /**
- *	Retorna la clave privada que sirve para recuperar la cuenta de didi
+ * @openapi
+ *   /recoverAccount:
+ *   post:
+ *     summary: Retorna la clave privada que sirve para recuperar la cuenta de didi.
+ *     requestBody:
+ *       required:
+ *         - eMail
+ *         - password
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               eMail:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               firebaseId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/recoverAccount",
 	Validator.validateBody([
@@ -140,9 +228,38 @@ router.post(
 );
 
 /**
- *	Valida que la contraseña se corresponda con la del usuario que tiene el did ingresado,
- *	no genera ningún token ni informaciún útil.
+ * @openapi
+ *   /userLogin:
+ *   post:
+ *     summary: Valida que la contraseña se corresponda con la del usuario que tiene el did ingresado.
+ *     description: No genera ningún token ni informaciún útil.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - password
+ *         - eMail
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               eMail:
+ *                 type: string
+ *               firebaseId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/userLogin",
 	Validator.validateBody([
@@ -179,9 +296,36 @@ router.post(
 );
 
 /**
- *	Permite cambiar la contraseña a partir de la cuenta de mail asociada al usuario (caso, me olvidé la contraseña),
- *	require que se haya validado el mail ("/sendMailValidator") antes de usarse.
+ * @openapi
+ *   /recoverPassword:
+ *   post:
+ *     summary: Permite cambiar la contraseña a partir de la cuenta de mail asociada al usuario.
+ *     description: Require que se haya validado el mail ("/sendMailValidator") antes de usarse.
+ *     requestBody:
+ *       required:
+ *         - eMail
+ *         - eMailValidationCode
+ *         - newPass
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               eMail:
+ *                 type: string
+ *               eMailValidationCode:
+ *                 type: string
+ *               newPass:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/recoverPassword",
 	Validator.validateBody([
@@ -223,8 +367,35 @@ router.post(
 );
 
 /**
- *	Renovar la contraseña, dado el mail y contraseña anterior
+ * @openapi
+ *   /changePassword:
+ *   post:
+ *     summary: Renueva la contraseña, dado el mail y contraseña anterior.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - oldPass
+ *         - newPass
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               oldPass:
+ *                 type: string
+ *               newPass:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/changePassword",
 	Validator.validateBody([
@@ -257,9 +428,41 @@ router.post(
 );
 
 /**
- *	Permite cambiar el número de teléfono asociado al usuario,
- *	require que se haya validado el teléfono ("/sendSmsValidator") antes de usarse
+ * @openapi
+ *   /changePhoneNumber:
+ *   post:
+ *     summary: Permite cambiar el número de teléfono asociado al usuario.
+ *     description: Requiere que se haya validado el teléfono ("/sendSmsValidator") antes de usarse.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - newPhoneNumber
+ *         - password
+ *         - phoneValidationCode
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               newPhoneNumber:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               phoneValidationCode:
+ *                 type: string
+ *               firebaseId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/changePhoneNumber",
 	Validator.validateBody([
@@ -335,9 +538,39 @@ router.post(
 );
 
 /**
- *	Permite cambiar el mail asociado al usuario,
- *	require que se haya validado el mail ("/sendMailValidator") antes de usarse.
+ * @openapi
+ *   /changeEmail:
+ *   post:
+ *     summary: Permite cambiar el mail asociado al usuario.
+ *     description: Require que se haya validado el mail ("/sendMailValidator") antes de usarse.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - newEMail
+ *         - password
+ *         - eMailValidationCode
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               newEMail:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               eMailValidationCode:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/changeEmail",
 	Validator.validateBody([
@@ -406,9 +639,33 @@ router.post(
 );
 
 /**
- *	Permite pedir al usuario dueño del did, el certificado para validar que es efectivamente el dueño del mismo
- *	(genera un shareRequest y lo envia via mouro para que el usuario valide el certificado)
+ * @openapi
+ *   /verifyCredentialRequest:
+ *   post:
+ *     summary: Permite pedir al usuario dueño del did, el certificado para validar que es efectivamente el dueño del mismo.
+ *     description: Genera un shareRequest y lo envia via mouro para que el usuario valide el certificado.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - jwt
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               jwt:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/verifyCredentialRequest",
 	Validator.validateBody([
@@ -459,8 +716,29 @@ router.post(
 );
 
 /**
- *	Recibe la respuesta al pedido de "/verifyCredentialRequest", marcando al certificado como validado
+ * @openapi
+ *   /verifyCredential:
+ *   post:
+ *     summary: Recibe la respuesta al pedido de "/verifyCredentialRequest", marcando al certificado como validado.
+ *     requestBody:
+ *       required:
+ *         - access_token
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               access_token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/verifyCredential",
 	Validator.validateBody([{ name: "access_token", validate: [IS_STRING] }]),
@@ -515,8 +793,25 @@ router.post(
 );
 
 /**
- *	Obtiene informacion sobre el usuario
+ * @openapi
+ *   /user/:{did}:
+ *   get:
+ *     summary: Obtiene informacion sobre el usuario.
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.get("/user/:did", Validator.checkValidationResult, Validator.validateParams, async function (req, res) {
 	try {
 		const { did } = req.params;
@@ -529,9 +824,39 @@ router.get("/user/:did", Validator.checkValidationResult, Validator.validatePara
 });
 
 /**
- *	Edita nombre y apellido,
- *  usado para migrar usuarios
+ * @openapi
+ *   /user/:{did}/edit:
+ *   post:
+ *     summary: Edita nombre y apellido.
+ *     description: Usado para migrar usuarios.
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     requestBody:
+ *       required:
+ *         - name
+ *         - lastname
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               lastname:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/user/:did/edit",
 	Validator.validateBody([
@@ -553,8 +878,31 @@ router.post(
 );
 
 /**
- *	Agrega una imagen de perfil al usuario
+ * @openapi
+ *   /user/:{did}/image:
+ *   post:
+ *     summary: Agrega una imagen de perfil al usuario.
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     requestBody:
+ *       content:
+ *         image/png:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.post(
 	"/user/:did/image",
 	Validator.validateBody([]),
@@ -580,8 +928,25 @@ router.post(
 );
 
 /**
- * Devuelve la imagen de usuario según un id
+ * @openapi
+ *   /image/:{id}:
+ *   get:
+ *     summary: Devuelve la imagen de usuario según un id.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : any
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401: 
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
  */
+
 router.get(
 	"/image/:id",
 	Validator.validateBody([]),
