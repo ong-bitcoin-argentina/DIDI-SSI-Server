@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "jest",
-		"functional-test" : "cd ./node_modules/DIDI-SSI-Server-functional-test/ && npm i && npm run test",
+		"functional-test": "cd ./node_modules/DIDI-SSI-Server-functional-test/ && npm i && npm run test",
 		"coverage": "coveralls < coverage/lcov.info",
 		"local": "node ./runLocal.js",
 		"start": "nodemon --experimental-worker server.js"
