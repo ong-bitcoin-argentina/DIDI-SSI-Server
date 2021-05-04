@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "jest",
+		"functional-test": "cd ./node_modules/DIDI-SSI-Server-functional-test/ && npm i && npm run test",
 		"coverage": "coveralls < coverage/lcov.info",
 		"local": "node ./runLocal.js",
 		"start": "nodemon --experimental-worker server.js"
@@ -57,6 +58,7 @@
 		"cz-jira-smart-commit": "^3.0.0",
 		"jest": "^26.6.3",
 		"swagger-jsdoc": "6.0.0",
-		"swagger-ui-express": "^4.1.6"
+		"swagger-ui-express": "^4.1.6",
+		"DIDI-SSI-Server-functional-test": "git+https://github.com/ong-bitcoin-argentina/DIDI-SSI-Server-functional-test"
 	}
 }
