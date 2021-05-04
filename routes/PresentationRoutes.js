@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const ResponseHandler = require("./utils/ResponseHandler");
-const Validator = require("./utils/Validator");
+const ResponseHandler = require("../utils/ResponseHandler");
+const Validator = require("../utils/Validator");
 const { getPresentation, savePresentation } = require("../services/PresentationService");
 
 const BASE_URL = "/presentation";

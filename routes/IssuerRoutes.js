@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const ResponseHandler = require("./utils/ResponseHandler");
+const ResponseHandler = require("../utils/ResponseHandler");
 
 const Certificate = require("../models/Certificate");
 const MouroService = require("../services/MouroService");
@@ -10,7 +10,7 @@ const IssuerService = require("../services/IssuerService");
 
 const FirebaseService = require("../services/FirebaseService");
 
-const Validator = require("./utils/Validator");
+const Validator = require("../utils/Validator");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
 const { halfHourLimiter } = require("../policies/RateLimit");

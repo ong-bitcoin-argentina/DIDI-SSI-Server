@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { validateAdminJWT } = require("../middlewares/ValidateAdminJWT");
 const admin = require("../controllers/admin");
-const Validator = require("./utils/Validator");
+const Validator = require("../utils/Validator");
 
 router.use("/admin/", validateAdminJWT);
 

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const ResponseHandler = require("./utils/ResponseHandler");
+const ResponseHandler = require("../utils/ResponseHandler");
 const Certificate = require("../models/Certificate");
 
 const UserService = require("../services/UserService");
@@ -11,10 +11,10 @@ const FirebaseService = require("../services/FirebaseService");
 
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
-const Validator = require("./utils/Validator");
+const Validator = require("../utils/Validator");
 const { userDTO } = require("../utils/DTOs");
 const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
-const { getImageUrl } = require("./utils/Helpers");
+const { getImageUrl } = require("../utils/Helpers");
 const { halfHourLimiter } = require("../policies/RateLimit");
 
 const { IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE } = Constants.VALIDATION_TYPES;
