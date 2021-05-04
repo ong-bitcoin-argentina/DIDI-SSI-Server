@@ -1,34 +1,34 @@
-if (!process.env.MONGO_DIR) throw new Error('No esta definida la varibale MONGO_DIR');
-if (!process.env.MONGO_PORT) throw new Error('No esta definida la varibale MONGO_PORT');
-if (!process.env.MONGO_DB) throw new Error('No esta definida la varibale MONGO_DB');
-if (!process.env.ADDRESS) throw new Error('No esta definida la varibale ADDRESS');
-if (!process.env.PORT) throw new Error('No esta definida la varibale PORT');
-if (!process.env.SERVER_DID) throw new Error('No esta definida la varibale SERVER_DID');
-if (!process.env.MOURO_URL) throw new Error('No esta definida la varibale MOURO_URL');
-if (!process.env.MAILGUN_API_KEY) throw new Error('No esta definida la varibale MAILGUN_API_KEY');
-if (!process.env.MAILGUN_DOMAIN) throw new Error('No esta definida la varibale MAILGUN_DOMAIN');
-if (!process.env.TWILIO_SID) throw new Error('No esta definida la varibale TWILIO_SID');
-if (!process.env.TWILIO_TOKEN) throw new Error('No esta definida la varibale TWILIO_TOKEN');
-if (!process.env.TWILIO_PHONE_NUMBER) throw new Error('No esta definida la varibale TWILIO_PHONE_NUMBER');
-if (!process.env.SERVER_IP) throw new Error('No esta definida la varibale SERVER_IP');
-if (!process.env.RENAPER_SCORE_TRESHOULD) throw new Error('No esta definida la varibale RENAPER_SCORE_TRESHOULD');
-if (!process.env.RENAPER_API_KEY) throw new Error('No esta definida la varibale RENAPER_API_KEY');
-if (!process.env.RENAPER_API) throw new Error('No esta definida la varibale RENAPER_API');
-if (!process.env.RENAPER_URL) throw new Error('No esta definida la varibale RENAPER_URL');
-if (!process.env.FINGER_PRINT_DATA) throw new Error('No esta definida la varibale FINGER_PRINT_DATA');
-if (!process.env.RSA_PRIVATE_KEY) throw new Error('No esta definida la varibale RSA_PRIVATE_KEY');
-if (!process.env.HASH_SALT) throw new Error('No esta definida la varibale HASH_SALT');
-if (!process.env.FIREBASE_URL) throw new Error('No esta definida la varibale FIREBASE_URL');
-if (!process.env.FIREBASE_PRIV_KEY_PATH) throw new Error('No esta definida la varibale FIREBASE_PRIV_KEY_PATH');
-if (!process.env.NAME) throw new Error('No esta definida la varibale RSA_PRIVATE_KEY');
-if (!process.env.BLOCKCHAIN_URL_MAIN) throw new Error('No esta definida la varibale BLOCKCHAIN_URL_MAIN');
-if (!process.env.BLOCKCHAIN_URL_RSK) throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
-if (!process.env.BLOCKCHAIN_URL_LAC) throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
-if (!process.env.BLOCKCHAIN_URL_BFA) throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
-if (!process.env.BLOCKCHAIN_CONTRACT_MAIN) throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
-if (!process.env.BLOCKCHAIN_CONTRACT_RSK) throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
-if (!process.env.BLOCKCHAIN_CONTRACT_LAC) throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
-if (!process.env.BLOCKCHAIN_CONTRACT_BFA) throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
+if (process.env.MONGO_DIR == null || process.env.MONGO_DIR == '') throw new Error('No esta definida la varibale MONGO_DIR');
+if (process.env.MONGO_PORT == null || process.env.MONGO_PORT == '') throw new Error('No esta definida la varibale MONGO_PORT');
+if (process.env.MONGO_DB == null || process.env.MONGO_DB == '') throw new Error('No esta definida la varibale MONGO_DB');
+if (process.env.ADDRESS == null || process.env.ADDRESS == '') throw new Error('No esta definida la varibale ADDRESS');
+if (process.env.PORT == null || process.env.PORT == '') throw new Error('No esta definida la varibale PORT');
+if (process.env.SERVER_DID == null || process.env.SERVER_DID == '') throw new Error('No esta definida la varibale SERVER_DID');
+if (process.env.MOURO_URL == null || process.env.MOURO_URL == '') throw new Error('No esta definida la varibale MOURO_URL');
+if (process.env.MAILGUN_API_KEY == null || process.env.MAILGUN_API_KEY == '') throw new Error('No esta definida la varibale MAILGUN_API_KEY');
+if (process.env.MAILGUN_DOMAIN == null || process.env.MAILGUN_DOMAIN == '') throw new Error('No esta definida la varibale MAILGUN_DOMAIN');
+if (process.env.TWILIO_SID == null || process.env.TWILIO_SID == '') throw new Error('No esta definida la varibale TWILIO_SID');
+if (process.env.TWILIO_TOKEN == null || process.env.TWILIO_TOKEN == '') throw new Error('No esta definida la varibale TWILIO_TOKEN');
+if (process.env.TWILIO_PHONE_NUMBER == null || process.env.TWILIO_PHONE_NUMBER == '') throw new Error('No esta definida la varibale TWILIO_PHONE_NUMBER');
+if (process.env.SERVER_IP == null || process.env.SERVER_IP == '') throw new Error('No esta definida la varibale SERVER_IP');
+if (process.env.RENAPER_SCORE_TRESHOULD == null || process.env.RENAPER_SCORE_TRESHOULD == '') throw new Error('No esta definida la varibale RENAPER_SCORE_TRESHOULD');
+if (process.env.RENAPER_API_KEY == null || process.env.RENAPER_API_KEY == '') throw new Error('No esta definida la varibale RENAPER_API_KEY');
+if (process.env.RENAPER_API == null || process.env.RENAPER_API == '') throw new Error('No esta definida la varibale RENAPER_API');
+if (process.env.RENAPER_URL == null || process.env.RENAPER_URL == '') throw new Error('No esta definida la varibale RENAPER_URL');
+if (process.env.FINGER_PRINT_DATA == null || process.env.FINGER_PRINT_DATA == '') throw new Error('No esta definida la varibale FINGER_PRINT_DATA');
+if (process.env.RSA_PRIVATE_KEY == null || process.env.RSA_PRIVATE_KEY == '') throw new Error('No esta definida la varibale RSA_PRIVATE_KEY');
+if (process.env.HASH_SALT == null || process.env.HASH_SALT == '') throw new Error('No esta definida la varibale HASH_SALT');
+if (process.env.FIREBASE_URL == null || process.env.FIREBASE_URL == '') throw new Error('No esta definida la varibale FIREBASE_URL');
+if (process.env.FIREBASE_PRIV_KEY_PATH == null || process.env.FIREBASE_PRIV_KEY_PATH == '') throw new Error('No esta definida la varibale FIREBASE_PRIV_KEY_PATH');
+if (process.env.NAME == null || process.env.NAME == '') throw new Error('No esta definida la varibale NAME');
+if (process.env.BLOCKCHAIN_URL_MAIN == null || process.env.BLOCKCHAIN_URL_MAIN == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_MAIN');
+if (process.env.BLOCKCHAIN_URL_RSK == null || process.env.BLOCKCHAIN_URL_RSK == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
+if (process.env.BLOCKCHAIN_URL_LAC == null || process.env.BLOCKCHAIN_URL_LAC == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_LAC');
+if (process.env.BLOCKCHAIN_URL_BFA == null || process.env.BLOCKCHAIN_URL_BFA == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_BFA');
+if (process.env.BLOCKCHAIN_CONTRACT_MAIN == null || process.env.BLOCKCHAIN_CONTRACT_MAIN == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_MAIN');
+if (process.env.BLOCKCHAIN_CONTRACT_RSK == null || process.env.BLOCKCHAIN_CONTRACT_RSK == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_RSK');
+if (process.env.BLOCKCHAIN_CONTRACT_LAC == null || process.env.BLOCKCHAIN_CONTRACT_LAC == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_LAC');
+if (process.env.BLOCKCHAIN_CONTRACT_BFA == null || process.env.BLOCKCHAIN_CONTRACT_BFA == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_BFA');
 
 const DEBUGG = process.env.DEBUGG_MODE === "true";
 const MONGO_DIR = process.env.MONGO_DIR;
@@ -69,6 +69,10 @@ const NO_SMS = process.env.NO_SMS === "true";
 
 const DELEGATE_DURATION = process.env.BLOCK_CHAIN_DELEGATE_DURATION || 1300000;
 const GAS_INCREMENT = process.env.GAS_INCREMENT || "1.1";
+
+const NAME = process.env.NAME;
+const APP_INSIGTHS_IKEY = process.env.APP_INSIGTHS_IKEY;
+const ENVIRONMENT = process.env.ENVIRONMENT;
 
 // ======================================================================================================
 
