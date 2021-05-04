@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const { sendErrWithStatus, sendRes } = require("./utils/ResponseHandler");
-const { checkValidationResult, validateBody, validateParams } = require("./utils/Validator");
+const { sendErrWithStatus, sendRes } = require("../utils/ResponseHandler");
+const { checkValidationResult, validateBody, validateParams } = require("../utils/Validator");
 const AppAuthService = require("../services/AppAuthService");
 const UserAppService = require("../services/UserAppService");
 const Constants = require("../constants/Constants");

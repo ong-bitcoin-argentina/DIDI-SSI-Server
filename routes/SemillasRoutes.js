@@ -1,9 +1,9 @@
 const router = require("express").Router();
-const ResponseHandler = require("./utils/ResponseHandler");
+const ResponseHandler = require("../utils/ResponseHandler");
 const SemillasService = require("../services/SemillasService");
 const Messages = require("../constants/Messages");
 const Constants = require("../constants/Constants");
-const { checkValidationResult, validateBody } = require("./utils/Validator");
+const { checkValidationResult, validateBody } = require("../utils/Validator");
 
 const { SUCCESS } = Messages.SEMILLAS;
 const { IS_STRING, IS_EMAIL, IS_DNI, IS_MOBILE_PHONE, IS_NUMBER } = Constants.VALIDATION_TYPES;

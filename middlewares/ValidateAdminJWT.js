@@ -1,4 +1,4 @@
-const ResponseHandler = require("../routes/utils/ResponseHandler");
+const ResponseHandler = require("../utils/ResponseHandler");
 const { verifyToken, getPayload } = require("../services/TokenService");
 const {
 	VALIDATION: { ADMIN_DID_NOT_MATCH },

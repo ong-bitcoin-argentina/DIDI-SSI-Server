@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const ResponseHandler = require("./utils/ResponseHandler");
-const Validator = require("./utils/Validator");
+const ResponseHandler = require("../utils/ResponseHandler");
+const Validator = require("../utils/Validator");
 const Constants = require("../constants/Constants");
 const { saveShareRequest, getShareRequestById } = require("../services/ShareRequestService");
 const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");

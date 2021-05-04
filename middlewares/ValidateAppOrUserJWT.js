@@ -1,6 +1,6 @@
 const { handleValidateAppJWT } = require("./ValidateAppJWT");
 const { verifyCertificate } = require("../services/CertService");
-const ResponseHandler = require("../routes/utils/ResponseHandler");
+const ResponseHandler = require("../utils/ResponseHandler");
 const {
 	TOKEN: { INVALID_CODE }
 } = require("../constants/Messages");

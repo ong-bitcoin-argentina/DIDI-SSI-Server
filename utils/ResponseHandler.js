@@ -1,4 +1,4 @@
-const Constants = require("../../constants/Constants");
+const Constants = require("../constants/Constants");
 
 /**
  *  Mandar respuesta html genérica

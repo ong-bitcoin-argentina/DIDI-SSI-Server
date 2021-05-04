@@ -1,7 +1,7 @@
-const Messages = require("../../constants/Messages");
-const Constants = require("../../constants/Constants");
+const Messages = require("../constants/Messages");
+const Constants = require("../constants/Constants");
 const ResponseHandler = require("../utils/ResponseHandler");
-const TokenService = require("../../services/TokenService");
+const TokenService = require("../services/TokenService");
 
 const { body, validationResult } = require("express-validator");
 
