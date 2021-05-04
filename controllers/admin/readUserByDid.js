@@ -4,7 +4,7 @@ const UserService = require("../../services/UserService");
 const { userDTO } = require("../../utils/DTOs");
 const ResponseHandler = require("../../utils/ResponseHandler");
 
-const getUserByDid = 	async (req, res) => {
+const readUserByDid = async (req, res) => {
   try {
     const { did } = req.params;
     const user = await UserService.findByDid(did);
@@ -27,5 +27,5 @@ const getUserByDid = 	async (req, res) => {
 }
 
 module.exports = {
-  getUserByDid,
+  readUserByDid,
 }

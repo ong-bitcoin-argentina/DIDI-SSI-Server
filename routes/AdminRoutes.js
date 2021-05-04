@@ -30,7 +30,7 @@ router.use("/admin/", validateAdminJWT);
 router.get("/admin/user/did/:did", 
 	Validator.checkValidationResult,
 	Validator.validateParams,
-	admin.getUserByDid,
+	admin.readUserByDid,
 );
 
 /**
@@ -61,7 +61,7 @@ router.get("/admin/user/did/:did",
 router.post("/admin/user/phone", 
 	Validator.checkValidationResult, 
 	Validator.validateParams, 
-	admin.getUserByPhone,
+	admin.readUserByPhone,
 );
 
 module.exports = router;

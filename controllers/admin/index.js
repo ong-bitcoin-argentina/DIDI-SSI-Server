@@ -1,7 +1,7 @@
-const getUserByDid = require('./getUserByDid');
-const getUserByPhone = require('./getUserByPhone');
+const { readUserByDid } = require('./readUserByDid');
+const { readUserByPhone } = require('./readUserByPhone');
 
 module.exports = {
-  getUserByDid,
-  getUserByPhone,
+  readUserByDid,
+  readUserByPhone,
 }

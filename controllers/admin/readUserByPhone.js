@@ -3,7 +3,7 @@ const UserService = require("../../services/UserService");
 const { userDTO } = require("../../utils/DTOs");
 const ResponseHandler = require("../../utils/ResponseHandler");
 
-const getUserByPhone = 	async (req, res) => {
+const readUserByPhone = async (req, res) => {
   try {
     const { phone } = req.body;
     const user = await UserService.getByTel(phone);
@@ -16,5 +16,5 @@ const getUserByPhone = 	async (req, res) => {
 }
 
 module.exports = {
-  getUserByPhone,
+  readUserByPhone,
 }
