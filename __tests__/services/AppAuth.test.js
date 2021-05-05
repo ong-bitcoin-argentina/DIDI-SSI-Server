@@ -1,31 +1,30 @@
 const { findByDID, createApp } = require('../../services/AppAuthService');
 const {
-  missingDid, missingName, 
+  missingDid, missingName,
 } = require('../../constants/serviceErrors');
 
 describe('Should be green', () => {
   test('Expect findByDID to throw on missing did', async () => {
     try {
       await findByDID(undefined);
-    } catch(e) {
+    } catch (e) {
       expect(e.code).toMatch(missingDid.code);
     }
   });
 
-  test('Expect createApp to throw on missing did', async() => {
+  test('Expect createApp to throw on missing did', async () => {
     try {
       await createApp(undefined, 'name');
-    } catch(e) {
+    } catch (e) {
       expect(e.code).toMatch(missingDid.code);
     }
-    
   });
 
   test('Expect createApp to throw on missing name', async () => {
     try {
       await createApp('did', undefined);
-    } catch(e) {
+    } catch (e) {
       expect(e.code).toMatch(missingName.code);
-    }    
+    }
   });
 });
