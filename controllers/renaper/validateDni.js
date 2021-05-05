@@ -9,7 +9,7 @@ const AuthRequestService = require("../../services/AuthRequestService");
 const ResponseHandler = require("../../utils/ResponseHandler");
 const Constants = require("../../constants/Constants");
 
-const validateDni = async (req, res) => {
+const createVerification = async (req, res) => {
     const did = req.body.did;
 
     const dni = req.body.dni;
@@ -178,5 +178,5 @@ const validateDni = async (req, res) => {
 }
 
 module.exports = {
-    validateDni,
+    createVerification,
 }

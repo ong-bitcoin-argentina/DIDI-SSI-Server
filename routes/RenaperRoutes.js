@@ -74,7 +74,7 @@ router.post(
 		{ name: "backImage", validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] }
 	]),
 	Validator.checkValidationResult,
-	renaper.validateDni
+	renaper.createVerification
 );
 
 /**
@@ -110,7 +110,7 @@ router.post(
 		{ name: "operationId", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
 	]),
 	Validator.checkValidationResult,
-	renaper.validateDniState
+	renaper.readVerificationByOperationId
 );
 
 module.exports = router;

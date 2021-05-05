@@ -1,7 +1,7 @@
 const AuthRequestService = require("../../services/AuthRequestService");
 const ResponseHandler = require("../../utils/ResponseHandler");
 
-const validateDniState = async (req, res) => {
+const readVerificationByOperationId = async (req, res) => {
     const operationId = req.body.operationId;
     try {
         const authRequest = await AuthRequestService.getByOperationId(operationId);
@@ -16,5 +16,5 @@ const validateDniState = async (req, res) => {
 };
 
 module.exports = {
-    validateDniState,
+    readVerificationByOperationId,
 }

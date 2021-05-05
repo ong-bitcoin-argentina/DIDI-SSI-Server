@@ -1,7 +1,7 @@
-const { validateDni } = require('./validateDni');
-const { validateDniState } = require('./validateDniState');
+const { createVerification } = require('./createVerification');
+const { readVerificationByOperationId } = require('./readVerificationByOperationId');
 
 module.exports = {
-  validateDni,
-  validateDniState,
+  createVerification,
+  readVerificationByOperationId,
 }
