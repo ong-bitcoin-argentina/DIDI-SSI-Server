@@ -35,7 +35,7 @@ if (process.env.BLOCKCHAIN_CONTRACT_BFA == null || process.env.BLOCKCHAIN_CONTRA
 const DEBUGG = process.env.DEBUGG_MODE === 'true';
 const { MONGO_DIR } = process.env;
 const { MONGO_PORT } = process.env;
-const { MONGO_USER } = process.env;
+const MONGO_USER = process.env.MONGO_USERNAME;
 const { MONGO_PASSWORD } = process.env;
 const { MONGO_DB } = process.env;
 
