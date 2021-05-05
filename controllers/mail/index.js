@@ -3,7 +3,7 @@ const { retryMailVerification } = require('./retryMailVerification');
 const { createCertificateByMailCode } = require('./createCertificateByMailCode');
 
 module.exports = {
-    createMailVerification,
-    retryMailVerification,
-    createCertificateByMailCode,
+  createMailVerification,
+  retryMailVerification,
+  createCertificateByMailCode,
 };

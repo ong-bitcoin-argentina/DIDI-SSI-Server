@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-restricted-syntax */
 /* eslint-disable max-len */
 /* eslint-disable no-tabs */
 const router = require('express').Router();
