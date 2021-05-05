@@ -4,4 +4,4 @@ const { readVerificationByOperationId } = require('./readVerificationByOperation
 module.exports = {
   createVerification,
   readVerificationByOperationId,
-}
+};

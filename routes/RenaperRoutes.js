@@ -1,7 +1,10 @@
-const router = require("express").Router();
-const Validator = require("../utils/Validator");
-const Constants = require("../constants/Constants");
-const renaper = require("../controllers/renaper");
+/* eslint-disable max-len */
+/* eslint-disable no-tabs */
+const router = require('express').Router();
+
+const Validator = require('../utils/Validator');
+const Constants = require('../constants/Constants');
+const renaper = require('../controllers/renaper');
 
 /**
  * @openapi
@@ -16,7 +19,7 @@ const renaper = require("../controllers/renaper");
  *         - name
  *         - lastName
  *         - birthDate
- *         - order      
+ *         - order
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -34,7 +37,7 @@ const renaper = require("../controllers/renaper");
  *                 type: string
  *               lastName:
  *                 type: string
- *               birthDate: 
+ *               birthDate:
  *                 type: string
  *               order:
  *                 type: string
@@ -50,31 +53,31 @@ const renaper = require("../controllers/renaper");
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
  *       500:
  *         description: Error interno del servidor
- * 
+ *
  */
 router.post(
-	"/renaper/validateDni",
-	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+  '/renaper/validateDni',
+  Validator.validateBody([
+    { name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 
-		{ name: "dni", validate: [Constants.VALIDATION_TYPES.IS_DNI] },
-		{ name: "gender", validate: [Constants.VALIDATION_TYPES.IS_GENDER] },
+    { name: 'dni', validate: [Constants.VALIDATION_TYPES.IS_DNI] },
+    { name: 'gender', validate: [Constants.VALIDATION_TYPES.IS_GENDER] },
 
-		{ name: "name", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "lastName", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "birthDate", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "order", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'lastName', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'birthDate', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'order', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
 
-		{ name: "selfieImage", validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] },
-		{ name: "frontImage", validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] },
-		{ name: "backImage", validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] }
-	]),
-	Validator.checkValidationResult,
-	renaper.createVerification
+    { name: 'selfieImage', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] },
+    { name: 'frontImage', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] },
+    { name: 'backImage', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE] },
+  ]),
+  Validator.checkValidationResult,
+  renaper.createVerification,
 );
 
 /**
@@ -98,19 +101,19 @@ router.post(
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
  *       500:
  *         description: Error interno del servidor
  */
 router.post(
-	"/renaper/validateDniState",
-	Validator.validateBody([
-		{ name: "did", validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-		{ name: "operationId", validate: [Constants.VALIDATION_TYPES.IS_STRING] }
-	]),
-	Validator.checkValidationResult,
-	renaper.readVerificationByOperationId
+  '/renaper/validateDniState',
+  Validator.validateBody([
+    { name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'operationId', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+  ]),
+  Validator.checkValidationResult,
+  renaper.readVerificationByOperationId,
 );
 
 module.exports = router;

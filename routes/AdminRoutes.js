@@ -1,9 +1,9 @@
-const router = require("express").Router();
-const { validateAdminJWT } = require("../middlewares/ValidateAdminJWT");
-const admin = require("../controllers/admin");
-const Validator = require("../utils/Validator");
+const router = require('express').Router();
+const { validateAdminJWT } = require('../middlewares/ValidateAdminJWT');
+const admin = require('../controllers/admin');
+const Validator = require('../utils/Validator');
 
-router.use("/admin/", validateAdminJWT);
+router.use('/admin/', validateAdminJWT);
 
 /**
  * @openapi
@@ -20,18 +20,17 @@ router.use("/admin/", validateAdminJWT);
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/admin/user/did/:did", 
-	Validator.checkValidationResult,
-	Validator.validateParams,
-	admin.readUserByDid,
-);
+router.get('/admin/user/did/:did',
+  Validator.checkValidationResult,
+  Validator.validateParams,
+  admin.readUserByDid);
 
 /**
  * @openapi
@@ -51,17 +50,16 @@ router.get("/admin/user/did/:did",
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
  */
-router.post("/admin/user/phone", 
-	Validator.checkValidationResult, 
-	Validator.validateParams, 
-	admin.readUserByPhone,
-);
+router.post('/admin/user/phone',
+  Validator.checkValidationResult,
+  Validator.validateParams,
+  admin.readUserByPhone);
 
 module.exports = router;

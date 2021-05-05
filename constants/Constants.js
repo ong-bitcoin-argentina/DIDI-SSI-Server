@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 if (process.env.MONGO_DIR == null || process.env.MONGO_DIR == '') throw new Error('No esta definida la varibale MONGO_DIR');
 if (process.env.MONGO_PORT == null || process.env.MONGO_PORT == '') throw new Error('No esta definida la varibale MONGO_PORT');
 if (process.env.MONGO_DB == null || process.env.MONGO_DB == '') throw new Error('No esta definida la varibale MONGO_DB');
@@ -33,62 +34,61 @@ if (process.env.BLOCKCHAIN_CONTRACT_RSK == null || process.env.BLOCKCHAIN_CONTRA
 if (process.env.BLOCKCHAIN_CONTRACT_LAC == null || process.env.BLOCKCHAIN_CONTRACT_LAC == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_LAC');
 if (process.env.BLOCKCHAIN_CONTRACT_BFA == null || process.env.BLOCKCHAIN_CONTRACT_BFA == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_BFA');
 
-const DEBUGG = process.env.DEBUGG_MODE === "true";
-const MONGO_DIR = process.env.MONGO_DIR;
-const MONGO_PORT = process.env.MONGO_PORT;
+const DEBUGG = process.env.DEBUGG_MODE === 'true';
+const { MONGO_DIR } = process.env;
+const { MONGO_PORT } = process.env;
 const MONGO_USER = process.env.MONGO_USERNAME;
-const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
-const MONGO_DB = process.env.MONGO_DB;
+const { MONGO_PASSWORD } = process.env;
+const { MONGO_DB } = process.env;
 
-const ADDRESS = process.env.ADDRESS;
-const PORT = process.env.PORT;
+const { ADDRESS } = process.env;
+const { PORT } = process.env;
 
-const SERVER_DID = process.env.SERVER_DID;
-const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY;
+const { SERVER_DID } = process.env;
+const { SERVER_PRIVATE_KEY } = process.env;
 
-const MOURO_URL = process.env.MOURO_URL;
+const { MOURO_URL } = process.env;
 
-const URL = MONGO_DIR + ":" + MONGO_PORT + "/" + MONGO_DB;
-const MONGO_URL =
-	MONGO_USER && MONGO_PASSWORD ? "mongodb://" + MONGO_USER + ":" + MONGO_PASSWORD + "@" + URL : "mongodb://" + URL;
+const URL = `${MONGO_DIR}:${MONGO_PORT}/${MONGO_DB}`;
+const MONGO_URL = MONGO_USER && MONGO_PASSWORD ? `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${URL}` : `mongodb://${URL}`;
 
-const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY;
-const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
+const { MAILGUN_API_KEY } = process.env;
+const { MAILGUN_DOMAIN } = process.env;
 
-const TWILIO_SID = process.env.TWILIO_SID;
-const TWILIO_TOKEN = process.env.TWILIO_TOKEN;
-const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+const { TWILIO_SID } = process.env;
+const { TWILIO_TOKEN } = process.env;
+const { TWILIO_PHONE_NUMBER } = process.env;
 
-const SERVER_IP = process.env.SERVER_IP;
-const RENAPER_SCORE_TRESHOULD = process.env.RENAPER_SCORE_TRESHOULD;
-const RENAPER_API_KEY = process.env.RENAPER_API_KEY;
-const RENAPER_API = process.env.RENAPER_API;
-const RENAPER_URL = process.env.RENAPER_URL;
+const { SERVER_IP } = process.env;
+const { RENAPER_SCORE_TRESHOULD } = process.env;
+const { RENAPER_API_KEY } = process.env;
+const { RENAPER_API } = process.env;
+const { RENAPER_URL } = process.env;
 
-const FINGER_PRINT_DATA = process.env.FINGER_PRINT_DATA;
+const { FINGER_PRINT_DATA } = process.env;
 
-const NO_EMAILS = process.env.NO_EMAILS === "true";
-const NO_SMS = process.env.NO_SMS === "true";
+const NO_EMAILS = process.env.NO_EMAILS === 'true';
+const NO_SMS = process.env.NO_SMS === 'true';
 
 const DELEGATE_DURATION = process.env.BLOCK_CHAIN_DELEGATE_DURATION || 1300000;
-const GAS_INCREMENT = process.env.GAS_INCREMENT || "1.1";
+const GAS_INCREMENT = process.env.GAS_INCREMENT || '1.1';
 
-const NAME = process.env.NAME;
-const APP_INSIGTHS_IKEY = process.env.APP_INSIGTHS_IKEY;
-const ENVIRONMENT = process.env.ENVIRONMENT;
-const DISABLE_TELEMETRY_CLIENT = process.env.DISABLE_TELEMETRY_CLIENT;
-// ======================================================================================================
+const { NAME } = process.env;
+const { APP_INSIGTHS_IKEY } = process.env;
+const { ENVIRONMENT } = process.env;
+const { DISABLE_TELEMETRY_CLIENT } = process.env;
+// ===========================================================================
 
-const BLOCKCHAIN_URL_MAIN = process.env.BLOCKCHAIN_URL_MAIN; // RSK
-const BLOCKCHAIN_URL_RSK = process.env.BLOCKCHAIN_URL_RSK; // RSK
-const BLOCKCHAIN_URL_LAC = process.env.BLOCKCHAIN_URL_LAC; // Lacchain
-const BLOCKCHAIN_URL_BFA = process.env.BLOCKCHAIN_URL_BFA; // BFA testnet
+const { BLOCKCHAIN_URL_MAIN } = process.env; // RSK
+const { BLOCKCHAIN_URL_RSK } = process.env; // RSK
+const { BLOCKCHAIN_URL_LAC } = process.env; // Lacchain
+const { BLOCKCHAIN_URL_BFA } = process.env; // BFA testnet
 
 // uPort SC ON
-const BLOCKCHAIN_CONTRACT_MAIN = process.env.BLOCKCHAIN_CONTRACT_MAIN; // RSK
-const BLOCKCHAIN_CONTRACT_RSK = process.env.BLOCKCHAIN_CONTRACT_RSK; // RSK
-const BLOCKCHAIN_CONTRACT_LAC = process.env.BLOCKCHAIN_CONTRACT_LAC; // Lacchain
-const BLOCKCHAIN_CONTRACT_BFA = process.env.BLOCKCHAIN_CONTRACT_BFA; // BFA
+const { BLOCKCHAIN_CONTRACT_MAIN } = process.env; // RSK
+const { BLOCKCHAIN_CONTRACT_RSK } = process.env; // RSK
+const { BLOCKCHAIN_CONTRACT_LAC } = process.env; // Lacchain
+const { BLOCKCHAIN_CONTRACT_BFA } = process.env; // BFA
 
 // Provider
 // MAINNET SHOULD BE THE FIRST NETWORK
@@ -97,174 +97,174 @@ const BLOCKCHAIN_CONTRACT_BFA = process.env.BLOCKCHAIN_CONTRACT_BFA; // BFA
 // RSK ==> did:ethr:rsk:
 // LACCHAIN ==> did:ethr:lacchain:
 const PROVIDER_CONFIG = {
-	networks: [
-		{
-			name: "mainnet",
-			rpcUrl: BLOCKCHAIN_URL_MAIN,
-			registry: BLOCKCHAIN_CONTRACT_MAIN
-		},
-		{
-			name: "lacchain",
-			rpcUrl: BLOCKCHAIN_URL_LAC,
-			registry: BLOCKCHAIN_CONTRACT_LAC
-		},
-		{
-			name: "bfa",
-			rpcUrl: BLOCKCHAIN_URL_BFA,
-			registry: BLOCKCHAIN_CONTRACT_BFA
-		},
-		{
-			name: "rsk",
-			rpcUrl: BLOCKCHAIN_URL_RSK,
-			registry: BLOCKCHAIN_CONTRACT_RSK
-		}
-	]
+  networks: [
+    {
+      name: 'mainnet',
+      rpcUrl: BLOCKCHAIN_URL_MAIN,
+      registry: BLOCKCHAIN_CONTRACT_MAIN,
+    },
+    {
+      name: 'lacchain',
+      rpcUrl: BLOCKCHAIN_URL_LAC,
+      registry: BLOCKCHAIN_CONTRACT_LAC,
+    },
+    {
+      name: 'bfa',
+      rpcUrl: BLOCKCHAIN_URL_BFA,
+      registry: BLOCKCHAIN_CONTRACT_BFA,
+    },
+    {
+      name: 'rsk',
+      rpcUrl: BLOCKCHAIN_URL_RSK,
+      registry: BLOCKCHAIN_CONTRACT_RSK,
+    },
+  ],
 };
 
-const RSA_PRIVATE_KEY = process.env.RSA_PRIVATE_KEY;
-const HASH_SALT = process.env.HASH_SALT;
+const { RSA_PRIVATE_KEY } = process.env;
+const { HASH_SALT } = process.env;
 
-const FIREBASE_URL = process.env.FIREBASE_URL;
-const FIREBASE_PRIV_KEY_PATH = process.env.FIREBASE_PRIV_KEY_PATH;
+const { FIREBASE_URL } = process.env;
+const { FIREBASE_PRIV_KEY_PATH } = process.env;
 
-const SEMILLAS_URL = process.env.SEMILLAS_URL;
+const { SEMILLAS_URL } = process.env;
 
 module.exports = {
-	NAME,
-	APP_INSIGTHS_IKEY,
-	ENVIRONMENT,
-	DISABLE_TELEMETRY_CLIENT,
-	API_VERSION: "1.0",
-	DEBUGG: DEBUGG,
-	MONGO_URL: MONGO_URL,
-	ADDRESS: ADDRESS,
-	PORT: PORT,
+  NAME,
+  APP_INSIGTHS_IKEY,
+  ENVIRONMENT,
+  DISABLE_TELEMETRY_CLIENT,
+  API_VERSION: '1.0',
+  DEBUGG,
+  MONGO_URL,
+  ADDRESS,
+  PORT,
 
-	RSA_PRIVATE_KEY: RSA_PRIVATE_KEY,
-	HASH_SALT: HASH_SALT,
+  RSA_PRIVATE_KEY,
+  HASH_SALT,
 
-	RENAPER_API_KEY: RENAPER_API_KEY,
-	RENAPER_API: RENAPER_API,
-	RENAPER_SCORE_TRESHOULD: RENAPER_SCORE_TRESHOULD,
+  RENAPER_API_KEY,
+  RENAPER_API,
+  RENAPER_SCORE_TRESHOULD,
 
-	FINGER_PRINT_DATA: FINGER_PRINT_DATA,
-	RENAPER_APP_VERS: "1.0.0",
-	RENAPER_ANALYZE_ANOMALIES: false,
-	RENAPER_ANALYZE_OCR: false,
-	SERVER_IP: SERVER_IP,
+  FINGER_PRINT_DATA,
+  RENAPER_APP_VERS: '1.0.0',
+  RENAPER_ANALYZE_ANOMALIES: false,
+  RENAPER_ANALYZE_OCR: false,
+  SERVER_IP,
 
-	RENAPER_URLS: {
-		SCAN_BAR_CODE: RENAPER_URL + "/scanBarcode",
-		NEW_OPERATION: RENAPER_URL + "/newOperation",
-		ADD_FRONT: RENAPER_URL + "/addFront",
-		ADD_BACK: RENAPER_URL + "/addBack",
-		ADD_SELFIE: RENAPER_URL + "/register",
-		ADD_BAR_CODE: RENAPER_URL + "/addBarcode",
-		END_OPERATION: RENAPER_URL + "/endOperation"
-	},
+  RENAPER_URLS: {
+    SCAN_BAR_CODE: `${RENAPER_URL}/scanBarcode`,
+    NEW_OPERATION: `${RENAPER_URL}/newOperation`,
+    ADD_FRONT: `${RENAPER_URL}/addFront`,
+    ADD_BACK: `${RENAPER_URL}/addBack`,
+    ADD_SELFIE: `${RENAPER_URL}/register`,
+    ADD_BAR_CODE: `${RENAPER_URL}/addBarcode`,
+    END_OPERATION: `${RENAPER_URL}/endOperation`,
+  },
 
-	MOURO_URL: MOURO_URL,
-	SERVER_DID: SERVER_DID,
-	SERVER_PRIVATE_KEY: SERVER_PRIVATE_KEY,
-	CREDENTIALS: {
-		TYPES: {
-			VERIFIABLE: "VerifiableCredential"
-		},
-		CONTEXT: "https://www.w3.org/2018/credentials/v1"
-	},
+  MOURO_URL,
+  SERVER_DID,
+  SERVER_PRIVATE_KEY,
+  CREDENTIALS: {
+    TYPES: {
+      VERIFIABLE: 'VerifiableCredential',
+    },
+    CONTEXT: 'https://www.w3.org/2018/credentials/v1',
+  },
 
-	VALIDATION_TYPES: {
-		IS_AUTH_TOKEN: "IsAuthToken",
-		IS_MOBILE_PHONE: "isMobilePhone",
-		IS_EMAIL: "isEmail",
-		IS_STRING: "isString",
-		IS_DATE_TIME: "isDateTime",
-		IS_BOOLEAN: "isBoolean",
-		IS_PASSWORD: "isPassword",
-		IS_BASE_64_IMAGE: "isBase64Image",
-		IS_FINGER_PRINT: "isFingerPrint",
-		IS_NUMBER: "isNumber",
-		IS_DNI: "isDni",
-		IS_IP: "isIp"
-	},
+  VALIDATION_TYPES: {
+    IS_AUTH_TOKEN: 'IsAuthToken',
+    IS_MOBILE_PHONE: 'isMobilePhone',
+    IS_EMAIL: 'isEmail',
+    IS_STRING: 'isString',
+    IS_DATE_TIME: 'isDateTime',
+    IS_BOOLEAN: 'isBoolean',
+    IS_PASSWORD: 'isPassword',
+    IS_BASE_64_IMAGE: 'isBase64Image',
+    IS_FINGER_PRINT: 'isFingerPrint',
+    IS_NUMBER: 'isNumber',
+    IS_DNI: 'isDni',
+    IS_IP: 'isIp',
+  },
 
-	MAILGUN_API_KEY: MAILGUN_API_KEY,
-	MAILGUN_DOMAIN: MAILGUN_DOMAIN,
+  MAILGUN_API_KEY,
+  MAILGUN_DOMAIN,
 
-	TWILIO_SID: TWILIO_SID,
-	TWILIO_TOKEN: TWILIO_TOKEN,
-	TWILIO_PHONE_NUMBER: TWILIO_PHONE_NUMBER,
+  TWILIO_SID,
+  TWILIO_TOKEN,
+  TWILIO_PHONE_NUMBER,
 
-	RECOVERY_CODE_LENGTH: 6,
-	HOURS_BEFORE_CODE_EXPIRES: 1,
+  RECOVERY_CODE_LENGTH: 6,
+  HOURS_BEFORE_CODE_EXPIRES: 1,
 
-	SALT_WORK_FACTOR: 16,
-	PASSWORD_MIN_LENGTH: 6,
-	COMMON_PASSWORDS: ["123456", "contraseña", "password"],
+  SALT_WORK_FACTOR: 16,
+  PASSWORD_MIN_LENGTH: 6,
+  COMMON_PASSWORDS: ['123456', 'contraseña', 'password'],
 
-	AUTHENTICATION_REQUEST: {
-		IN_PROGRESS: "In Progress",
-		SUCCESSFUL: "Successful",
-		FALIED: "Falied"
-	},
+  AUTHENTICATION_REQUEST: {
+    IN_PROGRESS: 'In Progress',
+    SUCCESSFUL: 'Successful',
+    FALIED: 'Falied',
+  },
 
-	CERTIFICATE_NAMES: {
-		EMAIL: "EMAIL",
-		TEL: "TEL",
-		USER_INFO: "USER_INFO",
-		USER_ADDRESS: "USER_ADDRESS",
-		GENERIC: "GENERIC"
-	},
+  CERTIFICATE_NAMES: {
+    EMAIL: 'EMAIL',
+    TEL: 'TEL',
+    USER_INFO: 'USER_INFO',
+    USER_ADDRESS: 'USER_ADDRESS',
+    GENERIC: 'GENERIC',
+  },
 
-	CERTIFICATE_STATUS: {
-		UNVERIFIED: "UNVERIFIED",
-		VERIFIED: "VERIFIED",
-		REVOKED: "REVOKED"
-	},
+  CERTIFICATE_STATUS: {
+    UNVERIFIED: 'UNVERIFIED',
+    VERIFIED: 'VERIFIED',
+    REVOKED: 'REVOKED',
+  },
 
-	BLOCKCHAIN: {
-		PROVIDER_CONFIG: PROVIDER_CONFIG,
-		GAS_INCREMENT: GAS_INCREMENT,
-		DELEGATE_DURATION: DELEGATE_DURATION
-	},
+  BLOCKCHAIN: {
+    PROVIDER_CONFIG,
+    GAS_INCREMENT,
+    DELEGATE_DURATION,
+  },
 
-	FIREBASE_URL: FIREBASE_URL,
-	FIREBASE_PRIV_KEY_PATH: FIREBASE_PRIV_KEY_PATH,
+  FIREBASE_URL,
+  FIREBASE_PRIV_KEY_PATH,
 
-	NO_EMAILS: NO_EMAILS,
-	NO_SMS: NO_SMS,
+  NO_EMAILS,
+  NO_SMS,
 
-	SEMILLAS_LOGIN: {
-		username: process.env.SEMILLAS_USERNAME,
-		password: process.env.SEMILLAS_PASSWORD
-	},
-	SEMILLAS_URL,
-	SEMILLAS_URLS: {
-		LOGIN: `${SEMILLAS_URL}/auth/login`,
-		CREDENTIALS_DIDI: `${SEMILLAS_URL}/credentials/didi`,
-		VALIDATE_DNI: `${SEMILLAS_URL}/identityValidationRequests`,
-		SHARE_DATA: `${SEMILLAS_URL}/credentials/share`,
-		PRESTADORES: `${SEMILLAS_URL}/providers`
-	},
+  SEMILLAS_LOGIN: {
+    username: process.env.SEMILLAS_USERNAME,
+    password: process.env.SEMILLAS_PASSWORD,
+  },
+  SEMILLAS_URL,
+  SEMILLAS_URLS: {
+    LOGIN: `${SEMILLAS_URL}/auth/login`,
+    CREDENTIALS_DIDI: `${SEMILLAS_URL}/credentials/didi`,
+    VALIDATE_DNI: `${SEMILLAS_URL}/identityValidationRequests`,
+    SHARE_DATA: `${SEMILLAS_URL}/credentials/share`,
+    PRESTADORES: `${SEMILLAS_URL}/providers`,
+  },
 
-	MAX_MB: 3,
-	STATUS: {
-		DONE: "Creado",
-		ERROR: "Error",
-		ERROR_RENEW: "Error al Renovar",
-		REVOKED: "Revocado"
-	},
+  MAX_MB: 3,
+  STATUS: {
+    DONE: 'Creado',
+    ERROR: 'Error',
+    ERROR_RENEW: 'Error al Renovar',
+    REVOKED: 'Revocado',
+  },
 
-	DELEGATE_ACTIONS: {
-		CREATE: "CREATE",
-		REVOKE: "REVOKE",
-		REFRESH: "REFRESH"
-	},
+  DELEGATE_ACTIONS: {
+    CREATE: 'CREATE',
+    REVOKE: 'REVOKE',
+    REFRESH: 'REFRESH',
+  },
 
-	EXPIRE_IN_MINUTES: 60,
+  EXPIRE_IN_MINUTES: 60,
 
-	JOBS: {
-		CANCEL_CALLBACK: 'DEFINITIVE FAIL',
-	}
+  JOBS: {
+    CANCEL_CALLBACK: 'DEFINITIVE FAIL',
+  },
 
 };
