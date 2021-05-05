@@ -1,20 +1,8 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-restricted-syntax */
 /* eslint-disable max-len */
 /* eslint-disable no-tabs */
 const router = require('express').Router();
-const ResponseHandler = require('../utils/ResponseHandler');
-
-const Certificate = require('../models/Certificate');
-
-const MailService = require('../services/MailService');
-const UserService = require('../services/UserService');
-const MouroService = require('../services/MouroService');
-const CertService = require('../services/CertService');
-
+const mail = require('../controllers/mail');
 const { validateBody, checkValidationResult } = require('../utils/Validator');
-const CodeGenerator = require('../utils/CodeGenerator');
-const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
 const { halfHourLimiter } = require('../policies/RateLimit');
 
@@ -70,36 +58,7 @@ router.post(
   ]),
   checkValidationResult,
   halfHourLimiter,
-  async (req, res) => {
-    const eMail = req.body.eMail.toLowerCase();
-    const { did } = req.body;
-    const { password } = req.body;
-
-    const { unique } = req.body;
-
-    try {
-      // Validar que el mail no este en uso
-      if (unique) await UserService.emailTaken(eMail, did);
-
-      // Si se ingresó contraseña, validarla
-      if (did && password) await UserService.getAndValidate(did, password);
-
-      // Generar código de validación
-      const code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
-      // eslint-disable-next-line no-console
-      if (Constants.DEBUGG) console.log(code);
-
-      // Crear y guardar pedido de validación de mail
-      await MailService.create(eMail, code, undefined);
-
-      // Mandar mail con el código de validación
-      await MailService.sendValidationCode(eMail, code);
-
-      return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.SENT);
-    } catch (err) {
-      return ResponseHandler.sendErr(res, err);
-    }
-  },
+  mail.createMailVerification,
 );
 
 /**
@@ -129,20 +88,7 @@ router.post(
   '/reSendMailValidator',
   validateBody([{ name: 'eMail', validate: [IS_STRING, IS_EMAIL] }]),
   checkValidationResult,
-  async (req, res) => {
-    const eMail = req.body.eMail.toLowerCase();
-
-    try {
-      const mail = await MailService.getByMail(eMail);
-
-      // Mandar mail con código de validación
-      await MailService.sendValidationCode(eMail, mail.code);
-
-      return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.SENT);
-    } catch (err) {
-      return ResponseHandler.sendErr(res, err);
-    }
-  },
+  mail.retryMailVerification,
 );
 
 /**
@@ -188,48 +134,7 @@ router.post(
   ]),
   checkValidationResult,
   halfHourLimiter,
-  async (req, res) => {
-    const { validationCode } = req.body;
-    const eMail = req.body.eMail.toLowerCase();
-    const { did } = req.body;
-
-    try {
-      // Validar código
-      const mail = await MailService.isValid(eMail, validationCode);
-
-      // Verificar que no exista un usuario con ese mail
-      const user = await UserService.getByEmail(eMail);
-      if (user) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.ALREADY_EXISTS);
-
-      // Generar certificado validando que ese did le corresponde al dueño del mail
-      const cert = await CertService.createMailCertificate(did, eMail);
-      await CertService.verifyCertificateEmail(cert);
-
-      // Revocar certificado anterior
-      const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.EMAIL);
-      for (const elem of old) {
-        elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
-        const jwt = await elem.getJwt();
-        await MouroService.revokeCertificate(jwt, elem.hash, did);
-      }
-
-      // Mandar certificado a mouro
-      const jwt = await MouroService.saveCertificate(cert, did);
-
-      // Validar código y actualizar pedido de validación de mail
-      await Certificate.generate(
-        Constants.CERTIFICATE_NAMES.EMAIL,
-        did,
-        Constants.CERTIFICATE_STATUS.UNVERIFIED,
-        jwt.data,
-        jwt.hash,
-      );
-      await MailService.validateMail(mail, did);
-      return ResponseHandler.sendRes(res, Messages.EMAIL.SUCCESS.MATCHED(cert));
-    } catch (err) {
-      return ResponseHandler.sendErr(res, err);
-    }
-  },
+  mail.createCertificateByMailCode,
 );
 
 module.exports = router;
