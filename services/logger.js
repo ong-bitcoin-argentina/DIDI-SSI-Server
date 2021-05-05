@@ -1,15 +1,18 @@
 const { LoggerManager, AzureLogger } = require("@proyecto-didi/didi-ssi-logger");
+const { 
+  NAME, ENVIRONMENT, DISABLE_TELEMETRY_CLIENT, APP_INSIGTHS_IKEY 
+} = require('../constants/Constants');
 
 /**
  * LogIn en Azure
  */
 const loggerManager = new LoggerManager();
 const azureLogger = new AzureLogger({
-    aiCloudRole: process.env.NAME,
-    aiCloudRoleInstance: process.env.ENVIRONMENT,
-    disableAppInsights: process.env.DISABLE_TELEMETRY_CLIENT,
-    environment: process.env.ENVIRONMENT,
-    ikey: process.env.APP_INSIGTHS_IKEY,
+    aiCloudRole: NAME,
+    aiCloudRoleInstance: ENVIRONMENT,
+    disableAppInsights: DISABLE_TELEMETRY_CLIENT,
+    environment: ENVIRONMENT,
+    ikey:APP_INSIGTHS_IKEY,
   })
 
 

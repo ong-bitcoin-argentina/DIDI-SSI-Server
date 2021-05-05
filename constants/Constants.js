@@ -21,6 +21,7 @@ if (process.env.HASH_SALT == null || process.env.HASH_SALT == '') throw new Erro
 if (process.env.FIREBASE_URL == null || process.env.FIREBASE_URL == '') throw new Error('No esta definida la varibale FIREBASE_URL');
 if (process.env.FIREBASE_PRIV_KEY_PATH == null || process.env.FIREBASE_PRIV_KEY_PATH == '') throw new Error('No esta definida la varibale FIREBASE_PRIV_KEY_PATH');
 if (process.env.NAME == null || process.env.NAME == '') throw new Error('No esta definida la varibale NAME');
+if (process.env.ENVIRONMENT == null || process.env.ENVIRONMENT == '') throw new Error('No esta definida la varibale ENVIRONMENT');
 if (process.env.BLOCKCHAIN_URL_MAIN == null || process.env.BLOCKCHAIN_URL_MAIN == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_MAIN');
 if (process.env.BLOCKCHAIN_URL_RSK == null || process.env.BLOCKCHAIN_URL_RSK == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
 if (process.env.BLOCKCHAIN_URL_LAC == null || process.env.BLOCKCHAIN_URL_LAC == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_LAC');
@@ -73,7 +74,7 @@ const GAS_INCREMENT = process.env.GAS_INCREMENT || "1.1";
 const NAME = process.env.NAME;
 const APP_INSIGTHS_IKEY = process.env.APP_INSIGTHS_IKEY;
 const ENVIRONMENT = process.env.ENVIRONMENT;
-
+const DISABLE_TELEMETRY_CLIENT = process.env.DISABLE_TELEMETRY_CLIENT;
 // ======================================================================================================
 
 const BLOCKCHAIN_URL_MAIN = process.env.BLOCKCHAIN_URL_MAIN; // RSK
@@ -127,8 +128,10 @@ const FIREBASE_PRIV_KEY_PATH = process.env.FIREBASE_PRIV_KEY_PATH;
 const SEMILLAS_URL = process.env.SEMILLAS_URL;
 
 module.exports = {
-	DIDI_SERVER_NAME: "Didi Server",
-
+	NAME,
+	APP_INSIGTHS_IKEY,
+	ENVIRONMENT,
+	DISABLE_TELEMETRY_CLIENT,
 	API_VERSION: "1.0",
 	DEBUGG: DEBUGG,
 	MONGO_URL: MONGO_URL,
