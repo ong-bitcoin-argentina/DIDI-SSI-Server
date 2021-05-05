@@ -22,6 +22,8 @@ if (process.env.FIREBASE_URL == null || process.env.FIREBASE_URL == '') throw ne
 if (process.env.FIREBASE_PRIV_KEY_PATH == null || process.env.FIREBASE_PRIV_KEY_PATH == '') throw new Error('No esta definida la varibale FIREBASE_PRIV_KEY_PATH');
 if (process.env.NAME == null || process.env.NAME == '') throw new Error('No esta definida la varibale NAME');
 if (process.env.ENVIRONMENT == null || process.env.ENVIRONMENT == '') throw new Error('No esta definida la varibale ENVIRONMENT');
+if (process.env.APP_INSIGTHS_IKEY == null || process.env.APP_INSIGTHS_IKEY == '') throw new Error('No esta definida la varibale APP_INSIGTHS_IKEY');
+if (process.env.SERVER_PRIVATE_KEY == null || process.env.SERVER_PRIVATE_KEY == '') throw new Error('No esta definida la varibale SERVER_PRIVATE_KEY');
 if (process.env.BLOCKCHAIN_URL_MAIN == null || process.env.BLOCKCHAIN_URL_MAIN == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_MAIN');
 if (process.env.BLOCKCHAIN_URL_RSK == null || process.env.BLOCKCHAIN_URL_RSK == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
 if (process.env.BLOCKCHAIN_URL_LAC == null || process.env.BLOCKCHAIN_URL_LAC == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_LAC');
