@@ -13,8 +13,7 @@ const optional = true;
  */
 router.get('/semillas/prestadores',
   checkValidationResult,
-  semillas.readProviders
-);
+  semillas.readProviders);
 
 /**
  * Notifica a semillas el did y el dni del usuario
@@ -27,8 +26,7 @@ router.post('/semillas/notifyDniDid',
     { name: 'dni', validate: [IS_STRING] },
   ]),
   checkValidationResult,
-  semillas.readCredentialsByDidAndDni
-);
+  semillas.readCredentialsByDidAndDni);
 
 /**
  * Usuario comparte sus credenciales al prestador para solicitar su servicio
@@ -44,8 +42,7 @@ router.post('/semillas/credentialShare',
     { name: 'dni', validate: [IS_STRING, IS_DNI] },
   ]),
   checkValidationResult,
-  semillas.shareCredentials
-);
+  semillas.shareCredentials);
 
 /**
  * Solicitud de validación de identidad a semillas
@@ -92,7 +89,6 @@ router.delete(
  */
 router.get('/semillas/identityValidation/:did',
   checkValidationResult,
-  semillas.readValidationStateByDid
-);
+  semillas.readValidationStateByDid);
 
 module.exports = router;
