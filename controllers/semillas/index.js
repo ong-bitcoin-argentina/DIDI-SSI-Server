@@ -1,17 +1,17 @@
-const { readProviders } = require('./readProviders');
-const { readCredentialsByDidAndDni } = require('./readCredentialsByDidAndDni');
+const { readPrestadores } = require('./readPrestadores');
+const { readCredentials } = require('./readCredentials');
 const { shareCredentials } = require('./shareCredentials');
-const { createValidationDni } = require('./createValidationDni');
-const { updateValidation } = require('./updateValidation');
-const { removeValidationByDid } = require('./removeValidationByDid');
-const { readValidationStateByDid } = require('./readValidationStateByDid');
+const { createDniValidation } = require('./createDniValidation');
+const { updateDniValidation } = require('./updateDniValidation');
+const { removeDniValidationByDid } = require('./removeDniValidationByDid');
+const { readDniValidationByDid } = require('./readDniValidationByDid');
 
 module.exports = {
-  readProviders,
-  readCredentialsByDidAndDni,
+  readPrestadores,
+  readCredentials,
   shareCredentials,
-  createValidationDni,
-  updateValidation,
-  removeValidationByDid,
-  readValidationStateByDid,
+  createDniValidation,
+  updateDniValidation,
+  removeDniValidationByDid,
+  readDniValidationByDid,
 };

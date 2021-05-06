@@ -13,7 +13,7 @@ const optional = true;
  */
 router.get('/semillas/prestadores',
   checkValidationResult,
-  semillas.readProviders);
+  semillas.readPrestadores);
 
 /**
  * Notifica a semillas el did y el dni del usuario
@@ -26,7 +26,7 @@ router.post('/semillas/notifyDniDid',
     { name: 'dni', validate: [IS_STRING] },
   ]),
   checkValidationResult,
-  semillas.readCredentialsByDidAndDni);
+  semillas.readCredentials);
 
 /**
  * Usuario comparte sus credenciales al prestador para solicitar su servicio
@@ -58,7 +58,7 @@ router.post(
     { name: 'lastName', validate: [IS_STRING] },
   ]),
   checkValidationResult,
-  semillas.createValidationDni,
+  semillas.createDniValidation,
 );
 
 /**
@@ -71,7 +71,7 @@ router.patch(
     { name: 'state', validate: [IS_STRING] },
   ]),
   checkValidationResult,
-  semillas.updateValidation,
+  semillas.updateDniValidation,
 );
 
 /**
@@ -81,7 +81,7 @@ router.delete(
   '/semillas/identityValidation',
   validateBody([{ name: 'did', validate: [IS_STRING] }]),
   checkValidationResult,
-  semillas.removeValidationByDid,
+  semillas.removeDniValidationByDid,
 );
 
 /**
@@ -89,6 +89,6 @@ router.delete(
  */
 router.get('/semillas/identityValidation/:did',
   checkValidationResult,
-  semillas.readValidationStateByDid);
+  semillas.readDniValidationByDid);
 
 module.exports = router;

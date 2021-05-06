@@ -1,7 +1,7 @@
 const SemillasService = require('../../services/SemillasService');
 const ResponseHandler = require('../../utils/ResponseHandler');
 
-const readCredentialsByDidAndDni = async (req, res) => {
+const readCredentials = async (req, res) => {
   try {
     const { did, dni } = req.body;
     const didi = await SemillasService.sendDIDandDNI({ did, dni });
@@ -12,5 +12,5 @@ const readCredentialsByDidAndDni = async (req, res) => {
 };
 
 module.exports = {
-  readCredentialsByDidAndDni,
+  readCredentials,
 };

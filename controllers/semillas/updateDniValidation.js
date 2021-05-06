@@ -1,10 +1,10 @@
 const SemillasService = require('../../services/SemillasService');
 const ResponseHandler = require('../../utils/ResponseHandler');
 
-const readValidationStateByDid = async (req, res) => {
-  const { did } = req.params;
+const updateDniValidation = async (req, res) => {
+  const { did, state } = req.body;
   try {
-    const result = await SemillasService.getValidation(did);
+    const result = await SemillasService.updateValidationState(did, state);
     return ResponseHandler.sendRes(res, result);
   } catch (err) {
     return ResponseHandler.sendErrWithStatus(res, err);
@@ -12,5 +12,5 @@ const readValidationStateByDid = async (req, res) => {
 };
 
 module.exports = {
-  readValidationStateByDid,
+  updateDniValidation,
 };

@@ -1,15 +1,16 @@
 const SemillasService = require('../../services/SemillasService');
 const ResponseHandler = require('../../utils/ResponseHandler');
 
-const readProviders = async (req, res) => {
+const removeDniValidationByDid = async (req, res) => {
+  const { did } = req.body;
   try {
-    const result = await SemillasService.getPrestadores();
+    const result = await SemillasService.deleteValidationByDid(did);
     return ResponseHandler.sendRes(res, result);
   } catch (err) {
-    return ResponseHandler.sendErr(res, err);
+    return ResponseHandler.sendErrWithStatus(res, err);
   }
 };
 
 module.exports = {
-  readProviders,
+  removeDniValidationByDid,
 };

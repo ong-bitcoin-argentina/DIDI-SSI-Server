@@ -4,7 +4,7 @@ const Messages = require('../../constants/Messages');
 
 const { SUCCESS } = Messages.SEMILLAS;
 
-const createValidationDni = async (req, res) => {
+const createDniValidation = async (req, res) => {
   try {
     await SemillasService.validateDni(req.body);
     await SemillasService.generateValidation(req.body.did);
@@ -15,5 +15,5 @@ const createValidationDni = async (req, res) => {
 };
 
 module.exports = {
-  createValidationDni,
+  createDniValidation,
 };
