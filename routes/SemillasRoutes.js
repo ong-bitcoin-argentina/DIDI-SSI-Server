@@ -21,9 +21,9 @@ const optional = true;
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
@@ -43,23 +43,25 @@ router.get('/semillas/prestadores', checkValidationResult, async (req, res) => {
  *   post:
  *     summary: Solicita las credenciales de semillas.
  *     description: Notifica a semillas el did y el dni del usuario para que luego se le envíen las credenciales de semillas, identidad y beneficio
- *     parameters:
- *       - name: did
- *         in: path
- *         required: true
- *         schema:
- *           type : string
- *       - name: dni
- *         in: path
- *         required: true
- *         schema:
- *           type : string
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - dni
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               dni:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
@@ -87,49 +89,39 @@ router.post(
  *   /semillas/credentialShare:
  *   post:
  *     summary: Usuario comparte sus credenciales al prestador para solicitar su servicio
- *     description: Usuario comparte sus credenciales al prestador para solicitar su servicio
- *     parameters:
- *       - name: did 
- *         in: path 
- *         required: true 
- *         schema: 
- *           type : string
- *       - name: email 
- *         in: path 
- *         required: true 
- *         schema: 
- *           type : string
- *       - name: phone
- *         in: path 
- *         required: true 
- *         schema: 
- *           type : string
- *       - name: viewerJWT 
- *         in: path 
- *         required: true 
- *         schema: 
- *           type : string
- *       - name: providerId 
- *         in: path 
- *         required: true 
- *         schema: 
- *           type : string
- *       - name: customProviderEmail 
- *         in: path 
- *         required: true 
- *         schema: 
- *           type : string
- *       - name: dni 
- *         in: path 
- *         required: true 
- *         schema: 
- *           type : string
+ *     description: Usuario comparte sus credenciales al prestador para solicitar su servicio.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - email
+ *         - phone
+ *         - viewerJWT
+ *         - dni
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               viewerJWT:
+ *                 type: string
+ *               providerId:
+ *                 type: number
+ *               customProviderEmail:
+ *                 type: string
+ *               dni:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
@@ -163,43 +155,37 @@ router.post(
  *   post:
  *     summary: Solicitud de validación de identidad a semillas.
  *     description: Solicitud de validación de identidad a semillas.
- *     parameters:
- *       - name: did
- *         in: path
- *         required: true
- *         schema:
- *           type : string
- *       - name: dni
- *         in: path
- *         required: true
- *         schema:
- *           type : string
- *       - name: email
- *         in: path
- *         required: true
- *         schema:
- *           type : string
- *       - name: phone
- *         in: path
- *         required: true
- *         schema:
- *           type : string
- *       - name: name
- *         in: path
- *         required: true
- *         schema:
- *           type : string
-*       - name: lastName
- *         in: path
- *         required: true
- *         schema:
- *           type : string
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - dni
+ *         - email
+ *         - phone
+ *         - name
+ *         - lastName
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               dni:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               lastName:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
@@ -232,23 +218,25 @@ router.post(
  *   patch:
  *     summary: Actualización del estado de la solicitud de validación de identidad.
  *     description: Actualización del estado de la solicitud de validación de identidad.
- *     parameters:
- *       - name: did
- *         in: path
- *         required: true
- *         schema:
- *           type : string
- *       - name: state
- *         in: path
- *         required: true
- *         schema:
- *           type : string
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - state
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               state:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
@@ -277,18 +265,22 @@ router.patch(
  *   delete:
  *     summary: Elimina una solicitud de validación de identidad desde semillas.
  *     description: Elimina una solicitud de validación de identidad desde semillas.
- *     parameters:
- *       - name: did
- *         in: path
- *         required: true
- *         schema:
- *           type : string
+ *     requestBody:
+ *       required:
+ *         - did
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
@@ -323,9 +315,9 @@ router.delete(
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
- *       404: 
+ *       404:
  *         description: El usuario no existe
  *       500:
  *         description: Error interno del servidor
