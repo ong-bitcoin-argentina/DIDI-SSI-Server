@@ -1,23 +1,23 @@
 const { createCertificateByJwt } = require('./createCertificateByJwt');
-const { readCertificateByDid } = require('./readCertificateByDid');
+const { createShareRequest } = require('./createShareRequest');
 const { deleteCertificate } = require('./deleteCertificate');
 const { createCertificateValidation } = require('./createCertificateValidation');
-const { validateIssuerByDid } = require('./validateIssuerByDid');
-const { createDelegateCertificate } = require('./createDelegateCertificate');
-const { deleteDelegateCertificate } = require('./deleteDelegateCertificate');
-const { refreshDelegateCertificate } = require('./refreshDelegateCertificate');
+const { readIssuerByDid } = require('./readIssuerByDid');
+const { createDelegation } = require('./createDelegation');
+const { deleteDelegation } = require('./deleteDelegation');
+const { refreshDelegation } = require('./refreshDelegation');
 const { readIssuerNameByDid } = require('./readIssuerNameByDid');
-const { editIssuerNameByDid } = require('./editIssuerNameByDid');
+const { updateIssuerNameByDid } = require('./updateIssuerNameByDid');
 
 module.exports = {
   createCertificateByJwt,
-  readCertificateByDid,
+  createShareRequest,
   deleteCertificate,
   createCertificateValidation,
-  validateIssuerByDid,
-  createDelegateCertificate,
-  deleteDelegateCertificate,
-  refreshDelegateCertificate,
+  readIssuerByDid,
+  createDelegation,
+  deleteDelegation,
+  refreshDelegation,
   readIssuerNameByDid,
-  editIssuerNameByDid,
+  updateIssuerNameByDid,
 };

@@ -4,7 +4,7 @@ const Constants = require('../../constants/Constants');
 
 const { REVOKE } = Constants.DELEGATE_ACTIONS;
 
-const deleteDelegateCertificate = async (req, res) => {
+const deleteDelegation = async (req, res) => {
   const { did, callbackUrl, token } = req.body;
   try {
     const delegateTransaction = await IssuerService.createDelegateTransaction({
@@ -20,5 +20,5 @@ const deleteDelegateCertificate = async (req, res) => {
 };
 
 module.exports = {
-  deleteDelegateCertificate,
+  deleteDelegation,
 };

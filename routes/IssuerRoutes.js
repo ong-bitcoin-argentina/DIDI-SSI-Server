@@ -77,7 +77,7 @@ router.post(
   ]),
   Validator.checkValidationResult,
   halfHourLimiter,
-  issuer.readCertificateByDid,
+  issuer.createShareRequest,
 );
 
 /**
@@ -184,7 +184,7 @@ router.post(
   '/issuer/verify',
   Validator.validateBody([{ name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
   halfHourLimiter,
-  issuer.validateIssuerByDid,
+  issuer.readIssuerByDid,
 );
 
 /**
@@ -232,7 +232,7 @@ router.post(
     },
   ]),
   Validator.checkValidationResult,
-  issuer.createDelegateCertificate,
+  issuer.createDelegation,
 );
 
 /**
@@ -270,7 +270,7 @@ router.delete(
     { name: 'token', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
   ]),
   Validator.checkValidationResult,
-  issuer.deleteDelegateCertificate,
+  issuer.deleteDelegation,
 );
 
 /**
@@ -315,7 +315,7 @@ router.post(
     { name: 'callbackUrl', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
   ]),
   Validator.checkValidationResult,
-  issuer.refreshDelegateCertificate,
+  issuer.refreshDelegation,
 );
 
 /**
@@ -372,7 +372,7 @@ router.put(
   '/issuer/:did',
   Validator.validateBody([{ name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
   Validator.checkValidationResult,
-  issuer.editIssuerNameByDid,
+  issuer.updateIssuerNameByDid,
 );
 
 module.exports = router;

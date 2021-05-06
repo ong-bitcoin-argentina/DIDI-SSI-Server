@@ -1,7 +1,7 @@
 const ResponseHandler = require('../../utils/ResponseHandler');
 const IssuerService = require('../../services/IssuerService');
 
-const editIssuerNameByDid = async (req, res) => {
+const updateIssuerNameByDid = async (req, res) => {
   try {
     const { did } = req.params;
     const { name } = req.body;
@@ -15,5 +15,5 @@ const editIssuerNameByDid = async (req, res) => {
 };
 
 module.exports = {
-  editIssuerNameByDid,
+  updateIssuerNameByDid,
 };

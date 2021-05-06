@@ -1,23 +1,19 @@
 const ResponseHandler = require('../../utils/ResponseHandler');
 const IssuerService = require('../../services/IssuerService');
-const Messages = require('../../constants/Messages');
 const Constants = require('../../constants/Constants');
 
-const { CREATE } = Constants.DELEGATE_ACTIONS;
+const { REFRESH } = Constants.DELEGATE_ACTIONS;
 
-const createDelegateCertificate = async (req, res) => {
-  const {
-    did, name, callbackUrl, token,
-  } = req.body;
+const refreshDelegation = async (req, res) => {
   try {
-    const didExist = await IssuerService.getIssuerByDID(did);
-    if (didExist) throw Messages.ISSUER.ERR.DID_EXISTS;
+    const { did } = req.params;
+    const { token, callbackUrl } = req.body;
+
     const delegateTransaction = await IssuerService.createDelegateTransaction({
       did,
-      name,
       callbackUrl,
       token,
-      action: CREATE,
+      action: REFRESH,
     });
 
     return ResponseHandler.sendRes(res, delegateTransaction);
@@ -29,5 +25,5 @@ const createDelegateCertificate = async (req, res) => {
 };
 
 module.exports = {
-  createDelegateCertificate,
+  refreshDelegation,
 };

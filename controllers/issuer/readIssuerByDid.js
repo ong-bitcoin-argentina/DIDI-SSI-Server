@@ -4,7 +4,7 @@ const CertService = require('../../services/CertService');
 const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
 
-const validateIssuerByDid = async (req, res) => {
+const readIssuerByDid = async (req, res) => {
   try {
     const { did } = req.body;
     await CertService.verifyIssuer(did);
@@ -19,5 +19,5 @@ const validateIssuerByDid = async (req, res) => {
 };
 
 module.exports = {
-  validateIssuerByDid,
+  readIssuerByDid,
 };

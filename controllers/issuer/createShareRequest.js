@@ -6,7 +6,7 @@ const UserService = require('../../services/UserService');
 const FirebaseService = require('../../services/FirebaseService');
 const Messages = require('../../constants/Messages');
 
-const readCertificateByDid = async (req, res) => {
+const createShareRequest = async (req, res) => {
   const { did } = req.body;
   const { jwt } = req.body;
   try {
@@ -38,5 +38,5 @@ const readCertificateByDid = async (req, res) => {
 };
 
 module.exports = {
-  readCertificateByDid,
+  createShareRequest,
 };
