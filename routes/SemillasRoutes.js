@@ -42,7 +42,8 @@ router.get('/semillas/prestadores', checkValidationResult, async (req, res) => {
  *   /semillas/notifyDniDid:
  *   post:
  *     summary: Solicita las credenciales de semillas.
- *     description: Notifica a semillas el did y el dni del usuario para que luego se le envíen las credenciales de semillas, identidad y beneficio
+ *     description: Notifica a semillas el did y el dni del usuario para
+ *     que luego se le envíen las credenciales de semillas, identidad y beneficio
  *     requestBody:
  *       required:
  *         - did
