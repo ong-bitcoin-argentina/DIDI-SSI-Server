@@ -69,7 +69,7 @@ router.post(
     { name: 'name', validate: [IS_STRING] },
   ]),
   checkValidationResult,
-  appUserAuth.createAppAuthorized,
+  appUserAuth.createAuthorizedApp,
 );
 
 /**

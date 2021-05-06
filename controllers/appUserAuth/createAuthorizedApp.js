@@ -1,7 +1,7 @@
 const AppAuthService = require('../../services/AppAuthService');
 const ResponseHandler = require('../../utils/ResponseHandler');
 
-const createAppAuthorized = async (req, res) => {
+const createAuthorizedApp = async (req, res) => {
   try {
     const { did, name } = req.body;
     const didi = await AppAuthService.createApp(did, name);
@@ -12,5 +12,5 @@ const createAppAuthorized = async (req, res) => {
 };
 
 module.exports = {
-  createAppAuthorized,
+  createAuthorizedApp,
 };
