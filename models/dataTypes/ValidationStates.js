@@ -1,5 +1,5 @@
 module.exports = {
-	inProgress: "IN_PROGRESS",
-	failure: "FAILURE",
-	success: "SUCCESS"
+  inProgress: 'IN_PROGRESS',
+  failure: 'FAILURE',
+  success: 'SUCCESS',
 };

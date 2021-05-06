@@ -1,13 +1,13 @@
-const router = require("express").Router();
-const ResponseHandler = require("./utils/ResponseHandler");
-const Validator = require("./utils/Validator");
-const Constants = require("../constants/Constants");
-const { saveShareRequest, getShareRequestById } = require("../services/ShareRequestService");
-const { validateAppOrUserJWT } = require("../middlewares/ValidateAppOrUserJWT");
+/* eslint-disable no-tabs */
+const router = require('express').Router();
+const Validator = require('../utils/Validator');
+const Constants = require('../constants/Constants');
+const { validateAppOrUserJWT } = require('../middlewares/ValidateAppOrUserJWT');
+const shareRequest = require('../controllers/shareRequest');
 
 const { IS_STRING } = Constants.VALIDATION_TYPES;
 
-const BASE_URL = "/shareRequest";
+const BASE_URL = '/shareRequest';
 
 router.use(BASE_URL, validateAppOrUserJWT);
 
@@ -30,28 +30,21 @@ router.use(BASE_URL, validateAppOrUserJWT);
  *                 type: string
  *               jwt:
  *                 type: string
- *  
+ *
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
  *       500:
  *         description: Error interno del servidor
  */
 router.post(
-	BASE_URL,
-	Validator.validateBody([{ name: "jwt", validate: [IS_STRING] }]),
-	Validator.checkValidationResult,
-	Validator.validateParams,
-	async function (req, res) {
-		try {
-			const { _id } = await saveShareRequest(req.body);
-			return ResponseHandler.sendRes(res, _id);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-	}
+  BASE_URL,
+  Validator.validateBody([{ name: 'jwt', validate: [IS_STRING] }]),
+  Validator.checkValidationResult,
+  Validator.validateParams,
+  shareRequest.createShareRequest,
 );
 
 /**
@@ -78,27 +71,17 @@ router.post(
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
  *       500:
  *         description: Error interno del servidor
  */
 router.post(
-	`${BASE_URL}/:id`,
-	Validator.validateBody([]),
-	Validator.checkValidationResult,
-	Validator.validateParams,
-	async function (req, res) {
-		try {
-			const { id } = req.params;
-			const { userJWT } = req.body;
-			const jwt = await getShareRequestById({ id, userJWT });
-			res.type("text");
-			return res.send(jwt);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-	}
+  `${BASE_URL}/:id`,
+  Validator.validateBody([]),
+  Validator.checkValidationResult,
+  Validator.validateParams,
+  shareRequest.readShareRequestById,
 );
 
 module.exports = router;

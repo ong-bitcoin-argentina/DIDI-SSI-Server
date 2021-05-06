@@ -1,19 +1,14 @@
-const router = require("express").Router();
-const ResponseHandler = require("./utils/ResponseHandler");
-const Certificate = require("../models/Certificate");
+/* eslint-disable max-len */
+const router = require('express').Router();
 
-const SmsService = require("../services/SmsService");
-const UserService = require("../services/UserService");
-const MouroService = require("../services/MouroService");
-const CertService = require("../services/CertService");
+const sms = require('../controllers/sms');
+const { validateBody, checkValidationResult } = require('../utils/Validator');
+const Constants = require('../constants/Constants');
+const { halfHourLimiter } = require('../policies/RateLimit');
 
-const { validateBody, checkValidationResult } = require("./utils/Validator");
-const CodeGenerator = require("./utils/CodeGenerator");
-const Messages = require("../constants/Messages");
-const Constants = require("../constants/Constants");
-const { halfHourLimiter } = require("../policies/RateLimit");
-
-const { IS_STRING, IS_MOBILE_PHONE, IS_PASSWORD, IS_BOOLEAN } = Constants.VALIDATION_TYPES;
+const {
+  IS_STRING, IS_MOBILE_PHONE, IS_PASSWORD, IS_BOOLEAN,
+} = Constants.VALIDATION_TYPES;
 
 /**
  * @openapi
@@ -40,61 +35,30 @@ const { IS_STRING, IS_MOBILE_PHONE, IS_PASSWORD, IS_BOOLEAN } = Constants.VALIDA
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
  *       500:
  *         description: Error interno del servidor
  */
 router.post(
-	"/sendSmsValidator",
-	validateBody([
-		{
-			name: "cellPhoneNumber",
-			validate: [IS_STRING, IS_MOBILE_PHONE]
-		},
-		{ name: "did", validate: [IS_STRING], optional: true },
-		{
-			name: "password",
-			validate: [IS_STRING, IS_PASSWORD],
-			length: { min: Constants.PASSWORD_MIN_LENGTH },
-			optional: true
-		},
-		{ name: "unique", validate: [IS_BOOLEAN], optional: true }
-	]),
-	checkValidationResult,
-	halfHourLimiter,
-	async function (req, res) {
-		const phoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
-		const did = req.body.did;
-		const password = req.body.password;
-		const unique = req.body.unique;
-
-		try {
-			// Validar que el teléfono no esté en uso
-			if (unique) await UserService.telTaken(phoneNumber, did);
-
-			// Si se ingresó contraseña, validarla
-			if (password && did) await UserService.getAndValidate(did, password);
-
-			// Generar código de validación
-			let code = CodeGenerator.generateCode(Constants.RECOVERY_CODE_LENGTH);
-			if (Constants.DEBUGG) console.log(code);
-
-			// Crear y guardar pedido de validación de teléfono
-			await SmsService.create(phoneNumber, code, undefined);
-
-			// Mandar sms con el código de validacion
-			if (Constants.NO_SMS) {
-				return ResponseHandler.sendRes(res, { code });
-			}
-
-			await SmsService.sendValidationCode(phoneNumber, code);
-
-			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.SENT);
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-	}
+  '/sendSmsValidator',
+  validateBody([
+    {
+      name: 'cellPhoneNumber',
+      validate: [IS_STRING, IS_MOBILE_PHONE],
+    },
+    { name: 'did', validate: [IS_STRING], optional: true },
+    {
+      name: 'password',
+      validate: [IS_STRING, IS_PASSWORD],
+      length: { min: Constants.PASSWORD_MIN_LENGTH },
+      optional: true,
+    },
+    { name: 'unique', validate: [IS_BOOLEAN], optional: true },
+  ]),
+  checkValidationResult,
+  halfHourLimiter,
+  sms.createSmsValidation,
 );
 
 /**
@@ -122,70 +86,28 @@ router.post(
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
- *       401: 
+ *       401:
  *         description: Acción no autorizada
  *       500:
  *         description: Error interno del servidor
  */
 router.post(
-	"/verifySmsCode",
-	validateBody([
-		{
-			name: "cellPhoneNumber",
-			validate: [IS_STRING, IS_MOBILE_PHONE]
-		},
-		{
-			name: "validationCode",
-			validate: [IS_STRING],
-			length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH }
-		},
-		{ name: "did", validate: [IS_STRING] }
-	]),
-	checkValidationResult,
-	halfHourLimiter,
-	async function (req, res) {
-		const cellPhoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
-
-		const validationCode = req.body.validationCode;
-		const did = req.body.did;
-
-		try {
-			// Validar código
-			let phone = await SmsService.isValid(cellPhoneNumber, validationCode);
-
-			// Validar que no existe un usuario con ese mail
-			const user = await UserService.getByTel(cellPhoneNumber);
-			if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
-
-			// Generar certificado validando que ese did le corresponde al dueño del teléfono
-			let cert = await CertService.createPhoneCertificate(did, cellPhoneNumber);
-			await CertService.verifyCertificatePhoneNumber(cert);
-
-			// Revocar certificado anterior
-			const old = await Certificate.findByType(did, Constants.CERTIFICATE_NAMES.TEL);
-			for (let elem of old) {
-				elem.update(Constants.CERTIFICATE_STATUS.REVOKED);
-				const jwt = await elem.getJwt();
-				await MouroService.revokeCertificate(jwt, elem.hash, did);
-			}
-
-			// Mandar certificado a mouro
-			const jwt = await MouroService.saveCertificate(cert, did);
-
-			// Validar código y actualizar pedido de validación de teléfono
-			await Certificate.generate(
-				Constants.CERTIFICATE_NAMES.TEL,
-				did,
-				Constants.CERTIFICATE_STATUS.UNVERIFIED,
-				jwt.data,
-				jwt.hash
-			);
-			phone = await SmsService.validatePhone(phone, did);
-			return ResponseHandler.sendRes(res, Messages.SMS.SUCCESS.MATCHED(cert));
-		} catch (err) {
-			return ResponseHandler.sendErr(res, err);
-		}
-	}
+  '/verifySmsCode',
+  validateBody([
+    {
+      name: 'cellPhoneNumber',
+      validate: [IS_STRING, IS_MOBILE_PHONE],
+    },
+    {
+      name: 'validationCode',
+      validate: [IS_STRING],
+      length: { min: Constants.RECOVERY_CODE_LENGTH, max: Constants.RECOVERY_CODE_LENGTH },
+    },
+    { name: 'did', validate: [IS_STRING] },
+  ]),
+  checkValidationResult,
+  halfHourLimiter,
+  sms.createCertificateBySmsValidation,
 );
 
 module.exports = router;
