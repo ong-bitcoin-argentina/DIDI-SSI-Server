@@ -1,10 +1,9 @@
 /* eslint-disable no-tabs */
 const router = require('express').Router();
-const ResponseHandler = require('../utils/ResponseHandler');
 const Validator = require('../utils/Validator');
 const Constants = require('../constants/Constants');
-const { saveShareRequest, getShareRequestById } = require('../services/ShareRequestService');
 const { validateAppOrUserJWT } = require('../middlewares/ValidateAppOrUserJWT');
+const shareRequest = require('../controllers/shareRequest');
 
 const { IS_STRING } = Constants.VALIDATION_TYPES;
 
@@ -45,14 +44,7 @@ router.post(
   Validator.validateBody([{ name: 'jwt', validate: [IS_STRING] }]),
   Validator.checkValidationResult,
   Validator.validateParams,
-  async (req, res) => {
-    try {
-      const { _id } = await saveShareRequest(req.body);
-      return ResponseHandler.sendRes(res, _id);
-    } catch (err) {
-      return ResponseHandler.sendErr(res, err);
-    }
-  },
+  shareRequest.createShareRequest,
 );
 
 /**
@@ -89,17 +81,7 @@ router.post(
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { userJWT } = req.body;
-      const jwt = await getShareRequestById({ id, userJWT });
-      res.type('text');
-      return res.send(jwt);
-    } catch (err) {
-      return ResponseHandler.sendErr(res, err);
-    }
-  },
+  shareRequest.readShareRequestById,
 );
 
 module.exports = router;
