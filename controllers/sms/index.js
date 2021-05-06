@@ -1,7 +1,7 @@
 const { createSmsValidation } = require('./createSmsValidation');
-const { createCertificateBySmsCode } = require('./createCertificateBySmsCode');
+const { createCertificateBySmsValidation } = require('./createCertificateBySmsValidation');
 
 module.exports = {
   createSmsValidation,
-  createCertificateBySmsCode,
+  createCertificateBySmsValidation,
 };

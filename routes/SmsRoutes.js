@@ -107,7 +107,7 @@ router.post(
   ]),
   checkValidationResult,
   halfHourLimiter,
-  sms.createCertificateBySmsCode,
+  sms.createCertificateBySmsValidation,
 );
 
 module.exports = router;

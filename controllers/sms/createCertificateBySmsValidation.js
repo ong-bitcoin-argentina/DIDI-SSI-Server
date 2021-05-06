@@ -9,7 +9,7 @@ const CertService = require('../../services/CertService');
 const Messages = require('../../constants/Messages');
 const Constants = require('../../constants/Constants');
 
-const createCertificateBySmsCode = async (req, res) => {
+const createCertificateBySmsValidation = async (req, res) => {
   const cellPhoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
 
   const { validationCode } = req.body;
@@ -54,5 +54,5 @@ const createCertificateBySmsCode = async (req, res) => {
 };
 
 module.exports = {
-  createCertificateBySmsCode,
+  createCertificateBySmsValidation,
 };
