@@ -1,10 +1,19 @@
 const Messages = require('../constants/Messages');
 const AuthRequest = require('../models/AuthRequest');
+const {
+  missingOperationId,
+  missingUserDID,
+  missingDid,
+  missingErrMsg,
+  missingStatus,
+} = require('../constants/serviceErrors');
 
 /**
  *  Crea y guarda pedido de validación de identidad
  */
 module.exports.create = async function create(operationId, userDID) {
+  if (!operationId) throw missingOperationId;
+  if (!userDID) throw missingUserDID;
   try {
     const authRequest = await AuthRequest.generate(operationId, userDID);
     if (!authRequest) return Promise.reject(Messages.RENAPER.CREATE);
@@ -20,6 +29,7 @@ module.exports.create = async function create(operationId, userDID) {
  *  Obtiene el pedido de validación a partir del código de operación
  */
 module.exports.getByOperationId = async function getByOperationId(operationId) {
+  if (!operationId) throw missingOperationId;
   try {
     const authRequest = await AuthRequest.findByOperationId(operationId);
     if (!authRequest) throw Messages.RENAPER.GET;
@@ -35,6 +45,7 @@ module.exports.getByOperationId = async function getByOperationId(operationId) {
  *  Indica si un determinado did posee una solicitud exitosa contra renaper
  */
 module.exports.getByDID = async function getByDID(did) {
+  if (!did) throw missingDid;
   try {
     const result = await AuthRequest.findByDid(did);
     if (!result) return null;
@@ -51,6 +62,8 @@ module.exports.getByDID = async function getByDID(did) {
  *  Actualiza el pedido de validación
  */
 module.exports.update = async function update(status, errMsg) {
+  if (!status) throw missingStatus;
+  if (!errMsg) throw missingErrMsg;
   try {
     // TODO: Fix operationId
     // eslint-disable-next-line no-undef
