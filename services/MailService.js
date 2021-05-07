@@ -2,6 +2,8 @@ const Mail = require('../models/Mail');
 const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
 
+const { missingEmail, missingCode, missingDid } = require('../constants/serviceErrors');
+
 const mailgun = Constants.MAILGUN_API_KEY
   // eslint-disable-next-line import/order
   ? require('mailgun-js')({
@@ -12,6 +14,7 @@ const mailgun = Constants.MAILGUN_API_KEY
  * Obtiene el pedido de validación a partir del mail
  */
 const getByMail = async function getByMail(email) {
+  if (!email) throw missingEmail;
   try {
     const mail = await Mail.getByEmail(email);
     if (!mail) return Promise.reject(Messages.EMAIL.ERR.NO_VALIDATIONS_FOR_EMAIL);
@@ -24,12 +27,12 @@ const getByMail = async function getByMail(email) {
   }
 };
 
-module.exports.getByMail = getByMail;
-
 /**
  * Realiza el envío de mail con el código de validación usando "Mailgun"
  */
-module.exports.sendValidationCode = async function sendValidationCode(eMail, code) {
+const sendValidationCode = async function sendValidationCode(eMail, code) {
+  if (!eMail) throw missingEmail;
+  if (!code) throw missingCode;
   const data = {
     from: Messages.EMAIL.VALIDATION.FROM,
     to: eMail,
@@ -56,7 +59,10 @@ module.exports.sendValidationCode = async function sendValidationCode(eMail, cod
 /**
  *  Crear y guardar pedido de validación de mail
  */
-module.exports.create = async function create(email, code, did) {
+const create = async function create(email, code, did) {
+  if (!email) throw missingEmail;
+  if (!code) throw missingCode;
+  if (!did) throw missingDid;
   try {
     const mail = await Mail.generate(email, code, did);
     if (!mail) return Promise.reject(Messages.EMAIL.ERR.CREATE);
@@ -71,7 +77,9 @@ module.exports.create = async function create(email, code, did) {
 /**
  *  Valida email según el did
  */
-module.exports.validateMail = async function validateMail(mail, did) {
+const validateMail = async function validateMail(mail, did) {
+  if (!mail) throw missingEmail;
+  if (!did) throw missingDid;
   try {
     // Validar mail
     const validatedMail = await mail.validateMail(did);
@@ -86,7 +94,9 @@ module.exports.validateMail = async function validateMail(mail, did) {
 /**
  *  Obtiene y verifica que el código de validación sea correcto
  */
-module.exports.isValid = async function isValid(email, code) {
+const isValid = async function isValid(email, code) {
+  if (!email) throw missingEmail;
+  if (!code) throw missingCode;
   try {
     const mail = await getByMail(email);
     const valid = await mail.isValid(code);
@@ -102,7 +112,9 @@ module.exports.isValid = async function isValid(email, code) {
 /**
  *  Indica si un mail a sido validado según el did
  */
-module.exports.isValidated = async function isValidated(did, email) {
+const isValidated = async function isValidated(did, email) {
+  if (!did) throw missingDid;
+  if (!email) throw missingEmail;
   try {
     const validated = await Mail.isValidated(did, email);
     return Promise.resolve(validated);
@@ -111,4 +123,13 @@ module.exports.isValidated = async function isValidated(did, email) {
     console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
+};
+
+module.exports = {
+  getByMail,
+  sendValidationCode,
+  create,
+  validateMail,
+  isValid,
+  isValidated,
 };

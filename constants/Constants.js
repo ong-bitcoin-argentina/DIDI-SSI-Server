@@ -1,4 +1,6 @@
 /* eslint-disable eqeqeq */
+require('dotenv').config();
+
 // General
 require('dotenv').config();
 
