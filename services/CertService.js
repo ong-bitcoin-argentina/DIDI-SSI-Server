@@ -13,12 +13,27 @@ const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
 
 const resolver = new Resolver(getResolver(Constants.BLOCKCHAIN.PROVIDER_CONFIG));
+const {
+  missingDid,
+  missingPhoneNumber,
+  missingEmail,
+  missingCallback,
+  missingClaims,
+  missingJwt,
+  missingSubject,
+  missingExpDate,
+  missingErrMsg,
+  missingHash,
+  missingIssuerDid,
+} = require('../constants/serviceErrors');
 
 /**
  *  Crea un nuevo certificado que valida la propiedad
  *  del número de teléfono por parte del dueño del did
  */
 module.exports.createPhoneCertificate = async function createPhoneCertificate(did, phoneNumber) {
+  if (!did) throw missingDid;
+  if (!phoneNumber) throw missingPhoneNumber;
   const subject = {
     Phone: {
       preview: {
@@ -39,6 +54,8 @@ module.exports.createPhoneCertificate = async function createPhoneCertificate(di
  *  del del mail por parte del dueño del did
  */
 module.exports.createMailCertificate = async function createMailCertificate(did, email) {
+  if (!did) throw missingDid;
+  if (!email) throw missingEmail;
   const subject = {
     Email: {
       preview: {
@@ -58,6 +75,9 @@ module.exports.createMailCertificate = async function createMailCertificate(did,
  *  Genera un certificado pidiendo info a determinado usuario
  */
 module.exports.createPetition = async function createPetition(did, claims, cb) {
+  if (!did) throw missingDid;
+  if (!claims) throw missingClaims;
+  if (!cb) throw missingCallback;
   try {
     // eslint-disable-next-line no-bitwise
     const exp = ((new Date().getTime() + 600000) / 1000) | 0;
@@ -89,6 +109,8 @@ module.exports.createPetition = async function createPetition(did, claims, cb) {
  *  Genera un token a partir de un did y su información
  */
 module.exports.createShareRequest = async function createShareRequest(did, jwt) {
+  if (!did) throw missingDid;
+  if (!jwt) throw missingJwt;
   const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
   const payload = { sub: did, disclosureRequest: jwt };
   const token = await createJWT(payload, { alg: 'ES256K-R', issuer: `did:ethr:${Constants.SERVER_DID}`, signer });
@@ -99,6 +121,10 @@ module.exports.createShareRequest = async function createShareRequest(did, jwt) 
  *  Genera un certificado asociando la información recibida en "subject" con el did
  */
 module.exports.createCertificate = async function createCertificate(did, subject, expDate, errMsg) {
+  if (!did) throw missingDid;
+  if (!subject) throw missingSubject;
+  if (!expDate) throw missingExpDate;
+  if (!errMsg) throw missingErrMsg;
   const vcissuer = new EthrDID({
     address: Constants.SERVER_DID,
     privateKey: Constants.SERVER_PRIVATE_KEY,
@@ -136,6 +162,8 @@ module.exports.createCertificate = async function createCertificate(did, subject
  *  Verifica la validez del certificado para el certificado de número de mail
  */
 module.exports.verifyCertificateEmail = async function verifyCertificateEmail(jwt, hash) {
+  if (!hash) throw missingHash;
+  if (!jwt) throw missingJwt;
   const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
   return result;
 };
@@ -146,6 +174,8 @@ module.exports.verifyCertificateEmail = async function verifyCertificateEmail(jw
 module.exports.verifyCertificatePhoneNumber = async function verifyCertificatePhoneNumber(
   jwt, hash,
 ) {
+  if (!hash) throw missingHash;
+  if (!jwt) throw missingJwt;
   const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
   return result;
 };
@@ -155,6 +185,8 @@ module.exports.verifyCertificatePhoneNumber = async function verifyCertificatePh
  *  (independientemente de si el certificado es válido o no)
  */
 module.exports.decodeCertificate = async function decodeCertificate(jwt, errMsg) {
+  if (!jwt) throw missingJwt;
+  if (!errMsg) throw missingErrMsg;
   try {
     const result = await decodeJWT(jwt);
     return Promise.resolve(result);
@@ -170,6 +202,9 @@ module.exports.decodeCertificate = async function decodeCertificate(jwt, errMsg)
  *  retorna la info del certificado y su estado
  */
 module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, errMsg) {
+  if (!jwt) throw missingJwt;
+  if (!hash) throw missingHash;
+  if (!errMsg) throw missingErrMsg;
   try {
     const result = await verifyCredential(jwt, resolver);
     result.status = Constants.CERTIFICATE_STATUS.UNVERIFIED;
@@ -189,6 +224,7 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
  * Dado un emisor de un certificado, verifica su validez
  */
 module.exports.verifyIssuer = async function verifyIssuer(issuerDid) {
+  if (!issuerDid) throw missingIssuerDid;
   // eslint-disable-next-line no-console
   console.log('Validating delegate...');
   if (issuerDid === `did:ethr:${Constants.SERVER_DID}`) {

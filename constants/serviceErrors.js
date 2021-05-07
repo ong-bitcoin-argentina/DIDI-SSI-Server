@@ -31,4 +31,36 @@ module.exports = {
     code: '#service-missingStatus',
     message: 'Falta el parámetro STATUS.',
   },
+  missingPhoneNumber: {
+    code: '#service-missingPhoneNumber',
+    message: 'Falta el parámetro PHONENUMBER.',
+  },
+  missingClaims: {
+    code: '#service-missingClaims',
+    message: 'Falta el parámetro CLAIMS.',
+  },
+  missingCallback: {
+    code: '#service-missingCallback',
+    message: 'Falta el parámetro CALLBACK.',
+  },
+  missingJwt: {
+    code: '#service-missingJwt',
+    message: 'Falta el parámetro JWT',
+  },
+  missingSubject: {
+    code: '#service-missingSubject',
+    message: 'Falta el parámetro SUBJECT',
+  },
+  missingExpDate: {
+    code: '#service-missingExpDate',
+    message: 'Falta el parámetro EXPDATE',
+  },
+  missingHash: {
+    code: '#service-missingHash',
+    message: 'Falta el parámetro HASH',
+  },
+  missingIssuerDid: {
+    code: '#service-issuerDid',
+    message: 'Falta el parámetro ISSUERDID',
+  },
 };
