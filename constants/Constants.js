@@ -1,4 +1,6 @@
 /* eslint-disable eqeqeq */
+require('dotenv').config();
+
 // General
 const DEBUGG = process.env.DEBUGG_MODE === 'true';
 const NO_EMAILS = process.env.NO_EMAILS === 'true';

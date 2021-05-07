@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const {
   getByMail, sendValidationCode, create, validateMail, isValid, isValidated,
 } = require('../../services/MailService');
