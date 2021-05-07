@@ -1,11 +1,8 @@
 const router = require('express').Router();
-const ResponseHandler = require('../utils/ResponseHandler');
-const SemillasService = require('../services/SemillasService');
-const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
 const { checkValidationResult, validateBody } = require('../utils/Validator');
+const semillas = require('../controllers/semillas');
 
-const { SUCCESS } = Messages.SEMILLAS;
 const {
   IS_STRING, IS_EMAIL, IS_DNI, IS_MOBILE_PHONE, IS_NUMBER,
 } = Constants.VALIDATION_TYPES;
@@ -14,43 +11,27 @@ const optional = true;
 /**
  * Obtiene los prestadores de semillas
  */
-router.get('/semillas/prestadores', checkValidationResult, async (req, res) => {
-  try {
-    const result = await SemillasService.getPrestadores();
-    return ResponseHandler.sendRes(res, result);
-  } catch (err) {
-    return ResponseHandler.sendErr(res, err);
-  }
-});
+router.get('/semillas/prestadores',
+  checkValidationResult,
+  semillas.readPrestadores);
 
 /**
  * Notifica a semillas el did y el dni del usuario
  * Para que luego se le envíen las credenciales de semillas, identidad y beneficio
  * En resumen: Solicita las credenciales de semillas
  */
-router.post(
-  '/semillas/notifyDniDid',
+router.post('/semillas/notifyDniDid',
   validateBody([
     { name: 'did', validate: [IS_STRING] },
     { name: 'dni', validate: [IS_STRING] },
   ]),
   checkValidationResult,
-  async (req, res) => {
-    try {
-      const { did, dni } = req.body;
-      const didi = await SemillasService.sendDIDandDNI({ did, dni });
-      return ResponseHandler.sendRes(res, didi);
-    } catch (err) {
-      return ResponseHandler.sendErr(res, err);
-    }
-  },
-);
+  semillas.readCredentials);
 
 /**
  * Usuario comparte sus credenciales al prestador para solicitar su servicio
  */
-router.post(
-  '/semillas/credentialShare',
+router.post('/semillas/credentialShare',
   validateBody([
     { name: 'did', validate: [IS_STRING] },
     { name: 'email', validate: [IS_STRING, IS_EMAIL] },
@@ -61,16 +42,7 @@ router.post(
     { name: 'dni', validate: [IS_STRING, IS_DNI] },
   ]),
   checkValidationResult,
-  async (req, res) => {
-    try {
-      const data = req.body;
-      await SemillasService.shareData(data);
-      return ResponseHandler.sendRes(res, SUCCESS.SHARE_DATA);
-    } catch (err) {
-      return ResponseHandler.sendErrWithStatus(res, err);
-    }
-  },
-);
+  semillas.shareCredentials);
 
 /**
  * Solicitud de validación de identidad a semillas
@@ -86,15 +58,7 @@ router.post(
     { name: 'lastName', validate: [IS_STRING] },
   ]),
   checkValidationResult,
-  async (req, res) => {
-    try {
-      await SemillasService.validateDni(req.body);
-      await SemillasService.generateValidation(req.body.did);
-      return ResponseHandler.sendRes(res, SUCCESS.VALIDATE_DNI);
-    } catch (err) {
-      return ResponseHandler.sendErrWithStatus(res, err);
-    }
-  },
+  semillas.createDniValidation,
 );
 
 /**
@@ -107,15 +71,7 @@ router.patch(
     { name: 'state', validate: [IS_STRING] },
   ]),
   checkValidationResult,
-  async (req, res) => {
-    const { did, state } = req.body;
-    try {
-      const result = await SemillasService.updateValidationState(did, state);
-      return ResponseHandler.sendRes(res, result);
-    } catch (err) {
-      return ResponseHandler.sendErrWithStatus(res, err);
-    }
-  },
+  semillas.updateDniValidation,
 );
 
 /**
@@ -125,28 +81,14 @@ router.delete(
   '/semillas/identityValidation',
   validateBody([{ name: 'did', validate: [IS_STRING] }]),
   checkValidationResult,
-  async (req, res) => {
-    const { did } = req.body;
-    try {
-      const result = await SemillasService.deleteValidationByDid(did);
-      return ResponseHandler.sendRes(res, result);
-    } catch (err) {
-      return ResponseHandler.sendErrWithStatus(res, err);
-    }
-  },
+  semillas.removeDniValidationByDid,
 );
 
 /**
  * Obtiene el estado de validación de identidad desde semillas
  */
-router.get('/semillas/identityValidation/:did', checkValidationResult, async (req, res) => {
-  const { did } = req.params;
-  try {
-    const result = await SemillasService.getValidation(did);
-    return ResponseHandler.sendRes(res, result);
-  } catch (err) {
-    return ResponseHandler.sendErrWithStatus(res, err);
-  }
-});
+router.get('/semillas/identityValidation/:did',
+  checkValidationResult,
+  semillas.readDniValidationByDid);
 
 module.exports = router;
