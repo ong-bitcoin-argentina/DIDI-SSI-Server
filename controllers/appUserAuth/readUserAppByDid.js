@@ -7,6 +7,7 @@ const readUserAppByDid = async (req, res) => {
     const result = await UserAppService.findByUserDID(did);
     return ResponseHandler.sendRes(res, result);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err);
     return ResponseHandler.sendErrWithStatus(res, err);
   }
