@@ -12,7 +12,7 @@ module.exports = {
     message: 'Falta el parámetro EMAIL',
   },
   missingCode: {
-    code: '#service-missingEmail',
+    code: '#service-missingCode',
     message: 'Falta el parámetro CODE',
   },
 };
