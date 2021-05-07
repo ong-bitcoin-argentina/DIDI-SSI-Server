@@ -9,16 +9,55 @@ const {
 const optional = true;
 
 /**
- * Obtiene los prestadores de semillas
+ * @openapi
+ *   /semillas/prestadores:
+ *   get:
+ *     summary: Obtiene los prestadores de semillas.
+ *     description: Obtiene los prestadores de semillas.
+ *     parameters:
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       404:
+ *         description: El usuario no existe
+ *       500:
+ *         description: Error interno del servidor
  */
 router.get('/semillas/prestadores',
   checkValidationResult,
   semillas.readPrestadores);
 
 /**
- * Notifica a semillas el did y el dni del usuario
- * Para que luego se le envíen las credenciales de semillas, identidad y beneficio
- * En resumen: Solicita las credenciales de semillas
+ * @openapi
+ *   /semillas/notifyDniDid:
+ *   post:
+ *     summary: Solicita las credenciales de semillas.
+ *     description: Notifica a semillas el did y el dni del usuario para
+ *     que luego se le envíen las credenciales de semillas, identidad y beneficio
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - dni
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               dni:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       404:
+ *         description: El usuario no existe
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post('/semillas/notifyDniDid',
   validateBody([
@@ -29,7 +68,46 @@ router.post('/semillas/notifyDniDid',
   semillas.readCredentials);
 
 /**
- * Usuario comparte sus credenciales al prestador para solicitar su servicio
+ * @openapi
+ *   /semillas/credentialShare:
+ *   post:
+ *     summary: Usuario comparte sus credenciales al prestador para solicitar su servicio
+ *     description: Usuario comparte sus credenciales al prestador para solicitar su servicio.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - email
+ *         - phone
+ *         - viewerJWT
+ *         - dni
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               viewerJWT:
+ *                 type: string
+ *               providerId:
+ *                 type: number
+ *               customProviderEmail:
+ *                 type: string
+ *               dni:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       404:
+ *         description: El usuario no existe
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post('/semillas/credentialShare',
   validateBody([
@@ -45,7 +123,45 @@ router.post('/semillas/credentialShare',
   semillas.shareCredentials);
 
 /**
- * Solicitud de validación de identidad a semillas
+ * @openapi
+ *   /semillas/validateDni:
+ *   post:
+ *     summary: Solicitud de validación de identidad a semillas.
+ *     description: Solicitud de validación de identidad a semillas.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - dni
+ *         - email
+ *         - phone
+ *         - name
+ *         - lastName
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               dni:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       404:
+ *         description: El usuario no existe
+ *       500:
+ *         description: Error interno del servidor
  */
 router.post(
   '/semillas/validateDni',
@@ -62,7 +178,33 @@ router.post(
 );
 
 /**
- * Actualización del estado de la solicitud de validación de identidad
+ * @openapi
+ *   /semillas/identityValidation:
+ *   patch:
+ *     summary: Actualización del estado de la solicitud de validación de identidad.
+ *     description: Actualización del estado de la solicitud de validación de identidad.
+ *     requestBody:
+ *       required:
+ *         - did
+ *         - state
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       404:
+ *         description: El usuario no existe
+ *       500:
+ *         description: Error interno del servidor
  */
 router.patch(
   '/semillas/identityValidation',
@@ -75,7 +217,30 @@ router.patch(
 );
 
 /**
- * Elimina una solicitud de validación de identidad desde semillas
+ * @openapi
+ *   /semillas/identityValidation:
+ *   delete:
+ *     summary: Elimina una solicitud de validación de identidad desde semillas.
+ *     description: Elimina una solicitud de validación de identidad desde semillas.
+ *     requestBody:
+ *       required:
+ *         - did
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               did:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       404:
+ *         description: El usuario no existe
+ *       500:
+ *         description: Error interno del servidor
  */
 router.delete(
   '/semillas/identityValidation',
@@ -85,7 +250,26 @@ router.delete(
 );
 
 /**
- * Obtiene el estado de validación de identidad desde semillas
+ * @openapi
+ *   /semillas/identityValidation/{did}:
+ *   get:
+ *     summary: Obtiene el estado de validación de identidad desde semillas.
+ *     description: Obtiene el estado de validación de identidad desde semillas.
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       404:
+ *         description: El usuario no existe
+ *       500:
+ *         description: Error interno del servidor
  */
 router.get('/semillas/identityValidation/:did',
   checkValidationResult,
