@@ -2,8 +2,6 @@
 require('dotenv').config();
 
 // General
-require('dotenv').config();
-
 const DEBUGG = process.env.DEBUGG_MODE === 'true';
 const NO_EMAILS = process.env.NO_EMAILS === 'true';
 const NO_SMS = process.env.NO_SMS === 'true';
