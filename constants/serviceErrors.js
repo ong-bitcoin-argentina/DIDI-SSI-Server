@@ -63,4 +63,20 @@ module.exports = {
     code: '#service-issuerDid',
     message: 'Falta el parámetro ISSUERDID',
   },
+  missingTitle: {
+    code: '#service-title',
+    message: 'Falta el parámetro TITLE',
+  },
+  missingMessage: {
+    code: '#service-message',
+    message: 'Falta el parámetro MESSAGE',
+  },
+  missingFirebaseId: {
+    code: '#service-FirebaseId',
+    message: 'Falta el parámetro FIREBASEID',
+  },
+  missingType: {
+    code: '#service-type',
+    message: 'Falta el parámetro TYPE',
+  },
 };
