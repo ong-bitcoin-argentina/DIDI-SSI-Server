@@ -60,7 +60,23 @@ module.exports = {
     message: 'Falta el parámetro HASH',
   },
   missingIssuerDid: {
-    code: '#service-issuerDid',
+    code: '#service-missingIssuerDid',
     message: 'Falta el parámetro ISSUERDID',
+  },
+  missingUrl: {
+    code: '#service-missingUrl',
+    message: 'Falta el parámetro URL',
+  },
+  missingToken: {
+    code: '#service-missingToken',
+    message: 'Falta el parámetro TOKEN',
+  },
+  missingData: {
+    code: '#service-missingData',
+    message: 'Falta el parámetro DATA',
+  },
+  missingAction: {
+    code: '#service-missingAction',
+    message: 'Falta el parámetro ACTION',
   },
 };

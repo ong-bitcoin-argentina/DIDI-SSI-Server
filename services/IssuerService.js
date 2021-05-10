@@ -9,10 +9,16 @@ const Messages = require('../constants/Messages');
 const { putOptionsAuth } = require('../constants/RequestOptions');
 const DelegateTransaction = require('../models/DelegateTransaction');
 
+const {
+  missingDid, missingName, missingUrl, missingToken, missingData, missingCallback, missingAction,
+} = require('../constants/serviceErrors');
+
 /**
  *  Crea un nuevo issuer
  */
 module.exports.addIssuer = async function addIssuer(did, name) {
+  if (!did) throw missingDid;
+  if (!name) throw missingName;
   // Verificar que el issuer no exista
   const byDIDExist = await Issuer.getByDID(did);
   if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
@@ -35,6 +41,8 @@ module.exports.addIssuer = async function addIssuer(did, name) {
  *  Permite editar el nombre de un issuer a partir de un did
  */
 module.exports.editName = async function editName(did, name) {
+  if (!did) throw missingDid;
+  if (!name) throw missingName;
   try {
     const issuer = await Issuer.getByDID(did);
     if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
@@ -51,6 +59,7 @@ module.exports.editName = async function editName(did, name) {
  *  Refrescar issuer (nueva fecha de expiración y hash)
  */
 module.exports.refresh = async function refresh(did) {
+  if (!did) throw missingDid;
   // Verificar que el issuer no exista o haya sido borrado
   const byDIDExist = await Issuer.getByDID(did);
   if (!byDIDExist || byDIDExist.deleted) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
@@ -79,6 +88,7 @@ module.exports.refresh = async function refresh(did) {
  *  Devuelve informacion de un issuer según su did
  */
 module.exports.getIssuerByDID = async function getIssuerByDID(did) {
+  if (!did) throw missingDid;
   return Issuer.getByDID(did);
 };
 
@@ -86,6 +96,10 @@ module.exports.getIssuerByDID = async function getIssuerByDID(did) {
  *  Envia respuesta a la url indicada
  */
 module.exports.callback = async function callback(url, did, token, data) {
+  if (!did) throw missingDid;
+  if (!url) throw missingUrl;
+  if (!token) throw missingToken;
+  if (!data) throw missingData;
   try {
     const response = await fetch(`${url}/${did}`, putOptionsAuth(token, data));
     const jsonResp = await response.json();
@@ -106,6 +120,11 @@ module.exports.callback = async function callback(url, did, token, data) {
 module.exports.createDelegateTransaction = async function createDelegateTransaction({
   did, name, callbackUrl, token, action,
 }) {
+  if (!did) throw missingDid;
+  if (!name) throw missingName;
+  if (!callbackUrl) throw missingCallback;
+  if (!token) throw missingToken;
+  if (!action) throw missingAction;
   try {
     return await DelegateTransaction.create({
       did, name, callbackUrl, token, action,
