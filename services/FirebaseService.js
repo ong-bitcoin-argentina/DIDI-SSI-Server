@@ -35,7 +35,7 @@ module.exports.sendPushNotification = async function sendPushNotification(
   if (!firebaseId) throw missingFirebaseId;
   if (!type) throw missingType;
 
-  if (!hasFirebaseInEnv() || !firebaseId) return;
+  if (!hasFirebaseInEnv()) return;
 
   const msg = {
     notification: {
