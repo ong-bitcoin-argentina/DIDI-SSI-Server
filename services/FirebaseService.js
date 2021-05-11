@@ -4,6 +4,10 @@ const firebaseAdmin = require('firebase-admin');
 const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
 
+const {
+  missingType, missingMessage, missingFirebaseId, missingTitle,
+} = require('../constants/serviceErrors');
+
 /**
  * Comprobar existencia de variables de entorno necesarias,
  * luego inicializar Firebase
@@ -26,7 +30,12 @@ if (hasFirebaseInEnv()) {
 module.exports.sendPushNotification = async function sendPushNotification(
   title, message, firebaseId, type,
 ) {
-  if (!hasFirebaseInEnv() || !firebaseId) return;
+  if (!title) throw missingTitle;
+  if (!message) throw missingMessage;
+  if (!firebaseId) throw missingFirebaseId;
+  if (!type) throw missingType;
+
+  if (!hasFirebaseInEnv()) return;
 
   const msg = {
     notification: {

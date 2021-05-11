@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 const router = require('express').Router();
 const Constants = require('../constants/Constants');
 const { checkValidationResult, validateBody } = require('../utils/Validator');
@@ -34,8 +36,7 @@ router.get('/semillas/prestadores',
  *   /semillas/notifyDniDid:
  *   post:
  *     summary: Solicita las credenciales de semillas.
- *     description: Notifica a semillas el did y el dni del usuario para
- *     que luego se le envíen las credenciales de semillas, identidad y beneficio
+ *     description: Notifica a semillas el did y el dni del usuario para que luego se le envíen las credenciales de semillas, identidad y beneficio
  *     requestBody:
  *       required:
  *         - did
