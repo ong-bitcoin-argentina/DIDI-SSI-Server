@@ -79,4 +79,8 @@ module.exports = {
     code: '#service-type',
     message: 'Falta el parámetro TYPE',
   },
+  missingCert: {
+    code: '#service-missingCert',
+    message: 'Falta el parámetro CERT',
+  },
 };
