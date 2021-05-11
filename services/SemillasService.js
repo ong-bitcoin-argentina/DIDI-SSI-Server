@@ -6,6 +6,9 @@ const SemillasValidation = require('../models/SemillasValidation');
 const {
   VALIDATION: { DID_NOT_FOUND },
 } = require('../constants/Messages');
+const {
+  missingData, missingDid, missingDni, missingState,
+} = require('../constants/serviceErrors');
 
 /**
  *  Fetch a semillas
@@ -62,6 +65,8 @@ module.exports.login = async function login() {
  *  Dados dni y did, solicita las credenciales a semillas
  */
 module.exports.sendDIDandDNI = async function sendDIDandDNI({ dni, did }) {
+  if (!dni) throw missingDni;
+  if (!did) throw missingDid;
   const data = { dni, did };
   const res = await semillasFetch(SEMILLAS_URLS.CREDENTIALS_DIDI, data);
   return res.json();
@@ -71,6 +76,7 @@ module.exports.sendDIDandDNI = async function sendDIDandDNI({ dni, did }) {
  *  Usuario comparte sus credenciales al prestador para solicitar su servicio
  */
 module.exports.shareData = async function shareData(data) {
+  if (!data) throw missingData;
   const res = await semillasFetch(SEMILLAS_URLS.SHARE_DATA, data);
   return handleJsonResponse(res);
 };
@@ -79,6 +85,7 @@ module.exports.shareData = async function shareData(data) {
  *  Validación de dni
  */
 module.exports.validateDni = async function validateDni(data) {
+  if (!data) throw missingDni;
   const res = await semillasFetch(SEMILLAS_URLS.VALIDATE_DNI, data);
   return handleTextResponse(res);
 };
@@ -87,6 +94,7 @@ module.exports.validateDni = async function validateDni(data) {
  *  Genera nueva validación
  */
 module.exports.generateValidation = async function generateValidation(did) {
+  if (!did) throw missingDid;
   return SemillasValidation.generate(did);
 };
 
@@ -94,6 +102,8 @@ module.exports.generateValidation = async function generateValidation(did) {
  *  Actualización del estado de la solicitud de validación de identidad
  */
 module.exports.updateValidationState = async function updateValidationState(did, state) {
+  if (!did) throw missingDid;
+  if (!state) throw missingState;
   const validation = await SemillasValidation.updateByUserDID(did, state);
   if (!validation) throw DID_NOT_FOUND(did);
   return validation;
@@ -103,6 +113,7 @@ module.exports.updateValidationState = async function updateValidationState(did,
  *  Elimina una solicitud de validación de identidad desde semillas
  */
 module.exports.deleteValidationByDid = async function deleteValidationByDid(did) {
+  if (!did) throw missingDid;
   const validation = await SemillasValidation.deleteByUserDID(did);
   if (!validation) throw DID_NOT_FOUND(did);
   return validation;
@@ -112,6 +123,7 @@ module.exports.deleteValidationByDid = async function deleteValidationByDid(did)
  *  Obtiene el estado de validación de identidad desde semillas
  */
 module.exports.getValidation = async function getValidation(did) {
+  if (!did) throw missingDid;
   const validation = await SemillasValidation.getByUserDID(did);
   if (!validation) throw DID_NOT_FOUND(did);
   const { createdOn, modifiedOn, state } = validation;
