@@ -1,6 +1,6 @@
 const { getTokenData, getPayload, verifyToken } = require('../../services/TokenService');
 const {
-  missingToken, missingJwt, missingIsUser,
+  missingToken, missingJwt,
 } = require('../../constants/serviceErrors');
 
 describe('Should be green', () => {

@@ -8,7 +8,7 @@ const { SERVER_DID } = require('../constants/Constants');
 const Constants = require('../constants/Constants');
 
 const {
-  missingToken, missingJwt, missingIsUser,
+  missingToken, missingJwt,
 } = require('../constants/serviceErrors');
 
 const {
