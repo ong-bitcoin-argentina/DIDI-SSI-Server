@@ -10,10 +10,16 @@ const {
   TOKEN: { INVALID_CODE },
 } = require('../constants/Messages');
 
+const {
+  missingUserDID, missingUserToken, missingAppToken,
+} = require('../constants/serviceErrors');
+
 /**
  *  Obtiene un usuario de una app autorizada por su did
  */
 const findByUserDID = async function findByUserDID(userDid) {
+  if (!userDid) throw missingUserDID;
+
   const user = await UserService.getByDID(userDid);
   if (!user) throw DID_NOT_FOUND(userDid);
 
@@ -47,6 +53,9 @@ const createUser = async function createUser(userDid, appDid) {
  *  Crea un usuario asociándolo con una app autorizada verificando los tokens
  */
 const createByTokens = async function createByTokens(userToken, appToken) {
+  if (!userToken) throw missingUserToken;
+  if (!appToken) throw missingAppToken;
+
   const verified = await CertService.verifyCertificate(userToken);
   if (!verified.payload) throw INVALID_CODE(true);
 

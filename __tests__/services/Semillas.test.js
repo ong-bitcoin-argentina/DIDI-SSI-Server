@@ -40,11 +40,11 @@ describe('Should be green', () => {
   /**
  *  Validación de dni
  */
-  test('Expect validateDni to throw on missing data', async () => {
+  test('Expect validateDni to throw on missing dni', async () => {
     try {
       await validateDni(undefined);
     } catch (e) {
-      expect(e.code).toMatch(missingData.code);
+      expect(e.code).toMatch(missingDni.code);
     }
   });
 

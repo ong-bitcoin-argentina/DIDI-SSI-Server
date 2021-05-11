@@ -7,15 +7,13 @@ const {
   VALIDATION: { DID_NOT_FOUND },
 } = require('../constants/Messages');
 const {
-  missingUrl, missingData, missingRes, missingDid, missingDni, missingState,
+  missingData, missingDid, missingDni, missingState,
 } = require('../constants/serviceErrors');
 
 /**
  *  Fetch a semillas
  */
 const semillasFetch = async function semillasFetch(url, data) {
-  if (!url) throw missingUrl;
-  if (!data) throw missingData;
   let token = await SemillasAuth.getToken();
   const options = data ? postOptionsAuth : getOptionsAuth;
   let res = await fetch(url, options(token, data));
@@ -29,7 +27,6 @@ const semillasFetch = async function semillasFetch(url, data) {
 };
 
 const handleJsonResponse = async (res) => {
-  if (!res) throw missingRes;
   const content = await res.json();
   if (!res.ok) {
     throw new Error({
@@ -40,7 +37,6 @@ const handleJsonResponse = async (res) => {
 };
 
 const handleTextResponse = async (res) => {
-  if (!res) throw missingRes;
   const content = await res.text();
   if (!res.ok) {
     throw new Error(content);
@@ -89,7 +85,7 @@ module.exports.shareData = async function shareData(data) {
  *  Validación de dni
  */
 module.exports.validateDni = async function validateDni(data) {
-  if (!data) throw missingData;
+  if (!data) throw missingDni;
   const res = await semillasFetch(SEMILLAS_URLS.VALIDATE_DNI, data);
   return handleTextResponse(res);
 };

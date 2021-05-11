@@ -95,10 +95,6 @@ module.exports = {
     code: '#service-missingType',
     message: 'Falta el parámetro TYPE',
   },
-  missingRes: {
-    code: '#service-missingRes',
-    message: 'Falta el parámetro RES',
-  },
   missingDni: {
     code: '#service-missingDni',
     message: 'Falta el parámetro DNI',
@@ -106,5 +102,61 @@ module.exports = {
   missingState: {
     code: '#service-missingState',
     message: 'Falta el parámetro STATE',
+  },
+  missingAppDid: {
+    code: '#service-appDid',
+    message: 'Falta el parámetro APPDID',
+  },
+  missingUserToken: {
+    code: '#service-UserToken',
+    message: 'Falta el parámetro USERTOKEN',
+  },
+  missingAppToken: {
+    code: '#service-AppToken',
+    message: 'Falta el parámetro APPTOKEN',
+  },
+  missingIsUser: {
+    code: '#service-missingIsUser',
+    message: 'Falta el parámetro ISUSER',
+  },
+  missingPassword: {
+    code: '#service-missingPassword',
+    message: 'Falta el parámetro PASSWORD',
+  },
+  missingExeptionDid: {
+    code: '#service-missingExeptionDid',
+    message: 'Falta el parámetro EXEPTIONDID',
+  },
+  missingPrivateKeySeed: {
+    code: '#service-missingPrivateKeySeed',
+    message: 'Falta el parámetro PRIVATEKEYSEED',
+  },
+  missingLastName: {
+    code: '#service-missingLastName',
+    message: 'Falta el parámetro LASTNAME',
+  },
+  missingContentType: {
+    code: '#service-missingContentType',
+    message: 'Falta el parámetro CONTENTTYPE',
+  },
+  missingPath: {
+    code: '#service-missingPath',
+    message: 'Falta el parámetro PATH',
+  },
+  missingId: {
+    code: '#service-missingId',
+    message: 'Falta el parámetro ID',
+  },
+  missingCert: {
+    code: '#service-missingCert',
+    message: 'Falta el parámetro CERT',
+  },
+  missingUserJWT: {
+    code: '#service-userJWT',
+    message: 'Falta el parámetro USERJWT',
+  },
+  missingOtherDID: {
+    code: '#service-missingOtherDID',
+    message: 'Falta el parámetro OTHERDID',
   },
 };
