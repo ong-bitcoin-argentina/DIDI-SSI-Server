@@ -80,19 +80,19 @@ module.exports = {
     message: 'Falta el parámetro ACTION',
   },
   missingTitle: {
-    code: '#service-title',
+    code: '#service-missingTitle',
     message: 'Falta el parámetro TITLE',
   },
   missingMessage: {
-    code: '#service-message',
+    code: '#service-missingMessage',
     message: 'Falta el parámetro MESSAGE',
   },
   missingFirebaseId: {
-    code: '#service-FirebaseId',
+    code: '#service-missingFirebaseId',
     message: 'Falta el parámetro FIREBASEID',
   },
   missingType: {
-    code: '#service-type',
+    code: '#service-missingType',
     message: 'Falta el parámetro TYPE',
   },
 };
