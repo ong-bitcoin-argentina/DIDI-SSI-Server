@@ -4,10 +4,15 @@ const Phone = require('../models/Phone');
 const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
 
+const {
+  missingDid, missingPhoneNumber, missingCode,
+} = require('../constants/serviceErrors');
+
 /**
  *  Obtiene el pedido de validación a partir del número de teléfono
  */
 const getByPhoneNumber = async function getByPhoneNumber(phoneNumber) {
+  if (!phoneNumber) throw missingPhoneNumber;
   try {
     const phone = await Phone.getByPhoneNumber(phoneNumber);
     if (!phone) return Promise.reject(Messages.SMS.ERR.NO_VALIDATIONS_FOR_NUMBER);
@@ -25,6 +30,8 @@ module.exports.getByPhoneNumber = getByPhoneNumber;
  *  Realiza el envío de sms con el código de validación usando "Twillio"
  */
 module.exports.sendValidationCode = async function sendValidationCode(phoneNumber, code) {
+  if (!phoneNumber) throw missingPhoneNumber;
+  if (!code) throw missingCode;
   const data = {
     body: Messages.SMS.VALIDATION.MESSAGE(code),
     to: phoneNumber,
@@ -55,6 +62,9 @@ module.exports.sendValidationCode = async function sendValidationCode(phoneNumbe
  *  Crear y guardar pedido de validación del número de teléfono
  */
 module.exports.create = async function create(phoneNumber, code, did) {
+  if (!phoneNumber) throw missingPhoneNumber;
+  if (!code) throw missingCode;
+  if (!did) throw missingDid;
   try {
     const phone = await Phone.generate(phoneNumber, code, did);
     if (Constants.DEBUGG) return Promise.resolve(phone);
@@ -71,6 +81,8 @@ module.exports.create = async function create(phoneNumber, code, did) {
  *  Valida número de teléfono según el did
  */
 module.exports.validatePhone = async function validatePhone(phone, did) {
+  if (!phone) throw missingPhoneNumber;
+  if (!did) throw missingDid;
   try {
     // validar tel
     const validatedPhone = await phone.validatePhone(did);
@@ -86,6 +98,8 @@ module.exports.validatePhone = async function validatePhone(phone, did) {
  *  Obtiene y compara el código de validación
  */
 module.exports.isValid = async function isValid(phoneNumber, code) {
+  if (!phoneNumber) throw missingPhoneNumber;
+  if (!code) throw missingCode;
   try {
     const phone = await getByPhoneNumber(phoneNumber);
     const valid = await phone.isValid(code);
@@ -102,6 +116,8 @@ module.exports.isValid = async function isValid(phoneNumber, code) {
  *  Indica si un número de teléfono a sido validado según el did
  */
 module.exports.isValidated = async function isValidated(did, phoneNumber) {
+  if (!did) throw missingDid;
+  if (!phoneNumber) throw missingPhoneNumber;
   try {
     const isValid = await Phone.isValidated(did, phoneNumber);
     return Promise.resolve(isValid);
