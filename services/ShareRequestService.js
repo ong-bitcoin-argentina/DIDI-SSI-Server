@@ -7,7 +7,7 @@ const {
 } = Messages.SHAREREQUEST.ERR;
 
 const {
-  missingJwt, missingId, missingUserJWT
+  missingJwt, missingId, missingUserJWT,
 } = require('../constants/serviceErrors');
 
 /**
