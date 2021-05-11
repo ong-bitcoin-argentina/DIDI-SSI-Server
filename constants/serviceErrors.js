@@ -79,4 +79,16 @@ module.exports = {
     code: '#service-type',
     message: 'Falta el parámetro TYPE',
   },
+  missingAppDid: {
+    code: '#service-appDid',
+    message: 'Falta el parámetro APPDID',
+  },
+  missingUserToken: {
+    code: '#service-UserToken',
+    message: 'Falta el parámetro USERTOKEN',
+  },
+  missingAppToken: {
+    code: '#service-AppToken',
+    message: 'Falta el parámetro APPTOKEN',
+  },
 };
