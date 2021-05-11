@@ -4,6 +4,9 @@ const {
 } = require('../../constants/serviceErrors');
 
 describe('Should be green', () => {
+  /**
+   * findByDID
+   */
   test('Expect findByDID to throw on missing did', async () => {
     try {
       await findByDID(undefined);
@@ -12,6 +15,9 @@ describe('Should be green', () => {
     }
   });
 
+  /**
+   * createApp
+   */
   test('Expect createApp to throw on missing did', async () => {
     try {
       await createApp(undefined, 'name');

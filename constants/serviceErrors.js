@@ -60,28 +60,40 @@ module.exports = {
     message: 'Falta el parámetro HASH',
   },
   missingIssuerDid: {
-    code: '#service-issuerDid',
+    code: '#service-missingIssuerDid',
     message: 'Falta el parámetro ISSUERDID',
   },
-  missingTitle: {
-    code: '#service-title',
-    message: 'Falta el parámetro TITLE',
+  missingUrl: {
+    code: '#service-missingUrl',
+    message: 'Falta el parámetro URL',
   },
-  missingMessage: {
-    code: '#service-message',
-    message: 'Falta el parámetro MESSAGE',
-  },
-  missingFirebaseId: {
-    code: '#service-FirebaseId',
-    message: 'Falta el parámetro FIREBASEID',
-  },
-  missingType: {
-    code: '#service-type',
-    message: 'Falta el parámetro TYPE',
+  missingToken: {
+    code: '#service-missingToken',
+    message: 'Falta el parámetro TOKEN',
   },
   missingData: {
     code: '#service-missingData',
     message: 'Falta el parámetro DATA',
+  },
+  missingAction: {
+    code: '#service-missingAction',
+    message: 'Falta el parámetro ACTION',
+  },
+  missingTitle: {
+    code: '#service-missingTitle',
+    message: 'Falta el parámetro TITLE',
+  },
+  missingMessage: {
+    code: '#service-missingMessage',
+    message: 'Falta el parámetro MESSAGE',
+  },
+  missingFirebaseId: {
+    code: '#service-missingFirebaseId',
+    message: 'Falta el parámetro FIREBASEID',
+  },
+  missingType: {
+    code: '#service-missingType',
+    message: 'Falta el parámetro TYPE',
   },
   missingPassword: {
     code: '#service-missingPassword',
@@ -110,5 +122,17 @@ module.exports = {
   missingId: {
     code: '#service-missingId',
     message: 'Falta el parámetro ID',
+  },
+  missingCert: {
+    code: '#service-missingCert',
+    message: 'Falta el parámetro CERT',
+  },
+  missingUserJWT: {
+    code: '#service-userJWT',
+    message: 'Falta el parámetro USERJWT',
+  },
+  missingOtherDID: {
+    code: '#service-missingOtherDID',
+    message: 'Falta el parámetro OTHERDID',
   },
 };
