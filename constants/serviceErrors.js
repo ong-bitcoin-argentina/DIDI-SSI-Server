@@ -95,4 +95,16 @@ module.exports = {
     code: '#service-missingType',
     message: 'Falta el parámetro TYPE',
   },
+  missingRes: {
+    code: '#service-missingRes',
+    message: 'Falta el parámetro RES',
+  },
+  missingDni: {
+    code: '#service-missingDni',
+    message: 'Falta el parámetro DNI',
+  },
+  missingState: {
+    code: '#service-missingState',
+    message: 'Falta el parámetro STATE',
+  },
 };
