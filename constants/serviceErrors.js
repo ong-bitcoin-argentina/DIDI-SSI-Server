@@ -79,4 +79,36 @@ module.exports = {
     code: '#service-type',
     message: 'Falta el parámetro TYPE',
   },
+  missingData: {
+    code: '#service-missingData',
+    message: 'Falta el parámetro DATA',
+  },
+  missingPassword: {
+    code: '#service-missingPassword',
+    message: 'Falta el parámetro PASSWORD',
+  },
+  missingExeptionDid: {
+    code: '#service-missingExeptionDid',
+    message: 'Falta el parámetro EXEPTIONDID',
+  },
+  missingPrivateKeySeed: {
+    code: '#service-missingPrivateKeySeed',
+    message: 'Falta el parámetro PRIVATEKEYSEED',
+  },
+  missingLastName: {
+    code: '#service-missingLastName',
+    message: 'Falta el parámetro LASTNAME',
+  },
+  missingContentType: {
+    code: '#service-missingContentType',
+    message: 'Falta el parámetro CONTENTTYPE',
+  },
+  missingPath: {
+    code: '#service-missingPath',
+    message: 'Falta el parámetro PATH',
+  },
+  missingId: {
+    code: '#service-missingId',
+    message: 'Falta el parámetro ID',
+  },
 };
