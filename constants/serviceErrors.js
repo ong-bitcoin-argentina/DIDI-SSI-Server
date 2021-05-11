@@ -79,4 +79,8 @@ module.exports = {
     code: '#service-type',
     message: 'Falta el parámetro TYPE',
   },
+  missingId: {
+    code: '#service-id',
+    message: 'Falta el parámetro ID',
+  },
 };
