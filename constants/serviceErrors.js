@@ -95,4 +95,8 @@ module.exports = {
     code: '#service-missingType',
     message: 'Falta el parámetro TYPE',
   },
+  missingIsUser: {
+    code: '#service-missingIsUser',
+    message: 'Falta el parámetro ISUSER',
+  },
 };

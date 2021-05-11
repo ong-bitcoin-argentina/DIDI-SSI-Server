@@ -8,6 +8,10 @@ const { SERVER_DID } = require('../constants/Constants');
 const Constants = require('../constants/Constants');
 
 const {
+  missingToken, missingJwt, missingIsUser,
+} = require('../constants/serviceErrors');
+
+const {
   EXPIRED, INVALID_CODE, EXPIRED_CODE, INVALID,
 } = Messages.TOKEN;
 
@@ -23,6 +27,7 @@ const errorMessages = {
  *  Valida el token y devuelve el userId
  */
 const getTokenData = async (token) => {
+  if (!token) throw missingToken;
   try {
     const decoded = await decodeJWT(token);
     if (!decoded) {
@@ -48,6 +53,7 @@ const getTokenData = async (token) => {
  *  Devuelve un payload a partir del jwt
  */
 const getPayload = (jwt) => {
+  if (!jwt) throw missingJwt;
   const { payload } = decodeJWT(jwt);
   return payload;
 };
@@ -56,6 +62,7 @@ const getPayload = (jwt) => {
  *  Verificar jwt
  */
 const verifyToken = async (jwt, isUser = false) => {
+  if (!jwt) throw missingJwt;
   const options = {
     resolver,
     audience: serverDid,
