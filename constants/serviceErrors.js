@@ -95,6 +95,14 @@ module.exports = {
     code: '#service-missingType',
     message: 'Falta el parámetro TYPE',
   },
+  missingId: {
+    code: '#service-id',
+    message: 'Falta el parámetro ID',
+  },
+  missingUserJWT: {
+    code: '#service-userJWT',
+    message: 'Falta el parámetro USERJWT',
+  },
   missingOtherDID: {
     code: '#service-missingOtherDID',
     message: 'Falta el parámetro OTHERDID',
