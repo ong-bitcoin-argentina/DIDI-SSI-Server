@@ -79,4 +79,8 @@ module.exports = {
     code: '#service-type',
     message: 'Falta el parámetro TYPE',
   },
+  missingOtherDID: {
+    code: '#service-missingOtherDID',
+    message: 'Falta el parámetro OTHERDID',
+  },
 };
