@@ -95,6 +95,10 @@ module.exports = {
     code: '#service-missingType',
     message: 'Falta el parámetro TYPE',
   },
+  missingCert: {
+    code: '#service-missingCert',
+    message: 'Falta el parámetro CERT',
+  },
   missingId: {
     code: '#service-id',
     message: 'Falta el parámetro ID',
