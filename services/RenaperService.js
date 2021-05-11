@@ -1,6 +1,23 @@
 const fetch = require('node-fetch');
 const Constants = require('../constants/Constants');
 const Messages = require('../constants/Messages');
+const {
+  missingFile,
+  missingGender,
+  missingDni,
+  missingDeviceIp,
+  missingFingerprintData,
+  missingOperationId,
+  missingFrontImage,
+  missingAnalyzeAnomalies,
+  missingAnalyzeOcr,
+  missingBackImage,
+  missingSelfie,
+  missingLastName,
+  missingName,
+  missingBirthDate,
+  missingOrder,
+} = require('../constants/serviceErrors');
 
 /**
  *  Realiza un post al servicio de renaper con la url interna y el body recibidos
@@ -28,6 +45,7 @@ const renaperPost = async function renaperPost(url, body) {
  *  Realiza un post al servicio de renaper cargando la info del codigo de barras
  */
 module.exports.scanBarcode = async function scanBarcode(file) {
+  if (!file) throw missingFile;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.SCAN_BAR_CODE,
@@ -47,6 +65,10 @@ module.exports.scanBarcode = async function scanBarcode(file) {
 module.exports.newOpperation = async function newOpperation(
   dni, gender, deviceIp, fingerprintData,
 ) {
+  if (!dni) throw missingDni;
+  if (!gender) throw missingGender;
+  if (!deviceIp) throw missingDeviceIp;
+  if (!fingerprintData) throw missingFingerprintData;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.NEW_OPERATION,
@@ -70,6 +92,12 @@ module.exports.newOpperation = async function newOpperation(
 module.exports.addFront = async function newOpperation(
   dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr,
 ) {
+  if (!dni) throw missingDni;
+  if (!gender) throw missingGender;
+  if (!operationId) throw missingOperationId;
+  if (!frontImage) throw missingFrontImage;
+  if (!analyzeAnomalies) throw missingAnalyzeAnomalies;
+  if (!analyzeOcr) throw missingAnalyzeOcr;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.ADD_FRONT,
@@ -94,6 +122,12 @@ module.exports.addFront = async function newOpperation(
 module.exports.addBack = async function addBack(
   dni, gender, operationId, backImage, analyzeAnomalies, analyzeOcr,
 ) {
+  if (!dni) throw missingDni;
+  if (!gender) throw missingGender;
+  if (!operationId) throw missingOperationId;
+  if (!backImage) throw missingBackImage;
+  if (!analyzeAnomalies) throw missingAnalyzeAnomalies;
+  if (!analyzeOcr) throw missingAnalyzeOcr;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.ADD_BACK,
@@ -116,6 +150,10 @@ module.exports.addBack = async function addBack(
  *  Realiza un post al servicio de renaper agregando selfie
  */
 module.exports.addSelfie = async function addSelfie(dni, gender, operationId, selfie) {
+  if (!dni) throw missingDni;
+  if (!gender) throw missingGender;
+  if (!operationId) throw missingOperationId;
+  if (!selfie) throw missingSelfie;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.ADD_SELFIE,
@@ -138,6 +176,13 @@ module.exports.addSelfie = async function addSelfie(dni, gender, operationId, se
 module.exports.addBarcode = async function addBarcode(
   dni, gender, operationId, name, lastName, birthDate, order,
 ) {
+  if (!dni) throw missingDni;
+  if (!gender) throw missingGender;
+  if (!operationId) throw missingOperationId;
+  if (!name) throw missingName;
+  if (!lastName) throw missingLastName;
+  if (!birthDate) throw missingBirthDate;
+  if (!order) throw missingOrder;
   const document = {
     names: name,
     lastNames: lastName,
@@ -168,6 +213,9 @@ module.exports.addBarcode = async function addBarcode(
  *  el proceso con toda la información previamente cargada
  */
 module.exports.endOperation = async function endOperation(dni, gender, operationId) {
+  if (!dni) throw missingDni;
+  if (!gender) throw missingGender;
+  if (!operationId) throw missingOperationId;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.END_OPERATION,
