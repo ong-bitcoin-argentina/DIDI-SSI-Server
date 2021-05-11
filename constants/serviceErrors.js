@@ -60,27 +60,55 @@ module.exports = {
     message: 'Falta el parámetro HASH',
   },
   missingIssuerDid: {
-    code: '#service-issuerDid',
+    code: '#service-missingIssuerDid',
     message: 'Falta el parámetro ISSUERDID',
   },
+  missingUrl: {
+    code: '#service-missingUrl',
+    message: 'Falta el parámetro URL',
+  },
+  missingToken: {
+    code: '#service-missingToken',
+    message: 'Falta el parámetro TOKEN',
+  },
+  missingData: {
+    code: '#service-missingData',
+    message: 'Falta el parámetro DATA',
+  },
+  missingAction: {
+    code: '#service-missingAction',
+    message: 'Falta el parámetro ACTION',
+  },
   missingTitle: {
-    code: '#service-title',
+    code: '#service-missingTitle',
     message: 'Falta el parámetro TITLE',
   },
   missingMessage: {
-    code: '#service-message',
+    code: '#service-missingMessage',
     message: 'Falta el parámetro MESSAGE',
   },
   missingFirebaseId: {
-    code: '#service-FirebaseId',
+    code: '#service-missingFirebaseId',
     message: 'Falta el parámetro FIREBASEID',
   },
   missingType: {
-    code: '#service-type',
+    code: '#service-missingType',
     message: 'Falta el parámetro TYPE',
+  },
+  missingCert: {
+    code: '#service-missingCert',
+    message: 'Falta el parámetro CERT',
   },
   missingId: {
     code: '#service-id',
     message: 'Falta el parámetro ID',
+  },
+  missingUserJWT: {
+    code: '#service-userJWT',
+    message: 'Falta el parámetro USERJWT',
+  },
+  missingOtherDID: {
+    code: '#service-missingOtherDID',
+    message: 'Falta el parámetro OTHERDID',
   },
 };
