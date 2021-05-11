@@ -150,7 +150,7 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect addBack to throw on missing frontImage', async () => {
+  test('Expect addBack to throw on missing backImage', async () => {
     try {
       await addBack('dni', 'gender', 'operationId', undefined, 'analyzeAnomalies', 'analyzeOcr');
     } catch (e) {
