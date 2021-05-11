@@ -60,23 +60,39 @@ module.exports = {
     message: 'Falta el parámetro HASH',
   },
   missingIssuerDid: {
-    code: '#service-issuerDid',
+    code: '#service-missingIssuerDid',
     message: 'Falta el parámetro ISSUERDID',
   },
+  missingUrl: {
+    code: '#service-missingUrl',
+    message: 'Falta el parámetro URL',
+  },
+  missingToken: {
+    code: '#service-missingToken',
+    message: 'Falta el parámetro TOKEN',
+  },
+  missingData: {
+    code: '#service-missingData',
+    message: 'Falta el parámetro DATA',
+  },
+  missingAction: {
+    code: '#service-missingAction',
+    message: 'Falta el parámetro ACTION',
+  },
   missingTitle: {
-    code: '#service-title',
+    code: '#service-missingTitle',
     message: 'Falta el parámetro TITLE',
   },
   missingMessage: {
-    code: '#service-message',
+    code: '#service-missingMessage',
     message: 'Falta el parámetro MESSAGE',
   },
   missingFirebaseId: {
-    code: '#service-FirebaseId',
+    code: '#service-missingFirebaseId',
     message: 'Falta el parámetro FIREBASEID',
   },
   missingType: {
-    code: '#service-type',
+    code: '#service-missingType',
     message: 'Falta el parámetro TYPE',
   },
   missingAppDid: {
@@ -90,5 +106,49 @@ module.exports = {
   missingAppToken: {
     code: '#service-AppToken',
     message: 'Falta el parámetro APPTOKEN',
+  },
+  missingIsUser: {
+    code: '#service-missingIsUser',
+    message: 'Falta el parámetro ISUSER',
+  },
+  missingPassword: {
+    code: '#service-missingPassword',
+    message: 'Falta el parámetro PASSWORD',
+  },
+  missingExeptionDid: {
+    code: '#service-missingExeptionDid',
+    message: 'Falta el parámetro EXEPTIONDID',
+  },
+  missingPrivateKeySeed: {
+    code: '#service-missingPrivateKeySeed',
+    message: 'Falta el parámetro PRIVATEKEYSEED',
+  },
+  missingLastName: {
+    code: '#service-missingLastName',
+    message: 'Falta el parámetro LASTNAME',
+  },
+  missingContentType: {
+    code: '#service-missingContentType',
+    message: 'Falta el parámetro CONTENTTYPE',
+  },
+  missingPath: {
+    code: '#service-missingPath',
+    message: 'Falta el parámetro PATH',
+  },
+  missingId: {
+    code: '#service-missingId',
+    message: 'Falta el parámetro ID',
+  },
+  missingCert: {
+    code: '#service-missingCert',
+    message: 'Falta el parámetro CERT',
+  },
+  missingUserJWT: {
+    code: '#service-userJWT',
+    message: 'Falta el parámetro USERJWT',
+  },
+  missingOtherDID: {
+    code: '#service-missingOtherDID',
+    message: 'Falta el parámetro OTHERDID',
   },
 };

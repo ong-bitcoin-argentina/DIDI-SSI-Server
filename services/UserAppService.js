@@ -11,10 +11,8 @@ const {
 } = require('../constants/Messages');
 
 const {
-  missingUserDID, missingAppDid, missingUserToken, missingAppToken,
+  missingUserDID, missingUserToken, missingAppToken,
 } = require('../constants/serviceErrors');
-
-
 
 /**
  *  Obtiene un usuario de una app autorizada por su did
@@ -35,7 +33,6 @@ const findByUserDID = async function findByUserDID(userDid) {
  *  Crea y guarda el usuario de app autorizada en base de datos
  */
 const createUser = async function createUser(userDid, appDid) {
-
   const user = await UserService.getByDID(userDid);
   if (!user) throw DID_NOT_FOUND(userDid);
 

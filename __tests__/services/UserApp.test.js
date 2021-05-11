@@ -1,7 +1,5 @@
 const { findByUserDID, createByTokens } = require('../../services/UserAppService');
-const { missingUserDID, missingAppDid, missingUserToken, missingAppToken,
-} = require('../../constants/serviceErrors');
-
+const { missingUserDID, missingUserToken, missingAppToken } = require('../../constants/serviceErrors');
 
 describe('Should be green', () => {
   /**

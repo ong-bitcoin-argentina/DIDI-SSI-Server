@@ -6,10 +6,15 @@ const {
   CREATE, NOT_FOUND, GET, USER_NOT_VALID,
 } = Messages.SHAREREQUEST.ERR;
 
+const {
+  missingJwt, missingId, missingUserJWT,
+} = require('../constants/serviceErrors');
+
 /**
  * Guarda un ShareRequest (Credencial a compartir por QR)
  */
 module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
+  if (!jwt) throw missingJwt;
   try {
     const { aud, iss } = getPayload(jwt);
     return await ShareRequest.generate({ aud, iss, jwt });
@@ -22,6 +27,8 @@ module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
  * Obtiene un ShareRequest según id (Devuelve un JWT con las credenciales previamente guardadas)
  */
 module.exports.getShareRequestById = async function saveShareRequest({ id, userJWT }) {
+  if (!id) throw missingId;
+  if (!userJWT) throw missingUserJWT;
   try {
     const shareRequest = await ShareRequest.getById(id);
 
