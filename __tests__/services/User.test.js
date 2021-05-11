@@ -159,7 +159,7 @@ describe('Should be green', () => {
 
   test('Expect telTaken to throw on missing exeptionDid', async () => {
     try {
-      await telTaken('mail', undefined);
+      await telTaken('tel', undefined);
     } catch (e) {
       expect(e.code).toMatch(missingExeptionDid.code);
     }
@@ -237,7 +237,7 @@ describe('Should be green', () => {
    */
   test('Expect login to throw on missing did', async () => {
     try {
-      await login(undefined, 'pass', 'email');
+      await login(undefined, 'email', 'pass');
     } catch (e) {
       expect(e.code).toMatch(missingDid.code);
     }

@@ -5,6 +5,10 @@ const IssuerService = require('./IssuerService');
 const Messages = require('../constants/Messages');
 const { SERVER_PRIVATE_KEY, SERVER_DID } = require('../constants/Constants');
 
+const {
+  missingOtherDID, missingIssuerDid,
+} = require('../constants/serviceErrors');
+
 /**
  *  Instanciar Blockchain Manager
  */
@@ -18,6 +22,7 @@ const blockchainManager = new BlockchainManager(config, Constants.BLOCKCHAIN.GAS
  *  Realiza una delegación de "DIDI Server" a "issuer"
  */
 module.exports.addDelegate = async function addDelegate(issuerDID) {
+  if (!issuerDID) throw missingIssuerDid;
   try {
     const credentials = {
       did: Constants.SERVER_DID,
@@ -36,6 +41,7 @@ module.exports.addDelegate = async function addDelegate(issuerDID) {
  *  En caso de existir, anula la delegación de "userDID" a "otherDID"
  */
 module.exports.revokeDelegate = async function revokeDelegate(otherDID) {
+  if (!otherDID) throw missingOtherDID;
   try {
     const issuer = await IssuerService.getIssuerByDID(otherDID);
 
@@ -56,6 +62,7 @@ module.exports.revokeDelegate = async function revokeDelegate(otherDID) {
  *  Retorna true si "userDID" realizó una delegación de DID a "otherDID"
  */
 module.exports.validDelegate = async function validDelegate(issuerDID) {
+  if (!issuerDID) throw missingIssuerDid;
   try {
     return await blockchainManager.validateDelegate(Constants.SERVER_DID, issuerDID);
   } catch (err) {
