@@ -159,4 +159,48 @@ module.exports = {
     code: '#service-missingOtherDID',
     message: 'Falta el parámetro OTHERDID',
   },
+  missingFile: {
+    code: '#service-missingFile',
+    message: 'Falta el parámetro FILE',
+  },
+  missingGender: {
+    code: '#service-missingGender',
+    message: 'Falta el parámetro GENDER',
+  },
+  missingDeviceIp: {
+    code: '#service-missingDeviceIp',
+    message: 'Falta el parámetro DEVICEIP',
+  },
+  missingFingerprintData: {
+    code: '#service-missingFingerprintData',
+    message: 'Falta el parámetro FINGERPRINTDATA',
+  },
+  missingFrontImage: {
+    code: '#service-missingFrontImage',
+    message: 'Falta el parámetro FINGERPRINTDATA',
+  },
+  missingAnalyzeAnomalies: {
+    code: '#service-missingAnalyzeAnomalies',
+    message: 'Falta el parámetro ANALYZEANOMALIES',
+  },
+  missingAnalyzeOcr: {
+    code: '#service-missingAnalyzeOcr',
+    message: 'Falta el parámetro ANALYZEOCR',
+  },
+  missingBackImage: {
+    code: '#service-missingBackImage',
+    message: 'Falta el parámetro BACKIMAGE',
+  },
+  missingSelfie: {
+    code: '#service-missingSelfie',
+    message: 'Falta el parámetro SELFIE',
+  },
+  missingBirthDate: {
+    code: '#service-missingBirthDate',
+    message: 'Falta el parámetro BIRTHDATE',
+  },
+  missingOrder: {
+    code: '#service-missingOrder',
+    message: 'Falta el parámetro ORDER',
+  },
 };
