@@ -177,7 +177,7 @@ module.exports = {
   },
   missingFrontImage: {
     code: '#service-missingFrontImage',
-    message: 'Falta el parámetro FINGERPRINTDATA',
+    message: 'Falta el parámetro FRONTIMAGE',
   },
   missingAnalyzeAnomalies: {
     code: '#service-missingAnalyzeAnomalies',
