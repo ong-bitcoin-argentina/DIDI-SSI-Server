@@ -8,7 +8,7 @@ const NO_SMS = process.env.NO_SMS === 'true';
 const ENABLE_INSECURE_ENDPOINTS = process.env.ENABLE_INSECURE_ENDPOINTS === 'true';
 
 const {
-  NAME, ENVIRONMENT, RSA_PRIVATE_KEY, HASH_SALT, ADDRESS, PORT, MOURO_URL,
+  NAME, ENVIRONMENT, RSA_PRIVATE_KEY, HASH_SALT, ADDRESS, PORT, MOURO_URL, VERSION,
 } = process.env;
 
 if (NAME == null || NAME == '') throw new Error('No esta definida la varibale NAME');
@@ -18,6 +18,7 @@ if (HASH_SALT == null || HASH_SALT == '') throw new Error('No esta definida la v
 if (ADDRESS == null || ADDRESS == '') throw new Error('No esta definida la varibale ADDRESS');
 if (PORT == null || PORT == '') throw new Error('No esta definida la varibale PORT');
 if (MOURO_URL == null || MOURO_URL == '') throw new Error('No esta definida la varibale MOURO_URL');
+if (VERSION == null || VERSION == '') throw new Error('No esta definida la varibale VERSION');
 
 // ethr
 const { SERVER_DID, SERVER_PRIVATE_KEY } = process.env;
@@ -139,6 +140,7 @@ module.exports = {
   MONGO_URL,
   ADDRESS,
   PORT,
+  VERSION,
 
   RSA_PRIVATE_KEY,
   HASH_SALT,
