@@ -1,6 +1,4 @@
 /* eslint-disable eqeqeq */
-require('dotenv').config();
-
 // General
 const DEBUGG = process.env.DEBUGG_MODE === 'true';
 const NO_EMAILS = process.env.NO_EMAILS === 'true';
@@ -27,17 +25,21 @@ if (SERVER_PRIVATE_KEY == null || SERVER_PRIVATE_KEY == '') throw new Error('No 
 // MongoDB
 const MONGO_USER = process.env.MONGO_USERNAME;
 const {
-  MONGO_DIR, MONGO_PORT, MONGO_PASSWORD, MONGO_DB,
+  MONGO_DIR, MONGO_PORT, MONGO_PASSWORD, MONGO_DB, MONGO_URI,
 } = process.env;
+let MONGO_URL;
 
-if (MONGO_USER == null || MONGO_USER == '') throw new Error('No esta definida la varibale MONGO_USER');
-if (MONGO_PASSWORD == null || MONGO_PASSWORD == '') throw new Error('No esta definida la varibale MONGO_PORT');
-if (MONGO_DIR == null || MONGO_DIR == '') throw new Error('No esta definida la varibale MONGO_DIR');
-if (MONGO_PORT == null || MONGO_PORT == '') throw new Error('No esta definida la varibale MONGO_PORT');
-if (MONGO_DB == null || MONGO_DB == '') throw new Error('No esta definida la varibale MONGO_DB');
-
-const URL = `${MONGO_DIR}:${MONGO_PORT}/${MONGO_DB}`;
-const MONGO_URL = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${URL}`;
+if (!MONGO_URI) {
+  if (MONGO_USER == null || MONGO_USER == '') throw new Error('No esta definida la varibale MONGO_USER');
+  if (MONGO_PASSWORD == null || MONGO_PASSWORD == '') throw new Error('No esta definida la varibale MONGO_PORT');
+  if (MONGO_DIR == null || MONGO_DIR == '') throw new Error('No esta definida la varibale MONGO_DIR');
+  if (MONGO_PORT == null || MONGO_PORT == '') throw new Error('No esta definida la varibale MONGO_PORT');
+  if (MONGO_DB == null || MONGO_DB == '') throw new Error('No esta definida la varibale MONGO_DB');
+  const URL = `${MONGO_DIR}:${MONGO_PORT}/${MONGO_DB}`;
+  MONGO_URL = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${URL}`;
+} else {
+  MONGO_URL = MONGO_URI;
+}
 
 // MailGun
 const { MAILGUN_API_KEY, MAILGUN_DOMAIN } = process.env;
