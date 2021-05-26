@@ -13,7 +13,10 @@ describe('Should be green', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-  }, 60000);
+  });
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
   test('Expect true to be true', () => {
     expect(true).toBe(true);
   });
