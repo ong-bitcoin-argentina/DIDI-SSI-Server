@@ -4,7 +4,7 @@
 	"version": "2.0.0",
 	"main": "index.js",
 	"scripts": {
-		"test": "jest",
+		"test": "jest --runInBand",
 		"lint": "eslint --ext .js __tests__/ constants/ controllers/ jobs/ middlewares/ models/ policies/ services/ utils/ routes/",
 		"lint:fix": "eslint --fix --ext .js __tests__/ constants/ controllers/ jobs/ middlewares/ models/ policies/ services/ utils/ routes/",
 		"functional-test": "cd ./node_modules/DIDI-SSI-Server-functional-test/ && npm i && npm run test",
