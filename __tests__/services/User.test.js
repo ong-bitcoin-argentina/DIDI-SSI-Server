@@ -26,7 +26,6 @@ const {
   missingEmail,
   missingPhoneNumber,
   missingPassword,
-  missingExeptionDid,
   missingPrivateKeySeed,
   missingFirebaseId,
   missingName,
@@ -119,14 +118,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect getAndValidate to throw on missing email', async () => {
-    try {
-      await getAndValidate('did', 'pass', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingEmail.code);
-    }
-  });
-
   /**
    * emailTaken
    */
@@ -138,14 +129,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect emailTaken to throw on missing exeptionDid', async () => {
-    try {
-      await emailTaken('mail', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingExeptionDid.code);
-    }
-  });
-
   /**
    * telTaken
    */
@@ -154,14 +137,6 @@ describe('Should be green', () => {
       await telTaken(undefined, 'exeptionDid');
     } catch (e) {
       expect(e.code).toMatch(missingPhoneNumber.code);
-    }
-  });
-
-  test('Expect telTaken to throw on missing exeptionDid', async () => {
-    try {
-      await telTaken('tel', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingExeptionDid.code);
     }
   });
 

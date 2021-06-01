@@ -61,14 +61,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect create to throw on missing did', async () => {
-    try {
-      await create('phoneNumber', 'code', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingDid.code);
-    }
-  });
-
   /**
    * validatePhone
    */

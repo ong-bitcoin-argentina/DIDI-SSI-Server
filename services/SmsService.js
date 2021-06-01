@@ -64,7 +64,6 @@ module.exports.sendValidationCode = async function sendValidationCode(phoneNumbe
 module.exports.create = async function create(phoneNumber, code, did) {
   if (!phoneNumber) throw missingPhoneNumber;
   if (!code) throw missingCode;
-  if (!did) throw missingDid;
   try {
     const phone = await Phone.generate(phoneNumber, code, did);
     if (Constants.DEBUGG) return Promise.resolve(phone);

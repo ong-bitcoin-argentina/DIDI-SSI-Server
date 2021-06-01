@@ -45,14 +45,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect create to throw on missing did', async () => {
-    try {
-      await create('email', 'code', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingDid.code);
-    }
-  });
-
   test('Expect validateMail to throw on missing mail', async () => {
     try {
       await validateMail(undefined, 'did');
