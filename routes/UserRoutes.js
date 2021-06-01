@@ -10,8 +10,6 @@ const {
   IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE,
 } = Constants.VALIDATION_TYPES;
 
-router.use('/user/', validateAppOrUserJWT);
-
 /**
  * @openapi
  *   /registerUser:
@@ -108,6 +106,7 @@ router.post(
  */
 router.post(
   '/renewFirebaseToken',
+  validateAppOrUserJWT,
   Validator.validateBody([
     {
       name: 'token',
@@ -148,6 +147,7 @@ router.post(
  */
 router.post(
   '/recoverAccount',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'eMail', validate: [IS_STRING, IS_EMAIL] },
     {
@@ -198,6 +198,7 @@ router.post(
  */
 router.post(
   '/userLogin',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'did', validate: [IS_STRING] },
     {
@@ -249,6 +250,7 @@ router.post(
  */
 router.post(
   '/recoverPassword',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'eMail', validate: [IS_STRING, IS_EMAIL] },
     {
@@ -297,6 +299,7 @@ router.post(
  */
 router.post(
   '/changePassword',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'did', validate: [IS_STRING] },
     {
@@ -350,6 +353,7 @@ router.post(
  */
 router.post(
   '/changePhoneNumber',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'did', validate: [IS_STRING] },
     {
@@ -412,6 +416,7 @@ router.post(
  */
 router.post(
   '/changeEmail',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'did', validate: [IS_STRING] },
 
@@ -461,6 +466,7 @@ router.post(
  */
 router.post(
   '/verifyCredentialRequest',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'did', validate: [IS_STRING] },
     { name: 'jwt', validate: [IS_STRING] },
@@ -494,6 +500,7 @@ router.post(
  */
 router.post(
   '/verifyCredential',
+  validateAppOrUserJWT,
   Validator.validateBody([{ name: 'access_token', validate: [IS_STRING] }]),
   Validator.checkValidationResult,
   user.updateCredentialPetition,
@@ -501,7 +508,7 @@ router.post(
 
 /**
  * @openapi
- *   /user/:{did}:
+ *   /user/{did}:
  *   get:
  *     summary: Obtiene informacion sobre el usuario.
  *     parameters:
@@ -525,7 +532,7 @@ router.get('/user/:did',
 
 /**
  * @openapi
- *   /user/:{did}/edit:
+ *   /user/{did}/edit:
  *   post:
  *     summary: Edita nombre y apellido.
  *     description: Usado para migrar usuarios.
@@ -558,6 +565,7 @@ router.get('/user/:did',
  */
 router.post(
   '/user/:did/edit',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'name', validate: [IS_STRING] },
     { name: 'lastname', validate: [IS_STRING] },
@@ -569,7 +577,7 @@ router.post(
 
 /**
  * @openapi
- *   /user/:{did}/image:
+ *   /user/{did}/image:
  *   post:
  *     summary: Agrega una imagen de perfil al usuario.
  *     parameters:
@@ -594,6 +602,7 @@ router.post(
  */
 router.post(
   '/user/:did/image',
+  validateAppOrUserJWT,
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,
@@ -603,7 +612,7 @@ router.post(
 
 /**
  * @openapi
- *   /image/:{id}:
+ *   /image/{id}:
  *   get:
  *     summary: Devuelve la imagen de usuario según un id.
  *     parameters:
