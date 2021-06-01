@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
 
@@ -31,8 +32,6 @@ const IssuerSchema = new mongoose.Schema({
     type: Date,
   },
 });
-
-const Issuer = mongoose.model('Issuer', IssuerSchema);
 
 IssuerSchema.pre('findOneAndUpdate', function pre(next) {
   this.update({}, { modifiedOn: new Date() });
@@ -84,6 +83,7 @@ IssuerSchema.methods.editName = async function editName(name) {
   }
 };
 
+const Issuer = mongoose.model('Issuer', IssuerSchema);
 module.exports = Issuer;
 
 Issuer.getByDID = async function getByDID(did) {
