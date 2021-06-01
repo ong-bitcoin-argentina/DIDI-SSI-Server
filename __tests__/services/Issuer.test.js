@@ -120,16 +120,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect createDelegateTransaction to throw on missing name', async () => {
-    try {
-      await createDelegateTransaction({
-        did: 'did', name: undefined, callbackUrl: 'callbackUrl', token: 'token', action: 'action',
-      });
-    } catch (e) {
-      expect(e.code).toMatch(missingName.code);
-    }
-  });
-
   test('Expect createDelegateTransaction to throw on missing callbackUrl', async () => {
     try {
       await createDelegateTransaction({

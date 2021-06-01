@@ -21,9 +21,7 @@ const {
   missingClaims,
   missingJwt,
   missingSubject,
-  missingExpDate,
   missingErrMsg,
-  missingHash,
   missingIssuerDid,
 } = require('../constants/serviceErrors');
 
@@ -123,7 +121,6 @@ module.exports.createShareRequest = async function createShareRequest(did, jwt) 
 module.exports.createCertificate = async function createCertificate(did, subject, expDate, errMsg) {
   if (!did) throw missingDid;
   if (!subject) throw missingSubject;
-  if (!expDate) throw missingExpDate;
   if (!errMsg) throw missingErrMsg;
   const vcissuer = new EthrDID({
     address: Constants.SERVER_DID,
@@ -162,7 +159,6 @@ module.exports.createCertificate = async function createCertificate(did, subject
  *  Verifica la validez del certificado para el certificado de número de mail
  */
 module.exports.verifyCertificateEmail = async function verifyCertificateEmail(jwt, hash) {
-  if (!hash) throw missingHash;
   if (!jwt) throw missingJwt;
   const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
   return result;
@@ -174,7 +170,6 @@ module.exports.verifyCertificateEmail = async function verifyCertificateEmail(jw
 module.exports.verifyCertificatePhoneNumber = async function verifyCertificatePhoneNumber(
   jwt, hash,
 ) {
-  if (!hash) throw missingHash;
   if (!jwt) throw missingJwt;
   const result = await module.exports.verifyCertificate(jwt, hash, Messages.CERTIFICATE.ERR.VERIFY);
   return result;
@@ -203,7 +198,6 @@ module.exports.decodeCertificate = async function decodeCertificate(jwt, errMsg)
  */
 module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, errMsg) {
   if (!jwt) throw missingJwt;
-  if (!hash) throw missingHash;
   if (!errMsg) throw missingErrMsg;
   try {
     const result = await verifyCredential(jwt, resolver);

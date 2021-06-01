@@ -11,7 +11,6 @@ const {
   missingEmail,
   missingPhoneNumber,
   missingPassword,
-  missingExeptionDid,
   missingPrivateKeySeed,
   missingFirebaseId,
   missingName,
@@ -101,7 +100,6 @@ module.exports.getByTel = getByTel;
 const getAndValidate = async function getAndValidate(did, pass, email) {
   if (!did) throw missingDid;
   if (!pass) throw missingPassword;
-  if (!email) throw missingEmail;
   try {
     // Obtener usuario
     let user = await getByDID(did);
@@ -127,7 +125,6 @@ module.exports.getAndValidate = getAndValidate;
  */
 const emailTaken = async function emailTaken(mail, exceptionDid) {
   if (!mail) throw missingEmail;
-  if (!exceptionDid) throw missingExeptionDid;
   try {
     const taken = await User.emailTaken(mail, exceptionDid);
     if (taken) return Promise.reject(Messages.USER.ERR.EMAIL_TAKEN);
@@ -145,7 +142,6 @@ module.exports.emailTaken = emailTaken;
  */
 const telTaken = async function telTaken(tel, exceptionDid) {
   if (!tel) throw missingPhoneNumber;
-  if (!exceptionDid) throw missingExeptionDid;
   try {
     const taken = await User.telTaken(tel, exceptionDid);
     if (taken) return Promise.reject(Messages.USER.ERR.TEL_TAKEN);
