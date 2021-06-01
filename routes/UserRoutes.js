@@ -1,8 +1,6 @@
 /* eslint-disable max-len */
 const router = require('express').Router();
 const user = require('../controllers/user');
-const ResponseHandler = require('../utils/ResponseHandler');
-const UserService = require('../services/UserService');
 const Constants = require('../constants/Constants');
 const Validator = require('../utils/Validator');
 const { validateAppOrUserJWT } = require('../middlewares/ValidateAppOrUserJWT');
@@ -627,16 +625,7 @@ router.get(
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { img, contentType } = await UserService.getImage(id);
-      res.type(contentType);
-      return res.send(img);
-    } catch (err) {
-      return ResponseHandler.sendErr(res, err);
-    }
-  },
+  user.readUserImageById,
 );
 
 module.exports = router;
