@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
 const Hashing = require('./utils/Hashing');
@@ -69,8 +70,6 @@ UserSchema.index(
     unique: true,
   },
 );
-
-const User = mongoose.model('User', UserSchema);
 
 // retorna clave privada del usuario
 UserSchema.methods.getSeed = async function getSeed() {
@@ -240,6 +239,7 @@ UserSchema.methods.updateImage = async function updateImage(imageId) {
   }
 };
 
+const User = mongoose.model('User', UserSchema);
 module.exports = User;
 
 User.emailTaken = async function emailTaken(mail, exceptionDid) {

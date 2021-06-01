@@ -27,8 +27,6 @@ const MailSchema = new mongoose.Schema({
   },
 });
 
-const Mail = mongoose.model('Mail', MailSchema);
-
 MailSchema.index(
   { 'email.encrypted': 1 },
   {
@@ -61,6 +59,7 @@ MailSchema.methods.validateMail = async function validateMail(did) {
     const quiery = { _id: this._id };
     const action = { $set: { validated: true, did: this.did } };
 
+    // eslint-disable-next-line no-use-before-define
     await Mail.findOneAndUpdate(quiery, action);
 
     this.validated = true;
@@ -82,6 +81,7 @@ MailSchema.methods.getDid = async function getDid() {
   return this.did;
 };
 
+const Mail = mongoose.model('Mail', MailSchema);
 module.exports = Mail;
 
 // crear nuevo pedido de validacion de mail, o pisar el anterior si hay otro con el mismo did

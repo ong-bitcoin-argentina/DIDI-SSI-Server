@@ -32,8 +32,6 @@ PhoneSchema.index(
   },
 );
 
-const Phone = mongoose.model('Phone', PhoneSchema);
-
 // verificar si el pedido de validacion de telefono expirò
 PhoneSchema.methods.expired = function expired() {
   return this.expiresOn.getTime() < new Date().getTime();
@@ -56,10 +54,11 @@ PhoneSchema.methods.validatePhone = async function validatePhone(did) {
   try {
     this.did = did;
 
-    const quiery = { _id: this._id };
+    const query = { _id: this._id };
     const action = { $set: { validated: true, did: this.did } };
 
-    await Phone.findOneAndUpdate(quiery, action);
+    // eslint-disable-next-line no-use-before-define
+    await Phone.findOneAndUpdate(query, action);
 
     this.validated = true;
     return Promise.resolve(this);
@@ -80,6 +79,7 @@ PhoneSchema.methods.getDid = async function getDid() {
   return this.did;
 };
 
+const Phone = mongoose.model('Phone', PhoneSchema);
 module.exports = Phone;
 
 // crear nuevo pedido de validacion de tel, o pisar el anterior si hay otro con el mismo did
