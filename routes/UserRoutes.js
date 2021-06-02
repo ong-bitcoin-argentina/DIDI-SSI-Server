@@ -275,12 +275,10 @@ router.post(
  *         - oldPass
  *         - newPass
  *       content:
- *         application/json:ateService.js
-Estabilidad
-None
-TaskMediana priority
-Assignee: Silvia Verónica Oxalde
-MM346-
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
  *               did:
  *                 type: string
  *               oldPass:
