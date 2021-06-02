@@ -10,8 +10,6 @@ const {
   IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE,
 } = Constants.VALIDATION_TYPES;
 
-router.use('/user/', validateAppOrUserJWT);
-
 /**
  * @openapi
  *   /registerUser:
@@ -558,6 +556,7 @@ router.get('/user/:did',
  */
 router.post(
   '/user/:did/edit',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'name', validate: [IS_STRING] },
     { name: 'lastname', validate: [IS_STRING] },
@@ -594,6 +593,7 @@ router.post(
  */
 router.post(
   '/user/:did/image',
+  validateAppOrUserJWT,
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,
