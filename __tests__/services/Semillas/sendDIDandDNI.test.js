@@ -1,8 +1,15 @@
-const { Response } = jest.requireActual('node-fetch');
 const mongoose = require('mongoose');
+const fetch = require('node-fetch');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { sendDIDandDNI } = require('../../../services/SemillasService');
 const { missingDid, missingDni } = require('../../../constants/serviceErrors');
+const { messages, appData } = require('./constants');
+
+jest.mock('../../../models/SemillasAuth', () => ({
+  getToken: () => ({ token: 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYyMjIzMDcyMCwiZXhwIjoxNjIyODM1NTIwfQ.XIR5oQgglbnUY9nkvhOwuFCD0XUNoIdP3v1cAnvj4qwwjxg7j53_byF3MVFwUPCmM-QlR0ZVQBoB2SUwsFPdhA' }),
+  createOrUpdateToken: () => ({ token: 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYyMjIzMDcyMCwiZXhwIjoxNjIyODM1NTIwfQ.XIR5oQgglbnUY9nkvhOwuFCD0XUNoIdP3v1cAnvj4qwwjxg7j53_byF3MVFwUPCmM-QlR0ZVQBoB2SUwsFPdhA' }),
+}));
+jest.mock('node-fetch');
 
 describe('Should be green', () => {
   /**
@@ -51,11 +58,29 @@ describe('Should be green', () => {
 
   /**
    * Solicita las credenciales a semillas.
+   * Caso de usuario ya existente.
+   */
+  test('Expect no operation response', async () => {
+    fetch.mockReturnValue(
+      Promise.resolve(
+        { json: () => (messages.sendDIDandDNINoOperation) },
+      ),
+    );
+    const app = await sendDIDandDNI({ dni: appData.dni, did: appData.did });
+    await expect(app).toMatchObject(messages.sendDIDandDNINoOperation);
+  });
+
+  /**
+   * Solicita las credenciales a semillas.
    * Caso de exito.
    */
   test('Expect success response', async () => {
-    const app = await sendDIDandDNI({ dni: 35986491, did: 'did:ethr:0xc54e8f526c2880ef454ee9552ee5f60a89f1820e' });
-    await console.log("app!!!", app);
-    await expect(app).toMatchObject({ message: 'El usuario con Dni: 35986491 ya posee sus credenciales validadas o en espera con Didi, no se realizó ninguna operación' });
+    fetch.mockReturnValue(
+      Promise.resolve(
+        { json: () => (messages.sendDIDandDNIOk) },
+      ),
+    );
+    const app = await sendDIDandDNI({ dni: appData.dni, did: appData.did });
+    await expect(app).toMatchObject(messages.sendDIDandDNIOk);
   });
 });
