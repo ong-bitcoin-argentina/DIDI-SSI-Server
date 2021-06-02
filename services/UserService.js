@@ -279,7 +279,6 @@ module.exports.changePhoneNumber = async function changePhoneNumber(
   if (!did) throw missingDid;
   if (!newPhoneNumber) throw missingPhoneNumber;
   if (!password) throw missingPassword;
-  if (!firebaseId) throw missingFirebaseId;
   try {
     // Obtener usuario
     let user = await getByDID(did);
