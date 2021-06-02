@@ -11,7 +11,7 @@ const { updateCredentialPetition } = require('./updateCredentialPetition');
 const { readUserByDid } = require('./readUserByDid');
 const { updateUserByDid } = require('./updateUserByDid');
 const { createUserImageByDid } = require('./createUserImageByDid');
-const { readUserImageByDid } = require('./readUserImageByDid');
+const { readUserImageById } = require('./readUserImageByDid');
 
 module.exports = {
   createUser,
@@ -27,5 +27,5 @@ module.exports = {
   readUserByDid,
   updateUserByDid,
   createUserImageByDid,
-  readUserImageByDid,
+  readUserImageById,
 };

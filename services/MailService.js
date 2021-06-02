@@ -62,7 +62,6 @@ const sendValidationCode = async function sendValidationCode(eMail, code) {
 const create = async function create(email, code, did) {
   if (!email) throw missingEmail;
   if (!code) throw missingCode;
-  if (!did) throw missingDid;
   try {
     const mail = await Mail.generate(email, code, did);
     if (!mail) return Promise.reject(Messages.EMAIL.ERR.CREATE);

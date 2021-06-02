@@ -20,8 +20,6 @@ const {
   missingJwt,
   missingSubject,
   missingErrMsg,
-  missingExpDate,
-  missingHash,
   missingIssuerDid,
 } = require('../../constants/serviceErrors');
 
@@ -129,14 +127,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect createCertificate to throw on missing expDate', async () => {
-    try {
-      await createCertificate('did', 'subject', undefined, 'errMsg');
-    } catch (e) {
-      expect(e.code).toMatch(missingExpDate.code);
-    }
-  });
-
   test('Expect createCertificate to throw on missing errMsg', async () => {
     try {
       await createCertificate('did', 'subject', 'expDate', undefined);
@@ -156,14 +146,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect verifyCertificateEmail to throw on missing hash', async () => {
-    try {
-      await verifyCertificateEmail('jwt', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingHash.code);
-    }
-  });
-
   /**
    * verifyCertificatePhoneNumber
    */
@@ -172,14 +154,6 @@ describe('Should be green', () => {
       await verifyCertificatePhoneNumber(undefined, 'hash');
     } catch (e) {
       expect(e.code).toMatch(missingJwt.code);
-    }
-  });
-
-  test('Expect verifyCertificatePhoneNumber to throw on missing hash', async () => {
-    try {
-      await verifyCertificatePhoneNumber('jwt', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingHash.code);
     }
   });
 
@@ -210,14 +184,6 @@ describe('Should be green', () => {
       await verifyCertificate(undefined, 'hash', 'errMsg');
     } catch (e) {
       expect(e.code).toMatch(missingJwt.code);
-    }
-  });
-
-  test('Expect verifyCertificate to throw on missing hash', async () => {
-    try {
-      await verifyCertificate('jwt', undefined, 'errNsg');
-    } catch (e) {
-      expect(e.code).toMatch(missingHash.code);
     }
   });
 

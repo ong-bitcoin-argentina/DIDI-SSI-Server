@@ -1,8 +1,6 @@
 /* eslint-disable max-len */
 const router = require('express').Router();
 const user = require('../controllers/user');
-const ResponseHandler = require('../utils/ResponseHandler');
-const UserService = require('../services/UserService');
 const Constants = require('../constants/Constants');
 const Validator = require('../utils/Validator');
 const { validateAppOrUserJWT } = require('../middlewares/ValidateAppOrUserJWT');
@@ -11,8 +9,6 @@ const { halfHourLimiter } = require('../policies/RateLimit');
 const {
   IS_STRING, IS_EMAIL, IS_PASSWORD, IS_MOBILE_PHONE,
 } = Constants.VALIDATION_TYPES;
-
-router.use('/user/', validateAppOrUserJWT);
 
 /**
  * @openapi
@@ -503,7 +499,7 @@ router.post(
 
 /**
  * @openapi
- *   /user/:{did}:
+ *   /user/{did}:
  *   get:
  *     summary: Obtiene informacion sobre el usuario.
  *     parameters:
@@ -527,7 +523,7 @@ router.get('/user/:did',
 
 /**
  * @openapi
- *   /user/:{did}/edit:
+ *   /user/{did}/edit:
  *   post:
  *     summary: Edita nombre y apellido.
  *     description: Usado para migrar usuarios.
@@ -560,6 +556,7 @@ router.get('/user/:did',
  */
 router.post(
   '/user/:did/edit',
+  validateAppOrUserJWT,
   Validator.validateBody([
     { name: 'name', validate: [IS_STRING] },
     { name: 'lastname', validate: [IS_STRING] },
@@ -571,7 +568,7 @@ router.post(
 
 /**
  * @openapi
- *   /user/:{did}/image:
+ *   /user/{did}/image:
  *   post:
  *     summary: Agrega una imagen de perfil al usuario.
  *     parameters:
@@ -596,6 +593,7 @@ router.post(
  */
 router.post(
   '/user/:did/image',
+  validateAppOrUserJWT,
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,
@@ -605,7 +603,7 @@ router.post(
 
 /**
  * @openapi
- *   /image/:{id}:
+ *   /image/{id}:
  *   get:
  *     summary: Devuelve la imagen de usuario según un id.
  *     parameters:
@@ -627,16 +625,7 @@ router.get(
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { img, contentType } = await UserService.getImage(id);
-      res.type(contentType);
-      return res.send(img);
-    } catch (err) {
-      return ResponseHandler.sendErr(res, err);
-    }
-  },
+  user.readUserImageById,
 );
 
 module.exports = router;

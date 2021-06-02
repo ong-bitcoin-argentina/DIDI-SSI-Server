@@ -121,7 +121,6 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
   did, name, callbackUrl, token, action,
 }) {
   if (!did) throw missingDid;
-  if (!name) throw missingName;
   if (!callbackUrl) throw missingCallback;
   if (!token) throw missingToken;
   if (!action) throw missingAction;

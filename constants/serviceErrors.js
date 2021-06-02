@@ -51,10 +51,6 @@ module.exports = {
     code: '#service-missingSubject',
     message: 'Falta el parámetro SUBJECT',
   },
-  missingExpDate: {
-    code: '#service-missingExpDate',
-    message: 'Falta el parámetro EXPDATE',
-  },
   missingHash: {
     code: '#service-missingHash',
     message: 'Falta el parámetro HASH',
@@ -122,10 +118,6 @@ module.exports = {
   missingPassword: {
     code: '#service-missingPassword',
     message: 'Falta el parámetro PASSWORD',
-  },
-  missingExeptionDid: {
-    code: '#service-missingExeptionDid',
-    message: 'Falta el parámetro EXEPTIONDID',
   },
   missingPrivateKeySeed: {
     code: '#service-missingPrivateKeySeed',

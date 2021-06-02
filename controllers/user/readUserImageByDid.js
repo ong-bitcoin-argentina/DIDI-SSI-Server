@@ -1,7 +1,7 @@
 const ResponseHandler = require('../../utils/ResponseHandler');
 const UserService = require('../../services/UserService');
 
-const readUserImageByDid = async (req, res) => {
+const readUserImageById = async (req, res) => {
   try {
     const { id } = req.params;
     const { img, contentType } = await UserService.getImage(id);
@@ -13,5 +13,5 @@ const readUserImageByDid = async (req, res) => {
 };
 
 module.exports = {
-  readUserImageByDid,
+  readUserImageById,
 };

@@ -19,7 +19,7 @@ const createCertificateBySmsValidation = async (req, res) => {
     // Validar código
     const phone = await SmsService.isValid(cellPhoneNumber, validationCode);
 
-    // Validar que no existe un usuario con ese mail
+    // Validar que no existe un usuario con ese nuemro de telefono
     const user = await UserService.getByTel(cellPhoneNumber);
     if (user) return ResponseHandler.sendErr(res, Messages.SMS.ERR.ALREADY_EXISTS);
 
