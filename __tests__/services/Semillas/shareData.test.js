@@ -4,10 +4,7 @@ const { shareData } = require('../../../services/SemillasService');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { missingData } = require('../../../constants/serviceErrors');
 
-describe('Should be green', () => {
-  /**
-   * BeforeAll
-   */
+describe('services/Semillas/shareData.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -18,16 +15,10 @@ describe('Should be green', () => {
       });
   });
 
-  /**
-   * AfterAll
-   */
   afterAll(async () => {
     await mongoose.connection.close();
   });
 
-  /**
- *  Usuario comparte sus credenciales al prestador para solicitar su servicio
- */
   test('Expect shareData to throw on missing data', async () => {
     try {
       await shareData(undefined);

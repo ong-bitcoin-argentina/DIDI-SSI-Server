@@ -4,10 +4,7 @@ const { deleteValidationByDid } = require('../../../services/SemillasService');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { missingDid } = require('../../../constants/serviceErrors');
 
-describe('Should be green', () => {
-  /**
-   * BeforeAll
-   */
+describe('services/Semillas/deleteValidationByDid.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -18,16 +15,10 @@ describe('Should be green', () => {
       });
   });
 
-  /**
-   * AfterAll
-   */
   afterAll(async () => {
     await mongoose.connection.close();
   });
 
-  /**
- *  Elimina una solicitud de validación de identidad desde semillas
- */
   test('Expect deleteValidationByDid to throw on missing did', async () => {
     try {
       await deleteValidationByDid(undefined);

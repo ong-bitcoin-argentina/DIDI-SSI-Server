@@ -11,10 +11,7 @@ jest.mock('../../../models/SemillasAuth', () => ({
 }));
 jest.mock('node-fetch');
 
-describe('Should be green', () => {
-  /**
-   * BeforeAll
-   */
+describe('services/Semillas/sendDIDandDNI.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -25,17 +22,10 @@ describe('Should be green', () => {
       });
   });
 
-  /**
-   * AfterAll
-   */
   afterAll(async () => {
     await mongoose.connection.close();
   });
 
-  /**
-   * Solicita las credenciales a semillas con dni vacio.
-   * Se espera un error.
-   */
   test('Expect sendDIDandDNI to throw on missing dni', async () => {
     try {
       await sendDIDandDNI({ dni: undefined, did: 'did' });
@@ -44,10 +34,6 @@ describe('Should be green', () => {
     }
   });
 
-  /**
-   * Solicita las credenciales a semillas con did vacio.
-   * Se espera un error.
-   */
   test('Expect sendDIDandDNI to throw on missing did', async () => {
     try {
       await sendDIDandDNI({ dni: 'dni', did: undefined });
@@ -56,10 +42,6 @@ describe('Should be green', () => {
     }
   });
 
-  /**
-   * Solicita las credenciales a semillas.
-   * Caso de usuario ya existente.
-   */
   test('Expect no operation response', async () => {
     fetch.mockReturnValue(
       Promise.resolve(
@@ -70,10 +52,6 @@ describe('Should be green', () => {
     await expect(app).toMatchObject(messages.sendDIDandDNINoOperation);
   });
 
-  /**
-   * Solicita las credenciales a semillas.
-   * Caso de exito.
-   */
   test('Expect success response', async () => {
     fetch.mockReturnValue(
       Promise.resolve(
