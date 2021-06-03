@@ -40,7 +40,7 @@ router.post(
 
 /**
  * @openapi
- *   /presentation/:{id}:
+ *   /presentation/{id}:
  *   get:
  *     summary: Obtiene una presentación dado un id
  *     parameters:

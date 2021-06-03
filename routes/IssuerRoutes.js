@@ -275,7 +275,7 @@ router.delete(
 
 /**
  * @openapi
- *   /issuer/:{did}/refresh:
+ *   /issuer/{did}/refresh:
  *   post:
  *     summary: Refresca la autorización de un emisor para emitir certificados.
  *     parameters:
@@ -320,7 +320,7 @@ router.post(
 
 /**
  * @openapi
- *   /issuer/:{did}:
+ *   /issuer/{did}:
  *   get:
  *     summary: Obtiene el nombre de un emisor autorizado a partir de su did.
  *     parameters:
@@ -341,7 +341,7 @@ router.get('/issuer/:did', issuer.readIssuerNameByDid);
 
 /**
  * @openapi
- *   /issuer/:{did}:
+ *   /issuer/{did}:
  *   put:
  *     summary: Edita el nombre de un emisor autorizado a partir de su did.
  *     parameters:

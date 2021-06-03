@@ -24,7 +24,7 @@ describe('controllers/mail/retryMailVerification.test.js', () => {
     await mongoose.connection.close();
   });
 
-  test.skip('Expect to throw if validation ism\'t created before', async () => {
+  test('Expect to throw if validation ism\'t created before', async () => {
     try {
       await retryMailVerification({ ...req, eMail: 'notVerified@test.io' }, res);
     } catch (e) {

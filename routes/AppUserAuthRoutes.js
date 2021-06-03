@@ -15,7 +15,7 @@ router.use('/userApp/validateUser', ValidateAppJWT);
 
 /**
  * @openapi
- *   /appAuth/:{did}:
+ *   /appAuth/{did}:
  *   get:
  *     summary: Obtiene una aplicación autorizada según su did
  *     parameters:
@@ -74,7 +74,7 @@ router.post(
 
 /**
  * @openapi
- *   /userApp/:{did}:
+ *   /userApp/{did}:
  *   get:
  *     summary: Obtiene un usuario según su did, cuya relación [user - app autorizada] fue establecida
  *     parameters:
