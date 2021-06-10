@@ -13,7 +13,7 @@ describe('services/Mail/getByMail.test.js', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await create(appData.email, appData.code, appData.did);
+    await create(appData.mail, appData.code, appData.did);
   });
 
   afterAll(async () => {
@@ -30,7 +30,7 @@ describe('services/Mail/getByMail.test.js', () => {
   });
 
   test('Expect getByMail success', async () => {
-    const getByEmailResponse = await getByMail(appData.email);
+    const getByEmailResponse = await getByMail(appData.mail);
     expect(getByEmailResponse).not.toBeNull();
   });
 });

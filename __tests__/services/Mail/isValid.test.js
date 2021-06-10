@@ -3,6 +3,7 @@ const { MONGO_URL } = require('../../../constants/Constants');
 const { isValid, create } = require('../../../services/MailService');
 const { missingEmail, missingCode } = require('../../../constants/serviceErrors');
 const { appData, errorData } = require('./constants');
+const Hashing = require('../../../models/utils/Hashing');
 
 describe('Should be green', () => {
   beforeAll(async () => {
@@ -13,7 +14,7 @@ describe('Should be green', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await create(appData.email, appData.code, appData.did);
+    await create(appData.mail, appData.code, appData.did);
   });
 
   afterAll(async () => {
@@ -37,13 +38,15 @@ describe('Should be green', () => {
   });
 
   test('Expect isValid success', async () => {
-    const isValidResponse = await isValid(appData.email, appData.code);
+    const isValidResponse = await isValid(appData.mail, appData.code);
+    const emailHashing = await Hashing.hash(appData.mail);
+    expect(isValidResponse.email.hash).toMatch(emailHashing.hash);
     expect(isValidResponse).not.toBeNull();
   });
 
   test('Expect isValid not valid', async () => {
     try {
-      await isValid(appData.email, 'QNgkcasdfkCO');
+      await isValid(appData.mail, appData.otherCode);
     } catch (e) {
       expect(e.code).toMatch(errorData.code);
       expect(e.message).toMatch(errorData.message);

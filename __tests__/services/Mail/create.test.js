@@ -16,7 +16,6 @@ describe('services/Mail/create.test.js', () => {
   });
 
   afterAll(async () => {
-    await mongoose.connection.db.dropCollection('mails');
     await mongoose.connection.close();
   });
 
@@ -45,7 +44,7 @@ describe('services/Mail/create.test.js', () => {
   });
 
   test('Expect create success a email', async () => {
-    const createResponse = await create(appData.email, appData.code, appData.did);
+    const createResponse = await create(appData.mail, appData.code, appData.did);
     expect(createResponse).not.toBeNull();
   });
 });
