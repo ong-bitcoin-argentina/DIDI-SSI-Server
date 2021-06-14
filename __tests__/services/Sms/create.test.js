@@ -18,7 +18,7 @@ describe('services/Sms/create.test.js', () => {
   });
 
   afterAll(async () => {
-    // await mongoose.connection.db.dropCollection('phones');
+    await mongoose.connection.db.dropCollection('phones');
     await mongoose.connection.close();
   });
 

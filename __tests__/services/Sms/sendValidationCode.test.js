@@ -2,6 +2,7 @@ const { sendValidationCode } = require('../../../services/SmsService');
 const {
   missingPhoneNumber, missingCode,
 } = require('../../../constants/serviceErrors');
+const { appData } = require('./constans');
 
 describe('Should be green', () => {
   test('Expect sendValidationCode to throw on missing phoneNumber', async () => {
@@ -22,19 +23,13 @@ describe('Should be green', () => {
 
   // si se ingresa un número de telefono válido funciona
   test.skip('Expect sendValidationCode to be Success', async () => {
-    const result = await sendValidationCode('+542215559612', '12345');
+    const result = await sendValidationCode(appData.phoneNumber, appData.code);
     expect(result).not.toBeNull();
   });
 
-  /*  Error: The 'To' number +542211234567 is not a valid phone number.
-      status: 400,
-      code: 21211,
-      moreInfo: 'https://www.twilio.com/docs/errors/21211',
-      details: undefined
-  */
-  test('Expect sendValidationCode to  be Error', async () => {
+  test('Expect sendValidationCode to throw Error', async () => {
     try {
-      await sendValidationCode('+542211234567', '12345');
+      await sendValidationCode(appData.otherPhoneNumber, appData.code);
     } catch (e) {
       expect(e.code).toMatch('SMS_SEND_ERROR');
     }

@@ -39,14 +39,10 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect validatePhone to throw on missing did', async () => {
-    try {
-      const phone = await isValid(appData.phoneNumber, appData.code);
-      console.log("phone..",phone);
-      const result = await validatePhone(phone, appData.did);
-      console.log('validatedPhone result', result);
-    } catch (e) {
-      console.log(e);
-    }
+  test('Expect validatePhone to validatePhone', async () => {
+    const phone = await isValid(appData.phoneNumber, appData.code);
+    const result = await validatePhone(phone, appData.did);
+    expect(result.validated).toBe(true);
+    expect(result.did).toBe(appData.did);
   });
 });

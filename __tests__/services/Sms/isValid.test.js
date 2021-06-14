@@ -19,7 +19,7 @@ describe('Should be green', () => {
   });
 
   afterAll(async () => {
-    // await mongoose.connection.db.dropCollection('phones');
+    await mongoose.connection.db.dropCollection('phones');
     await mongoose.connection.close();
   });
 
@@ -42,14 +42,11 @@ describe('Should be green', () => {
   test('Expect isValid to be Success', async () => {
     const result = await isValid(appData.phoneNumber, appData.code);
     expect(result).not.toBeNull();
-    /* expect(result.validated).toBe(true);
-    expect(result.validated).toBe(false);
-     */
   });
 
-  test('Expect isValid to be Error', async () => {
+  test('Expect isValid to throw Error', async () => {
     try {
-      await isValid(appData.phoneNumber, '987');
+      await isValid(appData.phoneNumber, appData.otherPhoneNumber);
     } catch (e) {
       expect(e.code).toMatch(errorValid.code);
     }

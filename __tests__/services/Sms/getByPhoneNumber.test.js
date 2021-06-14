@@ -34,9 +34,9 @@ describe('Should be green', () => {
     expect(result).not.toBeNull();
   });
 
-  test('Expect getByPhoneNumber to be Error ', async () => {
+  test('Expect getByPhoneNumber to throw Error ', async () => {
     try {
-      await getByPhoneNumber('987');
+      await getByPhoneNumber(appData.otherPhoneNumber);
     } catch (e) {
       expect(e.code).toMatch(error.code);
     }

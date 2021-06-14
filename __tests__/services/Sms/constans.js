@@ -2,7 +2,8 @@ module.exports = {
   appData: {
     did: 'did:ethr:0x123',
     code: '123',
-    phoneNumber: '123',
+    phoneNumber: '+542219876543',
+    otherPhoneNumber: '+541123456789',
   },
   error: {
     code: 'NO_VALIDATIONS',

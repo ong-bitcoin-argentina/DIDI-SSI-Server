@@ -39,8 +39,8 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect isValidated to isValidated', async () => {
+  test('Expect isValidated to throw false', async () => {
     const result = await isValidated(appData.did, appData.phoneNumber);
-    console.log(result);
+    expect(result).toBe(false);
   });
 });
