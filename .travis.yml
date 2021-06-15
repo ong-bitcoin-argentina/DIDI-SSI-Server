@@ -7,7 +7,9 @@ script:
 - npm run coverage
 before_install:
 - openssl aes-256-cbc -K $encrypted_ba0d7aaa5a42_key -iv $encrypted_ba0d7aaa5a42_iv
-  -in travis_github_key.enc -out travis_github_key -d
-- chmod 600 travis_github_key
+  -in travis_github_key.enc -out /home/travis/.ssh/id_rsa -d
+- chmod 600 /home/travis/.ssh/id_rsa
 - eval "$(ssh-agent -s)"
-- ssh-add travis_github_key
+- ssh-add /home/travis/.ssh/id_rsa
+- git config --global user.email "travis.ci@didi.org.ar" 
+- git config --global user.name "didi-ssi-travis-bot"
