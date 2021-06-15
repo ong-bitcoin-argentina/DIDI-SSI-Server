@@ -2,7 +2,7 @@ module.exports = {
   mailData: {
     mail: 'Email test.',
     otherMail: 'Other mail.',
-    email: 'email@didi.com',
+    email: 'it@didi.org.ar',
     code: 'QNgkcUjMzkCO',
     otherCode: 'ANgkcasdfkC7',
     did: 'did:ethr:0x184373f2423424242434242445d5e1b11159',
