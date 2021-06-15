@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { isValidated, create } = require('../../../services/MailService');
 const { missingEmail, missingDid } = require('../../../constants/serviceErrors');
-const { appData } = require('./constants');
+const { mailData } = require('./constants');
 
-describe('Should be green', () => {
+describe('services/Mail/isValidated.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -13,7 +13,7 @@ describe('Should be green', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await create(appData.mail, appData.code, appData.did);
+    await create(mailData.mail, mailData.code, mailData.did);
   });
 
   afterAll(async () => {
@@ -38,12 +38,12 @@ describe('Should be green', () => {
   });
 
   test('Expect isValidated false', async () => {
-    const isValidatedResponse = await isValidated(appData.did, appData.mail);
+    const isValidatedResponse = await isValidated(mailData.did, mailData.mail);
     expect(isValidatedResponse).toBe(false);
   });
 
   test('Expect isValidated true', async () => {
-    const isValidatedResponse = await isValidated(appData.did, appData.mail);
+    const isValidatedResponse = await isValidated(mailData.did, mailData.mail);
     expect(isValidatedResponse).toBe(false);
   });
 });

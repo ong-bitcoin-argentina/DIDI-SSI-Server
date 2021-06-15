@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { isValid, create } = require('../../../services/MailService');
 const { missingEmail, missingCode } = require('../../../constants/serviceErrors');
-const { appData, errorData } = require('./constants');
+const { mailData, errorData } = require('./constants');
 const Hashing = require('../../../models/utils/Hashing');
 
-describe('Should be green', () => {
+describe('services/Mail/isValid.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -14,7 +14,7 @@ describe('Should be green', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await create(appData.mail, appData.code, appData.did);
+    await create(mailData.mail, mailData.code, mailData.did);
   });
 
   afterAll(async () => {
@@ -38,15 +38,15 @@ describe('Should be green', () => {
   });
 
   test('Expect isValid success', async () => {
-    const isValidResponse = await isValid(appData.mail, appData.code);
-    const emailHashing = await Hashing.hash(appData.mail);
+    const isValidResponse = await isValid(mailData.mail, mailData.code);
+    const emailHashing = await Hashing.hash(mailData.mail);
     expect(isValidResponse.email.hash).toMatch(emailHashing.hash);
     expect(isValidResponse).not.toBeNull();
   });
 
   test('Expect isValid not valid', async () => {
     try {
-      await isValid(appData.mail, appData.otherCode);
+      await isValid(mailData.mail, mailData.otherCode);
     } catch (e) {
       expect(e.code).toMatch(errorData.code);
       expect(e.message).toMatch(errorData.message);

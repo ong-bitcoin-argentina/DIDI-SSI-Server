@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { sendValidationCode } = require('../../../services/MailService');
 const { missingEmail, missingCode } = require('../../../constants/serviceErrors');
-const { appData, errorInvalidEmail } = require('./constants');
+const { mailData, errorInvalidEmail } = require('./constants');
 
 describe('services/Mail/sendValidationCode.test.js', () => {
   beforeAll(async () => {
@@ -36,13 +36,13 @@ describe('services/Mail/sendValidationCode.test.js', () => {
   });
 
   test('Expect sendValidationCode success', async () => {
-    const sendValidationCodeResult = await sendValidationCode(appData.email, appData.code);
+    const sendValidationCodeResult = await sendValidationCode(mailData.email, mailData.code);
     expect(sendValidationCodeResult.message).toMatch('Queued. Thank you.');
   });
 
   test('Expect sendValidationCode email invalid', async () => {
     try {
-      await sendValidationCode(appData.invalidEmail, appData.code);
+      await sendValidationCode(mailData.invalidEmail, mailData.code);
     } catch (e) {
       expect(e.code).toMatch(errorInvalidEmail.code);
       expect(e.message).toMatch(errorInvalidEmail.message);

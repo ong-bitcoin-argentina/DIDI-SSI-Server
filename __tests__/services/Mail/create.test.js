@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { create } = require('../../../services/MailService');
 const { missingEmail, missingCode } = require('../../../constants/serviceErrors');
-const { appData } = require('./constants');
+const { mailData } = require('./constants');
 
 describe('services/Mail/create.test.js', () => {
   beforeAll(async () => {
@@ -44,7 +44,7 @@ describe('services/Mail/create.test.js', () => {
   });
 
   test('Expect create success a email', async () => {
-    const createResponse = await create(appData.mail, appData.code, appData.did);
+    const createResponse = await create(mailData.mail, mailData.code, mailData.did);
     expect(createResponse).not.toBeNull();
   });
 });

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { getByMail, create } = require('../../../services/MailService');
 const { missingEmail } = require('../../../constants/serviceErrors');
-const { appData } = require('./constants');
+const { mailData, noValidations } = require('./constants');
 
 describe('services/Mail/getByMail.test.js', () => {
   beforeAll(async () => {
@@ -13,7 +13,7 @@ describe('services/Mail/getByMail.test.js', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await create(appData.mail, appData.code, appData.did);
+    await create(mailData.mail, mailData.code, mailData.did);
   });
 
   afterAll(async () => {
@@ -30,7 +30,16 @@ describe('services/Mail/getByMail.test.js', () => {
   });
 
   test('Expect getByMail success', async () => {
-    const getByEmailResponse = await getByMail(appData.mail);
+    const getByEmailResponse = await getByMail(mailData.mail);
     expect(getByEmailResponse).not.toBeNull();
+  });
+
+  test('Expect getByMail to throw on missing email', async () => {
+    try {
+      await getByMail(mailData.otherMail);
+    } catch (e) {
+      expect(e.code).toMatch(noValidations.code);
+      expect(e.message).toMatch(noValidations.message);
+    }
   });
 });

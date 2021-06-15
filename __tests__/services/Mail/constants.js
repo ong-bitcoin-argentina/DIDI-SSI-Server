@@ -1,6 +1,7 @@
 module.exports = {
-  appData: {
+  mailData: {
     mail: 'Email test.',
+    otherMail: 'Other mail.',
     email: 'email@didi.com',
     code: 'QNgkcUjMzkCO',
     otherCode: 'ANgkcasdfkC7',
@@ -18,5 +19,9 @@ module.exports = {
   errorInvalidEmail: {
     code: 'EMAIL_SEND_ERROR',
     message: 'No pudo mandarse el mail.',
+  },
+  noValidations: {
+    code: 'NO_VALIDATIONS',
+    message: 'No se encontraron pedidos de validacion para ese mail.',
   },
 };
