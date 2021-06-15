@@ -2,7 +2,7 @@ const { sendValidationCode } = require('../../../services/SmsService');
 const {
   missingPhoneNumber, missingCode,
 } = require('../../../constants/serviceErrors');
-const { appData } = require('./constans');
+const { userData } = require('./constans');
 
 describe('Should be green', () => {
   test('Expect sendValidationCode to throw on missing phoneNumber', async () => {
@@ -22,14 +22,14 @@ describe('Should be green', () => {
   });
 
   // si se ingresa un número de telefono válido funciona
-  test.skip('Expect sendValidationCode to be Success', async () => {
-    const result = await sendValidationCode(appData.phoneNumber, appData.code);
+  test('Expect sendValidationCode to be Success', async () => {
+    const result = await sendValidationCode(userData.validPhoneNumber, userData.code);
     expect(result).not.toBeNull();
   });
 
   test('Expect sendValidationCode to throw Error', async () => {
     try {
-      await sendValidationCode(appData.otherPhoneNumber, appData.code);
+      await sendValidationCode(userData.invalidPhoneNumber, userData.code);
     } catch (e) {
       expect(e.code).toMatch('SMS_SEND_ERROR');
     }
