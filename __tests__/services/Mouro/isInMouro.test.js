@@ -2,11 +2,6 @@ const { isInMouro } = require('../../../services/MouroService');
 const { missingDid, missingJwt, missingErrMsg } = require('../../../constants/serviceErrors');
 const { appData } = require('./constants');
 
-jest.mock('../../../models/SemillasAuth', () => ({
-  getToken: () => ({ token: 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYyMjIzMDcyMCwiZXhwIjoxNjIyODM1NTIwfQ.XIR5oQgglbnUY9nkvhOwuFCD0XUNoIdP3v1cAnvj4qwwjxg7j53_byF3MVFwUPCmM-QlR0ZVQBoB2SUwsFPdhA' }),
-  createOrUpdateToken: () => ({ token: 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYyMjIzMDcyMCwiZXhwIjoxNjIyODM1NTIwfQ.XIR5oQgglbnUY9nkvhOwuFCD0XUNoIdP3v1cAnvj4qwwjxg7j53_byF3MVFwUPCmM-QlR0ZVQBoB2SUwsFPdhA' }),
-}));
-
 describe('services/Mouro/getHash.test.js', () => {
   test('Expect isInMouro to throw on missing jwt', async () => {
     try {
