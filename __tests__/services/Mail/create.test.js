@@ -3,6 +3,7 @@ const { MONGO_URL } = require('../../../constants/Constants');
 const { create } = require('../../../services/MailService');
 const { missingEmail, missingCode } = require('../../../constants/serviceErrors');
 const { mailData } = require('./constants');
+const Encrypt = require('../../../models/utils/Encryption');
 
 describe('services/Mail/create.test.js', () => {
   beforeAll(async () => {
@@ -44,7 +45,9 @@ describe('services/Mail/create.test.js', () => {
   });
 
   test('Expect create success a email', async () => {
-    const createResponse = await create(mailData.mail, mailData.code, mailData.did);
-    expect(createResponse).not.toBeNull();
+    const createRessult = await create(mailData.mail, mailData.code, mailData.did);
+    const decriptResult = await Encrypt.decript(createRessult.email.encrypted);
+    expect(createRessult).not.toBeNull();
+    expect(decriptResult).toMatch(mailData.mail);
   });
 });
