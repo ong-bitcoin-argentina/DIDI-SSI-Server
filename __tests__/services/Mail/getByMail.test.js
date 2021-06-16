@@ -3,6 +3,7 @@ const { MONGO_URL } = require('../../../constants/Constants');
 const { getByMail, create } = require('../../../services/MailService');
 const { missingEmail } = require('../../../constants/serviceErrors');
 const { mailData, noValidations } = require('./constants');
+const Encrypt = require('../../../models/utils/Encryption');
 
 describe('services/Mail/getByMail.test.js', () => {
   beforeAll(async () => {
@@ -30,11 +31,12 @@ describe('services/Mail/getByMail.test.js', () => {
   });
 
   test('Expect getByMail success', async () => {
-    const getByEmailResponse = await getByMail(mailData.mail);
-    expect(getByEmailResponse).not.toBeNull();
+    const getByEmailResult = await getByMail(mailData.mail);
+    const decriptResult = await Encrypt.decript(getByEmailResult.email.encrypted);
+    expect(decriptResult).toMatch(mailData.mail);
   });
 
-  test('Expect getByMail to throw on missing email', async () => {
+  test('Expect getByMail to throw on no validations', async () => {
     try {
       await getByMail(mailData.otherMail);
     } catch (e) {
