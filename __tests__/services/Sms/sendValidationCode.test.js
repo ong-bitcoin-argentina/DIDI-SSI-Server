@@ -21,7 +21,6 @@ describe('Should be green', () => {
     }
   });
 
-  // si se ingresa un número de telefono válido funciona
   test('Expect sendValidationCode to be Success', async () => {
     const result = await sendValidationCode(userData.validPhoneNumber, userData.code);
     expect(result).not.toBeNull();

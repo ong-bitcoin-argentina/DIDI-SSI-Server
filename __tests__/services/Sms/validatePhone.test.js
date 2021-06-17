@@ -4,7 +4,7 @@ const {
   missingPhoneNumber, missingDid,
 } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { appData } = require('./constans');
+const { userData } = require('./constans');
 
 describe('Should be green', () => {
   beforeAll(async () => {
@@ -15,7 +15,7 @@ describe('Should be green', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await create(appData.phoneNumber, appData.code, appData.did);
+    await create(userData.validPhoneNumber, userData.code, userData.did);
   });
 
   afterAll(async () => {
@@ -40,9 +40,9 @@ describe('Should be green', () => {
   });
 
   test('Expect validatePhone to validatePhone', async () => {
-    const phone = await isValid(appData.phoneNumber, appData.code);
-    const result = await validatePhone(phone, appData.did);
+    const phone = await isValid(userData.validPhoneNumber, userData.code);
+    const result = await validatePhone(phone, userData.did);
     expect(result.validated).toBe(true);
-    expect(result.did).toBe(appData.did);
+    expect(result.did).toBe(userData.did);
   });
 });

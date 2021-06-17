@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { getByPhoneNumber, create } = require('../../../services/SmsService');
 const { missingPhoneNumber } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { appData, error } = require('./constans');
+const { userData, error } = require('./constans');
 
 describe('Should be green', () => {
   beforeAll(async () => {
@@ -13,7 +13,7 @@ describe('Should be green', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await create(appData.phoneNumber, appData.code, appData.did);
+    await create(userData.validPhoneNumber, userData.code, userData.did);
   });
 
   afterAll(async () => {
@@ -30,13 +30,13 @@ describe('Should be green', () => {
   });
 
   test('Expect getByPhoneNumber to be Successful ', async () => {
-    const result = await getByPhoneNumber(appData.phoneNumber);
+    const result = await getByPhoneNumber(userData.validPhoneNumber);
     expect(result).not.toBeNull();
   });
 
   test('Expect getByPhoneNumber to throw Error ', async () => {
     try {
-      await getByPhoneNumber(appData.otherPhoneNumber);
+      await getByPhoneNumber(userData.invalidPhoneNumber);
     } catch (e) {
       expect(e.code).toMatch(error.code);
     }

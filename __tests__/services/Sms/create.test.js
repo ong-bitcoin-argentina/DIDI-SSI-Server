@@ -4,7 +4,7 @@ const {
   missingPhoneNumber, missingCode,
 } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { appData } = require('./constans');
+const { userData } = require('./constans');
 
 describe('services/Sms/create.test.js', () => {
   beforeAll(async () => {
@@ -39,7 +39,7 @@ describe('services/Sms/create.test.js', () => {
   });
 
   test('Expect create to create', async () => {
-    const result = await create(appData.phoneNumber, appData.code, appData.did);
+    const result = await create(userData.validPhoneNumber, userData.code, userData.did);
     expect(result).not.toBeNull();
   });
 });
