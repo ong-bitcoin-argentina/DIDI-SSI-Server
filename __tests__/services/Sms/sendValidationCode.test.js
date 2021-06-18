@@ -21,7 +21,7 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect sendValidationCode to be Success', async () => {
+  test.skip('Expect sendValidationCode to be Success', async () => {
     const result = await sendValidationCode(userData.validPhoneNumber, userData.code);
     expect(result).not.toBeNull();
   });
