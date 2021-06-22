@@ -9,3 +9,4 @@ docker-compose/d*
 .vscode/
 
 services/didi-next-00-firebase-adminsdk-iev7z-d7cc5b46ef.json
+services/didi-qa-00-firebase-adminsdk-9m8e9-db05c307cb.json
