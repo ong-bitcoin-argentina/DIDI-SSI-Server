@@ -2,6 +2,7 @@ const UserApp = require('../models/UserApp');
 const UserService = require('./UserService');
 const AppAuthService = require('./AppAuthService');
 const CertService = require('./CertService');
+const Messages = require('../constants/Messages');
 const { getPayload } = require('./TokenService');
 const { userDTO } = require('../utils/DTOs');
 const {
@@ -56,7 +57,10 @@ const createByTokens = async function createByTokens(userToken, appToken) {
   if (!userToken) throw missingUserToken;
   if (!appToken) throw missingAppToken;
 
-  const verified = await CertService.verifyCertificate(userToken);
+  const verified = await CertService.verifyCertificate(
+    userToken,
+    Messages.ISSUER.ERR.CERT_IS_INVALID,
+  );
   if (!verified.payload) throw INVALID_CODE(true);
 
   const userPayload = getPayload(userToken);
