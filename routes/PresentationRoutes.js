@@ -58,7 +58,7 @@ router.post(
  *         description: Error interno del servidor
  */
 router.get(
-  'presentation/:id',
+  '/presentation/:id',
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,
