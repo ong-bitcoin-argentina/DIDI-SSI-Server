@@ -1,5 +1,5 @@
 {
-	"name": "api",
+	"name": "@proyecto-didi/server",
 	"license": "SEE LICENSE IN LICENSE",
 	"version": "2.0.0",
 	"main": "index.js",
@@ -21,8 +21,8 @@
 		"express"
 	],
 	"dependencies": {
-		"@proyecto-didi/didi-blockchain-manager": "1.1.5",
-		"@proyecto-didi/didi-ssi-logger": "0.0.6",
+		"@proyecto-didi/didi-blockchain-manager": "1.2.0",
+		"@proyecto-didi/didi-ssi-logger": "0.0.7",
 		"apollo-boost": "0.4.7",
 		"apollo-cache-inmemory": "1.6.5",
 		"bcrypt": "5.0.0",
