@@ -59,6 +59,7 @@ const createByTokens = async function createByTokens(userToken, appToken) {
 
   const verified = await CertService.verifyCertificate(
     userToken,
+    undefined,
     Messages.ISSUER.ERR.CERT_IS_INVALID,
   );
   if (!verified.payload) throw INVALID_CODE(true);
