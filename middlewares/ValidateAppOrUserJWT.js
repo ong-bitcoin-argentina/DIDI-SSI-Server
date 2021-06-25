@@ -4,6 +4,7 @@ const ResponseHandler = require('../utils/ResponseHandler');
 const {
   TOKEN: { INVALID_CODE },
 } = require('../constants/Messages');
+const Messages = require('../constants/Messages');
 
 // eslint-disable-next-line consistent-return
 const validateAppOrUserJWT = async (req, res, next) => {
@@ -13,7 +14,8 @@ const validateAppOrUserJWT = async (req, res, next) => {
       await handleValidateAppJWT(req);
       return next();
     }
-    const userVerified = await verifyCertificate(userJWT);
+    // eslint-disable-next-line max-len
+    const userVerified = await verifyCertificate(userJWT, undefined, Messages.ISSUER.ERR.IS_INVALID);
     if (!userVerified.payload) throw INVALID_CODE(true);
     next();
   } catch (e) {
