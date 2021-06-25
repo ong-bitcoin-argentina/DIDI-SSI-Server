@@ -4,7 +4,7 @@ const { missingPhoneNumber } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { userData, error } = require('./constans');
 
-describe('Should be green', () => {
+describe('services/Sms/getByPhoneNumber.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
