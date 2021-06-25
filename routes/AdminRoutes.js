@@ -7,7 +7,7 @@ router.use('/admin/', validateAdminJWT);
 
 /**
  * @openapi
- *   /admin/user/did/:{did}:
+ *   /admin/user/did/{did}:
  *   get:
  *     summary: Obtiene información confidencial sobre el usuario según su did.
  *     description: Incluye status de renaper y de semillas.

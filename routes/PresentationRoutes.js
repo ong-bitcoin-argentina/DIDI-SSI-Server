@@ -40,7 +40,7 @@ router.post(
 
 /**
  * @openapi
- *   /presentation/:{id}:
+ *   /presentation/{id}:
  *   get:
  *     summary: Obtiene una presentación dado un id
  *     parameters:
@@ -58,7 +58,7 @@ router.post(
  *         description: Error interno del servidor
  */
 router.get(
-  'presentation/:id',
+  '/presentation/:id',
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,

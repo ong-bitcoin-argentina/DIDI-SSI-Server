@@ -501,7 +501,7 @@ router.post(
 
 /**
  * @openapi
- *   /user/:{did}:
+ *   /user/{did}:
  *   get:
  *     summary: Obtiene informacion sobre el usuario.
  *     parameters:
@@ -525,7 +525,7 @@ router.get('/user/:did',
 
 /**
  * @openapi
- *   /user/:{did}/edit:
+ *   /user/{did}/edit:
  *   post:
  *     summary: Edita nombre y apellido.
  *     description: Usado para migrar usuarios.
@@ -569,7 +569,7 @@ router.post(
 
 /**
  * @openapi
- *   /user/:{did}/image:
+ *   /user/{did}/image:
  *   post:
  *     summary: Agrega una imagen de perfil al usuario.
  *     parameters:
@@ -603,7 +603,7 @@ router.post(
 
 /**
  * @openapi
- *   /image/:{id}:
+ *   /image/{id}:
  *   get:
  *     summary: Devuelve la imagen de usuario según un id.
  *     parameters:

@@ -49,7 +49,7 @@ router.post(
 
 /**
  * @openapi
- *   /shareRequest/:{id}:
+ *   /shareRequest/{id}:
  *   post:
  *     summary: Obtiene un ShareRequest según id
  *     description: Devuelve un JWT con las credenciales previamente guardadas
