@@ -16,6 +16,7 @@ const createCertificateByJwt = async (req, res) => {
     // validar certificado y emisor (que este autorizado para emitir)
     console.log('Verifying JWT...');
     const cert = await CertService.verifyCertificate(jwt, undefined, Messages.ISSUER.ERR.IS_INVALID);
+
     if (!cert || !cert.payload) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
     // Validar si el emistor es correcto (autorizado a emitir y el mismo que el del certificado)
     console.log(`Verifying issuer ${cert.payload.iss}`);
@@ -58,7 +59,7 @@ const createCertificateByJwt = async (req, res) => {
         console.log(err);
       }
     }
-    return ResponseHandler.sendRes(res, result);
+    return ResponseHandler.sendRes(res, cert);
   } catch (err) {
     return ResponseHandler.sendErr(res, err);
   }
