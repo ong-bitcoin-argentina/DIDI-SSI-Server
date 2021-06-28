@@ -89,7 +89,7 @@ module.exports.newOpperation = async function newOpperation(
 /**
  *  Realiza un post al servicio de renaper agregando frente del dni
  */
-module.exports.addFront = async function newOpperation(
+module.exports.addFront = async function addFront(
   dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr,
 ) {
   if (!dni) throw missingDni;
