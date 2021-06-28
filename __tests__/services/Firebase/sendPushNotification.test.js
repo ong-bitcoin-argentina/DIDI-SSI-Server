@@ -12,7 +12,6 @@ describe('services/Firebase/sendPushNotification.test.js', () => {
       expect(e.code).toMatch(missingTitle.code);
     }
   });
-
   test('Expect sendPushNotification to throw on missing message', async () => {
     try {
       await sendPushNotification('title', undefined, 'firebaseId', 'type');
@@ -20,7 +19,6 @@ describe('services/Firebase/sendPushNotification.test.js', () => {
       expect(e.code).toMatch(missingMessage.code);
     }
   });
-
   test('Expect sendPushNotification to throw on missing firebaseId', async () => {
     try {
       await sendPushNotification('title', 'message', undefined, 'type');
@@ -28,7 +26,6 @@ describe('services/Firebase/sendPushNotification.test.js', () => {
       expect(e.code).toMatch(missingFirebaseId.code);
     }
   });
-
   test('Expect sendPushNotification to throw on missing type', async () => {
     try {
       await sendPushNotification('title', 'message', 'firebaseId', undefined);
