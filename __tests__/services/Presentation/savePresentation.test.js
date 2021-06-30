@@ -1,13 +1,26 @@
+/* eslint-disable linebreak-style */
+const mongoose = require('mongoose');
+const { MONGO_URL } = require('../../../constants/Constants');
 const { savePresentation } = require('../../../services/PresentationService');
 const {
   missingJwt,
 } = require('../../../constants/serviceErrors');
-const {jwts, decodedData} = require('./constants');
-const { decodeJWT } = require('did-jwt');
-const { Result } = require('express-validator');
+const { jwts } = require('./constants');
 
 describe('services/Presentation/savePresentation.test.js', () => {
-  
+  beforeAll(async () => {
+    await mongoose
+      .connect(MONGO_URL, {
+        useCreateIndex: true,
+        useFindAndModify: false,
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+      });
+  });
+  afterAll(async () => {
+    await mongoose.connection.db.dropCollection('presentations');
+    await mongoose.connection.close();
+  });
   test('Expect savePresentation to throw on missing jwts', async () => {
     try {
       await savePresentation({ jwts: undefined });
@@ -15,21 +28,11 @@ describe('services/Presentation/savePresentation.test.js', () => {
       expect(e.code).toMatch(missingJwt.code);
     }
   });
-  test('Expect decoded jwts on savePresentation', async () => {
-    var result;
+  test('Expect savePresentation generate the presentation', async () => {
     try {
-      const jwtsParsed = JSON.parse(jwts);
-      for (const jwt of jwtsParsed) {
-        const decoded = decodeJWT(jwt);
-        if (!decoded) {
-        throw INVALID();
-      }
-      result= decoded.data;
-      }
-      expect(result).toMatch(decodedData);
-
+      const savePresentationresponse = await savePresentation({ jwts });
+      expect(savePresentationresponse.jwts).toMatch(jwts);
     } catch (e) {
-      console.log(e);
       expect(e.code).toMatch(missingJwt.code);
     }
   });
