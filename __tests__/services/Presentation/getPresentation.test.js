@@ -1,9 +1,9 @@
-const { savePresentation, getPresentation } = require('../../../services/PresentationService');
+const { getPresentation } = require('../../../services/PresentationService');
 const {
-  missingJwt, missingId,
-} = require('../../constants/serviceErrors');
+   missingId,
+} = require('../../../constants/serviceErrors');
 
-describe('services/AppAuth/getPresentation.test.js', () => {
+describe('services/Presentation/getPresentation.test.js', () => {
 
   test('Expect getPresentation to throw on missing id', async () => {
     try {
