@@ -6,7 +6,6 @@ const {
 } = require('../../../constants/serviceErrors');
 const { jwts } = require('./constants');
 
-
 describe('services/Presentation/getPresentation.test.js', () => {
   beforeAll(async () => {
     await mongoose
