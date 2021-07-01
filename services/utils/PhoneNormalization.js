@@ -34,6 +34,5 @@ exports.normalizePhone = (phone) => {
   }
 
   // Dar formato E164 al número de teléfono
-  const result = phoneUtil.format(number, PNF.E164);
-  return result;
+  return phoneUtil.format(number, PNF.E164);
 };
