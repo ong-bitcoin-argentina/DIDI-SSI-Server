@@ -10,12 +10,11 @@ const Messages = require('../../constants/Messages');
 const Constants = require('../../constants/Constants');
 
 const createCertificateBySmsValidation = async (req, res) => {
-  const cellPhoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
-
   const { validationCode } = req.body;
   const { did } = req.body;
 
   try {
+    const cellPhoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
     // Validar código
     const phone = await SmsService.isValid(cellPhoneNumber, validationCode);
 

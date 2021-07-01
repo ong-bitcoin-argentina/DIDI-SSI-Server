@@ -282,6 +282,7 @@ module.exports = {
     SENDING(number) {
       return `Enviando sms a ${number}`;
     },
+    INVALID_NUMBER: 'Numero de teléfono invalido',
     VALIDATION: {
       MESSAGE: (code) => `${code} Ingresá este código en la app ai·di para darte de alta.`,
     },
