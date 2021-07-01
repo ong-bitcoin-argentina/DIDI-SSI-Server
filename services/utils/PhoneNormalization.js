@@ -27,7 +27,7 @@ exports.normalizePhone = (phone) => {
     // El número 9 no es requerido para mandar sms
     if (region === 'AR' && number.getNationalNumber().toString()[0] === '9') {
       const properNumber = number.getNationalNumber().toString().substring(1);
-      number = phoneUtil.parseAndKeepRawInput(properNumber);
+      number = phoneUtil.parseAndKeepRawInput(properNumber, region);
     }
   } catch (error) {
     throw Messages.SMS.INVALID_NUMBER;
