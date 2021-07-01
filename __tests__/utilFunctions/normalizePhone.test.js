@@ -10,7 +10,7 @@ describe('Normalize phone', () => {
 
   test('Expect error with 9 and 0. +xx90xxxx', async () => {
     try {
-      await normalizePhone(countries.argentina.inValidNumber);
+      await normalizePhone(countries.argentina.invalidNumber);
     } catch (e) {
       expect(e).toMatch(Messages.SMS.INVALID_NUMBER);
     }
@@ -31,7 +31,7 @@ describe('Normalize phone', () => {
 
   test('Expect error with Bolivia invalid number', async () => {
     try {
-      await normalizePhone(countries.bolivia.inValidNumber);
+      await normalizePhone(countries.bolivia.invalidNumber);
     } catch (e) {
       expect(e).toMatch(Messages.SMS.INVALID_NUMBER);
     }
@@ -44,7 +44,7 @@ describe('Normalize phone', () => {
 
   test('Expect error with Ecuador invalid number', async () => {
     try {
-      await normalizePhone(countries.ecuador.inValidNumber);
+      await normalizePhone(countries.ecuador.invalidNumber);
     } catch (e) {
       expect(e).toMatch(Messages.SMS.INVALID_NUMBER);
     }
@@ -57,7 +57,7 @@ describe('Normalize phone', () => {
 
   test('Expect error with Chile invalid number', async () => {
     try {
-      await normalizePhone(countries.chile.inValidNumber);
+      await normalizePhone(countries.chile.invalidNumber);
     } catch (e) {
       expect(e).toMatch(Messages.SMS.INVALID_NUMBER);
     }
@@ -70,7 +70,7 @@ describe('Normalize phone', () => {
 
   test('Expect error with Costa Rica invalid number', async () => {
     try {
-      await normalizePhone(countries.costaRica.inValidNumber);
+      await normalizePhone(countries.costaRica.invalidNumber);
     } catch (e) {
       expect(e).toMatch(Messages.SMS.INVALID_NUMBER);
     }
@@ -83,7 +83,7 @@ describe('Normalize phone', () => {
 
   test('Expect error with Panama invalid number', async () => {
     try {
-      await normalizePhone(countries.panama.inValidNumber);
+      await normalizePhone(countries.panama.invalidNumber);
     } catch (e) {
       expect(e).toMatch(Messages.SMS.INVALID_NUMBER);
     }
@@ -96,7 +96,7 @@ describe('Normalize phone', () => {
 
   test('Expect error with Peru invalid number', async () => {
     try {
-      await normalizePhone(countries.peru.inValidNumber);
+      await normalizePhone(countries.peru.invalidNumber);
     } catch (e) {
       expect(e).toMatch(Messages.SMS.INVALID_NUMBER);
     }
