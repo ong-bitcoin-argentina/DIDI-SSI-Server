@@ -1,6 +1,9 @@
 const { verifyToken } = require('../../../services/TokenService');
 const { missingJwt } = require('../../../constants/serviceErrors');
-const { tokenData, dataResponse, error } = require('./constants.js');
+
+const {
+  dataResponse, error, token, invalidToken,
+} = require('./constants.js');
 
 describe('services/Token/verifyToken.test.js', () => {
   test('Expect verifyToken to throw on missing jwt', async () => {
@@ -13,15 +16,16 @@ describe('services/Token/verifyToken.test.js', () => {
 
   test('Expect verifyToken to throw invalid token', async () => {
     try {
-      await verifyToken(tokenData.badToken);
+      await verifyToken(invalidToken);
     } catch (e) {
       expect(e.code).toBe(error.code);
     }
   });
+
   test('Expect verifyToken to verifyToken', async () => {
-    const result = await verifyToken(tokenData.goodToken);
-    expect(result.payload.iat).toBe(dataResponse.good.iat);
-    expect(result.payload.sub).toBe(dataResponse.good.sub);
-    expect(result.issuer).toBe(dataResponse.good.issuer);
+    const result = await verifyToken(await token);
+    expect(result.payload.iat).toBe(dataResponse.iat);
+    expect(result.payload.sub).toBe(dataResponse.sub);
+    expect(result.issuer).toBe(dataResponse.issuer);
   });
 });
