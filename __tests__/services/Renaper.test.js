@@ -15,7 +15,6 @@ const {
   missingFingerprintData,
   missingOperationId,
   missingFrontImage,
-  missingAnalyzeAnomalies,
   missingAnalyzeOcr,
   missingBackImage,
   missingSelfie,
@@ -107,14 +106,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect addFront to throw on missing analyzeAnomalies', async () => {
-    try {
-      await addFront('dni', 'gender', 'operationId', 'frontImage', undefined, 'analyzeOcr');
-    } catch (e) {
-      expect(e.code).toMatch(missingAnalyzeAnomalies.code);
-    }
-  });
-
   test('Expect addFront to throw on missing analyzeOcr', async () => {
     try {
       await addFront('dni', 'gender', 'operationId', 'frontImage', 'analyzeAnomalies', undefined);
@@ -155,14 +146,6 @@ describe('Should be green', () => {
       await addBack('dni', 'gender', 'operationId', undefined, 'analyzeAnomalies', 'analyzeOcr');
     } catch (e) {
       expect(e.code).toMatch(missingBackImage.code);
-    }
-  });
-
-  test('Expect addBack to throw on missing analyzeAnomalies', async () => {
-    try {
-      await addBack('dni', 'gender', 'operationId', 'backImage', undefined, 'analyzeOcr');
-    } catch (e) {
-      expect(e.code).toMatch(missingAnalyzeAnomalies.code);
     }
   });
 
