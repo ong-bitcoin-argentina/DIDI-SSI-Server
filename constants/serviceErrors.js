@@ -171,10 +171,6 @@ module.exports = {
     code: '#service-missingFrontImage',
     message: 'Falta el parámetro FRONTIMAGE',
   },
-  missingAnalyzeAnomalies: {
-    code: '#service-missingAnalyzeAnomalies',
-    message: 'Falta el parámetro ANALYZEANOMALIES',
-  },
   missingAnalyzeOcr: {
     code: '#service-missingAnalyzeOcr',
     message: 'Falta el parámetro ANALYZEOCR',

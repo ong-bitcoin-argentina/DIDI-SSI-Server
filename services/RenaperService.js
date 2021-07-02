@@ -9,7 +9,6 @@ const {
   missingFingerprintData,
   missingOperationId,
   missingFrontImage,
-  missingAnalyzeAnomalies,
   missingAnalyzeOcr,
   missingBackImage,
   missingSelfie,
@@ -96,7 +95,6 @@ module.exports.addFront = async function addFront(
   if (!gender) throw missingGender;
   if (!operationId) throw missingOperationId;
   if (!frontImage) throw missingFrontImage;
-  if (!analyzeAnomalies) throw missingAnalyzeAnomalies;
   if (!analyzeOcr) throw missingAnalyzeOcr;
   try {
     const result = await renaperPost(
@@ -126,7 +124,6 @@ module.exports.addBack = async function addBack(
   if (!gender) throw missingGender;
   if (!operationId) throw missingOperationId;
   if (!backImage) throw missingBackImage;
-  if (!analyzeAnomalies) throw missingAnalyzeAnomalies;
   if (!analyzeOcr) throw missingAnalyzeOcr;
   try {
     const result = await renaperPost(
