@@ -1,17 +1,9 @@
 const { sendPushNotification } = require('../../services/FirebaseService');
 const {
-  missingType, missingMessage, missingFirebaseId, missingTitle,
+  missingType, missingMessage, missingFirebaseId,
 } = require('../../constants/serviceErrors');
 
 describe('Should be green', () => {
-  test('Expect sendPushNotification to throw on missing title', async () => {
-    try {
-      await sendPushNotification(undefined, 'message', 'firebaseId', 'type');
-    } catch (e) {
-      expect(e.code).toMatch(missingTitle.code);
-    }
-  });
-
   test('Expect sendPushNotification to throw on missing message', async () => {
     try {
       await sendPushNotification('title', undefined, 'firebaseId', 'type');
