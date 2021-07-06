@@ -159,10 +159,6 @@ module.exports = {
     code: '#service-missingFrontImage',
     message: 'Falta el parámetro FRONTIMAGE',
   },
-  missingAnalyzeOcr: {
-    code: '#service-missingAnalyzeOcr',
-    message: 'Falta el parámetro ANALYZEOCR',
-  },
   missingBackImage: {
     code: '#service-missingBackImage',
     message: 'Falta el parámetro BACKIMAGE',

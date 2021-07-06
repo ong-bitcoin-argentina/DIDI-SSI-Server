@@ -9,7 +9,6 @@ const {
   missingFingerprintData,
   missingOperationId,
   missingFrontImage,
-  missingAnalyzeOcr,
   missingBackImage,
   missingSelfie,
   missingLastName,
@@ -95,7 +94,6 @@ module.exports.addFront = async function addFront(
   if (!gender) throw missingGender;
   if (!operationId) throw missingOperationId;
   if (!frontImage) throw missingFrontImage;
-  if (!analyzeOcr) throw missingAnalyzeOcr;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.ADD_FRONT,
@@ -124,7 +122,6 @@ module.exports.addBack = async function addBack(
   if (!gender) throw missingGender;
   if (!operationId) throw missingOperationId;
   if (!backImage) throw missingBackImage;
-  if (!analyzeOcr) throw missingAnalyzeOcr;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.ADD_BACK,
