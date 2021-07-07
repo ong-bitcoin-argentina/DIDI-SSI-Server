@@ -12,11 +12,11 @@ const Constants = require('../../constants/Constants');
 const updatePhoneNumber = async (req, res) => {
   const { did } = req.body;
   const { phoneValidationCode } = req.body;
-  const newPhoneNumber = await UserService.normalizePhone(req.body.newPhoneNumber);
   const { password } = req.body;
   const firebaseId = req.body.firebaseId ? req.body.firebaseId : '';
 
   try {
+    const newPhoneNumber = await UserService.normalizePhone(req.body.newPhoneNumber);
     // Validar telefono nuevo en uso
     await UserService.telTaken(newPhoneNumber, did);
 
