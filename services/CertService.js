@@ -202,8 +202,10 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
   try {
     const result = await verifyCredential(jwt, resolver);
     result.status = Constants.CERTIFICATE_STATUS.UNVERIFIED;
-    const cert = await Certificate.findByHash(hash);
-    if (cert) result.status = cert.status;
+    if (hash) {
+      const cert = await Certificate.findByHash(hash);
+      if (cert) result.status = cert.status;
+    }
 
     return result;
   } catch (err) {

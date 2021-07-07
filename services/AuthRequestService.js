@@ -4,7 +4,6 @@ const {
   missingOperationId,
   missingUserDID,
   missingDid,
-  missingErrMsg,
   missingStatus,
 } = require('../constants/serviceErrors');
 
@@ -63,7 +62,6 @@ module.exports.getByDID = async function getByDID(did) {
  */
 module.exports.update = async function update(status, errMsg) {
   if (!status) throw missingStatus;
-  if (!errMsg) throw missingErrMsg;
   try {
     // TODO: Fix operationId
     // eslint-disable-next-line no-undef

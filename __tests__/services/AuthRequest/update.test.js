@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const {
-  missingStatus, missingErrMsg,
+  missingStatus,
 } = require('../../../constants/serviceErrors');
 const {
   update, create,
@@ -30,14 +30,6 @@ describe('Should be green', () => {
       await update(undefined, 'errMsg');
     } catch (e) {
       expect(e.code).toMatch(missingStatus.code);
-    }
-  });
-
-  test('Expect update to throw on missing errMsg', async () => {
-    try {
-      await update('status', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingErrMsg.code);
     }
   });
 
