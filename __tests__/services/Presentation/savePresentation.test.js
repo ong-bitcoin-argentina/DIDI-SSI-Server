@@ -29,11 +29,10 @@ describe('services/Presentation/savePresentation.test.js', () => {
     }
   });
   test('Expect savePresentation generate the presentation', async () => {
-    try {
-      const savePresentationresponse = await savePresentation({ jwts });
-      expect(savePresentationresponse.jwts).toMatch(jwts);
-    } catch (e) {
-      expect(e.code).toMatch(missingJwt.code);
-    }
+    const jwtsParsed = JSON.parse(jwts);
+    const savePresentationresponse = await savePresentation({ jwts });
+    savePresentationresponse.jwts.forEach((jwt, index) => {
+      expect(jwt).toMatch(jwtsParsed[index]);
+    });
   });
 });
