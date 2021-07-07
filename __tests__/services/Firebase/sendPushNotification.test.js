@@ -4,7 +4,6 @@ const {
 } = require('../../../constants/serviceErrors');
 
 describe('services/Firebase/sendPushNotification.test.js', () => {
-
   test('Expect sendPushNotification to throw on missing title', async () => {
     try {
       await sendPushNotification(undefined, 'message', 'firebaseId', 'type');
