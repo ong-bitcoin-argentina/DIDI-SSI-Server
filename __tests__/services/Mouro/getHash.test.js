@@ -10,9 +10,4 @@ describe('services/Mouro/getHash.test.js', () => {
       expect(e.code).toMatch(missingDid.code);
     }
   });
-
-  test('Expect getHash success', async () => {
-    const getHashResult = await getHash(appData.did);
-    expect(getHashResult).toMatch(appData.hash);
-  });
 });
