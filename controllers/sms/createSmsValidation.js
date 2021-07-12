@@ -6,12 +6,12 @@ const Messages = require('../../constants/Messages');
 const Constants = require('../../constants/Constants');
 
 const createSmsValidation = async (req, res) => {
-  const phoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
   const { did } = req.body;
   const { password } = req.body;
   const { unique } = req.body;
 
   try {
+    const phoneNumber = await UserService.normalizePhone(req.body.cellPhoneNumber);
     // Validar que el teléfono no esté en uso
     if (unique) await UserService.telTaken(phoneNumber, did);
 

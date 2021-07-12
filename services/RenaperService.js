@@ -9,8 +9,6 @@ const {
   missingFingerprintData,
   missingOperationId,
   missingFrontImage,
-  missingAnalyzeAnomalies,
-  missingAnalyzeOcr,
   missingBackImage,
   missingSelfie,
   missingLastName,
@@ -89,15 +87,13 @@ module.exports.newOpperation = async function newOpperation(
 /**
  *  Realiza un post al servicio de renaper agregando frente del dni
  */
-module.exports.addFront = async function newOpperation(
+module.exports.addFront = async function addFront(
   dni, gender, operationId, frontImage, analyzeAnomalies, analyzeOcr,
 ) {
   if (!dni) throw missingDni;
   if (!gender) throw missingGender;
   if (!operationId) throw missingOperationId;
   if (!frontImage) throw missingFrontImage;
-  if (!analyzeAnomalies) throw missingAnalyzeAnomalies;
-  if (!analyzeOcr) throw missingAnalyzeOcr;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.ADD_FRONT,
@@ -126,8 +122,6 @@ module.exports.addBack = async function addBack(
   if (!gender) throw missingGender;
   if (!operationId) throw missingOperationId;
   if (!backImage) throw missingBackImage;
-  if (!analyzeAnomalies) throw missingAnalyzeAnomalies;
-  if (!analyzeOcr) throw missingAnalyzeOcr;
   try {
     const result = await renaperPost(
       Constants.RENAPER_URLS.ADD_BACK,
