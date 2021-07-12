@@ -128,7 +128,7 @@ module.exports.createCertificate = async function createCertificate(did, subject
   });
 
   // eslint-disable-next-line no-bitwise
-  const date = (new Date(expDate).getTime() / 1000) | 0;
+  const date = expDate ? (new Date(expDate).getTime() / 1000) | 0 : undefined;
 
   const vcPayload = {
     sub: did,
@@ -139,7 +139,7 @@ module.exports.createCertificate = async function createCertificate(did, subject
     },
   };
 
-  vcPayload.exp = date;
+  if (expDate) vcPayload.exp = date;
 
   try {
     const result = await createVerifiableCredential(vcPayload, vcissuer);
@@ -202,8 +202,10 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
   try {
     const result = await verifyCredential(jwt, resolver);
     result.status = Constants.CERTIFICATE_STATUS.UNVERIFIED;
-    const cert = await Certificate.findByHash(hash);
-    if (cert) result.status = cert.status;
+    if (hash) {
+      const cert = await Certificate.findByHash(hash);
+      if (cert) result.status = cert.status;
+    }
 
     return result;
   } catch (err) {

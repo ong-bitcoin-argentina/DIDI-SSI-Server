@@ -8,11 +8,12 @@ const createUser = async (req, res) => {
   const {
     password, did, privateKeySeed, name, lastname,
   } = req.body;
-  const phoneNumber = await UserService.normalizePhone(req.body.phoneNumber);
+
   const eMail = req.body.eMail.toLowerCase();
   const firebaseId = req.body.firebaseId ? req.body.firebaseId : '';
 
   try {
+    const phoneNumber = await UserService.normalizePhone(req.body.phoneNumber);
     await UserService.emailTaken(eMail);
     await UserService.telTaken(phoneNumber);
 
