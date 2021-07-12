@@ -1,8 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
 require('fast-text-encoding');
 
 const { addDelegate } = require('../../../services/BlockchainService');
 const { missingIssuerDid } = require('../../../constants/serviceErrors');
-
 const { data } = require('./constant');
 
 describe('services/Blockchain/addDelegate.test.js', () => {
@@ -17,7 +17,6 @@ describe('services/Blockchain/addDelegate.test.js', () => {
   // RSK
   test('Expect addDelegate to add Delegate RSK', async () => {
     const result = await addDelegate(data.issuerDIDRsk);
-    // console.log(result.events);
     expect(result.events.DIDDelegateChanged).toBeTruthy();
   });
 
@@ -33,7 +32,7 @@ describe('services/Blockchain/addDelegate.test.js', () => {
     expect(result.events.DIDDelegateChanged).toBeTruthy();
   });
 
-  test('Expect addDelegate to throw error', async () => {
+  test('Expect addDelegate to throw an error whit bad did', async () => {
     try {
       await addDelegate(data.badIssuerDID);
     } catch (e) {
