@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 require('fast-text-encoding');
 
-const { decodeCertificate } = require('../../../services/CertService');
+const { decodeCertificate, createPhoneCertificate } = require('../../../services/CertService');
 const { missingJwt, missingErrMsg } = require('../../../constants/serviceErrors');
 
 describe('services/Cert/decodeCertificate.test.js', () => {
@@ -19,5 +19,10 @@ describe('services/Cert/decodeCertificate.test.js', () => {
     } catch (e) {
       expect(e.code).toMatch(missingErrMsg.code);
     }
+  });
+  test('Expect decodeCertificate to throw on missing errMsg', async () => {
+    const credencial = await createPhoneCertificate('did:ethr:0x123', '123');
+    const decodificado = await decodeCertificate(credencial, 'err');
+    expect(decodificado.payload.sub).toBe('did:ethr:0x123');
   });
 });

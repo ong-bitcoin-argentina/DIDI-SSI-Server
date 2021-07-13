@@ -1,27 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 require('fast-text-encoding');
 
-const mongoose = require('mongoose');
-const { createCertificate } = require('../../../services/CertService');
+const { createCertificate, decodeCertificate } = require('../../../services/CertService');
 const { missingDid, missingSubject, missingErrMsg } = require('../../../constants/serviceErrors');
-const { MONGO_URL } = require('../../../constants/Constants');
 
 describe('services/Cert/createCertificate.test.js', () => {
-  beforeAll(async () => {
-    await mongoose
-      .connect(MONGO_URL, {
-        useCreateIndex: true,
-        useFindAndModify: false,
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
-      });
-  });
-
-  afterAll(async () => {
-    // await mongoose.connection.db.dropCollection('issuers');
-    await mongoose.connection.close();
-  });
-
   test('Expect createCertificate to throw on missing did', async () => {
     try {
       await createCertificate(undefined, 'subject', 'expDate', 'errMsg');
@@ -47,7 +30,8 @@ describe('services/Cert/createCertificate.test.js', () => {
   });
 
   test('Expect createCertificate to createCertificate', async () => {
-    const result = await createCertificate('did:ethr:0xb7123', 'TEL', 'expDate', 'errMsg');
-    console.log(result);
+    const result = await createCertificate('did:ethr:0x123', 'algo', undefined, 'errMsg');
+    const decodificado = await decodeCertificate(result, 'err');
+    expect(decodificado.payload.sub).toBe('did:ethr:0x123');
   });
 });

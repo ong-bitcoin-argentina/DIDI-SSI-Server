@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 require('fast-text-encoding');
 
-const { createMailCertificate } = require('../../../services/CertService');
+const { createMailCertificate, decodeCertificate } = require('../../../services/CertService');
 const { missingEmail, missingDid } = require('../../../constants/serviceErrors');
 
 describe('services/Cert/createMailCertificate.test.js', () => {
@@ -19,5 +19,11 @@ describe('services/Cert/createMailCertificate.test.js', () => {
     } catch (e) {
       expect(e.code).toMatch(missingEmail.code);
     }
+  });
+
+  test('Expect createMailCertificate to create a Mail Certificate', async () => {
+    const result = await createMailCertificate('did:ethr:0x123', 'mail@mail.com');
+    const decodificado = await decodeCertificate(result, 'err');
+    expect(decodificado.payload.sub).toBe('did:ethr:0x123');
   });
 });
