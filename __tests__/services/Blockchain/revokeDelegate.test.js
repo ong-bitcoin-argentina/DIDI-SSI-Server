@@ -2,11 +2,11 @@
 require('fast-text-encoding');
 
 const mongoose = require('mongoose');
-const { revokeDelegate, addDelegate } = require('../../../services/BlockchainService');
 const { missingOtherDID } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
+const { addDelegate, revokeDelegate } = require('../../../services/BlockchainService');
 const { data } = require('./constant');
-const { addIssuer } = require('../../../services/IssuerService');
+const { addIssuers } = require('./utils');
 
 describe('services/Blockchain/revokeDelegate.test.js', () => {
   beforeAll(async () => {
@@ -17,12 +17,7 @@ describe('services/Blockchain/revokeDelegate.test.js', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await addIssuer(data.issuerDIDRsk, 'blockchain-rsk-test');
-    await addDelegate(data.issuerDIDRsk);
-    await addIssuer(data.issuerDIDLatch, 'blockchain-latch--test');
-    await addDelegate(data.issuerDIDLatch);
-    // await addIssuer(data.issuerDIDBfa, 'blockchain-bfa--test');
-    // await addDelegate(data.issuerDIDBfa);
+    await addIssuers();
   });
 
   afterAll(async () => {
@@ -39,19 +34,22 @@ describe('services/Blockchain/revokeDelegate.test.js', () => {
   });
 
   // rsk
-  test('Expect revokeDelegate to revoke Delegate RSK', async () => {
+  test.skip('Expect revokeDelegate to revoke Delegate RSK', async () => {
+    await addDelegate(data.issuerDIDRsk);
     const result = await revokeDelegate(data.issuerDIDRsk);
     expect(result.deleted).toBe(true);
   });
 
   // Lacchain
-  test('Expect revokeDelegate to revoke Delegate LATCH', async () => {
+  test.skip('Expect revokeDelegate to revoke Delegate LATCH', async () => {
+    await addDelegate(data.issuerDIDLatch);
     const result = await revokeDelegate(data.issuerDIDLatch);
     expect(result.deleted).toBe(true);
   });
 
   // BFA
   test.skip('Expect revokeDelegate to revoke Delegate BFA', async () => {
+    await addDelegate(data.issuerDIDBfa);
     const result = await revokeDelegate(data.issuerDIDBfa);
     expect(result.deleted).toBe(true);
   });

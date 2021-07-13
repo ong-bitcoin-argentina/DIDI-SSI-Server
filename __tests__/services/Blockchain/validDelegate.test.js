@@ -6,12 +6,6 @@ const { missingIssuerDid } = require('../../../constants/serviceErrors');
 const { data } = require('./constant');
 
 describe('services/Blockchain/validDelegate.test.js', () => {
-  beforeAll(async () => {
-    await addDelegate(data.issuerDIDRsk);
-    await addDelegate(data.issuerDIDLatch);
-    // await addDelegate(data.issuerDIDBfa);
-  });
-
   test('Expect validDelegate to throw on missing issuerDID', async () => {
     try {
       await validDelegate(undefined);
@@ -22,12 +16,14 @@ describe('services/Blockchain/validDelegate.test.js', () => {
 
   // RSK
   test('Expect validDelegate to be true on RSK', async () => {
+    await addDelegate(data.issuerDIDRsk);
     const result = await validDelegate(data.issuerDIDRsk);
     expect(result).toBe(true);
   });
 
   // Lacchain
   test('Expect validDelegate to be true on Latch', async () => {
+    await addDelegate(data.issuerDIDLatch);
     const result = await validDelegate(data.issuerDIDLatch);
     expect(result).toBe(true);
   });
