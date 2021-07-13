@@ -315,14 +315,6 @@ describe('Should be green', () => {
     }
   });
 
-  test('Expect changePhoneNumber to throw on missing firebaseId', async () => {
-    try {
-      await changePhoneNumber('did', 'newPhoneNumber', 'password', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingFirebaseId.code);
-    }
-  });
-
   /**
    * changePassword
    */

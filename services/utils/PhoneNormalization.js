@@ -11,37 +11,26 @@
 
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 const PNF = require('google-libphonenumber').PhoneNumberFormat;
+const Messages = require('../../constants/Messages');
 
-/**
- * Obtenido de DIDI-Ronda
- */
-exports.normalizePhone = (phone, country = 'AR') => {
+exports.normalizePhone = (phone) => {
   let number;
-  const finalCountry = country;
 
   try {
-    number = phoneUtil.parseAndKeepRawInput(phone, country);
-    // Se remueve el 9 si es que esta delante del codigo de area
+    number = phoneUtil.parseAndKeepRawInput(phone);
+    const region = phoneUtil.getRegionCodeForNumber(number);
+
+    if (!phoneUtil.isValidNumberForRegion(number, region)) {
+      throw Messages.SMS.INVALID_NUMBER;
+    }
+    // Se remueve el 9 si es que esta delante del codigo de area en un numero Argentino
     // El número 9 no es requerido para mandar sms
-    if (number.getNationalNumber().toString()[0] === '9') {
+    if (region === 'AR' && number.getNationalNumber().toString()[0] === '9') {
       const properNumber = number.getNationalNumber().toString().substring(1);
-      number = phoneUtil.parseAndKeepRawInput(properNumber, country);
+      number = phoneUtil.parseAndKeepRawInput(properNumber, region);
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log('===== ERROR on parsing normalized phone =====');
-    if (error.message === 'Invalid country calling code') {
-      // Obtener el 1er número del telefono
-      const { 0: firstNumber } = phone;
-
-      if (firstNumber !== '9') {
-        // eslint-disable-next-line no-param-reassign
-        phone = `9 ${phone}`;
-      }
-      number = phoneUtil.parseAndKeepRawInput(phone, finalCountry);
-    } else {
-      throw error.message;
-    }
+    throw Messages.SMS.INVALID_NUMBER;
   }
 
   // Dar formato E164 al número de teléfono
