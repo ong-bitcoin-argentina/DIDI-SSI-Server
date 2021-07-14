@@ -3,9 +3,8 @@ const { decodeJWT } = require('did-jwt');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { saveShareRequest } = require('../../../services/ShareRequestService');
 const Encrypt = require('../../../models/utils/Encryption');
-const {
-  missingJwt,
-} = require('../../../constants/serviceErrors');
+const { missingJwt } = require('../../../constants/serviceErrors');
+const { jwt } = require('./constant');
 
 describe('__tests__/services/ShareRequest/saveShareRequest.test.js', () => {
   beforeAll(async () => {
@@ -28,8 +27,7 @@ describe('__tests__/services/ShareRequest/saveShareRequest.test.js', () => {
       expect(e.code).toMatch(missingJwt.code);
     }
   });
-  test.only('Expect saveShareRequest to throw on missing jwt', async () => {
-    const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJpc3MiOiJhc2QiLCJhdWQiOiJhc2QifQ.T_hESGkYz2OkwDvohzaVLaHfxbQwFOgVksErOzZ23WY';
+  test('Expect saveShareRequest to success', async () => {
     const { payload } = decodeJWT(jwt);
     const shareRequest = await saveShareRequest({ jwt });
 
