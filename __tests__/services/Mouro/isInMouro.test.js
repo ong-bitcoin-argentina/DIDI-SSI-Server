@@ -1,8 +1,15 @@
-const { isInMouro } = require('../../../services/MouroService');
+const { isInMouro, saveCertificate, revokeCertificate } = require('../../../services/MouroService');
 const { missingDid, missingJwt, missingErrMsg } = require('../../../constants/serviceErrors');
-const { appData } = require('./constants');
+const { data, cert } = require('./constants');
 
 describe('services/Mouro/getHash.test.js', () => {
+  let response;
+  beforeAll(async () => {
+    response = await saveCertificate(await cert, data.did);
+  });
+  afterAll(async () => {
+    await revokeCertificate(response.data, response.hash, data.did);
+  });
   test('Expect isInMouro to throw on missing jwt', async () => {
     try {
       await isInMouro(undefined, 'did', 'errMsg');
@@ -28,7 +35,7 @@ describe('services/Mouro/getHash.test.js', () => {
   });
 
   test('Expect isInMouro success', async () => {
-    const isInMouroResult = await isInMouro(appData.jwt, appData.did, 'myErrMsg');
-    expect(isInMouroResult).toBeUndefined();
+    const hash = await isInMouro(response.data, data.did, 'myErrMsg');
+    expect(hash).toMatch(response.hash);
   });
 });

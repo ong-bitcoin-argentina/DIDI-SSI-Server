@@ -18,3 +18,6 @@ before_install:
 - ssh-add /home/travis/.ssh/id_rsa
 - git config --global user.email "travis.ci@didi.org.ar"
 - git config --global user.name "didi-ssi-travis-bot"
+env:
+  global:
+    secure: BkmggZuzZmG8dczAu/6iNXt5n09tyOk6OPLSePmxXpGoeR/EfpH3WiGzGkfCmD60/w+ocutPn3iS2P1Pl77s2BVEZAeYP/rf4ZTxugX9TMg6h4BKYjeTtY/Nfo5nrGzSgI1oSJUdu3WYyhcOuDoIw6XTN5rA3rUExhxDJRLgL2hnyhe3qQcuOZ+JgFLjnGwpanQOYjAGgeic6CwsEaaXUecs/foeKG6HJPpBtAt3PwAUqi6a1uFuOjneGNDWgNQ+ATs6Z5SsCHUUKI8Y7J91e+dZmZuEg6RK8aHA17Lu5n9somET3EbrMj58Z18mtAR58nm0O6TSoYRnsehgGgf19e18RcyaOMvJPHuADb3OYJSvzJ0hBIEcPgkLduD4444lbZDNwLaBzlWZrQolgb4IdoLaergHeEDujUWHWJTjhJgRbqwnUBnv8+I8M/6PI8vpBbm5k8uTqv4MPLE+nGoF8aoSzkv1tfMijEjbiFCFPCaNXzyBdpVBYSRIYV6H5gT84e3vlRSUWWjvBXuILrvNM0+Q9AorNzmRy/F1PT0Oce73wl1B74Jr6v2bUQaTNt57IHsliIIsF3R+UF6Gif0nJXhEe5xcKoxSEYoFQYg3SkjiT+i8h/Il2rt+B4H9nJ9dUQ7rVRGMn3QcgmEXsE7di2QlWUia15WjwXWhml6UYp4=
