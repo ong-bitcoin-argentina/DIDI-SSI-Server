@@ -41,9 +41,9 @@ describe('services/Blockchain/revokeDelegate.test.js', () => {
   });
 
   // Lacchain
-  test.skip('Expect revokeDelegate to revoke Delegate LATCH', async () => {
-    await addDelegate(data.issuerDIDLatch);
-    const result = await revokeDelegate(data.issuerDIDLatch);
+  test.only('Expect revokeDelegate to revoke Delegate LACCH', async () => {
+    await addDelegate(data.issuerDIDLacch);
+    const result = await revokeDelegate(data.issuerDIDLacch);
     expect(result.deleted).toBe(true);
   });
 

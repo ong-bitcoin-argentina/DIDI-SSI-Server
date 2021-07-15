@@ -22,7 +22,7 @@ describe('services/Blockchain/addDelegate.test.js', () => {
 
   // Lacchain
   test('Expect addDelegate to add Delegate LATCH', async () => {
-    const result = await addDelegate(data.issuerDIDLatch);
+    const result = await addDelegate(data.issuerDIDLacch);
     expect(result.events.DIDDelegateChanged).toBeTruthy();
   });
 
@@ -34,7 +34,7 @@ describe('services/Blockchain/addDelegate.test.js', () => {
 
   test('Expect addDelegate to throw an error whit bad did', async () => {
     try {
-      await addDelegate(data.badIssuerDID);
+      await addDelegate(data.invalidIssuerDID);
     } catch (e) {
       expect(e.code).toMatch('INVALID_ARGUMENT');
     }

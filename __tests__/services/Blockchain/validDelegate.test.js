@@ -22,9 +22,9 @@ describe('services/Blockchain/validDelegate.test.js', () => {
   });
 
   // Lacchain
-  test('Expect validDelegate to be true on Latch', async () => {
-    await addDelegate(data.issuerDIDLatch);
-    const result = await validDelegate(data.issuerDIDLatch);
+  test('Expect validDelegate to be true on Lacch', async () => {
+    await addDelegate(data.issuerDIDLacch);
+    const result = await validDelegate(data.issuerDIDLacch);
     expect(result).toBe(true);
   });
 
