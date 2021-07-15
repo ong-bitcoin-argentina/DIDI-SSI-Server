@@ -2,7 +2,7 @@ const { getPayload } = require('../../../services/TokenService');
 const { missingJwt } = require('../../../constants/serviceErrors');
 const {
   token, invalidToken, dataResponse, error,
-} = require('./constants.js');
+} = require('./constants');
 
 describe('services/Token/getPayload.test.js', () => {
   test('Expect getPayload to throw on missing jwt', async () => {
