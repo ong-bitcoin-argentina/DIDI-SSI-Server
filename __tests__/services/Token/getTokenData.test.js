@@ -1,6 +1,6 @@
 const { getTokenData } = require('../../../services/TokenService');
 const { missingToken } = require('../../../constants/serviceErrors');
-const { token, dataResponse } = require('./constants.js');
+const { token, dataResponse } = require('./constants');
 
 describe('services/Token/getTokenData.test.js', () => {
   test('Expect getTokenData to throw on missing token', async () => {
