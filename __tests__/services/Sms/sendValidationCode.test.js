@@ -2,7 +2,7 @@ const { sendValidationCode } = require('../../../services/SmsService');
 const {
   missingPhoneNumber, missingCode,
 } = require('../../../constants/serviceErrors');
-const { userData } = require('./constans');
+const { userData } = require('./constanst');
 
 describe('Should be green', () => {
   test('Expect sendValidationCode to throw on missing phoneNumber', async () => {

@@ -4,7 +4,7 @@ const {
   missingPhoneNumber, missingCode,
 } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { userData, errorValid } = require('./constans');
+const { userData, errorValid } = require('./constanst');
 
 describe('Should be green', () => {
   beforeAll(async () => {
