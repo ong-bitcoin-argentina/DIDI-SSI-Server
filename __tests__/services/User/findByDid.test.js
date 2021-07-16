@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { getByDID, create } = require('../../../services/UserService');
+const { findByDid, create } = require('../../../services/UserService');
 
 const { missingDid } = require('../../../constants/serviceErrors');
-const { userData, secondDid } = require('./constant');
+const { userData, secondDid, errors } = require('./constant');
 
-describe('services/User/getByDID.test.js', () => {
+describe('services/User/findByDid.test.js', () => {
   let user;
   beforeAll(async () => {
     await mongoose
@@ -42,21 +42,25 @@ describe('services/User/getByDID.test.js', () => {
     await mongoose.connection.close();
   });
 
-  test('Expect getByDID to throw on missing did', async () => {
+  test('Expect findByDid to throw on missing did', async () => {
     try {
-      await getByDID(undefined);
+      await findByDid(undefined);
     } catch (e) {
       expect(e.code).toMatch(missingDid.code);
     }
   });
 
-  test('Expect getByDID to get user from user Did', async () => {
-    const response = await getByDID(user.did);
+  test('Expect findByDid to get user from user Did', async () => {
+    const response = await findByDid(user.did);
     expect(response.did).toMatch(user.did);
   });
 
-  test('Expect getByDID to be null user from inexistent user Did', async () => {
-    const response = await getByDID(secondDid);
-    expect(response).toBe(null);
+  test('Expect getByDID to throw error sending user from inexistent user Did', async () => {
+    try {
+      await findByDid(secondDid);
+    } catch (e) {
+      expect(e.code).toMatch(errors.missingDid.code);
+      expect(e.message).toMatch(errors.missingDid.message);
+    }
   });
 });
