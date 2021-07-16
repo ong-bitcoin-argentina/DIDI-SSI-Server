@@ -6,7 +6,7 @@ const {
 const {
   getByOperationId, create,
 } = require('../../../services/AuthRequestService');
-const { appData } = require('./constans');
+const { appData } = require('./constanst');
 
 describe('Should be green', () => {
   beforeAll(async () => {
