@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { getByEmail, create } = require('../../../services/UserService');
+const { emailTaken, create } = require('../../../services/UserService');
 const { missingEmail } = require('../../../constants/serviceErrors');
-const { userData } = require('./constant');
+const { userData, errors } = require('./constant');
 
-describe('services/User/getByEmail.test.js', () => {
-  let user;
+describe('services/User/emailTaken.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -24,7 +23,7 @@ describe('services/User/getByEmail.test.js', () => {
       name,
       lastname,
     } = userData;
-    user = await create(
+    await create(
       did,
       privateKeySeed,
       userMail,
@@ -41,21 +40,24 @@ describe('services/User/getByEmail.test.js', () => {
     await mongoose.connection.close();
   });
 
-  test('Expect getByEmail to throw on missing email', async () => {
+  test('Expect emailTaken to throw on missing mail', async () => {
     try {
-      await getByEmail(undefined);
+      await emailTaken(undefined, 'exeptionDid');
     } catch (e) {
       expect(e.code).toMatch(missingEmail.code);
     }
   });
 
-  test('Expect getByEmail to get user from user email', async () => {
-    const response = await getByEmail(userData.userMail);
-    expect(response.mail.encrypted).toBe(user.mail.encrypted);
+  test('Expect emailTaken to throw error on email taken', async () => {
+    try {
+      await emailTaken(userData.userMail);
+    } catch (e) {
+      expect(e.code).toBe(errors.emailTaken.code);
+    }
   });
 
-  test('Expect getByEmail to response null sending user from inexistent user email', async () => {
-    const response = await getByEmail('mail@mail.com');
-    expect(response).toBe(null);
+  test('Expect emailTaken to response undefined sending email not taken', async () => {
+    const response = await emailTaken('mail@mail.com');
+    expect(response).toBe(undefined);
   });
 });
