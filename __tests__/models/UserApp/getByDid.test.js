@@ -35,11 +35,12 @@ describe('UserApp getOrCreate', () => {
     expect(result.userId.did).toBe(userData.did);
     expect(result.appAuthId.name).toBe(appData.name);
   });
+  // Los siguientes test se saltean debido al mal funcionamiento del modelo
   test.skip('Expect to throw error on missing did', async () => {
     const result = await UserApp.getByDID(undefined);
     expect(result).toBeNull();
   });
-  test.skip('Expect to get multible userApp by did', async () => {
+  test.skip('Expect to get multiple userApp by did', async () => {
     const secondAppAuth = await createAppAuth(secondAppData);
     await UserApp.getOrCreate(user.id, secondAppAuth);
     const result = await UserApp.getByDID(userData.did);
