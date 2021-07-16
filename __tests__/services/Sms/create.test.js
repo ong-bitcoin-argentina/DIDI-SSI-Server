@@ -4,7 +4,7 @@ const {
   missingPhoneNumber, missingCode,
 } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { userData } = require('./constans');
+const { userData } = require('./constanst');
 
 describe('services/Sms/create.test.js', () => {
   beforeAll(async () => {

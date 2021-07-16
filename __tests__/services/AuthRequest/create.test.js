@@ -6,7 +6,7 @@ const {
 } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
 
-const { appData } = require('./constans');
+const { appData } = require('./constanst');
 
 describe('services/AuthRequest/create.test.js', () => {
   beforeAll(async () => {
