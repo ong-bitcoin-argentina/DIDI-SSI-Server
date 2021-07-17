@@ -50,7 +50,7 @@ module.exports.revokeDelegate = async function revokeDelegate(otherDID) {
       { did: SERVER_DID, privateKey: SERVER_PRIVATE_KEY },
       otherDID,
     );
-    return await issuer.delete();
+    return issuer.delete();
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);

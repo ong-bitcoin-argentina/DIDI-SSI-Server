@@ -21,7 +21,7 @@
 		"express"
 	],
 	"dependencies": {
-		"@proyecto-didi/didi-blockchain-manager": "1.2.0",
+		"@proyecto-didi/didi-blockchain-manager": "1.3.0",
 		"@proyecto-didi/didi-ssi-logger": "0.0.7",
 		"apollo-boost": "0.4.7",
 		"apollo-cache-inmemory": "1.6.5",
