@@ -1,14 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
-require('fast-text-encoding');
-
 const mongoose = require('mongoose');
 const { missingOtherDID } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { revokeDelegate } = require('../../../services/BlockchainService');
-const { data } = require('./constant');
 const { addIssuers } = require('./utils');
 
 describe('services/Blockchain/revokeDelegate.test.js', () => {
+  let rsk;
+  let lacchain;
+  let bfa;
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -17,7 +17,10 @@ describe('services/Blockchain/revokeDelegate.test.js', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await addIssuers();
+    const issuers = await addIssuers();
+    rsk = issuers.rsk;
+    lacchain = issuers.lacchain;
+    bfa = issuers.bfa;
   });
 
   afterAll(async () => {
@@ -34,18 +37,18 @@ describe('services/Blockchain/revokeDelegate.test.js', () => {
   });
 
   test('Expect revokeDelegate to revoke Delegate RSK', async () => {
-    const result = await revokeDelegate(data.issuerDIDRsk);
+    const result = await revokeDelegate(rsk.did);
     expect(result.deleted).toBe(true);
   });
 
   test('Expect revokeDelegate to revoke Delegate LACCH', async () => {
-    const result = await revokeDelegate(data.issuerDIDLacch);
+    const result = await revokeDelegate(lacchain.did);
     expect(result.deleted).toBe(true);
   });
 
   // Skiped because out of gas
   test.skip('Expect revokeDelegate to revoke Delegate BFA', async () => {
-    const result = await revokeDelegate(data.issuerDIDBfa);
+    const result = await revokeDelegate(bfa.did);
     expect(result.deleted).toBe(true);
   });
 });
