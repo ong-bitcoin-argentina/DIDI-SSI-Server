@@ -21,7 +21,7 @@ describe('services/Blockchain/addDelegate.test.js', () => {
   });
 
   // Lacchain
-  test('Expect addDelegate to add Delegate LATCH', async () => {
+  test('Expect addDelegate to add Delegate LACCH', async () => {
     const result = await addDelegate(data.issuerDIDLacch);
     expect(result.events.DIDDelegateChanged).toBeTruthy();
   });

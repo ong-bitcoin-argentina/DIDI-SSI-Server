@@ -1,8 +1,14 @@
+const { Credentials } = require('uport-credentials');
+
+const rsk = Credentials.createIdentity();
+const lacchain = Credentials.createIdentity();
+const bfa = Credentials.createIdentity();
+
 module.exports = {
   data: {
-    issuerDIDRsk: 'did:ethr:rsk:0xb71d5ba22cd5a244cfc9f991f98ad7fd4ce0e888',
-    issuerDIDLacch: 'did:ethr:lacchain:0xb71d5ba22cd5a244cfc9f991f98ad7fd4ce0e888',
-    issuerDIDBfa: 'did:ethr:bfa:0xb71d5ba22cd5a244cfc9f991f98ad7fd4ce0e888',
+    issuerDIDRsk: `did:ethr:rsk:${rsk.did}`,
+    issuerDIDLacch: `did:ethr:lacchain:${lacchain.did}`,
+    issuerDIDBfa: `did:ethr:bfa:${bfa.did}`,
     invalidIssuerDID: 'did:ethr:0xb7123',
   },
 };
