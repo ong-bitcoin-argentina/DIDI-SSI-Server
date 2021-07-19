@@ -8,3 +8,5 @@ docker-compose
 __tests__
 Didi-server-api.pdf
 Didi-server.pdf
+.env
+.env.test
