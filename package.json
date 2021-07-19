@@ -21,7 +21,7 @@
 		"express"
 	],
 	"dependencies": {
-		"@proyecto-didi/didi-blockchain-manager": "1.2.0",
+		"@proyecto-didi/didi-blockchain-manager": "1.3.0",
 		"@proyecto-didi/didi-ssi-logger": "0.0.7",
 		"apollo-boost": "0.4.7",
 		"apollo-cache-inmemory": "1.6.5",
@@ -60,8 +60,8 @@
 	"devDependencies": {
 		"commitizen": "^4.2.3",
 		"coveralls": "^3.1.0",
+		"didi-ssi-server-functional-test": "https://github.com/ong-bitcoin-argentina/DIDI-SSI-Server-functional-test",
 		"cz-jira-smart-commit": "^3.0.0",
-		"DIDI-SSI-Server-functional-test": "git+https://github.com/ong-bitcoin-argentina/DIDI-SSI-Server-functional-test",
 		"eslint": "^7.25.0",
 		"eslint-config-airbnb-base": "^14.2.1",
 		"eslint-plugin-import": "^2.22.1",
