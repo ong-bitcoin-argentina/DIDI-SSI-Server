@@ -9,6 +9,10 @@ const userData = {
   lastname: 'test',
 };
 const secondDid = 'did:ethr:0x36f6dc06d34b164aec5421c9071a0d07765d4ee1';
+const image = {
+  contentType: 'image/jpeg',
+  path: '__tests__/services/User/utils/image.jpg',
+};
 
 const errors = {
   missingDid: {
@@ -52,10 +56,19 @@ const errors = {
     message: 'No se pudo obtener el usuario, por favor inténtelo de nuevo más tarde.',
   },
   invalidPhoneNumber: 'Numero de teléfono invalido',
+  imageCreate: {
+    code: 'IMAGE_CREATE',
+    message: 'Hubo un error durante la creación  de la imagen, por favor inténtelo de nuevo más tarde.',
+  },
+  imageGet: {
+    code: 'IMAGE_GET',
+    message: 'No se pudo obtener la imagen, por favor inténtelo de nuevo más tarde.',
+  },
 };
 
 module.exports = {
   userData,
   secondDid,
   errors,
+  image,
 };
