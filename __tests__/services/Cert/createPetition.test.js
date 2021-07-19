@@ -1,8 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies */
-require('fast-text-encoding');
-
-const { createPetition } = require('../../../services/CertService');
+const { createPetition, decodeCertificate } = require('../../../services/CertService');
 const { missingClaims, missingCallback, missingDid } = require('../../../constants/serviceErrors');
+const { data } = require('./constant');
 
 describe('services/Cert/createPetition.test.js', () => {
   test('Expect createPetition to throw on missing did', async () => {
@@ -27,5 +25,12 @@ describe('services/Cert/createPetition.test.js', () => {
     } catch (e) {
       expect(e.code).toMatch(missingCallback.code);
     }
+  });
+
+  test('Expect createPetition to success', async () => {
+    const { did, claims, callback } = data;
+    const response = await createPetition(did, claims, callback);
+    const { payload } = await decodeCertificate(response, 'err');
+    expect(payload.sub).toBe(data.did);
   });
 });

@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-// require('fast-text-encoding');
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { missingIssuerDid } = require('../../../constants/serviceErrors');
