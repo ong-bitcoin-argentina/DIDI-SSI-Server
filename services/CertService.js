@@ -87,9 +87,8 @@ module.exports.createPetition = async function createPetition(did, claims, cb) {
       claims,
       type: 'shareReq',
     };
+    const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
 
-    // TODO: FIX
-    // eslint-disable-next-line no-undef
     const credentials = new Credentials({ did: `did:ethr:${Constants.SERVER_DID}`, signer, resolver });
     const petition = await credentials.signJWT(payload);
     // eslint-disable-next-line no-console
