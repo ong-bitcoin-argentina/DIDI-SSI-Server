@@ -1,8 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies */
-require('fast-text-encoding');
-
 const { createMailCertificate, decodeCertificate } = require('../../../services/CertService');
 const { missingEmail, missingDid } = require('../../../constants/serviceErrors');
+const { data } = require('./constant');
 
 describe('services/Cert/createMailCertificate.test.js', () => {
   test('Expect createMailCertificate to throw on missing did', async () => {
@@ -22,8 +20,8 @@ describe('services/Cert/createMailCertificate.test.js', () => {
   });
 
   test('Expect createMailCertificate to create a Mail Certificate', async () => {
-    const result = await createMailCertificate('did:ethr:0x123', 'mail@mail.com');
-    const decodificado = await decodeCertificate(result, 'err');
-    expect(decodificado.payload.sub).toBe('did:ethr:0x123');
+    const result = await createMailCertificate(data.did, data.mail);
+    const { payload } = await decodeCertificate(result, 'err');
+    expect(payload.sub).toBe(data.did);
   });
 });

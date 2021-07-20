@@ -1,8 +1,7 @@
-/* eslint-disable import/no-extraneous-dependencies */
-require('fast-text-encoding');
-
 const { createCertificate, decodeCertificate } = require('../../../services/CertService');
 const { missingDid, missingSubject, missingErrMsg } = require('../../../constants/serviceErrors');
+const { data } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/Cert/createCertificate.test.js', () => {
   test('Expect createCertificate to throw on missing did', async () => {
@@ -29,9 +28,14 @@ describe('services/Cert/createCertificate.test.js', () => {
     }
   });
 
-  test('Expect createCertificate to createCertificate', async () => {
-    const result = await createCertificate('did:ethr:0x123', 'algo', undefined, 'errMsg');
-    const decodificado = await decodeCertificate(result, 'err');
-    expect(decodificado.payload.sub).toBe('did:ethr:0x123');
+  test('Expect createCertificate to success', async () => {
+    const result = await createCertificate(
+      data.did,
+      data.did,
+      '123456',
+      Messages.CERTIFICATE.ERR.CREATE,
+    );
+    const { payload } = await decodeCertificate(result, 'err');
+    expect(payload.sub).toBe(data.did);
   });
 });

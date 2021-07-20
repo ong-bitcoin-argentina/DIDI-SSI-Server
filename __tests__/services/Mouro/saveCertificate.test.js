@@ -23,7 +23,7 @@ describe('services/Mouro/saveCertificate.test.js', () => {
     }
   });
 
-  test('Expect saveCertificate to succes', async () => {
+  test('Expect saveCertificate to success', async () => {
     response = await saveCertificate(await cert, data.did);
     expect(response.data).toMatch(await cert);
     expect(response.hash).not.toBe(undefined);

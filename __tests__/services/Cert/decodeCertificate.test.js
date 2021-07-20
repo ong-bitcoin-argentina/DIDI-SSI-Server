@@ -1,8 +1,7 @@
-/* eslint-disable import/no-extraneous-dependencies */
-require('fast-text-encoding');
-
-const { decodeCertificate, createPhoneCertificate } = require('../../../services/CertService');
+const { decodeCertificate, createCertificate } = require('../../../services/CertService');
 const { missingJwt, missingErrMsg } = require('../../../constants/serviceErrors');
+const { data } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/Cert/decodeCertificate.test.js', () => {
   test('Expect decodeCertificate to throw on missing jwt', async () => {
@@ -20,9 +19,24 @@ describe('services/Cert/decodeCertificate.test.js', () => {
       expect(e.code).toMatch(missingErrMsg.code);
     }
   });
-  test('Expect decodeCertificate to throw on missing errMsg', async () => {
-    const credencial = await createPhoneCertificate('did:ethr:0x123', '123');
-    const decodificado = await decodeCertificate(credencial, 'err');
-    expect(decodificado.payload.sub).toBe('did:ethr:0x123');
+
+  test('Expect decodeCertificate to success', async () => {
+    const cert = await createCertificate(
+      data.did,
+      data.did,
+      '123456',
+      Messages.CERTIFICATE.ERR.CREATE,
+    );
+    const { payload } = await decodeCertificate(cert, Messages.ISSUER.ERR.CERT_IS_INVALID);
+    expect(payload.sub).toBe(data.did);
+  });
+
+  test('Expect decodeCertificate to throw on invalid certificate', async () => {
+    try {
+      await decodeCertificate('jwt', Messages.ISSUER.ERR.CERT_IS_INVALID);
+    } catch (e) {
+      expect(e.code).toMatch(Messages.ISSUER.ERR.CERT_IS_INVALID.code);
+      expect(e.message).toMatch(Messages.ISSUER.ERR.CERT_IS_INVALID.message);
+    }
   });
 });

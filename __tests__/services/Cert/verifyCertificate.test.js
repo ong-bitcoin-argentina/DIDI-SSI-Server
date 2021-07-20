@@ -1,10 +1,19 @@
-/* eslint-disable import/no-extraneous-dependencies */
-require('fast-text-encoding');
-
-const { verifyCertificate } = require('../../../services/CertService');
+const { verifyCertificate, createCertificate } = require('../../../services/CertService');
 const { missingJwt, missingErrMsg } = require('../../../constants/serviceErrors');
+const { data } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/Cert/verifyCertificate.test.js', () => {
+  let cert;
+  beforeAll(async () => {
+    cert = await createCertificate(
+      data.did,
+      data.did,
+      undefined,
+      Messages.CERTIFICATE.ERR.CREATE,
+    );
+  });
+
   test('Expect verifyCertificate to throw on missing jwt', async () => {
     try {
       await verifyCertificate(undefined, 'hash', 'errMsg');
@@ -19,5 +28,10 @@ describe('services/Cert/verifyCertificate.test.js', () => {
     } catch (e) {
       expect(e.code).toMatch(missingErrMsg.code);
     }
+  });
+
+  test('Expect verifyCertificate to success', async () => {
+    const response = await verifyCertificate(cert, undefined, Messages.ISSUER.ERR.IS_INVALID);
+    expect(response).not.toBe(null);
   });
 });
