@@ -60,7 +60,7 @@
 	"devDependencies": {
 		"commitizen": "^4.2.3",
 		"coveralls": "^3.1.0",
-		"didi-ssi-server-functional-test": "https://github.com/ong-bitcoin-argentina/DIDI-SSI-Server-functional-test",
+		"didi-ssi-server-functional-test": "https://github.com/ong-bitcoin-argentina/DIDI-SSI-Server-functional-test#1.1.1",
 		"cz-jira-smart-commit": "^3.0.0",
 		"eslint": "^7.25.0",
 		"eslint-config-airbnb-base": "^14.2.1",
