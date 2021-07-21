@@ -220,7 +220,7 @@ module.exports = {
       MESSAGE: 'Tienes un pedido de certificado nuevo',
     },
     NEW_CERT: {
-      TITLE: undefined,
+      TITLE: 'Nueva credencial',
       MESSAGE: 'Tenés una nueva Credencial disponible para descargar en ai·di',
     },
   },
@@ -282,6 +282,7 @@ module.exports = {
     SENDING(number) {
       return `Enviando sms a ${number}`;
     },
+    INVALID_NUMBER: 'Numero de teléfono invalido',
     VALIDATION: {
       MESSAGE: (code) => `${code} Ingresá este código en la app ai·di para darte de alta.`,
     },

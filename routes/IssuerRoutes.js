@@ -153,7 +153,7 @@ router.post(
   '/issuer/verifyCertificate',
   Validator.validateBody([{ name: 'jwt', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
   halfHourLimiter,
-  issuer.createCertificateByJwt,
+  issuer.verifyCertificateByJwt,
 );
 
 /**

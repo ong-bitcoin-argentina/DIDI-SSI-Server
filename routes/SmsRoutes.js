@@ -15,7 +15,7 @@ const {
  *   /sendSmsValidator:
  *   post:
  *     summary: Validación de teléfono
- *     description: El usuario debe proveer su número de celular para poder generar una validación a través de SMS. Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario.
+ *     description: El usuario debe proveer su número de celular para poder generar una validación a través de SMS. Si el did ya tiene un usuario asociado, se requiere el ingreso de la contraseña para dicho usuario. El numero debe ser ingresado con + adelante y sin 0 luego del codigo de pais.
  *     requestBody:
  *       required:
  *         - cellPhoneNumber

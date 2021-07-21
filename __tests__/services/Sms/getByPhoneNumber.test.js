@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { getByPhoneNumber, create } = require('../../../services/SmsService');
 const { missingPhoneNumber } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { userData, error } = require('./constans');
+const { userData, error } = require('./constanst');
 
 describe('services/Sms/getByPhoneNumber.test.js', () => {
   beforeAll(async () => {

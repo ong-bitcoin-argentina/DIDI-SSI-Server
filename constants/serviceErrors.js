@@ -75,21 +75,9 @@ module.exports = {
     code: '#service-missingAction',
     message: 'Falta el parámetro ACTION',
   },
-  missingTitle: {
-    code: '#service-missingTitle',
-    message: 'Falta el parámetro TITLE',
-  },
-  missingMessage: {
-    code: '#service-missingMessage',
-    message: 'Falta el parámetro MESSAGE',
-  },
   missingFirebaseId: {
     code: '#service-missingFirebaseId',
     message: 'Falta el parámetro FIREBASEID',
-  },
-  missingType: {
-    code: '#service-missingType',
-    message: 'Falta el parámetro TYPE',
   },
   missingDni: {
     code: '#service-missingDni',
@@ -170,14 +158,6 @@ module.exports = {
   missingFrontImage: {
     code: '#service-missingFrontImage',
     message: 'Falta el parámetro FRONTIMAGE',
-  },
-  missingAnalyzeAnomalies: {
-    code: '#service-missingAnalyzeAnomalies',
-    message: 'Falta el parámetro ANALYZEANOMALIES',
-  },
-  missingAnalyzeOcr: {
-    code: '#service-missingAnalyzeOcr',
-    message: 'Falta el parámetro ANALYZEOCR',
   },
   missingBackImage: {
     code: '#service-missingBackImage',
