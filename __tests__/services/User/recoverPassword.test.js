@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { recoverPassword, create } = require('../../../services/UserService');
 const { missingPassword, missingEmail } = require('../../../constants/serviceErrors');
-const { userData, errors } = require('./constant');
+const { userData } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/recoverPassword.test.js', () => {
   const newPassword = '123456';
@@ -67,8 +68,8 @@ describe('services/User/recoverPassword.test.js', () => {
     try {
       await recoverPassword('mail@mail.com', newPassword);
     } catch (e) {
-      expect(e.code).toMatch(errors.noMatchUserMail.code);
-      expect(e.message).toMatch(errors.noMatchUserMail.message);
+      expect(e.code).toMatch(Messages.USER.ERR.NOMATCH_USER_EMAIL.code);
+      expect(e.message).toMatch(Messages.USER.ERR.NOMATCH_USER_EMAIL.message);
     }
   });
 });

@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { login, create } = require('../../../services/UserService');
 const { missingDid, missingEmail } = require('../../../constants/serviceErrors');
-const { userData, errors } = require('./constant');
+const { userData } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/login.test.js', () => {
   beforeAll(async () => {
@@ -67,8 +68,8 @@ describe('services/User/login.test.js', () => {
       const { did, userPass } = userData;
       await login(did, 'mail@mail.com', userPass);
     } catch (e) {
-      expect(e.code).toMatch(errors.invalidLogin.code);
-      expect(e.message).toMatch(errors.invalidLogin.message);
+      expect(e.code).toMatch(Messages.USER.ERR.INVALID_LOGIN.code);
+      expect(e.message).toMatch(Messages.USER.ERR.INVALID_LOGIN.message);
     }
   });
 
@@ -77,8 +78,8 @@ describe('services/User/login.test.js', () => {
       const { did, userMail } = userData;
       await login(did, userMail, '123456');
     } catch (e) {
-      expect(e.code).toMatch(errors.invalidLogin.code);
-      expect(e.message).toMatch(errors.invalidLogin.message);
+      expect(e.code).toMatch(Messages.USER.ERR.INVALID_LOGIN.code);
+      expect(e.message).toMatch(Messages.USER.ERR.INVALID_LOGIN.message);
     }
   });
 });

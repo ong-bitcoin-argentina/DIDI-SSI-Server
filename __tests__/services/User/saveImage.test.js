@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { saveImage, create } = require('../../../services/UserService');
 const { missingDid, missingContentType, missingPath } = require('../../../constants/serviceErrors');
-const { userData, image, errors } = require('./constant');
+const { userData, image } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/saveImage.test.js', () => {
   beforeAll(async () => {
@@ -73,8 +74,8 @@ describe('services/User/saveImage.test.js', () => {
     try {
       await saveImage(userData.did, image.contentType, `${image.path}/`);
     } catch (e) {
-      expect(e.code).toMatch(errors.imageCreate.code);
-      expect(e.message).toMatch(errors.imageCreate.message);
+      expect(e.code).toMatch(Messages.IMAGE.ERR.CREATE.code);
+      expect(e.message).toMatch(Messages.IMAGE.ERR.CREATE.message);
     }
   });
 });

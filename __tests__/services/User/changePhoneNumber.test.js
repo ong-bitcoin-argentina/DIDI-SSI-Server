@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { changePhoneNumber, create } = require('../../../services/UserService');
 const { missingDid, missingPassword, missingPhoneNumber } = require('../../../constants/serviceErrors');
-const { userData, errors, secondDid } = require('./constant');
+const { userData, secondDid } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/changePhoneNumber.test.js', () => {
   const newPhoneNumber = '+5432145678';
@@ -76,8 +77,8 @@ describe('services/User/changePhoneNumber.test.js', () => {
     try {
       await changePhoneNumber(secondDid, newPhoneNumber, userPass, firebaseId);
     } catch (e) {
-      expect(e.code).toMatch(errors.getUser.code);
-      expect(e.message).toMatch(errors.getUser.message);
+      expect(e.code).toMatch(Messages.USER.ERR.GET.code);
+      expect(e.message).toMatch(Messages.USER.ERR.GET.message);
     }
   });
 
@@ -86,8 +87,8 @@ describe('services/User/changePhoneNumber.test.js', () => {
     try {
       await changePhoneNumber(did, newPhoneNumber, '123456', firebaseId);
     } catch (e) {
-      expect(e.code).toMatch(errors.invalidPassword.code);
-      expect(e.message).toMatch(errors.invalidPassword.message);
+      expect(e.code).toMatch(Messages.USER.ERR.INVALID_USER.code);
+      expect(e.message).toMatch(Messages.USER.ERR.INVALID_USER.message);
     }
   });
 });

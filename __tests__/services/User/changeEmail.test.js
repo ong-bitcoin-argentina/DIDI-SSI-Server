@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { changeEmail, create } = require('../../../services/UserService');
 const { missingDid, missingEmail, missingPassword } = require('../../../constants/serviceErrors');
-const { userData, errors, secondDid } = require('./constant');
+const { userData, secondDid } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/changeEmail.test.js', () => {
   const newEmail = 'newmail@newmail.com';
@@ -76,8 +77,8 @@ describe('services/User/changeEmail.test.js', () => {
     try {
       await changeEmail(secondDid, newEmail, userData.userPass);
     } catch (e) {
-      expect(e.code).toMatch(errors.getUser.code);
-      expect(e.message).toMatch(errors.getUser.message);
+      expect(e.code).toMatch(Messages.USER.ERR.GET.code);
+      expect(e.message).toMatch(Messages.USER.ERR.GET.message);
     }
   });
 
@@ -85,8 +86,17 @@ describe('services/User/changeEmail.test.js', () => {
     try {
       await changeEmail(userData.did, newEmail, '123456');
     } catch (e) {
-      expect(e.code).toMatch(errors.invalidPassword.code);
-      expect(e.message).toMatch(errors.invalidPassword.message);
+      expect(e.code).toMatch(Messages.USER.ERR.INVALID_USER.code);
+      expect(e.message).toMatch(Messages.USER.ERR.INVALID_USER.message);
+    }
+  });
+
+  test('Expect changeEmail to throw error on wrong email', async () => {
+    try {
+      await changeEmail(userData.did, '123456', userData.userPass);
+    } catch (e) {
+      expect(e.code).toMatch(Messages.USER.ERR.INVALID_USER.code);
+      expect(e.message).toMatch(Messages.USER.ERR.INVALID_USER.message);
     }
   });
 });

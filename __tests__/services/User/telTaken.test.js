@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { telTaken, create } = require('../../../services/UserService');
 const { missingPhoneNumber } = require('../../../constants/serviceErrors');
-const { userData, errors } = require('./constant');
+const { userData } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/telTaken.test.js', () => {
   beforeAll(async () => {
@@ -48,16 +49,21 @@ describe('services/User/telTaken.test.js', () => {
     }
   });
 
-  test('Expect telTaken to throw error on email taken', async () => {
+  test('Expect telTaken to throw error on phoneNumber taken', async () => {
     try {
       await telTaken(userData.phoneNumber);
     } catch (e) {
-      expect(e.code).toBe(errors.telTaken.code);
-      expect(e.message).toBe(errors.telTaken.message);
+      expect(e.code).toBe(Messages.USER.ERR.TEL_TAKEN.code);
+      expect(e.message).toBe(Messages.USER.ERR.TEL_TAKEN.message);
     }
   });
 
-  test('Expect telTaken to response undefined sending email not taken', async () => {
+  test('Expect emailTaken to response undefined sending email taken and exceptionDid', async () => {
+    const response = await telTaken(userData.phoneNumber, userData.did);
+    expect(response).toBe(false);
+  });
+
+  test('Expect telTaken to response undefined sending phoneNumber not taken', async () => {
     const response = await telTaken('+54123512548');
     expect(response).toBe(false);
   });

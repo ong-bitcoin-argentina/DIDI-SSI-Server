@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { changePassword, create } = require('../../../services/UserService');
 const { missingDid, missingPassword } = require('../../../constants/serviceErrors');
-const { userData, errors, secondDid } = require('./constant');
+const { userData, secondDid } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/changePassword.test.js', () => {
   const newPassword = '123456';
@@ -76,8 +77,8 @@ describe('services/User/changePassword.test.js', () => {
     try {
       await changePassword(secondDid, userData.userPass, newPassword);
     } catch (e) {
-      expect(e.code).toMatch(errors.noMatchUserDid.code);
-      expect(e.message).toMatch(errors.noMatchUserDid.message);
+      expect(e.code).toMatch(Messages.USER.ERR.NOMATCH_USER_DID.code);
+      expect(e.message).toMatch(Messages.USER.ERR.NOMATCH_USER_DID.message);
     }
   });
 
@@ -85,8 +86,8 @@ describe('services/User/changePassword.test.js', () => {
     try {
       await changePassword(userData.did, userData.userPass, newPassword);
     } catch (e) {
-      expect(e.code).toMatch(errors.invalidPassword.code);
-      expect(e.message).toMatch(errors.invalidPassword.message);
+      expect(e.code).toMatch(Messages.USER.ERR.INVALID_USER.code);
+      expect(e.message).toMatch(Messages.USER.ERR.INVALID_USER.message);
     }
   });
 });

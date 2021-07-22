@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { emailTaken, create } = require('../../../services/UserService');
 const { missingEmail } = require('../../../constants/serviceErrors');
-const { userData, errors } = require('./constant');
+const { userData } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/emailTaken.test.js', () => {
   beforeAll(async () => {
@@ -42,17 +43,23 @@ describe('services/User/emailTaken.test.js', () => {
 
   test('Expect emailTaken to throw on missing mail', async () => {
     try {
-      await emailTaken(undefined, 'exeptionDid');
+      await emailTaken(undefined, 'exceptionDid');
     } catch (e) {
       expect(e.code).toMatch(missingEmail.code);
     }
+  });
+
+  test('Expect emailTaken to response undefined sending email taken and exceptionDid', async () => {
+    const response = await emailTaken(userData.userMail, userData.did);
+    expect(response).toBe(undefined);
   });
 
   test('Expect emailTaken to throw error on email taken', async () => {
     try {
       await emailTaken(userData.userMail);
     } catch (e) {
-      expect(e.code).toBe(errors.emailTaken.code);
+      expect(e.code).toBe(Messages.USER.ERR.EMAIL_TAKEN.code);
+      expect(e.message).toBe(Messages.USER.ERR.EMAIL_TAKEN.message);
     }
   });
 

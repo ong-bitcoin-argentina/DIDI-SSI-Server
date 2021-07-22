@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { normalizePhone, create } = require('../../../services/UserService');
 const { missingPhoneNumber } = require('../../../constants/serviceErrors');
-const { userData, errors } = require('./constant');
+const { userData } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/normalizePhone.test.js', () => {
   beforeAll(async () => {
@@ -57,7 +58,7 @@ describe('services/User/normalizePhone.test.js', () => {
     try {
       await normalizePhone('+54223123123123');
     } catch (e) {
-      expect(e).toMatch(errors.invalidPhoneNumber);
+      expect(e).toMatch(Messages.SMS.INVALID_NUMBER);
     }
   });
 });

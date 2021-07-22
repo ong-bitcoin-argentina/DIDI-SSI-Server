@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { getImage, create, saveImage } = require('../../../services/UserService');
 const { missingId } = require('../../../constants/serviceErrors');
-const { userData, image, errors } = require('./constant');
+const { userData, image } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/getImage.test.js', () => {
   let imageId;
@@ -60,8 +61,8 @@ describe('services/User/getImage.test.js', () => {
     try {
       await getImage(`${imageId}123`);
     } catch (e) {
-      expect(e.code).toMatch(errors.imageGet.code);
-      expect(e.message).toMatch(errors.imageGet.message);
+      expect(e.code).toMatch(Messages.IMAGE.ERR.GET.code);
+      expect(e.message).toMatch(Messages.IMAGE.ERR.GET.message);
     }
   });
 });

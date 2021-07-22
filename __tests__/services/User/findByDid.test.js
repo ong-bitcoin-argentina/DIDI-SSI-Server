@@ -3,7 +3,8 @@ const { MONGO_URL } = require('../../../constants/Constants');
 const { findByDid, create } = require('../../../services/UserService');
 
 const { missingDid } = require('../../../constants/serviceErrors');
-const { userData, secondDid, errors } = require('./constant');
+const { userData, secondDid } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/findByDid.test.js', () => {
   let user;
@@ -59,8 +60,8 @@ describe('services/User/findByDid.test.js', () => {
     try {
       await findByDid(secondDid);
     } catch (e) {
-      expect(e.code).toMatch(errors.missingDid.code);
-      expect(e.message).toMatch(errors.missingDid.message);
+      expect(e.code).toMatch(Messages.VALIDATION.DID_NOT_FOUND(secondDid).code);
+      expect(e.message).toMatch(Messages.VALIDATION.DID_NOT_FOUND(secondDid).message);
     }
   });
 });

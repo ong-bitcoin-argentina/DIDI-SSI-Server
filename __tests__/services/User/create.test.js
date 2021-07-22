@@ -11,7 +11,8 @@ const {
   missingName,
   missingLastName,
 } = require('../../../constants/serviceErrors');
-const { userData, errors } = require('./constant');
+const { userData } = require('./constant');
+const Messages = require('../../../constants/Messages');
 
 describe('services/User/emailTaken.test.js', () => {
   beforeAll(async () => {
@@ -150,8 +151,8 @@ describe('services/User/emailTaken.test.js', () => {
         lastname,
       );
     } catch (e) {
-      expect(e.code).toMatch(errors.existingUser.code);
-      expect(e.message).toMatch(errors.existingUser.message);
+      expect(e.code).toMatch(Messages.USER.ERR.USER_ALREADY_EXIST.code);
+      expect(e.message).toMatch(Messages.USER.ERR.USER_ALREADY_EXIST.message);
     }
   });
 });
