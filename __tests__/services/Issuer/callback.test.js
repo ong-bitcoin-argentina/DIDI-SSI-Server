@@ -10,7 +10,7 @@ const { postOptionsAuth, deleteOptionsAuth } = require('./utils');
 
 describe('services/Issuer/callback.test.js', () => {
   const {
-    did, token, callbackUrl, name, key,
+    rskDid, token, callbackUrl, name, key,
   } = data;
   beforeAll(async () => {
     await mongoose
@@ -20,10 +20,10 @@ describe('services/Issuer/callback.test.js', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await fetch(`${callbackUrl}`, postOptionsAuth(token, { did, name, key }));
+    await fetch(`${callbackUrl}`, postOptionsAuth(token, { rskDid, name, key }));
   });
   afterAll(async () => {
-    await fetch(`${callbackUrl}/${did}`, deleteOptionsAuth(token, {}));
+    await fetch(`${callbackUrl}/${rskDid}`, deleteOptionsAuth(token, {}));
     await mongoose.connection.close();
   });
   describe('Should be green', () => {
@@ -60,7 +60,7 @@ describe('services/Issuer/callback.test.js', () => {
     });
 
     test('Expect callback to throw on missing data', async () => {
-      const response = await callback(callbackUrl, did, token, { status: 'Creado' });
+      const response = await callback(callbackUrl, rskDid, token, { status: 'Creado' });
       expect(response).not.toBe(null);
     });
   });
