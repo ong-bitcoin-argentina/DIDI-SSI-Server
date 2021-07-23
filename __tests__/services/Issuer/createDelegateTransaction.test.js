@@ -27,7 +27,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing did', async () => {
       try {
         await createDelegateTransaction({
-          did: undefined, name: 'name', callbackUrl: 'callbackUrl', token: 'token', action: 'action',
+          undefined, name, callbackUrl, token, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingDid.code);
@@ -37,7 +37,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing callbackUrl', async () => {
       try {
         await createDelegateTransaction({
-          did: 'did', name: 'name', callbackUrl: undefined, token: 'token', action: 'action',
+          did, name, undefined, token, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingCallback.code);
@@ -47,7 +47,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing token', async () => {
       try {
         await createDelegateTransaction({
-          did: 'did', name: 'name', callbackUrl: 'callbackUrl', token: undefined, action: 'action',
+          did, name, callbackUrl, undefined, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingToken.code);
@@ -57,14 +57,14 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing action', async () => {
       try {
         await createDelegateTransaction({
-          did: 'did', name: 'name', callbackUrl: 'callbackUrl', token: 'token', action: undefined,
+          did, name, callbackUrl, token, undefined,
         });
       } catch (e) {
         expect(e.code).toMatch(missingAction.code);
       }
     });
 
-    test('Expect createDelegateTransaction to throw on missing data', async () => {
+    test('Expect createDelegateTransaction to success', async () => {
       const response = await createDelegateTransaction({
         did, name, callbackUrl, token, action,
       });

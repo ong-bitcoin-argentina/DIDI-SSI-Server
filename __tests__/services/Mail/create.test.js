@@ -39,11 +39,6 @@ describe('services/Mail/create.test.js', () => {
   test('Expect create success a email', async () => {
     const createRessult = await create(mailData.mail, mailData.code, mailData.did);
     const decriptResult = await Encrypt.decript(createRessult.email.encrypted);
-    expect(createRessult.did).toBe(undefined);
-    expect(Object.prototype.toString.call(createRessult.code.hash) === '[object String]')
-      .toBeTruthy();
-    expect(Object.prototype.toString.call(createRessult.code.salt) === '[object String]')
-      .toBeTruthy();
     expect(decriptResult).toMatch(mailData.mail);
   });
 });

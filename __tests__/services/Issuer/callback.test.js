@@ -59,7 +59,7 @@ describe('services/Issuer/callback.test.js', () => {
       }
     });
 
-    test('Expect callback to throw on missing data', async () => {
+    test('Expect callback to get response fron issuer', async () => {
       const response = await callback(callbackUrl, rskDid, token, { status: 'Creado' });
       expect(response).not.toBe(null);
     });

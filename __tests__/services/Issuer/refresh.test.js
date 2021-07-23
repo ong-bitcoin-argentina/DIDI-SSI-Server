@@ -8,6 +8,7 @@ const Messages = require('../../../constants/Messages');
 
 describe('services/Issuer/refresh.test.js', () => {
   const { did, name, secondDid } = data;
+  let issuerExp;
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -16,7 +17,8 @@ describe('services/Issuer/refresh.test.js', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    await addIssuer(did, name);
+    const response = await addIssuer(did, name);
+    issuerExp = response.expireOn;
   });
   afterAll(async () => {
     await revokeDelegate(did);
@@ -34,10 +36,10 @@ describe('services/Issuer/refresh.test.js', () => {
 
     test('Expect refresh to success', async () => {
       const response = await refresh(did);
-      expect(response.expireOn).not.toBe(null);
+      expect(response.expireOn).not.toBe(issuerExp);
     });
 
-    test('Expect refresh to throw error on invalid did', async () => {
+    test('Expect refresh to throw error on unregistered did', async () => {
       try {
         await refresh(secondDid);
       } catch (e) {
