@@ -19,8 +19,6 @@ const getByPhoneNumber = async function getByPhoneNumber(phoneNumber) {
     if (phone.expired()) return Promise.reject(Messages.SMS.ERR.VALIDATION_EXPIRED);
     return Promise.resolve(phone);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
 };
@@ -52,8 +50,6 @@ module.exports.sendValidationCode = async function sendValidationCode(phoneNumbe
     if (Constants.DEBUGG) console.log(Messages.SMS.SENT);
     return Promise.resolve(result);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(Messages.SMS.ERR.SMS_SEND_ERROR);
   }
 };
@@ -70,8 +66,6 @@ module.exports.create = async function create(phoneNumber, code, did) {
     if (!phone) return Promise.reject(Messages.SMS.ERR.CREATE);
     return Promise.resolve(phone);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
 };
@@ -87,8 +81,6 @@ module.exports.validatePhone = async function validatePhone(phone, did) {
     const validatedPhone = await phone.validatePhone(did);
     return Promise.resolve(validatedPhone);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
 };
@@ -105,8 +97,6 @@ module.exports.isValid = async function isValid(phoneNumber, code) {
     if (!valid) return Promise.reject(Messages.SMS.ERR.NO_SMSCODE_MATCH);
     return Promise.resolve(phone);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
 };
@@ -121,8 +111,6 @@ module.exports.isValidated = async function isValidated(did, phoneNumber) {
     const isValid = await Phone.isValidated(did, phoneNumber);
     return Promise.resolve(isValid);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
 };
