@@ -1,16 +1,27 @@
 const fetch = require('node-fetch');
+const fs = require('fs');
+const sanitize = require('mongo-sanitize');
+
 const Issuer = require('../models/Issuer');
+const Image = require('../models/Image');
+const DelegateTransaction = require('../models/DelegateTransaction');
 
 const BlockchainService = require('./BlockchainService');
 
 const Constants = require('../constants/Constants');
 const Messages = require('../constants/Messages');
-
 const { putOptionsAuth } = require('../constants/RequestOptions');
-const DelegateTransaction = require('../models/DelegateTransaction');
 
 const {
-  missingDid, missingName, missingUrl, missingToken, missingData, missingCallback, missingAction,
+  missingDid,
+  missingName,
+  missingUrl,
+  missingToken,
+  missingData,
+  missingCallback,
+  missingAction,
+  missingContentType,
+  missingPath,
 } = require('../constants/serviceErrors');
 
 /**
@@ -40,14 +51,16 @@ module.exports.addIssuer = async function addIssuer(did, name) {
 /**
  *  Permite editar el nombre de un issuer a partir de un did
  */
-module.exports.editName = async function editName(did, name) {
+module.exports.editData = async function editData(did, name, description) {
   if (!did) throw missingDid;
-  if (!name) throw missingName;
   try {
-    const issuer = await Issuer.getByDID(did);
+    let issuer = await Issuer.getByDID(did);
     if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
-    return await issuer.editName(name);
+    if (name) issuer = await issuer.editName(name);
+    if (description) issuer = await issuer.editDescription(description);
+
+    return issuer;
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
@@ -132,5 +145,36 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
     // eslint-disable-next-line no-console
     console.log(err);
     throw err;
+  }
+};
+
+/**
+ *  Obtener issuer y actualizar imagen
+ */
+module.exports.saveImage = async function saveImage(did, contentType, path) {
+  if (!did) throw missingDid;
+  if (!contentType) throw missingContentType;
+  if (!path) throw missingPath;
+  try {
+    // Obtener información de usuario
+    const issuer = await Issuer.getByDID(did);
+    if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
+
+    // Crear imagen
+    const cleanedPath = sanitize(path);
+    const image = fs.readFileSync(cleanedPath);
+    const encodedImage = image.toString('base64');
+    const buffer = Buffer.from(encodedImage, 'base64');
+
+    const { _id } = await Image.generate(buffer, contentType);
+
+    // Actualizar imagen del usuario
+    await issuer.updateImage(_id);
+
+    return Promise.resolve(_id);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    return Promise.reject(Messages.IMAGE.ERR.CREATE);
   }
 };

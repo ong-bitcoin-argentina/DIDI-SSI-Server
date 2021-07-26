@@ -7,7 +7,7 @@ const { createDelegation } = require('./createDelegation');
 const { deleteDelegation } = require('./deleteDelegation');
 const { refreshDelegation } = require('./refreshDelegation');
 const { readIssuerNameByDid } = require('./readIssuerNameByDid');
-const { updateIssuerNameByDid } = require('./updateIssuerNameByDid');
+const { updateIssuerDataByDid } = require('./updateIssuerDataByDid');
 const { verifyCertificateByJwt } = require('./verifyCertificateByJwt');
 
 module.exports = {
@@ -20,6 +20,6 @@ module.exports = {
   deleteDelegation,
   refreshDelegation,
   readIssuerNameByDid,
-  updateIssuerNameByDid,
+  updateIssuerDataByDid,
   verifyCertificateByJwt,
 };
