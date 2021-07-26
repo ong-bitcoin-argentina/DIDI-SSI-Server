@@ -12,6 +12,14 @@ const IssuerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
+  imageId: {
+    type: String,
+    required: true,
+  },
   blockHash: {
     type: String,
     required: true,
@@ -79,6 +87,36 @@ IssuerSchema.methods.editName = async function editName(name) {
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
+    return Promise.reject(err);
+  }
+};
+
+IssuerSchema.methods.editDescription = async function editDescription(description) {
+  const updateQuery = { _id: this._id };
+  const updateAction = {
+    $set: { description },
+  };
+
+  try {
+    return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    return Promise.reject(err);
+  }
+};
+
+IssuerSchema.methods.updateImage = async function updateImage(imageId) {
+  const updateQuery = { _id: this._id };
+  const updateAction = {
+    $set: { imageId },
+  };
+
+  try {
+    await Issuer.findOneAndUpdate(updateQuery, updateAction);
+    this.imageId = imageId;
+    return Promise.resolve(this);
+  } catch (err) {
     return Promise.reject(err);
   }
 };
