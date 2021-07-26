@@ -38,4 +38,26 @@ describe('services/Cert/createCertificate.test.js', () => {
     const { payload } = await decodeCertificate(result, 'err');
     expect(payload.sub).toBe(data.did);
   });
+
+  test('Expect createCertificate to success with undefined expDate', async () => {
+    const result = await createCertificate(
+      data.did,
+      data.did,
+      undefined,
+      Messages.CERTIFICATE.ERR.CREATE,
+    );
+    const { payload } = await decodeCertificate(result, 'err');
+    expect(payload.sub).toBe(data.did);
+  });
+
+  test('Expect createCertificate to create certificate with "exp": "0"', async () => {
+    const result = await createCertificate(
+      data.did,
+      data.did,
+      'asdasd',
+      Messages.CERTIFICATE.ERR.CREATE,
+    );
+    const { payload } = await decodeCertificate(result, 'err');
+    expect(payload.exp).toBe(0);
+  });
 });

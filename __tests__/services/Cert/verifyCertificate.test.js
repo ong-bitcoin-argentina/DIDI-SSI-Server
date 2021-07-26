@@ -34,4 +34,9 @@ describe('services/Cert/verifyCertificate.test.js', () => {
     const response = await verifyCertificate(cert, undefined, Messages.ISSUER.ERR.IS_INVALID);
     expect(response).not.toBe(null);
   });
+
+  test('Expect verifyCertificate to throw on invalid certificate', async () => {
+    const response = await verifyCertificate(data.jwt, 'hash', Messages.ISSUER.ERR.IS_INVALID);
+    expect(response).not.toBe(null);
+  });
 });
