@@ -18,7 +18,6 @@ const IssuerSchema = new mongoose.Schema({
   },
   imageId: {
     type: String,
-    required: true,
   },
   blockHash: {
     type: String,

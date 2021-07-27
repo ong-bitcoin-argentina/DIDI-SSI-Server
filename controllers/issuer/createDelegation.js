@@ -7,17 +7,21 @@ const { CREATE } = Constants.DELEGATE_ACTIONS;
 
 const createDelegation = async (req, res) => {
   const {
-    did, name, callbackUrl, token,
+    did, name, callbackUrl, token, description,
   } = req.body;
+  const { path, mimetype, size } = req.file;
+
   try {
     const didExist = await IssuerService.getIssuerByDID(did);
     if (didExist) throw Messages.ISSUER.ERR.DID_EXISTS;
     const delegateTransaction = await IssuerService.createDelegateTransaction({
       did,
       name,
+      description,
       callbackUrl,
       token,
       action: CREATE,
+      file: { path, mimetype, size },
     });
 
     return ResponseHandler.sendRes(res, delegateTransaction);

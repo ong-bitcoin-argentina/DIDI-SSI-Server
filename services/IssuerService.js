@@ -1,3 +1,6 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable max-len */
+/* eslint-disable no-undef */
 const fetch = require('node-fetch');
 const fs = require('fs');
 const sanitize = require('mongo-sanitize');
@@ -22,14 +25,29 @@ const {
   missingAction,
   missingContentType,
   missingPath,
+  missingDescription,
+  missingId,
 } = require('../constants/serviceErrors');
+
+const createImage = async (path, contentType) => {
+  const cleanedPath = sanitize(path);
+  const image = fs.readFileSync(cleanedPath);
+  const encodedImage = image.toString('base64');
+  const buffer = Buffer.from(encodedImage, 'base64');
+
+  const { _id } = await Image.generate(buffer, contentType);
+
+  return _id;
+};
 
 /**
  *  Crea un nuevo issuer
  */
-module.exports.addIssuer = async function addIssuer(did, name) {
+module.exports.addIssuer = async function addIssuer(did, name, description, file) {
   if (!did) throw missingDid;
   if (!name) throw missingName;
+  if (!description) throw missingDescription;
+
   // Verificar que el issuer no exista
   const byDIDExist = await Issuer.getByDID(did);
   if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
@@ -43,8 +61,15 @@ module.exports.addIssuer = async function addIssuer(did, name) {
     expireOn.setSeconds(expireOn.getSeconds() + Number(Constants.BLOCKCHAIN.DELEGATE_DURATION));
   }
 
+  let imageId;
+  if (file) {
+    const { size, mimetype, path } = file;
+    if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
+    imageId = await createImage(path, mimetype);
+  }
+
   return Issuer.create({
-    name, did, expireOn, blockHash: transactionHash,
+    name, did, expireOn, blockHash: transactionHash, description, imageId,
   });
 };
 
@@ -131,7 +156,7 @@ module.exports.callback = async function callback(url, did, token, data) {
  *  Permite manejar autorización para emitir credenciales de un issuer dada una action
  */
 module.exports.createDelegateTransaction = async function createDelegateTransaction({
-  did, name, callbackUrl, token, action,
+  did, name, callbackUrl, token, action, description, file,
 }) {
   if (!did) throw missingDid;
   if (!callbackUrl) throw missingCallback;
@@ -139,7 +164,7 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
   if (!action) throw missingAction;
   try {
     return await DelegateTransaction.create({
-      did, name, callbackUrl, token, action,
+      did, name, callbackUrl, token, action, description, file,
     });
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -160,13 +185,7 @@ module.exports.saveImage = async function saveImage(did, contentType, path) {
     const issuer = await Issuer.getByDID(did);
     if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
-    // Crear imagen
-    const cleanedPath = sanitize(path);
-    const image = fs.readFileSync(cleanedPath);
-    const encodedImage = image.toString('base64');
-    const buffer = Buffer.from(encodedImage, 'base64');
-
-    const { _id } = await Image.generate(buffer, contentType);
+    const _id = await createImage(path, contentType);
 
     // Actualizar imagen del usuario
     await issuer.updateImage(_id);
@@ -176,5 +195,21 @@ module.exports.saveImage = async function saveImage(did, contentType, path) {
     // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.IMAGE.ERR.CREATE);
+  }
+};
+
+/**
+ *  Obtener imagen de usuario según un id
+ */
+module.exports.getImage = async function getImage(id) {
+  if (!id) throw missingId;
+  try {
+    const image = await Image.getById(id);
+    if (!image) return Promise.reject(Messages.IMAGE.ERR.GET);
+    return Promise.resolve(image);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    return Promise.reject(Messages.IMAGE.ERR.GET);
   }
 };

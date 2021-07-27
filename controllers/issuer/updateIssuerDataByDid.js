@@ -16,9 +16,7 @@ const updateIssuerDataByDid = async (req, res) => {
     // Actualizar imagen
     if (path && mimetype && size) {
       if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
-      const result = await IssuerService.saveImage(did, mimetype, path);
-      console.log('imagen del issuer');
-      console.log(result);
+      await IssuerService.saveImage(did, mimetype, path);
     }
 
     return ResponseHandler.sendRes(res, issuer.name);

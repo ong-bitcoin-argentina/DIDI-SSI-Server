@@ -197,7 +197,7 @@ router.post(
  *         - did
  *         - name
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -205,10 +205,15 @@ router.post(
  *                 type: string
  *               name:
  *                 type: string
+ *               description:
+ *                 type: string
  *               callbackUrl:
  *                 type: string
  *               token:
  *                 type: string
+ *               file:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
@@ -222,14 +227,10 @@ router.post(
 router.post(
   '/issuer',
   Validator.validateBody([
-    {
-      name: 'did',
-      validate: [Constants.VALIDATION_TYPES.IS_STRING],
-    },
-    {
-      name: 'name',
-      validate: [Constants.VALIDATION_TYPES.IS_STRING],
-    },
+    { name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'description', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'file', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE], optional: true },
   ]),
   Validator.checkValidationResult,
   issuer.createDelegation,
@@ -322,7 +323,7 @@ router.post(
  * @openapi
  *   /issuer/{did}:
  *   get:
- *     summary: Obtiene el nombre de un emisor autorizado a partir de su did.
+ *     summary: Obtiene la informacion de un emisor autorizado a partir de su did.
  *     parameters:
  *       - name: did
  *         in: path
@@ -337,7 +338,7 @@ router.post(
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/issuer/:did', issuer.readIssuerNameByDid);
+router.get('/issuer/:did', issuer.readIssuerDataByDid);
 
 /**
  * @openapi
@@ -381,5 +382,26 @@ router.patch(
   Validator.checkValidationResult,
   issuer.updateIssuerDataByDid,
 );
+
+/**
+ * @openapi
+ *   /issuer/image/{did}:
+ *   get:
+ *     summary: Obtiene la imagen de un emisor autorizado a partir de su did.
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/issuer/image/:did', issuer.readIssuerImageByDid);
 
 module.exports = router;
