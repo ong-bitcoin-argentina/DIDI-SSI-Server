@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const fetch = require('node-fetch');
 const Issuer = require('../models/Issuer');
 
@@ -24,8 +25,7 @@ module.exports.addIssuer = async function addIssuer(did, name) {
   if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 
   const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
-  // eslint-disable-next-line no-console
-  console.log({ transactionHash, ...rest });
+  if (Constants.DEBUGG) console.log({ transactionHash, ...rest });
 
   const expireOn = new Date();
   if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
@@ -49,7 +49,6 @@ module.exports.editName = async function editName(did, name) {
 
     return await issuer.editName(name);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     throw err;
   }
@@ -66,8 +65,7 @@ module.exports.refresh = async function refresh(did) {
 
   try {
     const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
-    // eslint-disable-next-line no-console
-    console.log({ transactionHash, ...rest });
+    if (Constants.DEBUGG) console.log({ transactionHash, ...rest });
 
     const expireOn = new Date();
     if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
@@ -78,7 +76,6 @@ module.exports.refresh = async function refresh(did) {
 
     return { ...byDIDExist, expireOn, blockHash: transactionHash };
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     throw err;
   }
@@ -108,7 +105,6 @@ module.exports.callback = async function callback(url, did, token, data) {
 
     return jsonResp;
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     throw err;
   }
@@ -129,7 +125,6 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
       did, name, callbackUrl, token, action,
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     throw err;
   }

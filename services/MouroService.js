@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { SimpleSigner, createJWT } = require('did-jwt');
 const { InMemoryCache } = require('apollo-cache-inmemory');
 const ApolloClient = require('apollo-boost').default;
@@ -54,12 +55,10 @@ module.exports.getHash = async function getHash(did) {
         did,
       },
     });
-    // eslint-disable-next-line no-console
-    console.log(Messages.CERTIFICATE.HASH);
+    if (Constants.DEBUGG) console.log(Messages.CERTIFICATE.HASH);
     const res = result.data.hash;
     return Promise.resolve(res);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.CERTIFICATE.ERR.HASH);
   }
@@ -86,15 +85,13 @@ module.exports.saveCertificate = async function saveCertificate(cert, did) {
         did,
       },
     });
-    // eslint-disable-next-line no-console
-    console.log(Messages.CERTIFICATE.SAVED);
+    if (Constants.DEBUGG) console.log(Messages.CERTIFICATE.SAVED);
     const res = result.data.addEdge;
     return Promise.resolve({
       data: res.jwt,
       hash: res.hash,
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.CERTIFICATE.ERR.SAVE);
   }
@@ -119,11 +116,10 @@ module.exports.revokeCertificate = async function revokeCertificate(jwt, hash, d
         did,
       },
     });
-    // eslint-disable-next-line no-console
-    console.log(Messages.CERTIFICATE.REVOKED);
+
+    if (Constants.DEBUGG) console.log(Messages.CERTIFICATE.REVOKED);
     return Promise.resolve(result);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.CERTIFICATE.ERR.REVOKE);
   }
@@ -154,7 +150,6 @@ module.exports.isInMouro = async function isInMouro(jwt, did, errMsg) {
     const res = result.data.edgeByJwt;
     return Promise.resolve(res && res.hash ? res.hash : undefined);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(errMsg);
   }
