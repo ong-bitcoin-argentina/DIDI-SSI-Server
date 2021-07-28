@@ -8,13 +8,13 @@ const updateIssuerDataByDid = async (req, res) => {
   try {
     const { did } = req.params;
     const { name, description } = req.body;
-    const { path, mimetype, size } = req.file;
 
-    // Actualizar nombre y descripcion
+    // Actualizar nombre y descripción
     const issuer = await IssuerService.editData(did, name, description);
 
     // Actualizar imagen
-    if (path && mimetype && size) {
+    if (req.file) {
+      const { path, mimetype, size } = req.file;
       if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
       await IssuerService.saveImage(did, mimetype, path);
     }

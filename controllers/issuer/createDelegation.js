@@ -9,7 +9,14 @@ const createDelegation = async (req, res) => {
   const {
     did, name, callbackUrl, token, description,
   } = req.body;
-  const { path, mimetype, size } = req.file;
+  let path;
+  let mimetype;
+  let size;
+  if (req.file) {
+    path = req.file.path;
+    mimetype = req.file.file;
+    size = req.file.size;
+  }
 
   try {
     const didExist = await IssuerService.getIssuerByDID(did);

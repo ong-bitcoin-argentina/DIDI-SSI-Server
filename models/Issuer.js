@@ -123,6 +123,18 @@ IssuerSchema.methods.updateImage = async function updateImage(imageId) {
 const Issuer = mongoose.model('Issuer', IssuerSchema);
 module.exports = Issuer;
 
+Issuer.getAll = async function getAll(limit, page) {
+  return Issuer.find({
+    deleted: false,
+  },
+  {
+    did: 1, name: 1, description: 1, imageId: 1,
+  })
+    .sort({ name: 1 })
+    .skip(page > 0 ? ((page - 1) * limit) : 0)
+    .limit(limit);
+};
+
 Issuer.getByDID = async function getByDID(did) {
   return Issuer.findOne({ did });
 };

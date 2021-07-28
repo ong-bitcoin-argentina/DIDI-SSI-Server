@@ -128,6 +128,13 @@ module.exports.getIssuerByDID = async function getIssuerByDID(did) {
 };
 
 /**
+ *  Devuelve informacion de todos los issuer delegados
+ */
+module.exports.getAll = async function getAll(limit, page) {
+  return Issuer.getAll(limit, page);
+};
+
+/**
  *  Envia respuesta a la url indicada
  */
 module.exports.callback = async function callback(url, did, token, data) {

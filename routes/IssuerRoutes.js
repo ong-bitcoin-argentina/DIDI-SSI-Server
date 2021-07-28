@@ -321,6 +321,32 @@ router.post(
 
 /**
  * @openapi
+ *   /issuer/list:
+ *   get:
+ *     summary: Obtiene una lista con la informacion de los emisores autorizados.
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Limite de campos a mostrar por pagina
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Numero de pagina a mostrar
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/issuer/list', issuer.readAllIssuers);
+
+/**
+ * @openapi
  *   /issuer/{did}:
  *   get:
  *     summary: Obtiene la informacion de un emisor autorizado a partir de su did.
@@ -344,7 +370,7 @@ router.get('/issuer/:did', issuer.readIssuerDataByDid);
  * @openapi
  *   /issuer/{did}:
  *   patch:
- *     summary: La informacion de un emisor autorizado a partir de su did.
+ *     summary: Modifica la informacion de un emisor autorizadod.
  *     parameters:
  *       - name: did
  *         in: path
