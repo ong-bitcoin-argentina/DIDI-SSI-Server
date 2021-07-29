@@ -1,6 +1,7 @@
 const ResponseHandler = require('../../utils/ResponseHandler');
 const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
+const { getImageUrl } = require('../../utils/Helpers');
 
 const readIssuerDataByDid = async (req, res) => {
   const { did } = req.params;
@@ -11,7 +12,9 @@ const readIssuerDataByDid = async (req, res) => {
 
     const { name, description, imageId } = issuer;
 
-    const issuerData = { name, description, imageId };
+    const imageUrl = getImageUrl(imageId);
+
+    const issuerData = { name, description, imageUrl };
 
     return ResponseHandler.sendRes(res, issuerData);
   } catch (err) {

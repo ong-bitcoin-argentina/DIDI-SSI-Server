@@ -9,7 +9,6 @@ const { refreshDelegation } = require('./refreshDelegation');
 const { readIssuerDataByDid } = require('./readIssuerDataByDid');
 const { updateIssuerDataByDid } = require('./updateIssuerDataByDid');
 const { verifyCertificateByJwt } = require('./verifyCertificateByJwt');
-const { readIssuerImageByDid } = require('./readIssuerImageByDid');
 const { readAllIssuers } = require('./readAllIssuers');
 
 module.exports = {
@@ -24,6 +23,5 @@ module.exports = {
   readIssuerDataByDid,
   updateIssuerDataByDid,
   verifyCertificateByJwt,
-  readIssuerImageByDid,
   readAllIssuers,
 };

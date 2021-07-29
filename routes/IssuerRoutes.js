@@ -409,25 +409,4 @@ router.patch(
   issuer.updateIssuerDataByDid,
 );
 
-/**
- * @openapi
- *   /issuer/image/{did}:
- *   get:
- *     summary: Obtiene la imagen de un emisor autorizado a partir de su did.
- *     parameters:
- *       - name: did
- *         in: path
- *         required: true
- *         schema:
- *           type : string
- *     responses:
- *       200:
- *         description: Puede devolver ok o error en algun parametro
- *       401:
- *         description: Acción no autorizada
- *       500:
- *         description: Error interno del servidor
- */
-router.get('/issuer/image/:did', issuer.readIssuerImageByDid);
-
 module.exports = router;

@@ -5,7 +5,6 @@
 const fetch = require('node-fetch');
 
 const Issuer = require('../models/Issuer');
-const Image = require('../models/Image');
 const DelegateTransaction = require('../models/DelegateTransaction');
 
 const BlockchainService = require('./BlockchainService');
@@ -26,7 +25,6 @@ const {
   missingContentType,
   missingPath,
   missingDescription,
-  missingId,
 } = require('../constants/serviceErrors');
 
 /**
@@ -183,21 +181,5 @@ module.exports.saveImage = async function saveImage(did, contentType, path) {
     // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.IMAGE.ERR.CREATE);
-  }
-};
-
-/**
- *  Obtener imagen de usuario según un id
- */
-module.exports.getImage = async function getImage(id) {
-  if (!id) throw missingId;
-  try {
-    const image = await Image.getById(id);
-    if (!image) return Promise.reject(Messages.IMAGE.ERR.GET);
-    return Promise.resolve(image);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    return Promise.reject(Messages.IMAGE.ERR.GET);
   }
 };
