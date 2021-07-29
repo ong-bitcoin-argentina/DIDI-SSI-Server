@@ -29,9 +29,7 @@ const funcToDone = async (next, data, statusError) => {
 };
 
 const createAction = (data) => funcToDone(
-  async ({
-    did, name, description, file,
-  }) => IssuerService.addIssuer(did, name, description, file),
+  async ({ did, name, description }) => IssuerService.addIssuer(did, name, description),
   data,
   ERROR,
 );

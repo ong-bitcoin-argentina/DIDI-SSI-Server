@@ -13,17 +13,6 @@ const DelegateTransactionSchema = new mongoose.Schema({
   description: {
     type: String,
   },
-  file: {
-    path: {
-      type: String,
-    },
-    mimetype: {
-      type: String,
-    },
-    size: {
-      type: Number,
-    },
-  },
   token: {
     type: String,
   },

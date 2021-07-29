@@ -9,14 +9,6 @@ const createDelegation = async (req, res) => {
   const {
     did, name, callbackUrl, token, description,
   } = req.body;
-  let path;
-  let mimetype;
-  let size;
-  if (req.file) {
-    path = req.file.path;
-    mimetype = req.file.file;
-    size = req.file.size;
-  }
 
   try {
     const didExist = await IssuerService.getIssuerByDID(did);
@@ -28,7 +20,6 @@ const createDelegation = async (req, res) => {
       callbackUrl,
       token,
       action: CREATE,
-      file: { path, mimetype, size },
     });
 
     return ResponseHandler.sendRes(res, delegateTransaction);

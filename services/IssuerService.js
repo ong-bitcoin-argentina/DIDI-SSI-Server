@@ -3,8 +3,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-console */
 const fetch = require('node-fetch');
-const fs = require('fs');
-const sanitize = require('mongo-sanitize');
 
 const Issuer = require('../models/Issuer');
 const Image = require('../models/Image');
@@ -15,6 +13,7 @@ const BlockchainService = require('./BlockchainService');
 const Constants = require('../constants/Constants');
 const Messages = require('../constants/Messages');
 const { putOptionsAuth } = require('../constants/RequestOptions');
+const { createImage } = require('./utils/creatreImate');
 
 const {
   missingDid,
@@ -30,21 +29,10 @@ const {
   missingId,
 } = require('../constants/serviceErrors');
 
-const createImage = async (path, contentType) => {
-  const cleanedPath = sanitize(path);
-  const image = fs.readFileSync(cleanedPath);
-  const encodedImage = image.toString('base64');
-  const buffer = Buffer.from(encodedImage, 'base64');
-
-  const { _id } = await Image.generate(buffer, contentType);
-
-  return _id;
-};
-
 /**
  *  Crea un nuevo issuer
  */
-module.exports.addIssuer = async function addIssuer(did, name, description, file) {
+module.exports.addIssuer = async function addIssuer(did, name, description) {
   if (!did) throw missingDid;
   if (!name) throw missingName;
   if (!description) throw missingDescription;
@@ -53,23 +41,21 @@ module.exports.addIssuer = async function addIssuer(did, name, description, file
   const byDIDExist = await Issuer.getByDID(did);
   if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 
-  const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
-  if (Constants.DEBUGG) console.log({ transactionHash, ...rest });
+  // Realizar delegacion en la blockchain
+  /* const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
+  if (Constants.DEBUGG) console.log({ transactionHash, ...rest }); */
 
+  // Asignar fecha de expiracion
   const expireOn = new Date();
   if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
     expireOn.setSeconds(expireOn.getSeconds() + Number(Constants.BLOCKCHAIN.DELEGATE_DURATION));
   }
 
-  let imageId;
-  if (file) {
-    const { size, mimetype, path } = file;
-    if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
-    imageId = await createImage(path, mimetype);
-  }
+  // Capitalizar primer letra del nombre
+  const normalizedName = name.charAt(0).toUpperCase() + name.slice(1);
 
   return Issuer.create({
-    name, did, expireOn, blockHash: transactionHash, description, imageId,
+    normalizedName, did, expireOn, blockHash: 'transactionHash', description,
   });
 };
 
@@ -159,7 +145,7 @@ module.exports.callback = async function callback(url, did, token, data) {
  *  Permite manejar autorización para emitir credenciales de un issuer dada una action
  */
 module.exports.createDelegateTransaction = async function createDelegateTransaction({
-  did, name, callbackUrl, token, action, description, file,
+  did, name, callbackUrl, token, action, description,
 }) {
   if (!did) throw missingDid;
   if (!callbackUrl) throw missingCallback;
@@ -167,7 +153,7 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
   if (!action) throw missingAction;
   try {
     return await DelegateTransaction.create({
-      did, name, callbackUrl, token, action, description, file,
+      did, name, callbackUrl, token, action, description,
     });
   } catch (err) {
     console.log(err);
