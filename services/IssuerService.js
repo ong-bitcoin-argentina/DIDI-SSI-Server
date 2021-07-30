@@ -40,8 +40,8 @@ module.exports.addIssuer = async function addIssuer(did, name, description) {
   if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 
   // Realizar delegacion en la blockchain
-  /* const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
-  if (Constants.DEBUGG) console.log({ transactionHash, ...rest }); */
+  const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
+  if (Constants.DEBUGG) console.log({ transactionHash, ...rest });
 
   // Asignar fecha de expiracion
   const expireOn = new Date();
