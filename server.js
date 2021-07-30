@@ -1,4 +1,4 @@
-require('dotenv-flow').config();
+require('dotenv-flow').config({ silent: true });
 require('./services/logger');
 
 const mongoose = require('mongoose');

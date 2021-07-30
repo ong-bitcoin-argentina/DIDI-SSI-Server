@@ -12,6 +12,13 @@ const IssuerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
+  imageId: {
+    type: String,
+  },
   blockHash: {
     type: String,
     required: true,
@@ -83,8 +90,50 @@ IssuerSchema.methods.editName = async function editName(name) {
   }
 };
 
+IssuerSchema.methods.editDescription = async function editDescription(description) {
+  const updateQuery = { _id: this._id };
+  const updateAction = {
+    $set: { description },
+  };
+
+  try {
+    return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    return Promise.reject(err);
+  }
+};
+
+IssuerSchema.methods.updateImage = async function updateImage(imageId) {
+  const updateQuery = { _id: this._id };
+  const updateAction = {
+    $set: { imageId },
+  };
+
+  try {
+    await Issuer.findOneAndUpdate(updateQuery, updateAction);
+    this.imageId = imageId;
+    return Promise.resolve(this);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+};
+
 const Issuer = mongoose.model('Issuer', IssuerSchema);
 module.exports = Issuer;
+
+Issuer.getAll = async function getAll(limit, page) {
+  return Issuer.find({
+    deleted: false,
+  },
+  {
+    did: 1, name: 1, description: 1, imageId: 1,
+  })
+    .sort({ name: 1 })
+    .skip(page > 0 ? ((page - 1) * limit) : 0)
+    .limit(limit);
+};
 
 Issuer.getByDID = async function getByDID(did) {
   return Issuer.findOne({ did });

@@ -1,6 +1,6 @@
 const {
   addIssuer,
-  editName,
+  editData,
   refresh,
   getIssuerByDID,
   callback,
@@ -32,21 +32,13 @@ describe('Should be green', () => {
   });
 
   /**
-   * editName
+   * editData
    */
-  test('Expect editName to throw on missing did', async () => {
+  test('Expect editData to throw on missing did', async () => {
     try {
-      await editName(undefined, 'name');
+      await editData(undefined, 'name', 'description');
     } catch (e) {
       expect(e.code).toMatch(missingDid.code);
-    }
-  });
-
-  test('Expect editName to throw on missing name', async () => {
-    try {
-      await editName('did', undefined);
-    } catch (e) {
-      expect(e.code).toMatch(missingName.code);
     }
   });
 
