@@ -175,4 +175,8 @@ module.exports = {
     code: '#service-missingOrder',
     message: 'Falta el parámetro ORDER',
   },
+  missingDescription: {
+    code: '#service-missingDescription',
+    message: 'Falta el parámetro DESCRIPTION',
+  },
 };

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { Credentials } = require('uport-credentials');
 
 const EthrDID = require('ethr-did');
@@ -92,13 +93,10 @@ module.exports.createPetition = async function createPetition(did, claims, cb) {
     // eslint-disable-next-line no-undef
     const credentials = new Credentials({ did: `did:ethr:${Constants.SERVER_DID}`, signer, resolver });
     const petition = await credentials.signJWT(payload);
-    // eslint-disable-next-line no-console
     if (Constants.DEBUGG) console.log(petition);
     const result = module.exports.createShareRequest(did, petition);
     return Promise.resolve(result);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(err);
   }
 };
@@ -143,14 +141,12 @@ module.exports.createCertificate = async function createCertificate(did, subject
 
   try {
     const result = await createVerifiableCredential(vcPayload, vcissuer);
-    // eslint-disable-next-line no-console
-    console.log(Messages.CERTIFICATE.CREATED);
-    // eslint-disable-next-line no-console
-    if (Constants.DEBUGG) console.log(result);
+    if (Constants.DEBUGG) {
+      console.log(Messages.CERTIFICATE.CREATED);
+      console.log(result);
+    }
     return Promise.resolve(result);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(errMsg);
   }
 };
@@ -186,8 +182,6 @@ module.exports.decodeCertificate = async function decodeCertificate(jwt, errMsg)
     const result = await decodeJWT(jwt);
     return Promise.resolve(result);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(errMsg);
   }
 };
@@ -209,8 +203,6 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
 
     return result;
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return new Error(errMsg);
   }
 };
@@ -220,14 +212,10 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
  */
 module.exports.verifyIssuer = async function verifyIssuer(issuerDid) {
   if (!issuerDid) throw missingIssuerDid;
-  // eslint-disable-next-line no-console
-  console.log('Validating delegate...');
   if (issuerDid === `did:ethr:${Constants.SERVER_DID}`) {
     return true;
   }
   const delegated = await BlockchainService.validDelegate(issuerDid);
-  // eslint-disable-next-line no-console
-  console.log('Delegate verified!');
   if (delegated) return Messages.CERTIFICATE.VERIFIED;
   throw Messages.ISSUER.ERR.IS_INVALID;
 };

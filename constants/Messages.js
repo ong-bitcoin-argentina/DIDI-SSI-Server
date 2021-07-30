@@ -352,7 +352,7 @@ module.exports = {
       },
       CREATE: {
         code: 'IMAGE_CREATE',
-        message: 'Hubo un error al durante la creación  de la imagen, por favor inténtelo de nuevo más tarde.',
+        message: 'Hubo un error durante la creación  de la imagen, por favor inténtelo de nuevo más tarde.',
       },
     },
   },
