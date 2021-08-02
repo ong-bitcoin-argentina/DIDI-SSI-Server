@@ -61,43 +61,13 @@ IssuerSchema.methods.delete = async function delet() {
 };
 
 IssuerSchema.methods.edit = async function edit(data) {
-  const updateQuery = { _id: this._id };
-  const updateAction = {
-    $set: data,
-  };
-
+  const { name, description } = data;
   try {
-    return await Issuer.findOneAndUpdate(updateQuery, updateAction);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    return Promise.reject(err);
-  }
-};
-
-IssuerSchema.methods.editName = async function editName(name) {
-  const updateQuery = { _id: this._id };
-  const updateAction = {
-    $set: { name },
-  };
-
-  try {
-    return await Issuer.findOneAndUpdate(updateQuery, updateAction);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    return Promise.reject(err);
-  }
-};
-
-IssuerSchema.methods.editDescription = async function editDescription(description) {
-  const updateQuery = { _id: this._id };
-  const updateAction = {
-    $set: { description },
-  };
-
-  try {
-    return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+    return await Issuer.findByIdAndUpdate(
+      { _id: this._id },
+      { name, description },
+      { new: true },
+    );
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
@@ -106,15 +76,8 @@ IssuerSchema.methods.editDescription = async function editDescription(descriptio
 };
 
 IssuerSchema.methods.updateImage = async function updateImage(imageId) {
-  const updateQuery = { _id: this._id };
-  const updateAction = {
-    $set: { imageId },
-  };
-
   try {
-    await Issuer.findOneAndUpdate(updateQuery, updateAction);
-    this.imageId = imageId;
-    return Promise.resolve(this);
+    return await Issuer.findByIdAndUpdate({ _id: this._id }, { imageId }, { new: true });
   } catch (err) {
     return Promise.reject(err);
   }

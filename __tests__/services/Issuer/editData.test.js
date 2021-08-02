@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
-const { getIssuerByDID, addIssuer } = require('../../../services/IssuerService');
+const { editData, addIssuer } = require('../../../services/IssuerService');
 const { missingDid } = require('../../../constants/serviceErrors');
 const { revokeDelegate } = require('../../../services/BlockchainService');
 const { data } = require('./constatns');
 const Messages = require('../../../constants/Messages');
 
-describe('services/Issuer/getIssuerByDID.test.js', () => {
+describe('services/Issuer/editData.test.js', () => {
   const {
-    did, name, secondDid, description,
+    did, name, secondName, secondDid, description, secondDescription,
   } = data;
   beforeAll(async () => {
     await mongoose
@@ -26,22 +26,29 @@ describe('services/Issuer/getIssuerByDID.test.js', () => {
     await mongoose.connection.close();
   });
   describe('Should be green', () => {
-    test('Expect getIssuerByDID to throw on missing did', async () => {
+    test('Expect editData to throw on missing did', async () => {
       try {
-        await getIssuerByDID(undefined);
+        await editData(undefined, 'name', 'description');
       } catch (e) {
         expect(e.code).toMatch(missingDid.code);
       }
     });
 
-    test('Expect getIssuerByDID to success', async () => {
-      const response = await getIssuerByDID(did);
-      expect(response.did).toBe(did);
+    test('Expect editData to success with name change', async () => {
+      const response = await editData(did, secondName, description);
+      expect(response.did).toMatch(did);
+      expect(response.name).toMatch(secondName);
     });
 
-    test('Expect getIssuerByDID to throw error on invalid did', async () => {
+    test('Expect editData to success with descripcion change', async () => {
+      const response = await editData(did, secondName, secondDescription);
+      expect(response.did).toMatch(did);
+      expect(response.description).toMatch(secondDescription);
+    });
+
+    test('Expect editData to throw error on unregistered did', async () => {
       try {
-        await getIssuerByDID(secondDid);
+        await editData(secondDid, name);
       } catch (e) {
         expect(e).toBe(Messages.ISSUER.ERR.DID_NOT_EXISTS);
       }

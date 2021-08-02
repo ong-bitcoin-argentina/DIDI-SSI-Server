@@ -8,7 +8,7 @@ const { data } = require('./constatns');
 
 describe('services/Issuer/createDelegateTransaction.test.js', () => {
   const {
-    did, token, callbackUrl, name, action,
+    did, token, callbackUrl, name, action, description,
   } = data;
   beforeAll(async () => {
     await mongoose
@@ -27,7 +27,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing did', async () => {
       try {
         await createDelegateTransaction({
-          undefined, name, callbackUrl, token, action,
+          undefined, name, description, callbackUrl, token, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingDid.code);
@@ -37,7 +37,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing callbackUrl', async () => {
       try {
         await createDelegateTransaction({
-          did, name, undefined, token, action,
+          did, name, description, undefined, token, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingCallback.code);
@@ -47,7 +47,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing token', async () => {
       try {
         await createDelegateTransaction({
-          did, name, callbackUrl, undefined, action,
+          did, name, description, callbackUrl, undefined, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingToken.code);
@@ -57,7 +57,17 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing action', async () => {
       try {
         await createDelegateTransaction({
-          did, name, callbackUrl, token, undefined,
+          did, name, description, callbackUrl, token, undefined,
+        });
+      } catch (e) {
+        expect(e.code).toMatch(missingAction.code);
+      }
+    });
+
+    test('Expect createDelegateTransaction to throw on missing description', async () => {
+      try {
+        await createDelegateTransaction({
+          did, name, undefined, callbackUrl, token, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingAction.code);
@@ -66,7 +76,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
 
     test('Expect createDelegateTransaction to success', async () => {
       const response = await createDelegateTransaction({
-        did, name, callbackUrl, token, action,
+        did, name, description, callbackUrl, token, action,
       });
       expect(response.did).toMatch(did);
     });

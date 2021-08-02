@@ -7,7 +7,9 @@ const { data } = require('./constatns');
 const Messages = require('../../../constants/Messages');
 
 describe('services/Issuer/refresh.test.js', () => {
-  const { did, name, secondDid } = data;
+  const {
+    did, name, secondDid, description,
+  } = data;
   let issuerExp;
   beforeAll(async () => {
     await mongoose
@@ -17,7 +19,7 @@ describe('services/Issuer/refresh.test.js', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
-    const response = await addIssuer(did, name);
+    const response = await addIssuer(did, name, description);
     issuerExp = response.expireOn;
   });
   afterAll(async () => {
