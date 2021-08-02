@@ -1,6 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable max-len */
-/* eslint-disable no-undef */
 /* eslint-disable no-console */
 const fetch = require('node-fetch');
 
@@ -12,7 +9,7 @@ const BlockchainService = require('./BlockchainService');
 const Constants = require('../constants/Constants');
 const Messages = require('../constants/Messages');
 const { putOptionsAuth } = require('../constants/RequestOptions');
-const { createImage } = require('./utils/creatreImate');
+const { createImage } = require('./utils/createImage');
 
 const {
   missingDid,
@@ -171,14 +168,13 @@ module.exports.saveImage = async function saveImage(did, contentType, path) {
     const issuer = await Issuer.getByDID(did);
     if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
-    const _id = await createImage(path, contentType);
+    const imageId = await createImage(path, contentType);
 
     // Actualizar imagen del usuario
-    await issuer.updateImage(_id);
+    await issuer.updateImage(imageId);
 
-    return Promise.resolve(_id);
+    return Promise.resolve(imageId);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.IMAGE.ERR.CREATE);
   }

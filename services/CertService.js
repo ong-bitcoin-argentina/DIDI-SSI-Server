@@ -97,6 +97,7 @@ module.exports.createPetition = async function createPetition(did, claims, cb) {
     const result = module.exports.createShareRequest(did, petition);
     return Promise.resolve(result);
   } catch (err) {
+    console.log(err);
     return Promise.reject(err);
   }
 };
@@ -147,6 +148,7 @@ module.exports.createCertificate = async function createCertificate(did, subject
     }
     return Promise.resolve(result);
   } catch (err) {
+    console.log(err);
     return Promise.reject(errMsg);
   }
 };
@@ -182,6 +184,7 @@ module.exports.decodeCertificate = async function decodeCertificate(jwt, errMsg)
     const result = await decodeJWT(jwt);
     return Promise.resolve(result);
   } catch (err) {
+    console.log(err);
     return Promise.reject(errMsg);
   }
 };
@@ -203,6 +206,7 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
 
     return result;
   } catch (err) {
+    console.log(err);
     return new Error(errMsg);
   }
 };

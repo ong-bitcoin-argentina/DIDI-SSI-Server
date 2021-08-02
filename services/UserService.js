@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const User = require('../models/User');
 const Messages = require('../constants/Messages');
 const PhoneNormalization = require('./utils/PhoneNormalization');
@@ -18,7 +17,7 @@ const {
   missingPath,
   missingId,
 } = require('../constants/serviceErrors');
-const { createImage } = require('./utils/creatreImate');
+const { createImage } = require('./utils/createImage');
 
 const { DID_NOT_FOUND } = Messages.VALIDATION;
 
@@ -373,12 +372,12 @@ module.exports.saveImage = async function saveImage(did, contentType, path) {
     if (!user) return Promise.reject(Messages.USER.ERR.GET);
 
     // Crear imagen
-    const _id = await createImage(path, contentType);
+    const imageId = await createImage(path, contentType);
 
     // Actualizar imagen del usuario
-    await user.updateImage(_id);
+    await user.updateImage(imageId);
 
-    return Promise.resolve(_id);
+    return Promise.resolve(imageId);
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);

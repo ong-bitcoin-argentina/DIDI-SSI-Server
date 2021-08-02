@@ -8,15 +8,12 @@ const readAllIssuers = async (req, res) => {
     const page = parseInt(req.query.page, 10);
 
     const issuers = await IssuerService.getAll(limit, page);
-    const issuerList = [];
-    issuers.forEach((issuer) => {
-      const {
-        name, did, description, imageId,
-      } = issuer;
-      issuerList.push({
-        name, did, description, imageUrl: getImageUrl(imageId),
-      });
-    });
+
+    const issuerList = issuers.map(({
+      name, did, description, imageId,
+    }) => ({
+      name, did, description, imageUrl: getImageUrl(imageId),
+    }));
 
     return ResponseHandler.sendRes(res, issuerList);
   } catch (err) {

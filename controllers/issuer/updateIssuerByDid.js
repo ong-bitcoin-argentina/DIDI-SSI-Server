@@ -4,7 +4,7 @@ const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
 const Constants = require('../../constants/Constants');
 
-const updateIssuerDataByDid = async (req, res) => {
+const updateIssuerByDid = async (req, res) => {
   try {
     const { did } = req.params;
     const { name, description } = req.body;
@@ -26,5 +26,5 @@ const updateIssuerDataByDid = async (req, res) => {
 };
 
 module.exports = {
-  updateIssuerDataByDid,
+  updateIssuerByDid,
 };
