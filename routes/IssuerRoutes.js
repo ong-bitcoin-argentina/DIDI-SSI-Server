@@ -184,7 +184,7 @@ router.post(
   '/issuer/verify',
   Validator.validateBody([{ name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
   halfHourLimiter,
-  issuer.readIssuerByDid,
+  issuer.verifyIssuerByDid,
 );
 
 /**

@@ -10,7 +10,7 @@ const updateIssuerByDid = async (req, res) => {
     const { name, description } = req.body;
 
     // Actualizar nombre y descripción
-    const issuer = await IssuerService.editData(did, name, description);
+    await IssuerService.editData(did, name, description);
 
     // Actualizar imagen
     if (req.file) {
@@ -19,7 +19,9 @@ const updateIssuerByDid = async (req, res) => {
       await IssuerService.saveImage(did, mimetype, path);
     }
 
-    return ResponseHandler.sendRes(res, issuer.name);
+    const issuerUpdated = await IssuerService.getIssuerByDID(did);
+
+    return ResponseHandler.sendRes(res, issuerUpdated);
   } catch (err) {
     return ResponseHandler.sendErr(res, err);
   }

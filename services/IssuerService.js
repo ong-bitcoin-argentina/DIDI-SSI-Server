@@ -50,7 +50,7 @@ module.exports.addIssuer = async function addIssuer(did, name, description) {
   const normalizedName = name.charAt(0).toUpperCase() + name.slice(1);
 
   return Issuer.create({
-    normalizedName, did, expireOn, blockHash: 'transactionHash', description,
+    name: normalizedName, did, expireOn, blockHash: 'transactionHash', description,
   });
 };
 
@@ -63,8 +63,7 @@ module.exports.editData = async function editData(did, name, description) {
     let issuer = await Issuer.getByDID(did);
     if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
-    if (name) issuer = await issuer.editName(name);
-    if (description) issuer = await issuer.editDescription(description);
+    issuer = await issuer.edit({ name, description });
 
     return issuer;
   } catch (err) {
@@ -105,7 +104,15 @@ module.exports.refresh = async function refresh(did) {
  */
 module.exports.getIssuerByDID = async function getIssuerByDID(did) {
   if (!did) throw missingDid;
-  return Issuer.getByDID(did);
+  try {
+    const issuer = await Issuer.getByDID(did);
+    if (!issuer || issuer.deleted) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
+
+    return issuer;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 };
 
 /**

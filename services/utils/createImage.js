@@ -1,5 +1,6 @@
 const fs = require('fs');
 const sanitize = require('mongo-sanitize');
+const Image = require('../../models/Image');
 
 const createImage = async (path, contentType) => {
   const cleanedPath = sanitize(path);
