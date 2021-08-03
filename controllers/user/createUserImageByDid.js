@@ -13,8 +13,8 @@ const createUserImageByDid = async (req, res) => {
     // MAX_MB * 1000000 da la cantidad exacta de los MB permitidos
     if (size > Constants.MAX_MB * 1000000) return ResponseHandler.sendErr(res, Messages.IMAGE.ERR.INVALID_SIZE);
 
-    const { _id } = await UserService.saveImage(did, mimetype, path);
-    const imageUrl = getImageUrl(_id);
+    const { imageId } = await UserService.saveImage(did, mimetype, path);
+    const imageUrl = getImageUrl(imageId);
 
     return ResponseHandler.sendRes(res, imageUrl);
   } catch (err) {

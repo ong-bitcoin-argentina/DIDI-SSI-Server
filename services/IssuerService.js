@@ -1,6 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable max-len */
-/* eslint-disable no-undef */
 /* eslint-disable no-console */
 const fetch = require('node-fetch');
 
@@ -12,7 +9,7 @@ const BlockchainService = require('./BlockchainService');
 const Constants = require('../constants/Constants');
 const Messages = require('../constants/Messages');
 const { putOptionsAuth } = require('../constants/RequestOptions');
-const { createImage } = require('./utils/creatreImate');
+const { createImage } = require('./utils/createImage');
 
 const {
   missingDid,
@@ -53,7 +50,7 @@ module.exports.addIssuer = async function addIssuer(did, name, description) {
   const normalizedName = name.charAt(0).toUpperCase() + name.slice(1);
 
   return Issuer.create({
-    normalizedName, did, expireOn, blockHash: 'transactionHash', description,
+    name: normalizedName, did, expireOn, blockHash: 'transactionHash', description,
   });
 };
 
@@ -66,8 +63,7 @@ module.exports.editData = async function editData(did, name, description) {
     let issuer = await Issuer.getByDID(did);
     if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
-    if (name) issuer = await issuer.editName(name);
-    if (description) issuer = await issuer.editDescription(description);
+    issuer = await issuer.edit({ name, description });
 
     return issuer;
   } catch (err) {
@@ -108,7 +104,15 @@ module.exports.refresh = async function refresh(did) {
  */
 module.exports.getIssuerByDID = async function getIssuerByDID(did) {
   if (!did) throw missingDid;
-  return Issuer.getByDID(did);
+  try {
+    const issuer = await Issuer.getByDID(did);
+    if (!issuer || issuer.deleted) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
+
+    return issuer;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 };
 
 /**
@@ -171,14 +175,13 @@ module.exports.saveImage = async function saveImage(did, contentType, path) {
     const issuer = await Issuer.getByDID(did);
     if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
-    const _id = await createImage(path, contentType);
+    const imageId = await createImage(path, contentType);
 
     // Actualizar imagen del usuario
-    await issuer.updateImage(_id);
+    await issuer.updateImage(imageId);
 
-    return Promise.resolve(_id);
+    return Promise.resolve(imageId);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.IMAGE.ERR.CREATE);
   }
