@@ -9,13 +9,15 @@ const readIssuerByDid = async (req, res) => {
   try {
     const issuer = await IssuerService.getIssuerByDID(did);
     if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-
-    const { name, description, imageId } = issuer;
+    console.log(issuer);
+    const {
+      name, description, imageId, expireOn,
+    } = issuer;
 
     const imageUrl = getImageUrl(imageId);
 
     const issuerData = {
-      name, description, imageUrl, imageId,
+      name, description, imageUrl, imageId, did, expireOn,
     };
 
     return ResponseHandler.sendRes(res, issuerData);
