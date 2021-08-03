@@ -184,7 +184,7 @@ router.post(
   '/issuer/verify',
   Validator.validateBody([{ name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
   halfHourLimiter,
-  issuer.readIssuerByDid,
+  issuer.verifyIssuerByDid,
 );
 
 /**
@@ -364,7 +364,7 @@ router.get('/issuer/list', issuer.readAllIssuers);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/issuer/:did', issuer.readIssuerDataByDid);
+router.get('/issuer/:did', issuer.readIssuerByDid);
 
 /**
  * @openapi
@@ -406,7 +406,7 @@ router.patch(
     { name: 'file', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE], optional: true },
   ]),
   Validator.checkValidationResult,
-  issuer.updateIssuerDataByDid,
+  issuer.updateIssuerByDid,
 );
 
 module.exports = router;

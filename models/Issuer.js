@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-console */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
@@ -65,11 +67,14 @@ IssuerSchema.methods.edit = async function edit(data) {
   try {
     return await Issuer.findByIdAndUpdate(
       { _id: this._id },
-      { name, description },
+      {
+        name: name === null || name === undefined ? this.name : name,
+        description:
+          description === null || description === undefined ? this.description : description,
+      },
       { new: true },
     );
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(err);
   }
@@ -87,7 +92,16 @@ const Issuer = mongoose.model('Issuer', IssuerSchema);
 module.exports = Issuer;
 
 Issuer.getAll = async function getAll(limit, page) {
-  return Issuer.find({
+  let totalPages;
+  if (limit === 0 || isNaN(limit)) {
+    totalPages = 1;
+  } else {
+    totalPages = Math.ceil(await Issuer.find({
+      deleted: false,
+    }).countDocuments() / limit);
+  }
+
+  const list = await Issuer.find({
     deleted: false,
   },
   {
@@ -96,6 +110,8 @@ Issuer.getAll = async function getAll(limit, page) {
     .sort({ name: 1 })
     .skip(page > 0 ? ((page - 1) * limit) : 0)
     .limit(limit);
+
+  return { list, totalPages };
 };
 
 Issuer.getByDID = async function getByDID(did) {
