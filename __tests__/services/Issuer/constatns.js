@@ -1,3 +1,5 @@
+const { issuers } = require('./issuers');
+
 const data = {
   did: 'did:ethr:0x36f6dc06d34b164aec5421c9071a0d07765d4ee0',
   rskDid: 'did:ethr:rsk:0x36f6dc06d34b164aec5421c9071a0d07765d4ee0',
@@ -12,6 +14,37 @@ const data = {
   secondDescription: 'Otra descripcion para el issuer',
 };
 
+const pagination = {
+  limit: 1,
+  page: 2,
+};
+
+const successBody = {
+  status: 'success',
+  data: {
+    _id: '60f96e6e1e4ea500368721cb',
+    did: data.did,
+    name: data.name,
+    createdOn: '2021-07-22T13:11:10.623Z',
+    status: 'Creado',
+    messageError: 'Error',
+    blockchain: 'rsk',
+  },
+};
+
+const failureBody = {
+  status: 'fail',
+  data: {},
+};
+
 module.exports = {
   data,
+  issuers,
+  pagination,
+  successResp: {
+    json: () => successBody,
+  },
+  failureResp: {
+    json: () => failureBody,
+  },
 };

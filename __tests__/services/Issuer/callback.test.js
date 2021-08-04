@@ -1,67 +1,67 @@
-const mongoose = require('mongoose');
+jest.mock('node-fetch');
+
 const fetch = require('node-fetch');
-const { MONGO_URL } = require('../../../constants/Constants');
 const { callback } = require('../../../services/IssuerService');
 const {
   missingDid, missingUrl, missingToken, missingData,
 } = require('../../../constants/serviceErrors');
-const { data } = require('./constatns');
-const { postOptionsAuth, deleteOptionsAuth } = require('./utils');
+const { data, successResp, failureResp } = require('./constatns');
 
 describe('services/Issuer/callback.test.js', () => {
   const {
-    rskDid, token, callbackUrl, name, key,
+    rskDid, token, callbackUrl,
   } = data;
-  beforeAll(async () => {
-    await mongoose
-      .connect(MONGO_URL, {
-        useCreateIndex: true,
-        useFindAndModify: false,
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
-      });
-    await fetch(`${callbackUrl}`, postOptionsAuth(token, { rskDid, name, key }));
+
+  test('Expect callback to throw on missing url', async () => {
+    try {
+      await callback(undefined, 'did', 'token', 'data');
+    } catch (e) {
+      expect(e.code).toMatch(missingUrl.code);
+    }
   });
-  afterAll(async () => {
-    await fetch(`${callbackUrl}/${rskDid}`, deleteOptionsAuth(token, {}));
-    await mongoose.connection.close();
+
+  test('Expect callback to throw on missing did', async () => {
+    try {
+      await callback('url', undefined, 'token', 'data');
+    } catch (e) {
+      expect(e.code).toMatch(missingDid.code);
+    }
   });
-  describe('Should be green', () => {
-    test('Expect callback to throw on missing url', async () => {
-      try {
-        await callback(undefined, 'did', 'token', 'data');
-      } catch (e) {
-        expect(e.code).toMatch(missingUrl.code);
-      }
-    });
 
-    test('Expect callback to throw on missing did', async () => {
-      try {
-        await callback('url', undefined, 'token', 'data');
-      } catch (e) {
-        expect(e.code).toMatch(missingDid.code);
-      }
-    });
+  test('Expect callback to throw on missing token', async () => {
+    try {
+      await callback('url', 'did', undefined, 'data');
+    } catch (e) {
+      expect(e.code).toMatch(missingToken.code);
+    }
+  });
 
-    test('Expect callback to throw on missing token', async () => {
-      try {
-        await callback('url', 'did', undefined, 'data');
-      } catch (e) {
-        expect(e.code).toMatch(missingToken.code);
-      }
-    });
+  test('Expect callback to throw on missing data', async () => {
+    try {
+      await callback('url', 'did', 'token', undefined);
+    } catch (e) {
+      expect(e.code).toMatch(missingData.code);
+    }
+  });
 
-    test('Expect callback to throw on missing data', async () => {
-      try {
-        await callback('url', 'did', 'token', undefined);
-      } catch (e) {
-        expect(e.code).toMatch(missingData.code);
-      }
-    });
+  test('Expect callback to get success response fron issuer', async () => {
+    fetch.mockReturnValue(
+      Promise.resolve(successResp),
+    );
+    const response = await callback(callbackUrl, rskDid, token, { status: 'Creado' });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(response).toBe(successResp.json());
+  });
 
-    test('Expect callback to get response fron issuer', async () => {
-      const response = await callback(callbackUrl, rskDid, token, { status: 'Creado' });
-      expect(response).not.toBe(null);
-    });
+  test('Expect callback to get failure response fron issuer', async () => {
+    fetch.mockReturnValue(
+      Promise.reject(failureResp),
+    );
+    try {
+      await callback(callbackUrl, rskDid, token, { status: 'Creado' });
+    } catch (error) {
+      expect(error).toBe(failureResp);
+    }
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });
