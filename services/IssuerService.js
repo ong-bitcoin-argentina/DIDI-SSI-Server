@@ -46,11 +46,8 @@ module.exports.addIssuer = async function addIssuer(did, name, description) {
     expireOn.setSeconds(expireOn.getSeconds() + Number(Constants.BLOCKCHAIN.DELEGATE_DURATION));
   }
 
-  // Capitalizar primer letra del nombre
-  const normalizedName = name.charAt(0).toUpperCase() + name.slice(1);
-
   return Issuer.create({
-    name: normalizedName, did, expireOn, blockHash: 'transactionHash', description,
+    name, did, expireOn, blockHash: transactionHash, description,
   });
 };
 
