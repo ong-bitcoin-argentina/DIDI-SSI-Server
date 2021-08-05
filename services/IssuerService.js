@@ -102,10 +102,7 @@ module.exports.refresh = async function refresh(did) {
 module.exports.getIssuerByDID = async function getIssuerByDID(did) {
   if (!did) throw missingDid;
   try {
-    const issuer = await Issuer.getByDID(did);
-    if (!issuer || issuer.deleted) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
-
-    return issuer;
+    return await Issuer.getByDID(did);
   } catch (err) {
     console.log(err);
     throw err;
