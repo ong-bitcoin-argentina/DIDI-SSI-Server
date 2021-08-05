@@ -21,7 +21,7 @@ describe('services/Cert/verifyIssuer.test.js', () => {
     try {
       await verifyIssuer(data.did);
     } catch (e) {
-      expect(e).toMatch(Messages.ISSUER.ERR.IS_INVALID);
+      expect(e.code).toMatch(Messages.ISSUER.ERR.IS_INVALID.code);
     }
   });
 });
