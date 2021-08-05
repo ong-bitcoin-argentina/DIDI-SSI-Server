@@ -6,7 +6,7 @@ const {
 const { MONGO_URL } = require('../../../constants/Constants');
 const { userData } = require('./constanst');
 
-describe('Should be green', () => {
+describe('services/Sms/isValidated.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {

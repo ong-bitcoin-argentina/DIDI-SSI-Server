@@ -1,5 +1,3 @@
-const fs = require('fs');
-const sanitize = require('mongo-sanitize');
 const User = require('../models/User');
 const Messages = require('../constants/Messages');
 const PhoneNormalization = require('./utils/PhoneNormalization');
@@ -19,6 +17,7 @@ const {
   missingPath,
   missingId,
 } = require('../constants/serviceErrors');
+const { createImage } = require('./utils/createImage');
 
 const { DID_NOT_FOUND } = Messages.VALIDATION;
 
@@ -373,17 +372,12 @@ module.exports.saveImage = async function saveImage(did, contentType, path) {
     if (!user) return Promise.reject(Messages.USER.ERR.GET);
 
     // Crear imagen
-    const cleanedPath = sanitize(path);
-    const image = fs.readFileSync(cleanedPath);
-    const encodedImage = image.toString('base64');
-    const buffer = Buffer.from(encodedImage, 'base64');
-
-    const { _id } = await Image.generate(buffer, contentType);
+    const imageId = await createImage(path, contentType);
 
     // Actualizar imagen del usuario
-    await user.updateImage(_id);
+    await user.updateImage(imageId);
 
-    return Promise.resolve(_id);
+    return Promise.resolve(imageId);
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);

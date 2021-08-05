@@ -5,6 +5,7 @@ const {
 } = require('../../../constants/serviceErrors');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { userData } = require('./constanst');
+const Encrypt = require('../../../models/utils/Encryption');
 
 describe('services/Sms/create.test.js', () => {
   beforeAll(async () => {
@@ -39,7 +40,8 @@ describe('services/Sms/create.test.js', () => {
   });
 
   test('Expect create to create', async () => {
-    const result = await create(userData.validPhoneNumber, userData.code, userData.did);
-    expect(result).not.toBeNull();
+    const response = await create(userData.validPhoneNumber, userData.code, userData.did);
+    const decryptedPhone = await Encrypt.decript(response.phoneNumber.encrypted);
+    expect(decryptedPhone).toMatch(userData.validPhoneNumber);
   });
 });
