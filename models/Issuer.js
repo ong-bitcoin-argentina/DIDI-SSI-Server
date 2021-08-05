@@ -107,6 +107,10 @@ Issuer.getAll = async function getAll(limit, page) {
   {
     did: 1, name: 1, description: 1, imageId: 1,
   })
+    .collation({
+      locale: 'es',
+      caseFirst: 'off',
+    })
     .sort({ name: 1 })
     .skip(page > 0 ? ((page - 1) * limit) : 0)
     .limit(limit);
