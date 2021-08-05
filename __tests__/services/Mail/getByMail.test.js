@@ -32,6 +32,11 @@ describe('services/Mail/getByMail.test.js', () => {
 
   test('Expect getByMail success', async () => {
     const getByEmailResult = await getByMail(mailData.mail);
+    expect(getByEmailResult.did).toBe(undefined);
+    expect(Object.prototype.toString.call(getByEmailResult.code.hash) === '[object String]')
+      .toBeTruthy();
+    expect(Object.prototype.toString.call(getByEmailResult.code.salt) === '[object String]')
+      .toBeTruthy();
     const decriptResult = await Encrypt.decript(getByEmailResult.email.encrypted);
     expect(decriptResult).toMatch(mailData.mail);
   });

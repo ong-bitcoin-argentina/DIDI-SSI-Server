@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-console */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
@@ -11,6 +13,13 @@ const IssuerSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  imageId: {
+    type: String,
   },
   blockHash: {
     type: String,
@@ -54,37 +63,60 @@ IssuerSchema.methods.delete = async function delet() {
 };
 
 IssuerSchema.methods.edit = async function edit(data) {
-  const updateQuery = { _id: this._id };
-  const updateAction = {
-    $set: data,
-  };
-
+  const { name, description } = data;
   try {
-    return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+    return await Issuer.findByIdAndUpdate(
+      { _id: this._id },
+      {
+        name: name === null || name === undefined ? this.name : name,
+        description:
+          description === null || description === undefined ? this.description : description,
+      },
+      { new: true },
+    );
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(err);
   }
 };
 
-IssuerSchema.methods.editName = async function editName(name) {
-  const updateQuery = { _id: this._id };
-  const updateAction = {
-    $set: { name },
-  };
-
+IssuerSchema.methods.updateImage = async function updateImage(imageId) {
   try {
-    return await Issuer.findOneAndUpdate(updateQuery, updateAction);
+    return await Issuer.findByIdAndUpdate({ _id: this._id }, { imageId }, { new: true });
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
     return Promise.reject(err);
   }
 };
 
 const Issuer = mongoose.model('Issuer', IssuerSchema);
 module.exports = Issuer;
+
+Issuer.getAll = async function getAll(limit, page) {
+  let totalPages;
+  if (limit === 0 || isNaN(limit)) {
+    totalPages = 1;
+  } else {
+    totalPages = Math.ceil(await Issuer.find({
+      deleted: false,
+    }).countDocuments() / limit);
+  }
+
+  const list = await Issuer.find({
+    deleted: false,
+  },
+  {
+    did: 1, name: 1, description: 1, imageId: 1,
+  })
+    .collation({
+      locale: 'es',
+      caseFirst: 'off',
+    })
+    .sort({ name: 1 })
+    .skip(page > 0 ? ((page - 1) * limit) : 0)
+    .limit(limit);
+
+  return { list, totalPages };
+};
 
 Issuer.getByDID = async function getByDID(did) {
   return Issuer.findOne({ did });

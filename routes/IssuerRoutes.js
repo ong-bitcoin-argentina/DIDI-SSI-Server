@@ -184,7 +184,7 @@ router.post(
   '/issuer/verify',
   Validator.validateBody([{ name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
   halfHourLimiter,
-  issuer.readIssuerByDid,
+  issuer.verifyIssuerByDid,
 );
 
 /**
@@ -197,7 +197,7 @@ router.post(
  *         - did
  *         - name
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -205,10 +205,15 @@ router.post(
  *                 type: string
  *               name:
  *                 type: string
+ *               description:
+ *                 type: string
  *               callbackUrl:
  *                 type: string
  *               token:
  *                 type: string
+ *               file:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
@@ -222,14 +227,10 @@ router.post(
 router.post(
   '/issuer',
   Validator.validateBody([
-    {
-      name: 'did',
-      validate: [Constants.VALIDATION_TYPES.IS_STRING],
-    },
-    {
-      name: 'name',
-      validate: [Constants.VALIDATION_TYPES.IS_STRING],
-    },
+    { name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'description', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'file', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE], optional: true },
   ]),
   Validator.checkValidationResult,
   issuer.createDelegation,
@@ -320,9 +321,35 @@ router.post(
 
 /**
  * @openapi
+ *   /issuer/list:
+ *   get:
+ *     summary: Obtiene una lista con la informacion de los emisores autorizados.
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Limite de campos a mostrar por pagina
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Numero de pagina a mostrar
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/issuer/list', issuer.readAllIssuers);
+
+/**
+ * @openapi
  *   /issuer/{did}:
  *   get:
- *     summary: Obtiene el nombre de un emisor autorizado a partir de su did.
+ *     summary: Obtiene la informacion de un emisor autorizado a partir de su did.
  *     parameters:
  *       - name: did
  *         in: path
@@ -337,13 +364,13 @@ router.post(
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/issuer/:did', issuer.readIssuerNameByDid);
+router.get('/issuer/:did', issuer.readIssuerByDid);
 
 /**
  * @openapi
  *   /issuer/{did}:
- *   put:
- *     summary: Edita el nombre de un emisor autorizado a partir de su did.
+ *   patch:
+ *     summary: Modifica la informacion de un emisor autorizadod.
  *     parameters:
  *       - name: did
  *         in: path
@@ -351,15 +378,18 @@ router.get('/issuer/:did', issuer.readIssuerNameByDid);
  *         schema:
  *           type : string
  *     requestBody:
- *       required:
- *         - name
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               name:
  *                 type: string
+ *               description:
+ *                 type: string
+ *               file:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
@@ -368,11 +398,15 @@ router.get('/issuer/:did', issuer.readIssuerNameByDid);
  *       500:
  *         description: Error interno del servidor
  */
-router.put(
+router.patch(
   '/issuer/:did',
-  Validator.validateBody([{ name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+  Validator.validateBody([
+    { name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
+    { name: 'description', validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
+    { name: 'file', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE], optional: true },
+  ]),
   Validator.checkValidationResult,
-  issuer.updateIssuerNameByDid,
+  issuer.updateIssuerByDid,
 );
 
 module.exports = router;

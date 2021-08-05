@@ -36,18 +36,9 @@ describe('services/Mail/create.test.js', () => {
     }
   });
 
-  test('Expect create to throw on missing code', async () => {
-    try {
-      await create('email', undefined, 'did');
-    } catch (e) {
-      expect(e.code).toMatch(missingCode.code);
-    }
-  });
-
   test('Expect create success a email', async () => {
     const createRessult = await create(mailData.mail, mailData.code, mailData.did);
     const decriptResult = await Encrypt.decript(createRessult.email.encrypted);
-    expect(createRessult).not.toBeNull();
     expect(decriptResult).toMatch(mailData.mail);
   });
 });

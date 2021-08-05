@@ -1,55 +1,69 @@
+/* eslint-disable no-console */
 const fetch = require('node-fetch');
+
 const Issuer = require('../models/Issuer');
+const DelegateTransaction = require('../models/DelegateTransaction');
 
 const BlockchainService = require('./BlockchainService');
 
 const Constants = require('../constants/Constants');
 const Messages = require('../constants/Messages');
-
 const { putOptionsAuth } = require('../constants/RequestOptions');
-const DelegateTransaction = require('../models/DelegateTransaction');
+const { createImage } = require('./utils/createImage');
 
 const {
-  missingDid, missingName, missingUrl, missingToken, missingData, missingCallback, missingAction,
+  missingDid,
+  missingName,
+  missingUrl,
+  missingToken,
+  missingData,
+  missingCallback,
+  missingAction,
+  missingContentType,
+  missingPath,
+  missingDescription,
 } = require('../constants/serviceErrors');
 
 /**
  *  Crea un nuevo issuer
  */
-module.exports.addIssuer = async function addIssuer(did, name) {
+module.exports.addIssuer = async function addIssuer(did, name, description) {
   if (!did) throw missingDid;
   if (!name) throw missingName;
+  if (!description) throw missingDescription;
+
   // Verificar que el issuer no exista
   const byDIDExist = await Issuer.getByDID(did);
   if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 
+  // Realizar delegacion en la blockchain
   const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
-  // eslint-disable-next-line no-console
-  console.log({ transactionHash, ...rest });
+  if (Constants.DEBUGG) console.log({ transactionHash, ...rest });
 
+  // Asignar fecha de expiracion
   const expireOn = new Date();
   if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
     expireOn.setSeconds(expireOn.getSeconds() + Number(Constants.BLOCKCHAIN.DELEGATE_DURATION));
   }
 
   return Issuer.create({
-    name, did, expireOn, blockHash: transactionHash,
+    name, did, expireOn, blockHash: transactionHash, description,
   });
 };
 
 /**
  *  Permite editar el nombre de un issuer a partir de un did
  */
-module.exports.editName = async function editName(did, name) {
+module.exports.editData = async function editData(did, name, description) {
   if (!did) throw missingDid;
-  if (!name) throw missingName;
   try {
-    const issuer = await Issuer.getByDID(did);
+    let issuer = await Issuer.getByDID(did);
     if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
-    return await issuer.editName(name);
+    issuer = await issuer.edit({ name, description });
+
+    return issuer;
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     throw err;
   }
@@ -66,8 +80,7 @@ module.exports.refresh = async function refresh(did) {
 
   try {
     const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
-    // eslint-disable-next-line no-console
-    console.log({ transactionHash, ...rest });
+    if (Constants.DEBUGG) console.log({ transactionHash, ...rest });
 
     const expireOn = new Date();
     if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
@@ -78,7 +91,6 @@ module.exports.refresh = async function refresh(did) {
 
     return { ...byDIDExist, expireOn, blockHash: transactionHash };
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     throw err;
   }
@@ -89,7 +101,22 @@ module.exports.refresh = async function refresh(did) {
  */
 module.exports.getIssuerByDID = async function getIssuerByDID(did) {
   if (!did) throw missingDid;
-  return Issuer.getByDID(did);
+  try {
+    const issuer = await Issuer.getByDID(did);
+    if (!issuer || issuer.deleted) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
+
+    return issuer;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+/**
+ *  Devuelve informacion de todos los issuer delegados
+ */
+module.exports.getAll = async function getAll(limit, page) {
+  return Issuer.getAll(limit, page);
 };
 
 /**
@@ -108,7 +135,6 @@ module.exports.callback = async function callback(url, did, token, data) {
 
     return jsonResp;
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     throw err;
   }
@@ -118,7 +144,7 @@ module.exports.callback = async function callback(url, did, token, data) {
  *  Permite manejar autorización para emitir credenciales de un issuer dada una action
  */
 module.exports.createDelegateTransaction = async function createDelegateTransaction({
-  did, name, callbackUrl, token, action,
+  did, name, callbackUrl, token, action, description,
 }) {
   if (!did) throw missingDid;
   if (!callbackUrl) throw missingCallback;
@@ -126,11 +152,34 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
   if (!action) throw missingAction;
   try {
     return await DelegateTransaction.create({
-      did, name, callbackUrl, token, action,
+      did, name, callbackUrl, token, action, description,
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     throw err;
+  }
+};
+
+/**
+ *  Obtener issuer y actualizar imagen
+ */
+module.exports.saveImage = async function saveImage(did, contentType, path) {
+  if (!did) throw missingDid;
+  if (!contentType) throw missingContentType;
+  if (!path) throw missingPath;
+  try {
+    // Obtener información de usuario
+    const issuer = await Issuer.getByDID(did);
+    if (!issuer) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
+
+    const imageId = await createImage(path, contentType);
+
+    // Actualizar imagen del usuario
+    await issuer.updateImage(imageId);
+
+    return Promise.resolve(imageId);
+  } catch (err) {
+    console.log(err);
+    return Promise.reject(Messages.IMAGE.ERR.CREATE);
   }
 };

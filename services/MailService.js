@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const Mail = require('../models/Mail');
 const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
@@ -21,7 +22,6 @@ const getByMail = async function getByMail(email) {
     if (mail.expired()) return Promise.reject(Messages.EMAIL.ERR.VALIDATION_EXPIRED);
     return Promise.resolve(mail);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
@@ -46,11 +46,10 @@ const sendValidationCode = async function sendValidationCode(eMail, code) {
   // En caso cotrario enviar un sms
   try {
     const result = await mailgun.messages().send(data);
-    // eslint-disable-next-line no-console
+
     if (Constants.DEBUGG) console.log(Messages.EMAIL.SENT);
     return Promise.resolve(result);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.EMAIL.ERR.EMAIL_SEND_ERROR);
   }
@@ -67,7 +66,6 @@ const create = async function create(email, code, did) {
     if (!mail) return Promise.reject(Messages.EMAIL.ERR.CREATE);
     return Promise.resolve(mail);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
@@ -84,7 +82,6 @@ const validateMail = async function validateMail(mail, did) {
     const validatedMail = await mail.validateMail(did);
     return Promise.resolve(validatedMail);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
@@ -102,7 +99,6 @@ const isValid = async function isValid(email, code) {
     if (!valid) return Promise.reject(Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
     return Promise.resolve(mail);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }
@@ -118,7 +114,6 @@ const isValidated = async function isValidated(did, email) {
     const validated = await Mail.isValidated(did, email);
     return Promise.resolve(validated);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.COMMUNICATION_ERROR);
   }

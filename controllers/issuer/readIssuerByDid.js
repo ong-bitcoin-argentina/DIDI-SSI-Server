@@ -1,19 +1,26 @@
-/* eslint-disable no-console */
 const ResponseHandler = require('../../utils/ResponseHandler');
-const CertService = require('../../services/CertService');
 const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
+const { getImageUrl } = require('../../utils/Helpers');
 
 const readIssuerByDid = async (req, res) => {
+  const { did } = req.params;
+
   try {
-    const { did } = req.body;
-    await CertService.verifyIssuer(did);
     const issuer = await IssuerService.getIssuerByDID(did);
-    if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
-    const { name, expireOn } = issuer;
-    return ResponseHandler.sendRes(res, { did, name, expireOn });
+    if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
+    const {
+      name, description, imageId, expireOn,
+    } = issuer;
+
+    const imageUrl = getImageUrl(imageId);
+
+    const issuerData = {
+      name, description, imageUrl, imageId, did, expireOn,
+    };
+
+    return ResponseHandler.sendRes(res, issuerData);
   } catch (err) {
-    console.log(err);
     return ResponseHandler.sendErr(res, err);
   }
 };
