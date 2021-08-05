@@ -27,7 +27,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing did', async () => {
       try {
         await createDelegateTransaction({
-          undefined, name, description, callbackUrl, token, action,
+          name, description, callbackUrl, token, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingDid.code);
@@ -37,7 +37,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing callbackUrl', async () => {
       try {
         await createDelegateTransaction({
-          did, name, description, undefined, token, action,
+          did, name, description, token, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingCallback.code);
@@ -47,7 +47,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing token', async () => {
       try {
         await createDelegateTransaction({
-          did, name, description, callbackUrl, undefined, action,
+          did, name, description, callbackUrl, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingToken.code);
@@ -57,7 +57,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing action', async () => {
       try {
         await createDelegateTransaction({
-          did, name, description, callbackUrl, token, undefined,
+          did, name, description, callbackUrl, token,
         });
       } catch (e) {
         expect(e.code).toMatch(missingAction.code);
@@ -67,7 +67,7 @@ describe('services/Issuer/createDelegateTransaction.test.js', () => {
     test('Expect createDelegateTransaction to throw on missing description', async () => {
       try {
         await createDelegateTransaction({
-          did, name, undefined, callbackUrl, token, action,
+          did, name, callbackUrl, token, action,
         });
       } catch (e) {
         expect(e.code).toMatch(missingAction.code);
