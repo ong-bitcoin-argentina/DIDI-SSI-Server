@@ -3,7 +3,7 @@ module.exports = {
     mail: 'Email test.',
     otherMail: 'Other mail.',
     email: 'it@didi.org.ar',
-    code: 'QNgkcUjMzkCO',
+    code: '123456',
     otherCode: 'ANgkcasdfkC7',
     did: 'did:ethr:0x184373f2423424242434242445d5e1b11159',
     invalidEmail: 'invalidEmail',
