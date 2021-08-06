@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const Issuer = require('../../../models/Issuer');
-const { issuer } = require('./constants');
+const { issuers } = require('./constants');
 const { getImageUrl } = require('../../../utils/Helpers');
 
 describe('models/Issuer/getAll.test.js', () => {
@@ -15,7 +15,7 @@ describe('models/Issuer/getAll.test.js', () => {
       });
 
     const Issuers = await mongoose.connection.db.collection('issuers');
-    await Issuers.insert(issuer);
+    await Issuers.insert(issuers);
   });
   afterAll(async () => {
     await mongoose.connection.db.dropCollection('issuers');

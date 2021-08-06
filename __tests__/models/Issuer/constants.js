@@ -1,4 +1,4 @@
-const issuer = [{
+const issuers = [{
   deleted: false,
   createdOn: { date: '2021-07-06T15:55:29.432Z' },
   name: 'Issuer Travis test',
@@ -23,5 +23,5 @@ const issuer = [{
 }];
 
 module.exports = {
-  issuer,
+  issuers,
 };
