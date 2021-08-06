@@ -2,7 +2,7 @@ const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
 const ResponseHandler = require('../../utils/ResponseHandler');
 
-const readIssuerImageByDid = async (req, res) => {
+const readIssuerImagesByDid = async (req, res) => {
   const { did } = req.params;
 
   try {
@@ -18,5 +18,5 @@ const readIssuerImageByDid = async (req, res) => {
 };
 
 module.exports = {
-  readIssuerImageByDid,
+  readIssuerImagesByDid,
 };

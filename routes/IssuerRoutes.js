@@ -384,7 +384,7 @@ router.get('/issuer/:did', issuer.readIssuerByDid);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/issuer/:did/image', issuer.readIssuerImageByDid);
+router.get('/issuer/:did/image', issuer.readIssuerImagesByDid);
 
 /**
  * @openapi
