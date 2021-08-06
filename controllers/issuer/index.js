@@ -10,6 +10,7 @@ const { readIssuerByDid } = require('./readIssuerByDid');
 const { updateIssuerByDid } = require('./updateIssuerByDid');
 const { verifyCertificateByJwt } = require('./verifyCertificateByJwt');
 const { readAllIssuers } = require('./readAllIssuers');
+const { readIssuerImageByDid } = require('./readIssuerImageByDid');
 
 module.exports = {
   createCertificateByJwt,
@@ -24,4 +25,5 @@ module.exports = {
   updateIssuerByDid,
   verifyCertificateByJwt,
   readAllIssuers,
+  readIssuerImageByDid,
 };

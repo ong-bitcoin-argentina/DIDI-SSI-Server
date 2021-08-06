@@ -1,27 +1,22 @@
-const ResponseHandler = require('../../utils/ResponseHandler');
 const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
+const ResponseHandler = require('../../utils/ResponseHandler');
 
-const readIssuerByDid = async (req, res) => {
+const readIssuerImageByDid = async (req, res) => {
   const { did } = req.params;
 
   try {
     const issuer = await IssuerService.getIssuerByDID(did);
     if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
-    const {
-      name, description, imageId, expireOn, imageUrl,
-    } = issuer;
 
-    const issuerData = {
-      name, description, imageUrl, imageId, did, expireOn,
-    };
+    const { imageUrl } = issuer;
 
-    return ResponseHandler.sendRes(res, issuerData);
+    return ResponseHandler.sendRes(res, [imageUrl]);
   } catch (err) {
     return ResponseHandler.sendErr(res, err);
   }
 };
 
 module.exports = {
-  readIssuerByDid,
+  readIssuerImageByDid,
 };
