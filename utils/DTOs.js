@@ -1,5 +1,3 @@
-const { getImageUrl } = require('./Helpers');
-
 /**
  * DTO: Data Transfer Object
  */
@@ -17,7 +15,7 @@ const userDTO = async (user, extra = {}) => {
     name: user.name,
     lastname: user.lastname,
     imageId: user.imageId,
-    imageUrl: getImageUrl(user.imageId),
+    imageUrl: user.imageUrl,
     ...extra,
   };
 };

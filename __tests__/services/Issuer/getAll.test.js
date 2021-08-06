@@ -24,19 +24,19 @@ describe('services/Issuer/getAll.test.js', () => {
 
   test('Expect getAll to success', async () => {
     const response = await getAll();
-    expect.arrayContaining(response.list);
+    expect.arrayContaining(response.issuersList);
     expect(response.totalPages).toBe(1);
   });
 
   test('Expect getAll to success passing limit parameter', async () => {
     const response = await getAll(limit);
-    expect.arrayContaining(response.list);
+    expect.arrayContaining(response.issuersList);
     expect(response.totalPages).toBe(4);
   });
 
   test('Expect getAll to success passing grater limit and page parameters', async () => {
     const response = await getAll(limit + 1, page);
-    expect.arrayContaining(response.list);
+    expect.arrayContaining(response.issuersList);
     expect(response.totalPages).toBe(2);
   });
 });

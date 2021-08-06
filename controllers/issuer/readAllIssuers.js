@@ -1,6 +1,5 @@
 const ResponseHandler = require('../../utils/ResponseHandler');
 const IssuerService = require('../../services/IssuerService');
-const { getImageUrl } = require('../../utils/Helpers');
 
 const readAllIssuers = async (req, res) => {
   try {
@@ -8,13 +7,7 @@ const readAllIssuers = async (req, res) => {
     const page = parseInt(req.query.page, 10);
 
     const issuers = await IssuerService.getAll(limit, page);
-    const { list, totalPages } = issuers;
-
-    const issuersList = list.map(({
-      name, did, description, imageId,
-    }) => ({
-      name, did, description, imageUrl: getImageUrl(imageId), imageId,
-    }));
+    const { issuersList, totalPages } = issuers;
 
     return ResponseHandler.sendRes(res, { issuersList, totalPages });
   } catch (err) {

@@ -5,6 +5,7 @@ const Hashing = require('./utils/Hashing');
 const Encrypt = require('./utils/Encryption');
 const EncryptedData = require('./dataTypes/EncryptedData');
 const HashedData = require('./dataTypes/HashedData');
+const { getImageUrl } = require('../utils/Helpers');
 
 // Registra la informacion correspondiente a un usuario de didi
 const UserSchema = new mongoose.Schema({
@@ -55,6 +56,14 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+},
+{
+  toObject: {
+    virtuals: true,
+  },
+  toJSON: {
+    virtuals: true,
+  },
 });
 
 UserSchema.index(
@@ -70,6 +79,11 @@ UserSchema.index(
     unique: true,
   },
 );
+
+// Devuelve al url donde esta guardada la imagen de ususuario segun imageID
+UserSchema.virtual('imageUrl').get(function imageUrl() {
+  return getImageUrl(this.imageId);
+});
 
 // retorna clave privada del usuario
 UserSchema.methods.getSeed = async function getSeed() {

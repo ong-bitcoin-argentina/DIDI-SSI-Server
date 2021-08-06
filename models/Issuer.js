@@ -3,6 +3,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
+const { getImageUrl } = require('../utils/Helpers');
 
 const IssuerSchema = new mongoose.Schema({
   did: {
@@ -40,6 +41,19 @@ const IssuerSchema = new mongoose.Schema({
   modifiedOn: {
     type: Date,
   },
+},
+{
+  toObject: {
+    virtuals: true,
+  },
+  toJSON: {
+    virtuals: true,
+  },
+});
+
+// Devuelve al url donde esta guardada la imagen de un issuer segun su imageID
+IssuerSchema.virtual('imageUrl').get(function imageUrl() {
+  return getImageUrl(this.imageId);
 });
 
 IssuerSchema.pre('findOneAndUpdate', function pre(next) {
@@ -101,11 +115,11 @@ Issuer.getAll = async function getAll(limit, page) {
     }).countDocuments() / limit);
   }
 
-  const list = await Issuer.find({
+  const issuersList = await Issuer.find({
     deleted: false,
   },
   {
-    did: 1, name: 1, description: 1, imageId: 1,
+    did: 1, name: 1, description: 1, imageId: 1, imageUrl: 1,
   })
     .collation({
       locale: 'es',
@@ -114,8 +128,7 @@ Issuer.getAll = async function getAll(limit, page) {
     .sort({ name: 1 })
     .skip(page > 0 ? ((page - 1) * limit) : 0)
     .limit(limit);
-
-  return { list, totalPages };
+  return { issuersList, totalPages };
 };
 
 Issuer.getByDID = async function getByDID(did) {
