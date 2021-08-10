@@ -6,7 +6,7 @@ const { revokeDelegate } = require('../../../services/BlockchainService');
 const { data } = require('./constatns');
 const Messages = require('../../../constants/Messages');
 
-describe('services/Issuer/addIssuer.test.js', () => {
+xdescribe('services/Issuer/addIssuer.test.js', () => {
   const { did, name, description } = data;
   beforeAll(async () => {
     await mongoose

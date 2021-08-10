@@ -7,7 +7,7 @@ const Certificate = require('../../../models/Certificate');
 const Constants = require('../../../constants/Constants');
 const { data, mouroResponse } = require('./constant');
 
-describe('services/Cert/verifyCertificate.test.js', () => {
+xdescribe('services/Cert/verifyCertificate.test.js', () => {
   let cert;
   beforeAll(async () => {
     await mongoose
