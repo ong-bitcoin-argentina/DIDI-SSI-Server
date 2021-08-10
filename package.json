@@ -47,7 +47,7 @@
 		"graphql-tag": "2.10.3",
 		"mailgun-js": "0.22.0",
 		"mongo-sanitize": "1.1.0",
-		"mongoose": "5.9.2",
+		"mongoose": "^5.13.5",
 		"multer": "1.4.2",
 		"node-fetch": "2.6.1",
 		"node-pre-gyp": "0.14.0",
