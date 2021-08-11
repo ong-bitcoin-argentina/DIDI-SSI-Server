@@ -2,7 +2,7 @@ const { verifyCertificatePhoneNumber, createPhoneCertificate } = require('../../
 const { missingJwt } = require('../../../constants/serviceErrors');
 const { data } = require('./constant');
 
-describe('services/Cert/verifyCertificatePhoneNumber.test.js', () => {
+xdescribe('services/Cert/verifyCertificatePhoneNumber.test.js', () => {
   let cert;
   beforeAll(async () => {
     cert = await createPhoneCertificate(data.did, data.phoneNumber);
