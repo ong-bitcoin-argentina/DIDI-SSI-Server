@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const ResponseHandler = require('../../utils/ResponseHandler');
 const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
@@ -9,6 +10,7 @@ const createDelegation = async (req, res) => {
   const {
     did, name, callbackUrl, token, description,
   } = req.body;
+  const { path, mimetype, size } = req.file;
 
   try {
     const didExist = await IssuerService.getIssuerByDID(did);
@@ -20,6 +22,7 @@ const createDelegation = async (req, res) => {
       callbackUrl,
       token,
       action: CREATE,
+      file: { path, mimetype, size },
     });
 
     return ResponseHandler.sendRes(res, delegateTransaction);
