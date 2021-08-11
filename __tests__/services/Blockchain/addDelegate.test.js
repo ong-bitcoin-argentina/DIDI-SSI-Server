@@ -3,7 +3,7 @@ const { Credentials } = require('uport-credentials');
 const { missingIssuerDid } = require('../../../constants/serviceErrors');
 const { addDelegate } = require('../../../services/BlockchainService');
 
-describe('services/Blockchain/addDelegate.test.js', () => {
+xdescribe('services/Blockchain/addDelegate.test.js', () => {
   const rsk = Credentials.createIdentity();
   rsk.did = `did:ethr:rsk:${rsk.did}`;
   const lacchain = Credentials.createIdentity();
