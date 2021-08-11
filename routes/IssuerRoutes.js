@@ -196,6 +196,7 @@ router.post(
  *       required:
  *         - did
  *         - name
+ *         - description
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -424,8 +425,8 @@ router.patch(
   Validator.validateBody([
     { name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
     { name: 'description', validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
-    { name: 'file', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE], optional: true },
   ]),
+  Validator.validateFile,
   Validator.checkValidationResult,
   issuer.updateIssuerByDid,
 );

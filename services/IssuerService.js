@@ -49,7 +49,7 @@ module.exports.addIssuer = async function addIssuer(did, name, description, file
   let imageId;
   if (file) {
     const { mimetype, path } = file;
-    imageId = await this.saveImage(did, mimetype, path);
+    imageId = await createImage(path, mimetype);
   }
 
   return Issuer.create({

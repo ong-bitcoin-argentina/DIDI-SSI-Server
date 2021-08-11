@@ -6,8 +6,10 @@ const { revokeDelegate } = require('../../../services/BlockchainService');
 const { data } = require('./constatns');
 const Messages = require('../../../constants/Messages');
 
-xdescribe('services/Issuer/addIssuer.test.js', () => {
-  const { did, name, description } = data;
+describe('services/Issuer/addIssuer.test.js', () => {
+  const {
+    did, name, description, file,
+  } = data;
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -47,12 +49,24 @@ xdescribe('services/Issuer/addIssuer.test.js', () => {
     }
   });
 
-  test('Expect addIssuer to success', async () => {
+  test('Expect addIssuer to success without image', async () => {
     const response = await addIssuer(did, name, description);
     expect(response.did).toMatch(did);
     expect(response.name).toMatch(name);
     expect(response.description).toMatch(description);
     expect(response.deleted).toBe(false);
+    expect(response.expireOne).not.toBe(null);
+    expect(response.blockHash).not.toBe(null);
+    await mongoose.connection.db.dropCollection('issuers');
+  });
+
+  test('Expect addIssuer to success with image', async () => {
+    const response = await addIssuer(did, name, description, file);
+    expect(response.did).toMatch(did);
+    expect(response.name).toMatch(name);
+    expect(response.description).toMatch(description);
+    expect(response.deleted).toBe(false);
+    expect(response.imageId).not.toBe(null);
     expect(response.expireOne).not.toBe(null);
     expect(response.blockHash).not.toBe(null);
   });

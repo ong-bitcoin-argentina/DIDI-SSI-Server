@@ -150,9 +150,11 @@ module.exports.validateBody = function validateBody(params) {
 };
 
 module.exports.validateFile = function validateFile(req, res, next) {
-  const { size } = req.file;
-  if (size > Constants.MAX_MB * 1000000) {
-    return ResponseHandler.sendErrWithStatus(res, Messages.IMAGE.ERR.INVALID_SIZE);
+  if (req.file) {
+    const { size } = req.file;
+    if (size > Constants.MAX_MB * 1000000) {
+      return ResponseHandler.sendErrWithStatus(res, Messages.IMAGE.ERR.INVALID_SIZE);
+    }
   }
   return next();
 };

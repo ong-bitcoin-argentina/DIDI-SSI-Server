@@ -1,7 +1,7 @@
 const { issuers } = require('./issuers');
 
 const data = {
-  did: 'did:ethr:0x36f6dc06d34b164aec5421c9071a0d07765d4ee0',
+  did: 'did:ethr:lacchain:0x36f6dc06d34b164aec5421c9071a0d07765d4ee0',
   rskDid: 'did:ethr:rsk:0x36f6dc06d34b164aec5421c9071a0d07765d4ee0',
   key: '08c5c2d853de11b8a31da6048433f35d3ea966dd9dd558172ef2606a569eec03',
   secondDid: 'did:ethr:0x36f6dc06d34b164aec5421c9071a0d07765d4ee1',
@@ -12,6 +12,10 @@ const data = {
   action: 'CREATE',
   description: 'Descripcion del issuer',
   secondDescription: 'Otra descripcion para el issuer',
+  file: {
+    mimetype: 'image/jpeg',
+    path: '__tests__/services/User/utils/image.jpg',
+  },
 };
 
 const pagination = {
