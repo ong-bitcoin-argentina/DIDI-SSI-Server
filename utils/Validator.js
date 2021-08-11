@@ -149,6 +149,14 @@ module.exports.validateBody = function validateBody(params) {
   return validations;
 };
 
+module.exports.validateFile = function validateFile(req, res, next) {
+  const { size } = req.file;
+  if (size > Constants.MAX_MB * 1000000) {
+    return ResponseHandler.sendErrWithStatus(res, Messages.IMAGE.ERR.INVALID_SIZE);
+  }
+  return next();
+};
+
 module.exports.validateParams = function validateParams(req, res, next) {
   const { params } = req;
   const keys = Object.keys(params);

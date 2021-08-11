@@ -48,8 +48,7 @@ module.exports.addIssuer = async function addIssuer(did, name, description, file
 
   let imageId;
   if (file) {
-    const { size, mimetype, path } = file;
-    if (size > Constants.MAX_MB * 1000000) throw Messages.IMAGE.ERR.INVALID_SIZE;
+    const { mimetype, path } = file;
     imageId = await this.saveImage(did, mimetype, path);
   }
 

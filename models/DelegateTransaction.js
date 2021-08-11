@@ -20,9 +20,6 @@ const DelegateTransactionSchema = new mongoose.Schema({
     mimetype: {
       type: String,
     },
-    size: {
-      type: Number,
-    },
   },
   token: {
     type: String,

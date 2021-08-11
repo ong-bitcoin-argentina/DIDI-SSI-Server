@@ -230,8 +230,8 @@ router.post(
     { name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
     { name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
     { name: 'description', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-    { name: 'file', validate: [Constants.VALIDATION_TYPES.IS_BASE_64_IMAGE], optional: true },
   ]),
+  Validator.validateFile,
   Validator.checkValidationResult,
   issuer.createDelegation,
 );
