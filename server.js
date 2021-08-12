@@ -151,11 +151,11 @@ app.use(route, UserRoutes);
 app.use(route, SmsRoutes);
 app.use(route, MailRoutes);
 app.use(route, RenaperRoutes);
+app.use(route, SemillasRoutes);
 app.use(route, AppUserAuthRoutes);
 app.use(route, AdminRoutes);
 app.use(route, PresentationRoutes);
 app.use(route, ShareRequestRoutes);
-if (Constants.ENABLE_SEMILLAS) app.use(route, SemillasRoutes);
 app.use('*', (req, res) => res.status(404).json({
   status: 'error',
   errorCode: 'INVALID_ROUTE',
