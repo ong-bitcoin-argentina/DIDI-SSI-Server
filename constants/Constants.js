@@ -77,6 +77,7 @@ const { APP_INSIGTHS_IKEY } = process.env;
 if (APP_INSIGTHS_IKEY == null || APP_INSIGTHS_IKEY == '') throw new Error('No esta definida la varibale APP_INSIGTHS_IKEY');
 
 // Semillas
+const ENABLE_SEMILLAS = process.env.ENABLE_SEMILLAS === 'true';
 const { SEMILLAS_USERNAME, SEMILLAS_PASSWORD, SEMILLAS_URL } = process.env;
 if (SEMILLAS_USERNAME == null || SEMILLAS_USERNAME == '') throw new Error('No esta definida la varibale SEMILLAS_USERNAME');
 if (SEMILLAS_PASSWORD == null || SEMILLAS_PASSWORD == '') throw new Error('No esta definida la varibale SEMILLAS_PASSWORD');
@@ -238,6 +239,7 @@ module.exports = {
   NO_EMAILS,
   NO_SMS,
 
+  ENABLE_SEMILLAS,
   SEMILLAS_LOGIN: {
     username: SEMILLAS_USERNAME,
     password: SEMILLAS_PASSWORD,
