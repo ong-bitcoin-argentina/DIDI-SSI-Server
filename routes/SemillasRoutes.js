@@ -3,7 +3,7 @@ const router = require('express').Router();
 const Constants = require('../constants/Constants');
 const { checkValidationResult, validateBody } = require('../utils/Validator');
 const semillas = require('../controllers/semillas');
-const semillasMiddelware = require('../middlewares/semillas');
+const { semillasMiddelware } = require('../middlewares/semillas');
 
 router.use('/semillas/', semillasMiddelware);
 
