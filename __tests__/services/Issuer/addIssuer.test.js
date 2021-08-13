@@ -8,7 +8,7 @@ const Messages = require('../../../constants/Messages');
 
 describe('services/Issuer/addIssuer.test.js', () => {
   const {
-    did, name, description, file,
+    did, name, description, file, secondDid,
   } = data;
   beforeAll(async () => {
     await mongoose
@@ -57,12 +57,11 @@ describe('services/Issuer/addIssuer.test.js', () => {
     expect(response.deleted).toBe(false);
     expect(response.expireOne).not.toBe(null);
     expect(response.blockHash).not.toBe(null);
-    await mongoose.connection.db.dropCollection('issuers');
   });
 
   test('Expect addIssuer to success with image', async () => {
-    const response = await addIssuer(did, name, description, file);
-    expect(response.did).toMatch(did);
+    const response = await addIssuer(secondDid, name, description, file);
+    expect(response.did).toMatch(secondDid);
     expect(response.name).toMatch(name);
     expect(response.description).toMatch(description);
     expect(response.deleted).toBe(false);
