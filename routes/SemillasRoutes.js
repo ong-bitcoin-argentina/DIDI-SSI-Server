@@ -1,9 +1,11 @@
 /* eslint-disable max-len */
-
 const router = require('express').Router();
 const Constants = require('../constants/Constants');
 const { checkValidationResult, validateBody } = require('../utils/Validator');
 const semillas = require('../controllers/semillas');
+const { semillasMiddelware } = require('../middlewares/semillas');
+
+router.use('/semillas/', semillasMiddelware);
 
 const {
   IS_STRING, IS_EMAIL, IS_DNI, IS_MOBILE_PHONE, IS_NUMBER,
