@@ -27,7 +27,7 @@ const {
 /**
  *  Crea un nuevo issuer
  */
-module.exports.addIssuer = async function addIssuer(did, name, description) {
+module.exports.addIssuer = async function addIssuer(did, name, description, file) {
   if (!did) throw missingDid;
   if (!name) throw missingName;
   if (!description) throw missingDescription;
@@ -46,8 +46,14 @@ module.exports.addIssuer = async function addIssuer(did, name, description) {
     expireOn.setSeconds(expireOn.getSeconds() + Number(Constants.BLOCKCHAIN.DELEGATE_DURATION));
   }
 
+  let imageId;
+  if (file) {
+    const { mimetype, path } = file;
+    imageId = await createImage(path, mimetype);
+  }
+
   return Issuer.create({
-    name, did, expireOn, blockHash: transactionHash, description,
+    name, did, expireOn, blockHash: transactionHash, description, imageId,
   });
 };
 
@@ -141,7 +147,7 @@ module.exports.callback = async function callback(url, did, token, data) {
  *  Permite manejar autorización para emitir credenciales de un issuer dada una action
  */
 module.exports.createDelegateTransaction = async function createDelegateTransaction({
-  did, name, callbackUrl, token, action, description,
+  did, name, callbackUrl, token, action, description, file,
 }) {
   if (!did) throw missingDid;
   if (!callbackUrl) throw missingCallback;
@@ -149,7 +155,7 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
   if (!action) throw missingAction;
   try {
     return await DelegateTransaction.create({
-      did, name, callbackUrl, token, action, description,
+      did, name, callbackUrl, token, action, description, file,
     });
   } catch (err) {
     console.log(err);
