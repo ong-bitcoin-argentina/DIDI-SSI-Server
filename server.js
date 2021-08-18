@@ -82,7 +82,7 @@ const options = {
       version: VERSION,
     },
     servers: [{
-      url: '/api/1.0/didi',
+      url: '/',
     }],
   },
   apis: ['./*.js', './routes/*.js'], // files containing annotations as above
@@ -131,12 +131,6 @@ app.use((error, req, _, next) => {
   next();
 });
 
-const route = `/api/${Constants.API_VERSION}/didi`;
-if (Constants.DEBUGG) {
-  // eslint-disable-next-line no-console
-  console.log(`route: ${route}`);
-}
-
 app.use(
   multer({
     dest: './uploads/',
@@ -146,16 +140,16 @@ app.use(
   }).single('file'),
 );
 
-app.use(route, IssuerRoutes);
-app.use(route, UserRoutes);
-app.use(route, SmsRoutes);
-app.use(route, MailRoutes);
-app.use(route, RenaperRoutes);
-app.use(route, SemillasRoutes);
-app.use(route, AppUserAuthRoutes);
-app.use(route, AdminRoutes);
-app.use(route, PresentationRoutes);
-app.use(route, ShareRequestRoutes);
+app.use(IssuerRoutes);
+app.use(UserRoutes);
+app.use(SmsRoutes);
+app.use(MailRoutes);
+app.use(RenaperRoutes);
+app.use(SemillasRoutes);
+app.use(AppUserAuthRoutes);
+app.use(AdminRoutes);
+app.use(PresentationRoutes);
+app.use(ShareRequestRoutes);
 app.use('*', (req, res) => res.status(404).json({
   status: 'error',
   errorCode: 'INVALID_ROUTE',
