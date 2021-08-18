@@ -15,7 +15,7 @@ const createCredentialPetition = async (req, res) => {
     const decoded = await CertService.decodeCertificate(jwt, Messages.CERTIFICATE.ERR.VERIFY);
     const name = Object.keys(decoded.payload.vc.credentialSubject)[0];
 
-    const cb = `${Constants.ADDRESS}:${Constants.PORT}/api/1.0/didi/verifyCredential`;
+    const cb = `${Constants.ADDRESS}:${Constants.PORT}/verifyCredential`;
     const claims = {
       verifiable: {
         [name]: {

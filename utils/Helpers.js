@@ -1,3 +1,3 @@
-const { ADDRESS, API_VERSION } = require('../constants/Constants');
+const { ADDRESS } = require('../constants/Constants');
 
-module.exports.getImageUrl = (imageId) => (imageId ? `${ADDRESS}/api/${API_VERSION}/didi/image/${imageId}` : null);
+module.exports.getImageUrl = (imageId) => (imageId ? `${ADDRESS}/image/${imageId}` : null);
