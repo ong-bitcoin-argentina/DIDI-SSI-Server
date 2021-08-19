@@ -4,8 +4,8 @@ cache:
 services:
 - mongodb
 before_script:
-- sleep 15
-- mongo mydb_test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
+- sleep 5
+- mongo mydb_test --eval 'db.createUser({user:"travis",pwd:"test",roles:[{role:"readWrite",db:"didi-server"}]});'
 script:
 - npm run lint
 - npm run test
