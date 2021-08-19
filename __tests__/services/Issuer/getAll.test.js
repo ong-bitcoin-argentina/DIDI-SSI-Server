@@ -15,7 +15,7 @@ describe('services/Issuer/getAll.test.js', () => {
       });
 
     const Issuers = await mongoose.connection.db.collection('issuers');
-    await Issuers.insert(issuers);
+    await Issuers.insertMany(issuers);
   });
   afterAll(async () => {
     await mongoose.connection.db.dropCollection('issuers');
