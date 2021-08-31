@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 require('dotenv-flow').config({ silent: true });
 require('./services/logger');
 
@@ -35,7 +36,6 @@ const server = http.createServer(app);
 
 // sobreescribir log para agregarle el timestamp
 const { log } = console;
-// eslint-disable-next-line no-console
 console.log = (data) => {
   process.stdout.write(`${new Date().toISOString()}: `);
   log(data);
@@ -52,7 +52,6 @@ app.use(
 );
 app.use(bodyParser.json());
 
-// eslint-disable-next-line no-console
 if (Constants.DEBUGG) console.log(Messages.INDEX.MSG.CONNECTING + Constants.MONGO_URL);
 
 // configuracion de mongoose
@@ -63,10 +62,8 @@ mongoose
     useUnifiedTopology: true,
     useNewUrlParser: true,
   })
-  // eslint-disable-next-line no-console
   .then(() => console.log(Messages.INDEX.MSG.CONNECTED))
   .catch((err) => {
-    // eslint-disable-next-line no-console
     console.log(Messages.INDEX.ERR.CONNECTION + err.message);
   });
 
@@ -115,10 +112,8 @@ app.use(bodyParser.json());
 // loggear llamadas
 app.use((req, _, next) => {
   if (Constants.DEBUGG) {
-    // eslint-disable-next-line no-console
     console.log(`${req.method} ${req.originalUrl}`);
     process.stdout.write('body: ');
-    // eslint-disable-next-line no-console
     console.log(req.body);
   }
   next();
@@ -126,7 +121,6 @@ app.use((req, _, next) => {
 
 // loggear errores
 app.use((error, req, _, next) => {
-  // eslint-disable-next-line no-console
   console.log(error);
   next();
 });
@@ -158,7 +152,6 @@ app.use('*', (req, res) => res.status(404).json({
 
 // forkear workers
 if (cluster.isMaster) {
-  // eslint-disable-next-line no-console
   console.log(Messages.INDEX.MSG.STARTING_WORKERS(numCPUs));
   permanentJob();
 
@@ -168,19 +161,15 @@ if (cluster.isMaster) {
   }
 
   cluster.on('online', (worker) => {
-    // eslint-disable-next-line no-console
     console.log(Messages.INDEX.MSG.STARTED_WORKER(worker.process.pid));
   });
 
   cluster.on('exit', (worker, code, signal) => {
-    // eslint-disable-next-line no-console
     console.log(Messages.INDEX.MSG.ENDED_WORKER(worker.process.pid, code, signal));
-    // eslint-disable-next-line no-console
     console.log(Messages.INDEX.MSG.STARTING_WORKER);
     cluster.fork();
   });
 } else {
   server.listen(Constants.PORT);
-  // eslint-disable-next-line no-console
   console.log(Messages.INDEX.MSG.RUNNING_ON + Constants.PORT);
 }

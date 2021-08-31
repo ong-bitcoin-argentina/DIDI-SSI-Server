@@ -30,8 +30,8 @@ const funcToDone = async (next, data, statusError) => {
 
 const createAction = (data) => funcToDone(
   async ({
-    did, name, description, file,
-  }) => IssuerService.addIssuer(did, name, description, file),
+    did, name, description, imageUrl,
+  }) => IssuerService.addIssuer(did, name, description, imageUrl),
   data,
   ERROR,
 );

@@ -5,20 +5,11 @@ const IssuerService = require('../../services/IssuerService');
 const updateIssuerByDid = async (req, res) => {
   try {
     const { did } = req.params;
-    const { name, description } = req.body;
+    const { name, description, imageUrl } = req.body;
 
-    // Actualizar nombre y descripción
-    await IssuerService.editData(did, name, description);
+    const issuer = await IssuerService.editData(did, name, description, imageUrl);
 
-    // Actualizar imagen
-    if (req.file) {
-      const { path, mimetype } = req.file;
-      await IssuerService.saveImage(did, mimetype, path);
-    }
-
-    const issuerUpdated = await IssuerService.getIssuerByDID(did);
-
-    return ResponseHandler.sendRes(res, issuerUpdated);
+    return ResponseHandler.sendRes(res, issuer);
   } catch (err) {
     return ResponseHandler.sendErr(res, err);
   }

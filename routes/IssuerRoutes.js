@@ -212,9 +212,8 @@ router.post(
  *                 type: string
  *               token:
  *                 type: string
- *               file:
+ *               imageUrl:
  *                 type: string
- *                 format: binary
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
@@ -231,6 +230,7 @@ router.post(
     { name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
     { name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
     { name: 'description', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+    { name: 'imageUrl', validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
   ]),
   Validator.validateFile,
   Validator.checkValidationResult,
@@ -409,9 +409,8 @@ router.get('/issuer/:did/image', issuer.readIssuerImagesByDid);
  *                 type: string
  *               description:
  *                 type: string
- *               file:
+ *               imageUrl:
  *                 type: string
- *                 format: binary
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
@@ -425,6 +424,7 @@ router.patch(
   Validator.validateBody([
     { name: 'name', validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
     { name: 'description', validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
+    { name: 'imageUrl', validate: [Constants.VALIDATION_TYPES.IS_STRING], optional: true },
   ]),
   Validator.validateFile,
   Validator.checkValidationResult,
