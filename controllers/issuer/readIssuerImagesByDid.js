@@ -9,9 +9,9 @@ const readIssuerImagesByDid = async (req, res) => {
     const issuer = await IssuerService.getIssuerByDID(did);
     if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.IS_INVALID);
 
-    const { imageUrl, imageId } = issuer;
+    const { imageUrl } = issuer;
 
-    return ResponseHandler.sendRes(res, [imageUrl, imageId]);
+    return ResponseHandler.sendRes(res, [imageUrl]);
   } catch (err) {
     return ResponseHandler.sendErr(res, err);
   }

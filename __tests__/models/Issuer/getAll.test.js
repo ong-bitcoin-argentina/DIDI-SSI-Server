@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const Issuer = require('../../../models/Issuer');
 const { issuers } = require('./constants');
-const { getImageUrl } = require('../../../utils/Helpers');
 
 describe('models/Issuer/getAll.test.js', () => {
   beforeAll(async () => {
@@ -25,15 +24,14 @@ describe('models/Issuer/getAll.test.js', () => {
   test('Expect getAll to success', async () => {
     const { totalPages, issuersList } = await Issuer.getAll();
     expect.arrayContaining(issuersList);
-    expect(issuersList[1].imageId).toBe(undefined);
+    expect(issuersList[1].imageUrl).toBe(undefined);
     expect(totalPages).toBe(1);
   });
 
-  test('Expect getAll to get an issuer with imageId', async () => {
+  test('Expect getAll to get an issuer with imageUrl', async () => {
     const { totalPages, issuersList } = await Issuer.getAll();
     expect.arrayContaining(issuersList);
-    expect(issuersList[0].imageId).not.toBe(null);
-    expect(issuersList[0].imageUrl).toBe(getImageUrl(issuersList[0].imageId));
+    expect(issuersList[0].imageUrl).toBe(issuersList[0].imageUrl);
     expect(totalPages).toBe(1);
   });
 });

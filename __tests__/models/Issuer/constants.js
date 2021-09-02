@@ -8,7 +8,7 @@ const issuers = [{
   __v: 0,
   description: 'Issuer para los test de travis',
   modifiedOn: { date: '2021-07-27T12:55:13.717Z' },
-  imageId: '6100023190c0393938665f90',
+  imageUrl: '6100023190c0393938665f90',
 },
 {
   deleted: false,

@@ -17,7 +17,7 @@ const {
   missingPath,
   missingId,
 } = require('../constants/serviceErrors');
-const { createImage } = require('./utils/createImage');
+const { createImage } = require('./utils/imageHandler');
 
 const { DID_NOT_FOUND } = Messages.VALIDATION;
 

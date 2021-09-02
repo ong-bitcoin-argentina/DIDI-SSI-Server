@@ -3,7 +3,6 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
-const { getImageUrl } = require('../utils/Helpers');
 
 const IssuerSchema = new mongoose.Schema({
   did: {
@@ -19,7 +18,7 @@ const IssuerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  imageId: {
+  imageUrl: {
     type: String,
   },
   blockHash: {
@@ -49,11 +48,6 @@ const IssuerSchema = new mongoose.Schema({
   toJSON: {
     virtuals: true,
   },
-});
-
-// Devuelve al url donde esta guardada la imagen de un issuer segun su imageID
-IssuerSchema.virtual('imageUrl').get(function imageUrl() {
-  return getImageUrl(this.imageId);
 });
 
 IssuerSchema.pre('findOneAndUpdate', function pre(next) {
@@ -94,9 +88,9 @@ IssuerSchema.methods.edit = async function edit(data) {
   }
 };
 
-IssuerSchema.methods.updateImage = async function updateImage(imageId) {
+IssuerSchema.methods.updateImage = async function updateImage(imageUrl) {
   try {
-    return await Issuer.findByIdAndUpdate({ _id: this._id }, { imageId }, { new: true });
+    return await Issuer.findByIdAndUpdate({ _id: this._id }, { imageUrl }, { new: true });
   } catch (err) {
     return Promise.reject(err);
   }
@@ -119,7 +113,7 @@ Issuer.getAll = async function getAll(limit, page) {
     deleted: false,
   },
   {
-    did: 1, name: 1, description: 1, imageId: 1, imageUrl: 1,
+    did: 1, name: 1, description: 1, imageUrl: 1,
   })
     .collation({
       locale: 'es',
