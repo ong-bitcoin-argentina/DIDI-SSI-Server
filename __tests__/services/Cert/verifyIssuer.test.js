@@ -2,6 +2,7 @@ const { verifyIssuer } = require('../../../services/CertService');
 const { missingIssuerDid } = require('../../../constants/serviceErrors');
 const { data } = require('./constant');
 const Messages = require('../../../constants/Messages');
+const Constants = require('../../../constants/Constants');
 
 describe('services/Cert/verifyIssuer.test.js', () => {
   test('Expect verifyIssuer to throw on missing issuerDid', async () => {
@@ -23,5 +24,10 @@ describe('services/Cert/verifyIssuer.test.js', () => {
     } catch (e) {
       expect(e.code).toMatch(Messages.ISSUER.ERR.IS_INVALID.code);
     }
+  });
+
+  test('Expect verifyIssuer to success with DIDI Server DID ', async () => {
+    const response = await verifyIssuer(`did:ethr:${Constants.SERVER_DID}`);
+    expect(response).toMatch(Messages.CERTIFICATE.VERIFIED);
   });
 });

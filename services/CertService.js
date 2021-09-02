@@ -216,7 +216,7 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
 module.exports.verifyIssuer = async function verifyIssuer(issuerDid) {
   if (!issuerDid) throw missingIssuerDid;
   if (issuerDid === `did:ethr:${Constants.SERVER_DID}`) {
-    return true;
+    return Messages.CERTIFICATE.VERIFIED;
   }
   const delegated = await BlockchainService.validDelegate(issuerDid);
   if (delegated) return Messages.CERTIFICATE.VERIFIED;
