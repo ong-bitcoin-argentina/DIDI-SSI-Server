@@ -76,11 +76,12 @@ IssuerSchema.methods.edit = async function edit(data) {
     return await Issuer.findByIdAndUpdate(
       { _id: this._id },
       {
-        name: name === null || name === undefined ? this.name : name,
-        description:
-          description === null || description === undefined ? this.description : description,
+        $set: {
+          name,
+          description,
+        },
       },
-      { new: true },
+      { new: true, omitUndefined: true },
     );
   } catch (err) {
     console.log(err);
