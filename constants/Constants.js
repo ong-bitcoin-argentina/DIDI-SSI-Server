@@ -84,21 +84,17 @@ if (SEMILLAS_PASSWORD == null || SEMILLAS_PASSWORD == '') throw new Error('No es
 if (SEMILLAS_URL == null || SEMILLAS_URL == '') throw new Error('No esta definida la varibale SEMILLAS_URL');
 
 // Blockchain
-const {
-  BLOCKCHAIN_CONTRACT_MAIN, BLOCKCHAIN_CONTRACT_RSK, BLOCKCHAIN_CONTRACT_LAC,
-  BLOCKCHAIN_CONTRACT_BFA, BLOCKCHAIN_URL_MAIN, BLOCKCHAIN_URL_RSK,
-  BLOCKCHAIN_URL_LAC, BLOCKCHAIN_URL_BFA,
-} = process.env;
+const { BLOCKCHAIN_URL_RSK, BLOCKCHAIN_URL_LAC, BLOCKCHAIN_URL_BFA } = process.env;
+const { BLOCKCHAIN_CONTRACT_MAIN, BLOCKCHAIN_CONTRACT_LAC, BLOCKCHAIN_CONTRACT_BFA } = process.env;
+const { INFURA_KEY } = process.env;
 
 const DELEGATE_DURATION = process.env.BLOCK_CHAIN_DELEGATE_DURATION || 1300000;
 const GAS_INCREMENT = process.env.GAS_INCREMENT || '1.1';
 
-if (BLOCKCHAIN_URL_MAIN == null || BLOCKCHAIN_URL_MAIN == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_MAIN');
 if (BLOCKCHAIN_URL_RSK == null || BLOCKCHAIN_URL_RSK == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_RSK');
 if (BLOCKCHAIN_URL_LAC == null || BLOCKCHAIN_URL_LAC == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_LAC');
 if (BLOCKCHAIN_URL_BFA == null || BLOCKCHAIN_URL_BFA == '') throw new Error('No esta definida la varibale BLOCKCHAIN_URL_BFA');
 if (BLOCKCHAIN_CONTRACT_MAIN == null || BLOCKCHAIN_CONTRACT_MAIN == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_MAIN');
-if (BLOCKCHAIN_CONTRACT_RSK == null || BLOCKCHAIN_CONTRACT_RSK == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_RSK');
 if (BLOCKCHAIN_CONTRACT_LAC == null || BLOCKCHAIN_CONTRACT_LAC == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_LAC');
 if (BLOCKCHAIN_CONTRACT_BFA == null || BLOCKCHAIN_CONTRACT_BFA == '') throw new Error('No esta definida la varibale BLOCKCHAIN_CONTRACT_BFA');
 
@@ -112,7 +108,27 @@ const PROVIDER_CONFIG = {
   networks: [
     {
       name: 'mainnet',
-      rpcUrl: BLOCKCHAIN_URL_MAIN,
+      rpcUrl: `https://mainnet.infura.io/v3/${INFURA_KEY}`,
+      registry: BLOCKCHAIN_CONTRACT_MAIN,
+    },
+    {
+      name: 'ropsten',
+      rpcUrl: `https://ropsten.infura.io/v3/${INFURA_KEY}`,
+      registry: BLOCKCHAIN_CONTRACT_MAIN,
+    },
+    {
+      name: 'rinkeby',
+      rpcUrl: `https://rinkeby.infura.io/v3/${INFURA_KEY}`,
+      registry: BLOCKCHAIN_CONTRACT_MAIN,
+    },
+    {
+      name: 'goerli',
+      rpcUrl: `https://goerli.infura.io/v3/${INFURA_KEY}`,
+      registry: BLOCKCHAIN_CONTRACT_MAIN,
+    },
+    {
+      name: 'kovan',
+      rpcUrl: `https://kovan.infura.io/v3/${INFURA_KEY}`,
       registry: BLOCKCHAIN_CONTRACT_MAIN,
     },
     {
@@ -128,7 +144,7 @@ const PROVIDER_CONFIG = {
     {
       name: 'rsk',
       rpcUrl: BLOCKCHAIN_URL_RSK,
-      registry: BLOCKCHAIN_CONTRACT_RSK,
+      registry: BLOCKCHAIN_CONTRACT_MAIN,
     },
   ],
 };
