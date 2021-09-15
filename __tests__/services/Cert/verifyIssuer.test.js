@@ -22,7 +22,7 @@ describe('services/Cert/verifyIssuer.test.js', () => {
     try {
       await verifyIssuer(data.did);
     } catch (e) {
-      expect(e.code).toMatch(Messages.ISSUER.ERR.IS_INVALID.code);
+      expect(e.code).toMatch(Messages.DELEGATE.ERR.GET_DELEGATE.code);
     }
   });
 
