@@ -25,23 +25,8 @@ assert.ok(SERVER_DID, 'No esta definida la varibale SERVER_DID');
 assert.ok(SERVER_PRIVATE_KEY, 'No esta definida la varibale SERVER_PRIVATE_KEY');
 
 // MongoDB
-const MONGO_USER = process.env.MONGO_USERNAME;
-const {
-  MONGO_DIR, MONGO_PORT, MONGO_PASSWORD, MONGO_DB, MONGO_URI,
-} = process.env;
-let MONGO_URL;
-
-if (!MONGO_URI) {
-  assert.ok(MONGO_USER, 'No esta definida la varibale MONGO_USER');
-  assert.ok(MONGO_PASSWORD, 'No esta definida la varibale MONGO_PASSWORD');
-  assert.ok(MONGO_DIR, 'No esta definida la varibale MONGO_DIR');
-  assert.ok(MONGO_PORT, 'No esta definida la varibale MONGO_PORT');
-  assert.ok(MONGO_DB, 'No esta definida la varibale MONGO_DB');
-  const URL = `${MONGO_DIR}:${MONGO_PORT}/${MONGO_DB}`;
-  MONGO_URL = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${URL}`;
-} else {
-  MONGO_URL = MONGO_URI;
-}
+const { MONGO_URI } = process.env;
+assert.ok(MONGO_URI, 'No esta definida la varibale MONGO_URI');
 
 // MailGun
 const { MAILGUN_API_KEY, MAILGUN_DOMAIN } = process.env;
@@ -85,7 +70,11 @@ assert.ok(SEMILLAS_URL, 'No esta definida la varibale SEMILLAS_URL');
 
 // Blockchain
 const { BLOCKCHAIN_URL_RSK, BLOCKCHAIN_URL_LAC, BLOCKCHAIN_URL_BFA } = process.env;
-const { BLOCKCHAIN_CONTRACT_MAIN, BLOCKCHAIN_CONTRACT_LAC, BLOCKCHAIN_CONTRACT_BFA } = process.env;
+
+const BLOCKCHAIN_CONTRACT_MAIN = '0xdca7ef03e98e0dc2b855be647c39abe984fcf21b';
+const BLOCKCHAIN_CONTRACT_LAC = '0x488C83c4D1dDCF8f3696273eCcf0Ff4Cf54Bf277';
+const BLOCKCHAIN_CONTRACT_BFA = '0x0b2b8e138c38f4ca844dc79d4c004256712de547';
+
 const { INFURA_KEY } = process.env;
 
 const DELEGATE_DURATION = process.env.BLOCK_CHAIN_DELEGATE_DURATION || 1300000;
@@ -94,17 +83,8 @@ const GAS_INCREMENT = process.env.GAS_INCREMENT || '1.1';
 assert.ok(BLOCKCHAIN_URL_RSK, 'No esta definida la varibale BLOCKCHAIN_URL_RSK');
 assert.ok(BLOCKCHAIN_URL_LAC, 'No esta definida la varibale BLOCKCHAIN_URL_LAC');
 assert.ok(BLOCKCHAIN_URL_BFA, 'No esta definida la varibale BLOCKCHAIN_URL_BFA');
-assert.ok(BLOCKCHAIN_CONTRACT_MAIN, 'No esta definida la varibale BLOCKCHAIN_CONTRACT_MAIN');
-assert.ok(BLOCKCHAIN_CONTRACT_LAC, 'No esta definida la varibale BLOCKCHAIN_CONTRACT_LAC');
-assert.ok(BLOCKCHAIN_CONTRACT_BFA, 'No esta definida la varibale BLOCKCHAIN_CONTRACT_BFA');
 assert.ok(INFURA_KEY, 'No esta definida la varibale INFURA_KEY');
 
-// Provider
-// MAINNET SHOULD BE THE FIRST NETWORK
-// DID ROUTE EXAMPLE PREFIX:
-// MAINNET ==> did:ethr:
-// RSK ==> did:ethr:rsk:
-// LACCHAIN ==> did:ethr:lacchain:
 const PROVIDER_CONFIG = {
   networks: [
     {
@@ -157,7 +137,7 @@ module.exports = {
   DISABLE_TELEMETRY_CLIENT,
   API_SERVER_PRIVATE_KEY: '1.0',
   DEBUGG,
-  MONGO_URL,
+  MONGO_URL: MONGO_URI,
   ADDRESS,
   PORT,
   VERSION,
