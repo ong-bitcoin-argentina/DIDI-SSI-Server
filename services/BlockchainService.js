@@ -6,7 +6,13 @@ const Messages = require('../constants/Messages');
 const { SERVER_PRIVATE_KEY, SERVER_DID } = require('../constants/Constants');
 
 const {
-  missingOtherDID, missingIssuerDid,
+  missingOtherDID,
+  missingIssuerDid,
+  missingJwt,
+  missingPrivateKey,
+  missingPayload,
+  missingExpiration,
+  missingDid,
 } = require('../constants/serviceErrors');
 
 /**
@@ -70,4 +76,70 @@ module.exports.validDelegate = async function validDelegate(issuerDID) {
     console.log(err);
     throw Messages.DELEGATE.ERR.GET_DELEGATE;
   }
+};
+
+/**
+ * Cenera un certificado asociando la informacion recibida
+ */
+module.exports.createVerifiableCredential = function createCertificate(
+  subjectDid, subjectPayload, expirationDate, issuerDid, issuerPkey,
+) {
+  if (!issuerDid) throw missingIssuerDid;
+  if (!issuerPkey) throw missingPrivateKey;
+  if (!subjectPayload) throw missingPayload;
+  if (!expirationDate) throw missingExpiration;
+  if (!subjectDid) throw missingDid;
+  try {
+    return blockchainManager.createCertificate(
+      subjectDid, subjectPayload, expirationDate, issuerDid, issuerPkey,
+    );
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    throw Messages.CERTIFICATE.ERR.CREATE;
+  }
+};
+
+/**
+ * Crea una firma valida a partir de la clave privada
+ */
+module.exports.getSigner = function getSigner(privateKey) {
+  if (!privateKey) throw missingPrivateKey;
+  return blockchainManager.getSigner(privateKey);
+};
+
+/**
+ * Crea un jwt a partir del payload con la informacion a codificar
+ */
+module.exports.createJWT = function createJWT(
+  issuerDID, privateKey, payload, expiration, audienceDID,
+) {
+  if (!issuerDID) throw missingIssuerDid;
+  if (!privateKey) throw missingPrivateKey;
+  if (!payload) throw missingPayload;
+  return blockchainManager.createJWT(issuerDID, privateKey, payload, expiration, audienceDID);
+};
+
+/**
+ * Decodifica un jwt y devuelve su contenido
+ */
+module.exports.decodeJWT = function decodeJWT(jwt) {
+  if (!jwt) throw missingJwt;
+  return blockchainManager.decodeJWT(jwt);
+};
+
+/**
+ * Verifica una credencial
+ */
+module.exports.verifyCertificate = function verifyCertificate(jwt) {
+  if (!jwt) throw missingJwt;
+  return blockchainManager.verifyCertificate(jwt);
+};
+
+/**
+ * Verifica un jwt
+ */
+module.exports.verifyJWT = async function verifyJWT(jwt, audienceDID) {
+  if (!jwt) throw missingJwt;
+  return blockchainManager.verifyJWT(jwt, audienceDID);
 };
