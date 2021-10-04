@@ -8,10 +8,9 @@ const addIssuers = async () => {
   lacchain.did = `did:ethr:lacchain:${lacchain.did}`;
   const bfa = Credentials.createIdentity();
   bfa.did = `did:ethr:bfa:${bfa.did}`;
-
   await addIssuer(rsk.did, `Test: ${rsk.did}`, 'Issuer description');
   await addIssuer(lacchain.did, `Test: ${lacchain.did}`, 'Issuer description');
-  // await addIssuer(bfa.did, `Test: ${bfa.did}`);
+  await addIssuer(bfa.did, `Test: ${bfa.did}`, 'Issuer description');
   return { rsk, lacchain, bfa };
 };
 

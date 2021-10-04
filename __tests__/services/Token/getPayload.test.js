@@ -23,7 +23,6 @@ describe('services/Token/getPayload.test.js', () => {
 
   test('Expect getPayload to get a valid Payload', async () => {
     const result = await getPayload(await token);
-    expect(result.sub).toBe(dataResponse.sub);
-    expect(result.iat).toBe(dataResponse.iat);
+    expect(result.iss).toBe(dataResponse.issuer);
   });
 });

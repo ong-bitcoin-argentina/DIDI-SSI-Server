@@ -1,6 +1,5 @@
 const { verifyToken } = require('../../../services/TokenService');
 const { missingJwt } = require('../../../constants/serviceErrors');
-
 const {
   dataResponse, error, token, invalidToken,
 } = require('./constants');

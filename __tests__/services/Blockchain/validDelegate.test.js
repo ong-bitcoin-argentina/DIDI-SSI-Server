@@ -4,7 +4,7 @@ const { missingIssuerDid } = require('../../../constants/serviceErrors');
 const { validDelegate } = require('../../../services/BlockchainService');
 const { addIssuers } = require('./utils');
 
-xdescribe('services/Blockchain/validDelegate.test.js', () => {
+describe('services/Blockchain/validDelegate.test.js', () => {
   let rsk;
   let lacchain;
   let bfa;

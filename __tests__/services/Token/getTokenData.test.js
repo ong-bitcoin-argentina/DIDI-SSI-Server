@@ -13,7 +13,7 @@ describe('services/Token/getTokenData.test.js', () => {
 
   test('Expect getTokenData to get valid TokenData', async () => {
     const result = await getTokenData(await token);
-    expect(result.payload.iat).toBe(dataResponse.iat);
-    expect(result.payload.sub).toBe(dataResponse.sub);
+    expect(result.data).not.toBe(null);
+    expect(result.payload.iss).toBe(dataResponse.issuer);
   });
 });

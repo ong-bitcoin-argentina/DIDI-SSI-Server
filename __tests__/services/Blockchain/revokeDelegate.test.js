@@ -5,7 +5,7 @@ const { MONGO_URL } = require('../../../constants/Constants');
 const { revokeDelegate } = require('../../../services/BlockchainService');
 const { addIssuers } = require('./utils');
 
-xdescribe('services/Blockchain/revokeDelegate.test.js', () => {
+describe('services/Blockchain/revokeDelegate.test.js', () => {
   let rsk;
   let lacchain;
   let bfa;
