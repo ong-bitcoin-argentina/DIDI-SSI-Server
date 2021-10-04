@@ -187,8 +187,4 @@ module.exports = {
     code: '#service-missingPayload',
     message: 'Falta el parámetro PAYLOAD',
   },
-  missingExpiration: {
-    code: '#service-missingExpiration',
-    message: 'Falta el parámetro EXPIRATION',
-  },
 };

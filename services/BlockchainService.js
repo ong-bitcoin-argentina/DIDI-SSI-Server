@@ -11,7 +11,6 @@ const {
   missingJwt,
   missingPrivateKey,
   missingPayload,
-  missingExpiration,
   missingDid,
 } = require('../constants/serviceErrors');
 
@@ -87,7 +86,6 @@ module.exports.createVerifiableCredential = function createCertificate(
   if (!issuerDid) throw missingIssuerDid;
   if (!issuerPkey) throw missingPrivateKey;
   if (!subjectPayload) throw missingPayload;
-  if (!expirationDate) throw missingExpiration;
   if (!subjectDid) throw missingDid;
   try {
     return blockchainManager.createCertificate(
