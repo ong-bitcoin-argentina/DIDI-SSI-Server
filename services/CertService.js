@@ -1,19 +1,9 @@
 /* eslint-disable no-console */
-const { Credentials } = require('uport-credentials');
-
-const EthrDID = require('ethr-did');
-const { decodeJWT, createJWT, SimpleSigner } = require('did-jwt');
-const { createVerifiableCredential, verifyCredential } = require('did-jwt-vc');
-// TODO: FIX
-// eslint-disable-next-line import/no-extraneous-dependencies
-const { Resolver } = require('did-resolver');
-const { getResolver } = require('ethr-did-resolver');
 const Certificate = require('../models/Certificate');
 const BlockchainService = require('./BlockchainService');
 const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
 
-const resolver = new Resolver(getResolver(Constants.BLOCKCHAIN.PROVIDER_CONFIG));
 const {
   missingDid,
   missingPhoneNumber,
@@ -25,6 +15,9 @@ const {
   missingErrMsg,
   missingIssuerDid,
 } = require('../constants/serviceErrors');
+
+const serverDid = `did:ethr:${Constants.SERVER_DID}`;
+const privateKey = Constants.SERVER_PRIVATE_KEY;
 
 /**
  *  Crea un nuevo certificado que valida la propiedad
@@ -82,18 +75,18 @@ module.exports.createPetition = async function createPetition(did, claims, cb) {
     const exp = ((new Date().getTime() + 600000) / 1000) | 0;
 
     const payload = {
-      iss: `did:ethr:${Constants.SERVER_DID}`,
+      iss: serverDid,
       exp,
       callback: cb,
       claims,
       type: 'shareReq',
     };
-    const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
+    const credentials = BlockchainService.createVerifiableCredential(
+      did, payload, exp, serverDid, privateKey,
+    );
 
-    const credentials = new Credentials({ did: `did:ethr:${Constants.SERVER_DID}`, signer, resolver });
-    const petition = await credentials.signJWT(payload);
-    if (Constants.DEBUGG) console.log(petition);
-    const result = module.exports.createShareRequest(did, petition);
+    if (Constants.DEBUGG) console.log(credentials);
+    const result = module.exports.createShareRequest(did, credentials);
     return Promise.resolve(result);
   } catch (err) {
     console.log(err);
@@ -107,9 +100,13 @@ module.exports.createPetition = async function createPetition(did, claims, cb) {
 module.exports.createShareRequest = async function createShareRequest(did, jwt) {
   if (!did) throw missingDid;
   if (!jwt) throw missingJwt;
-  const signer = SimpleSigner(Constants.SERVER_PRIVATE_KEY);
   const payload = { sub: did, disclosureRequest: jwt };
-  const token = await createJWT(payload, { alg: 'ES256K-R', issuer: `did:ethr:${Constants.SERVER_DID}`, signer });
+  const token = await BlockchainService.createJWT(
+    serverDid,
+    privateKey,
+    payload,
+    undefined,
+  );
   return token;
 };
 
@@ -120,10 +117,6 @@ module.exports.createCertificate = async function createCertificate(did, subject
   if (!did) throw missingDid;
   if (!subject) throw missingSubject;
   if (!errMsg) throw missingErrMsg;
-  const vcissuer = new EthrDID({
-    address: Constants.SERVER_DID,
-    privateKey: Constants.SERVER_PRIVATE_KEY,
-  });
 
   // eslint-disable-next-line no-bitwise
   const date = expDate ? (new Date(expDate).getTime() / 1000) | 0 : undefined;
@@ -140,7 +133,9 @@ module.exports.createCertificate = async function createCertificate(did, subject
   if (expDate) vcPayload.exp = date;
 
   try {
-    const result = await createVerifiableCredential(vcPayload, vcissuer);
+    const result = await BlockchainService.createVerifiableCredential(
+      did, vcPayload, expDate, serverDid, privateKey,
+    );
     if (Constants.DEBUGG) {
       console.log(Messages.CERTIFICATE.CREATED);
       console.log(result);
@@ -180,7 +175,7 @@ module.exports.decodeCertificate = async function decodeCertificate(jwt, errMsg)
   if (!jwt) throw missingJwt;
   if (!errMsg) throw missingErrMsg;
   try {
-    const result = await decodeJWT(jwt);
+    const result = await BlockchainService.decodeJWT(jwt);
     return Promise.resolve(result);
   } catch (err) {
     console.log(err);
@@ -196,7 +191,7 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
   if (!jwt) throw missingJwt;
   if (!errMsg) throw missingErrMsg;
   try {
-    const result = await verifyCredential(jwt, resolver);
+    const result = await BlockchainService.verifyCertificate(jwt);
     result.status = Constants.CERTIFICATE_STATUS.UNVERIFIED;
     if (hash) {
       const cert = await Certificate.findByHash(hash);
@@ -215,7 +210,7 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
  */
 module.exports.verifyIssuer = async function verifyIssuer(issuerDid) {
   if (!issuerDid) throw missingIssuerDid;
-  if (issuerDid === `did:ethr:${Constants.SERVER_DID}`) {
+  if (issuerDid === serverDid) {
     return Messages.CERTIFICATE.VERIFIED;
   }
   const delegated = await BlockchainService.validDelegate(issuerDid);

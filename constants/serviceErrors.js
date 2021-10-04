@@ -179,4 +179,16 @@ module.exports = {
     code: '#service-missingDescription',
     message: 'Falta el parámetro DESCRIPTION',
   },
+  missingPrivateKey: {
+    code: '#service-missingPrivateKey',
+    message: 'Falta el parámetro PRIVATE-KEY',
+  },
+  missingPayload: {
+    code: '#service-missingPayload',
+    message: 'Falta el parámetro PAYLOAD',
+  },
+  missingExpiration: {
+    code: '#service-missingExpiration',
+    message: 'Falta el parámetro EXPIRATION',
+  },
 };

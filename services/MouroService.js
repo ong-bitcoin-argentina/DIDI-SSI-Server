@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-const { SimpleSigner, createJWT } = require('did-jwt');
 const { InMemoryCache } = require('apollo-cache-inmemory');
 const ApolloClient = require('apollo-boost').default;
 const gql = require('graphql-tag');
 const fetch = require('node-fetch');
+const { createJWT } = require('./BlockchainService');
 const Constants = require('../constants/Constants');
 const Messages = require('../constants/Messages');
 const {
@@ -18,8 +18,13 @@ const {
  *  Agrega token a pedidos para indicar a mouro que es el didi-server quien realiza los llamados
  */
 async function getAuthHeader(did, key) {
-  const signer = SimpleSigner(key);
-  const token = await createJWT({ exp: new Date().getTime() / 1000 + 500 }, { alg: 'ES256K-R', issuer: did, signer });
+  const expiration = new Date().getTime() / 1000 + 500;
+  const token = await createJWT(
+    did,
+    key,
+    {},
+    expiration,
+  );
   return token ? `Bearer ${token}` : '';
 }
 

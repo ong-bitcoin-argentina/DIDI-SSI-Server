@@ -16,7 +16,7 @@ const {
 module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
   if (!jwt) throw missingJwt;
   try {
-    const { aud, iss } = getPayload(jwt);
+    const { aud, iss } = await getPayload(jwt);
     return await ShareRequest.generate({ aud, iss, jwt });
   } catch (e) {
     throw CREATE;
@@ -36,7 +36,7 @@ module.exports.getShareRequestById = async function saveShareRequest({ id, userJ
     if (!shareRequest) return Promise.reject(NOT_FOUND);
 
     // Verifico si el aud es el correcto con el token
-    const { iss } = getPayload(userJWT);
+    const { iss } = await getPayload(userJWT);
     const { aud, jwt } = shareRequest;
 
     if (iss !== aud) return Promise.reject(USER_NOT_VALID);

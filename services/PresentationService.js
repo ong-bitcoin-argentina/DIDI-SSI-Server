@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-const { decodeJWT } = require('did-jwt');
+const { decodeJWT } = require('./BlockchainService');
 const Messages = require('../constants/Messages');
 const { missingJwt, missingId } = require('../constants/serviceErrors');
 const Presentation = require('../models/Presentation');
