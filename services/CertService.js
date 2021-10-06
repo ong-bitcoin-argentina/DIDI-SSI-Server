@@ -134,7 +134,7 @@ module.exports.createCertificate = async function createCertificate(did, subject
 
   try {
     const result = await BlockchainService.createVerifiableCredential(
-      did, vcPayload, expDate, serverDid, privateKey,
+      did, subject, expDate, serverDid, privateKey,
     );
     if (Constants.DEBUGG) {
       console.log(Messages.CERTIFICATE.CREATED);
