@@ -21,10 +21,8 @@ describe('services/Token/verifyToken.test.js', () => {
     }
   });
 
-  test.skip('Expect verifyToken to verifyToken', async () => {
+  test('Expect verifyToken to verifyToken', async () => {
     const result = await verifyToken(await token);
-    expect(result.payload.iat).toBe(dataResponse.iat);
-    expect(result.payload.sub).toBe(dataResponse.sub);
     expect(result.issuer).toBe(dataResponse.issuer);
   });
 });

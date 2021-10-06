@@ -1,16 +1,16 @@
-const { createJWT } = require('../../../services/BlockchainService');
+const BlockchainService = require('../../../services/BlockchainService');
 const Constants = require('../../../constants/Constants');
 
 const dataResponse = {
   sub: 'did:ethr:0x341b73c4dab6da7a2b037ae16e6a1f03d1245e99',
-  issuer: 'did:ethr:0xb1ba86face5115be2ca902fae14f79de31c0fe7f',
+  issuer: `did:ethr:${Constants.SERVER_DID}`,
 };
 
 const createToken = async (key) => {
   const issuerDID = dataResponse.issuer;
   const privateKey = key;
   const payload = { hola: 'test' };
-  const jwt = await createJWT(issuerDID, privateKey, {
+  const jwt = await BlockchainService.createJWT(issuerDID, privateKey, {
     ...payload,
   });
   return jwt;

@@ -99,14 +99,6 @@ module.exports.createVerifiableCredential = function createCertificate(
 };
 
 /**
- * Crea una firma valida a partir de la clave privada
- */
-module.exports.getSigner = function getSigner(privateKey) {
-  if (!privateKey) throw missingPrivateKey;
-  return blockchainManager.getSigner(privateKey);
-};
-
-/**
  * Crea un jwt a partir del payload con la informacion a codificar
  */
 module.exports.createJWT = function createJWT(
@@ -131,7 +123,13 @@ module.exports.decodeJWT = function decodeJWT(jwt) {
  */
 module.exports.verifyCertificate = function verifyCertificate(jwt) {
   if (!jwt) throw missingJwt;
-  return blockchainManager.verifyCertificate(jwt);
+  try {
+    return blockchainManager.verifyCertificate(jwt);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    throw Messages.CERTIFICATE.ERR.VERIFY;
+  }
 };
 
 /**
@@ -140,4 +138,12 @@ module.exports.verifyCertificate = function verifyCertificate(jwt) {
 module.exports.verifyJWT = async function verifyJWT(jwt, audienceDID) {
   if (!jwt) throw missingJwt;
   return blockchainManager.verifyJWT(jwt, audienceDID);
+};
+
+/**
+ * Crea una firma valida a partir de la clave privada
+ */
+module.exports.getSigner = function getSigner(privateKey) {
+  if (!privateKey) throw missingPrivateKey;
+  return blockchainManager.getSigner(privateKey);
 };
