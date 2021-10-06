@@ -1,7 +1,6 @@
 const { BlockchainManager } = require('@proyecto-didi/didi-blockchain-manager');
 const Constants = require('../constants/Constants');
 const IssuerService = require('./IssuerService');
-
 const Messages = require('../constants/Messages');
 const { SERVER_PRIVATE_KEY, SERVER_DID } = require('../constants/Constants');
 
@@ -146,4 +145,13 @@ module.exports.verifyJWT = async function verifyJWT(jwt, audienceDID) {
 module.exports.getSigner = function getSigner(privateKey) {
   if (!privateKey) throw missingPrivateKey;
   return blockchainManager.getSigner(privateKey);
+};
+
+/**
+ * Devuelve la direccion de un did
+ */
+module.exports.getDidAddress = function getDidAddress(did) {
+  if (!did) throw missingDid;
+  const cleanDid = did.split(':');
+  return cleanDid[cleanDid.length - 1];
 };
