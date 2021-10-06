@@ -1,7 +1,6 @@
 // TODO: fix
 // eslint-disable-next-line import/no-extraneous-dependencies
 const BlockchainService = require('./BlockchainService');
-const { decodeJWT } = require('./BlockchainService');
 const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');
 
@@ -25,7 +24,7 @@ const errorMessages = {
 const getTokenData = async (token) => {
   if (!token) throw missingToken;
   try {
-    const decoded = await decodeJWT(token);
+    const decoded = await BlockchainService.decodeJWT(token);
     if (!decoded) {
       throw INVALID();
     }
@@ -50,7 +49,7 @@ const getTokenData = async (token) => {
  */
 const getPayload = async (jwt) => {
   if (!jwt) throw missingJwt;
-  const { payload } = await decodeJWT(jwt);
+  const { payload } = await BlockchainService.decodeJWT(jwt);
   return payload;
 };
 
