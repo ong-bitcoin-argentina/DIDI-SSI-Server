@@ -23,6 +23,8 @@ describe('services/Token/verifyToken.test.js', () => {
 
   test('Expect verifyToken to verifyToken', async () => {
     const result = await verifyToken(await token);
+    const now = Date.now() / 1000;
+    expect(result.payload.iat - now).toBeLessThan(500);
     expect(result.issuer).toBe(dataResponse.issuer);
   });
 });

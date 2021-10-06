@@ -9,10 +9,7 @@ const dataResponse = {
 const createToken = async (key) => {
   const issuerDID = dataResponse.issuer;
   const privateKey = key;
-  const payload = { hola: 'test' };
-  const jwt = await BlockchainService.createJWT(issuerDID, privateKey, {
-    ...payload,
-  });
+  const jwt = await BlockchainService.createJWT(issuerDID, privateKey, { hola: 'test' });
   return jwt;
 };
 

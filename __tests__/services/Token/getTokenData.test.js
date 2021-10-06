@@ -13,7 +13,9 @@ describe('services/Token/getTokenData.test.js', () => {
 
   test('Expect getTokenData to get valid TokenData', async () => {
     const result = await getTokenData(await token);
-    expect(result.data).not.toBe(null);
+    const now = Date.now() / 1000;
+    expect(result.payload.iat - now).toBeLessThan(500);
     expect(result.payload.iss).toBe(dataResponse.issuer);
+    expect(result.data).not.toBe(null);
   });
 });

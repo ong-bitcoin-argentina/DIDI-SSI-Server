@@ -23,6 +23,8 @@ describe('services/Token/getPayload.test.js', () => {
 
   test('Expect getPayload to get a valid Payload', async () => {
     const result = await getPayload(await token);
+    const now = Date.now() / 1000;
+    expect(result.iat - now).toBeLessThan(500);
     expect(result.iss).toBe(dataResponse.issuer);
   });
 });
