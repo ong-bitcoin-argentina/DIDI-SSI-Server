@@ -20,7 +20,6 @@ describe('services/Blockchain/revokeDelegate.test.js', () => {
     const issuers = await addIssuers();
     rsk = issuers.rsk;
     lacchain = issuers.lacchain;
-    bfa = issuers.bfa;
   });
 
   afterAll(async () => {
