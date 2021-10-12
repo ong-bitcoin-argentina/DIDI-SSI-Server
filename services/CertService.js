@@ -81,10 +81,7 @@ module.exports.createPetition = async function createPetition(did, claims, cb) {
       claims,
       type: 'shareReq',
     };
-    const credentials = BlockchainService.createVerifiableCredential(
-      did, payload, exp, serverDid, privateKey,
-    );
-
+    const credentials = await BlockchainService.createJWT(serverDid, privateKey, payload, exp);
     if (Constants.DEBUGG) console.log(credentials);
     const result = module.exports.createShareRequest(did, credentials);
     return Promise.resolve(result);
