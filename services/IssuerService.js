@@ -37,7 +37,7 @@ module.exports.addIssuer = async function addIssuer(did, name, description, imag
   const transactions = await BlockchainService.addDelegate(did);
   let tx;
   if (transactions.length > 1) {
-    tx = transactions.find((response) => response.status === 'fulfilled').value;
+    tx = transactions.find((response) => response.status === 'fulfilled');
   } else {
     [tx] = transactions;
   }
