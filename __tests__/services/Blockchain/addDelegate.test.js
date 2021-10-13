@@ -32,8 +32,8 @@ describe('services/Blockchain/addDelegate.test.js', () => {
   test('Expect addDelegate to add Delegate RSK', async () => {
     const result = await addDelegate(rsk.did);
     const confirmation = await validDelegate(rsk.did);
-    expect(result.transactionHash).not.toBe(null);
-    expect(result.from).toBe(Constants.SERVER_DID);
+    expect(result[0].value.transactionHash).not.toBe(null);
+    expect(result[0].value.from).toBe(Constants.SERVER_DID);
     expect(confirmation).toBeTruthy();
   });
 
@@ -41,8 +41,8 @@ describe('services/Blockchain/addDelegate.test.js', () => {
   test('Expect addDelegate to add Delegate LACCH', async () => {
     const result = await addDelegate(lacchain.did);
     const confirmation = await validDelegate(lacchain.did);
-    expect(result.transactionHash).not.toBe(null);
-    expect(result.from).toBe(Constants.SERVER_DID);
+    expect(result[0].value.transactionHash).not.toBe(null);
+    expect(result[0].value.from).toBe(Constants.SERVER_DID);
     expect(confirmation).toBeTruthy();
   });
 
@@ -50,8 +50,8 @@ describe('services/Blockchain/addDelegate.test.js', () => {
   test.skip('Expect addDelegate to add Delegate BFA', async () => {
     const result = await addDelegate(bfa.did);
     const confirmation = await validDelegate(bfa.did);
-    expect(result.transactionHash).not.toBe(null);
-    expect(result.from).toBe(Constants.SERVER_DID);
+    expect(result[0].value.transactionHash).not.toBe(null);
+    expect(result[0].value.from).toBe(Constants.SERVER_DID);
     expect(confirmation).toBeTruthy();
   });
 
