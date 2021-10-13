@@ -115,20 +115,6 @@ module.exports.createCertificate = async function createCertificate(did, subject
   if (!subject) throw missingSubject;
   if (!errMsg) throw missingErrMsg;
 
-  // eslint-disable-next-line no-bitwise
-  const date = expDate ? (new Date(expDate).getTime() / 1000) | 0 : undefined;
-
-  const vcPayload = {
-    sub: did,
-    vc: {
-      '@context': [Constants.CREDENTIALS.CONTEXT],
-      type: [Constants.CREDENTIALS.TYPES.VERIFIABLE],
-      credentialSubject: subject,
-    },
-  };
-
-  if (expDate) vcPayload.exp = date;
-
   try {
     const result = await BlockchainService.createVerifiableCredential(
       did, subject, expDate, serverDid, privateKey,
@@ -207,7 +193,7 @@ module.exports.verifyCertificate = async function verifyCertificate(jwt, hash, e
  */
 module.exports.verifyIssuer = async function verifyIssuer(issuerDid) {
   if (!issuerDid) throw missingIssuerDid;
-  if (issuerDid === serverDid) {
+  if (await BlockchainService.compareDid(issuerDid, serverDid)) {
     return Messages.CERTIFICATE.VERIFIED;
   }
   const delegated = await BlockchainService.validDelegate(issuerDid);

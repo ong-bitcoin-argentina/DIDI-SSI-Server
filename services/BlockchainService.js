@@ -152,6 +152,14 @@ module.exports.getSigner = function getSigner(privateKey) {
  */
 module.exports.getDidAddress = function getDidAddress(did) {
   if (!did) throw missingDid;
-  const cleanDid = did.split(':');
-  return cleanDid[cleanDid.length - 1];
+  return BlockchainManager.getDidAddress(did);
+};
+
+/**
+ * Devuelve true si ambos dids son iguales y false en el caso contrario
+ */
+module.exports.compareDid = function compareDid(did, secondDid) {
+  if (!did) throw missingDid;
+  if (!secondDid) throw missingDid;
+  return BlockchainManager.compareDid(did, secondDid);
 };
