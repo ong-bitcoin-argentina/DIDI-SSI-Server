@@ -5,7 +5,7 @@ const { missingIssuerDid } = require('../../../constants/serviceErrors');
 const { addDelegate, validDelegate } = require('../../../services/BlockchainService');
 const Constants = require('../../../constants/Constants');
 
-describe('services/Blockchain/addDelegate.test.js', () => {
+xdescribe('services/Blockchain/addDelegate.test.js', () => {
   const rsk = Credentials.createIdentity();
   rsk.did = `did:ethr:rsk:${getDidAddress(rsk.did)}`;
   const lacchain = Credentials.createIdentity();
