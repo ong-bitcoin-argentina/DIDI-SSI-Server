@@ -33,17 +33,15 @@ module.exports.addIssuer = async function addIssuer(did, name, description, imag
   const byDIDExist = await Issuer.getByDID(did);
   if (byDIDExist) throw Messages.ISSUER.ERR.DID_EXISTS;
 
-  // Realizar delegacion en la blockchain
+  // Realizar delegacion/nes en la blockchain
   const transactions = await BlockchainService.addDelegate(did);
-  let tx;
-  if (transactions.length > 1) {
-    tx = transactions.find((response) => response.status === 'fulfilled');
-  } else {
-    [tx] = transactions;
-  }
 
-  const { transactionHash, ...rest } = tx.value;
-  if (Constants.DEBUGG) console.log({ transactionHash, ...rest });
+  // Extraer delegaciones exitosas
+  const delegationHashes = transactions.filter(({ status }) => status === 'fulfilled')
+    .map(({ network, value }) => ({ network, transactionHash: value.transactionHash }));
+
+  if (Constants.DEBUGG) console.log(delegationHashes);
+
   // Asignar fecha de expiracion
   const expireOn = new Date();
   if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
@@ -51,7 +49,7 @@ module.exports.addIssuer = async function addIssuer(did, name, description, imag
   }
 
   return Issuer.create({
-    name, did, expireOn, blockHash: transactionHash, description, imageUrl,
+    name, did, expireOn, delegationHashes, description, imageUrl,
   });
 };
 

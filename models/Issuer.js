@@ -23,6 +23,9 @@ const IssuerSchema = new mongoose.Schema({
   },
   blockHash: {
     type: String,
+  },
+  delegationHashes: {
+    type: Array,
     required: true,
   },
   deleted: {
