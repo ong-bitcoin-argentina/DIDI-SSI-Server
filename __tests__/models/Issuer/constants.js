@@ -1,3 +1,5 @@
+const { Credentials } = require('uport-credentials');
+
 const issuers = [{
   deleted: false,
   createdOn: { date: '2021-07-06T15:55:29.432Z' },
@@ -22,6 +24,33 @@ const issuers = [{
   modifiedOn: { date: '2021-07-27T12:55:13.717Z' },
 }];
 
+const delegationHashes = [
+  {
+    network: 'lacchain',
+    transactionHash: '0xc653efa2d9712cde6e6d86de0997327c35f1fa76595f3d543cd30fb0ffbd261a',
+  },
+  {
+    network: 'rsk',
+    transactionHash: '0x664614fd64248497003f050c1fcc0da4653cb4c08f0a761c59a7b03821d0b30e',
+  },
+];
+
+const newIssuer = Credentials.createIdentity();
+const expireOn = Date.now() / 1000 + 500;
+const name = 'issueewrwefwrName';
+const description = 'description';
+const imageUrl = 'url';
+
+const data = {
+  newIssuer,
+  expireOn,
+  name,
+  description,
+  imageUrl,
+};
+
 module.exports = {
   issuers,
+  data,
+  delegationHashes,
 };
