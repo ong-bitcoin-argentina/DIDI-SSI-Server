@@ -1,6 +1,5 @@
 const { verifyToken } = require('../../../services/TokenService');
 const { missingJwt } = require('../../../constants/serviceErrors');
-
 const {
   dataResponse, error, token, invalidToken,
 } = require('./constants');
@@ -22,10 +21,10 @@ describe('services/Token/verifyToken.test.js', () => {
     }
   });
 
-  test.skip('Expect verifyToken to verifyToken', async () => {
+  test('Expect verifyToken to verifyToken', async () => {
     const result = await verifyToken(await token);
-    expect(result.payload.iat).toBe(dataResponse.iat);
-    expect(result.payload.sub).toBe(dataResponse.sub);
+    const now = Date.now() / 1000;
+    expect(result.payload.iat - now).toBeLessThan(500);
     expect(result.issuer).toBe(dataResponse.issuer);
   });
 });

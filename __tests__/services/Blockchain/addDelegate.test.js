@@ -1,15 +1,19 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const { Credentials } = require('uport-credentials');
+const { getDidAddress } = require('../../../services/BlockchainService');
 const { missingIssuerDid } = require('../../../constants/serviceErrors');
-const { addDelegate } = require('../../../services/BlockchainService');
+const { addDelegate, validDelegate } = require('../../../services/BlockchainService');
+const Constants = require('../../../constants/Constants');
 
 xdescribe('services/Blockchain/addDelegate.test.js', () => {
   const rsk = Credentials.createIdentity();
-  rsk.did = `did:ethr:rsk:${rsk.did}`;
+  rsk.did = `did:ethr:rsk:${getDidAddress(rsk.did)}`;
   const lacchain = Credentials.createIdentity();
-  lacchain.did = `did:ethr:lacchain:${lacchain.did}`;
+  lacchain.did = `did:ethr:lacchain:${getDidAddress(lacchain.did)}`;
   const bfa = Credentials.createIdentity();
-  bfa.did = `did:ethr:bfa:${bfa.did}`;
+  bfa.did = `did:ethr:bfa:${getDidAddress(bfa.did)}`;
+  const main = Credentials.createIdentity();
+
   test('Expect addDelegate to throw on missing issuerDID', async () => {
     try {
       await addDelegate(undefined);
@@ -18,22 +22,37 @@ xdescribe('services/Blockchain/addDelegate.test.js', () => {
     }
   });
 
+  // Did without network
+  test('Expect addDelegate to add Delegate on any blockchain', async () => {
+    const result = await addDelegate(main.did);
+    expect(result.some((response) => response.status === 'fulfilled'));
+  });
+
   // RSK
   test('Expect addDelegate to add Delegate RSK', async () => {
     const result = await addDelegate(rsk.did);
-    expect(result.events.DIDDelegateChanged).toBeTruthy();
+    const confirmation = await validDelegate(rsk.did);
+    expect(result[0].value.transactionHash).not.toBe(null);
+    expect(result[0].value.from).toBe(Constants.SERVER_DID);
+    expect(confirmation).toBeTruthy();
   });
 
   // Lacchain
   test('Expect addDelegate to add Delegate LACCH', async () => {
     const result = await addDelegate(lacchain.did);
-    expect(result.events.DIDDelegateChanged).toBeTruthy();
+    const confirmation = await validDelegate(lacchain.did);
+    expect(result[0].value.transactionHash).not.toBe(null);
+    expect(result[0].value.from).toBe(Constants.SERVER_DID);
+    expect(confirmation).toBeTruthy();
   });
 
-  // BFA
+  // BFA SKIPED DUE TO LACK OF GAS
   test.skip('Expect addDelegate to add Delegate BFA', async () => {
     const result = await addDelegate(bfa.did);
-    expect(result.events.DIDDelegateChanged).toBeTruthy();
+    const confirmation = await validDelegate(bfa.did);
+    expect(result[0].value.transactionHash).not.toBe(null);
+    expect(result[0].value.from).toBe(Constants.SERVER_DID);
+    expect(confirmation).toBeTruthy();
   });
 
   test('Expect addDelegate to throw an error whit bad did', async () => {

@@ -29,10 +29,11 @@ describe('services/Cert/createCertificate.test.js', () => {
   });
 
   test('Expect createCertificate to success', async () => {
+    const expDate = Date.now();
     const result = await createCertificate(
       data.did,
       data.did,
-      '123456',
+      expDate,
       Messages.CERTIFICATE.ERR.CREATE,
     );
     const { payload } = await decodeCertificate(result, 'err');
@@ -51,10 +52,11 @@ describe('services/Cert/createCertificate.test.js', () => {
   });
 
   test('Expect createCertificate to create certificate with "exp": "0"', async () => {
+    const expDate = 1;
     const result = await createCertificate(
       data.did,
       data.did,
-      'asdasd',
+      expDate,
       Messages.CERTIFICATE.ERR.CREATE,
     );
     const { payload } = await decodeCertificate(result, 'err');

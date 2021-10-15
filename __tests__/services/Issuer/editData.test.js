@@ -6,7 +6,7 @@ const { revokeDelegate } = require('../../../services/BlockchainService');
 const { data } = require('./constatns');
 const Messages = require('../../../constants/Messages');
 
-xdescribe('services/Issuer/editData.test.js', () => {
+describe('services/Issuer/editData.test.js', () => {
   const {
     did, name, secondName, secondDid, description, secondDescription,
   } = data;

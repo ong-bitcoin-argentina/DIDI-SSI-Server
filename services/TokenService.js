@@ -1,10 +1,7 @@
-const { decodeJWT, verifyJWT } = require('did-jwt');
 // TODO: fix
 // eslint-disable-next-line import/no-extraneous-dependencies
-const { Resolver } = require('did-resolver');
-const { getResolver } = require('ethr-did-resolver');
+const BlockchainService = require('./BlockchainService');
 const Messages = require('../constants/Messages');
-const { SERVER_DID } = require('../constants/Constants');
 const Constants = require('../constants/Constants');
 
 const {
@@ -15,9 +12,7 @@ const {
   EXPIRED, INVALID_CODE, EXPIRED_CODE, INVALID,
 } = Messages.TOKEN;
 
-const resolver = new Resolver(getResolver(Constants.BLOCKCHAIN.PROVIDER_CONFIG));
-
-const serverDid = `did:ethr:${SERVER_DID}`;
+const serverDid = `did:ethr:${Constants.SERVER_DID}`;
 
 const errorMessages = {
   TokenExpiredError: EXPIRED_CODE(),
@@ -29,7 +24,7 @@ const errorMessages = {
 const getTokenData = async (token) => {
   if (!token) throw missingToken;
   try {
-    const decoded = await decodeJWT(token);
+    const decoded = await BlockchainService.decodeJWT(token);
     if (!decoded) {
       throw INVALID();
     }
@@ -52,9 +47,9 @@ const getTokenData = async (token) => {
 /**
  *  Devuelve un payload a partir del jwt
  */
-const getPayload = (jwt) => {
+const getPayload = async (jwt) => {
   if (!jwt) throw missingJwt;
-  const { payload } = decodeJWT(jwt);
+  const { payload } = await BlockchainService.decodeJWT(jwt);
   return payload;
 };
 
@@ -63,12 +58,9 @@ const getPayload = (jwt) => {
  */
 const verifyToken = async (jwt, isUser = false) => {
   if (!jwt) throw missingJwt;
-  const options = {
-    resolver,
-    audience: serverDid,
-  };
   try {
-    return await verifyJWT(jwt, options);
+    const response = await BlockchainService.verifyJWT(jwt, serverDid);
+    return response;
   } catch (error) {
     const message = errorMessages[error.name] || INVALID_CODE(isUser);
     throw message;

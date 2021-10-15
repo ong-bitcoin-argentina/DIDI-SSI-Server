@@ -4,7 +4,7 @@ const {
 } = require('../../../constants/serviceErrors');
 const { userData } = require('./constanst');
 
-xdescribe('services/Sms/sendValidationCode.test.js', () => {
+describe('services/Sms/sendValidationCode.test.js', () => {
   test('Expect sendValidationCode to throw on missing phoneNumber', async () => {
     try {
       await sendValidationCode(undefined, 'code');
