@@ -4,7 +4,7 @@ const { sendValidationCode } = require('../../../services/MailService');
 const { missingEmail, missingCode } = require('../../../constants/serviceErrors');
 const { mailData, errorInvalidEmail } = require('./constants');
 
-xdescribe('services/Mail/sendValidationCode.test.js', () => {
+describe('services/Mail/sendValidationCode.test.js', () => {
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {

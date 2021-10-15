@@ -23,7 +23,23 @@ const IssuerSchema = new mongoose.Schema({
   },
   blockHash: {
     type: String,
+  },
+  delegationHashes: {
+    type: [
+      {
+        network: {
+          type: String,
+          required: true,
+        },
+        transactionHash: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     required: true,
+    // Para evitar guardar un array vacio, definimos como default: undefined.
+    default: undefined,
   },
   deleted: {
     type: Boolean,
