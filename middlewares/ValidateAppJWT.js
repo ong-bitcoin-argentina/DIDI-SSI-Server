@@ -4,6 +4,7 @@ const {
   VALIDATION: { APP_DID_NOT_FOUND },
   TOKEN: { INVALID_CODE },
 } = require('../constants/Messages');
+const { sendErrWithStatus } = require('../utils/ResponseHandler');
 
 const handleValidateAppJWT = async (req) => {
   const jwt = req.header('Authorization');
@@ -16,8 +17,14 @@ const handleValidateAppJWT = async (req) => {
 };
 
 const ValidateAppJWT = async (req, res, next) => {
-  await handleValidateAppJWT(req);
-  next();
+  try {
+    await handleValidateAppJWT(req);
+    next();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    sendErrWithStatus(res, e, 401);
+  }
 };
 
 module.exports = {
