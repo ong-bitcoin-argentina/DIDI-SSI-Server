@@ -110,15 +110,16 @@ app.get('/', (_, res) => res.send(`${Messages.INDEX.MSG.HELLO_WORLD} v${VERSION}
 app.use(bodyParser.json());
 
 // loggear llamadas
-app.use((req, _, next) => {
-  if (Constants.DEBUGG) {
+if (Constants.DEBUGG) {
+  app.use((req, _, next) => {
     console.log(`${req.method} ${req.originalUrl}`);
     process.stdout.write('body: ');
     console.log(req.body);
-  }
-  next();
-});
-
+    process.stdout.write('Headers: ');
+    console.log(req.headers);
+    next();
+  });
+}
 // loggear errores
 app.use((error, req, _, next) => {
   console.log(error);
