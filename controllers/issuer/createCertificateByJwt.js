@@ -24,7 +24,7 @@ const createCertificateByJwt = async (req, res) => {
     // Validar sujeto (que este registrado en didi)
     console.log(`Verifying subject ${cert.payload.sub}`);
     const { sub } = cert.payload;
-    let subject = await UserService.getByDID(sub);
+    const subject = await UserService.getByDID(sub);
     if (!subject) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_SUB_IS_INVALID);
     console.log('Issued successfully!');
     // Guardar certificado en mouro
@@ -41,7 +41,7 @@ const createCertificateByJwt = async (req, res) => {
     // Guardar hash de recuperacion (swarm)
     console.log('Asking for hash in mouro...');
     const hash = await MouroService.getHash(cert.payload.sub);
-    if (hash) subject = await subject.updateHash(hash);
+    if (hash) await subject.updateHash(hash);
     // Enviar push notification
     if (req.body.sendPush) {
       console.log('Sending push notification!');

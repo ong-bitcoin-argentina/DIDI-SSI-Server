@@ -9,7 +9,7 @@ const { sendErrWithStatus } = require('../utils/ResponseHandler');
 const handleValidateAppJWT = async (req) => {
   const jwt = req.header('Authorization');
   const did = getPayload(jwt).iss;
-  const authorizatedApp = AppAuthService.findByDID(did);
+  const authorizatedApp = await AppAuthService.findByDID(did);
   if (!authorizatedApp) throw APP_DID_NOT_FOUND(did);
 
   const verified = await verifyToken(jwt);

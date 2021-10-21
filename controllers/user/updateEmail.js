@@ -20,7 +20,7 @@ const updateEmail = async (req, res) => {
     await UserService.emailTaken(newEMail, did);
 
     // Validar codigo
-    let mail = await MailService.isValid(newEMail, eMailValidationCode);
+    const mail = await MailService.isValid(newEMail, eMailValidationCode);
     if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 
     // Generar certificado validando que ese did le corresponde al dueño del mail
@@ -49,7 +49,7 @@ const updateEmail = async (req, res) => {
       jwt.data,
       jwt.hash,
     );
-    mail = await MailService.validateMail(mail, did);
+    await MailService.validateMail(mail, did);
     return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_EMAIL(cert));
   } catch (err) {
     return ResponseHandler.sendErr(res, err);

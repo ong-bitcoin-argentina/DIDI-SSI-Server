@@ -10,7 +10,7 @@ const recoverPassword = async (req, res) => {
 
   try {
     // Validar código
-    let mail = await MailService.isValid(eMail, eMailValidationCode);
+    const mail = await MailService.isValid(eMail, eMailValidationCode);
     if (!mail) return ResponseHandler.sendErr(res, Messages.EMAIL.ERR.NO_EMAILCODE_MATCH);
 
     // Actualizar contraseña
@@ -19,7 +19,7 @@ const recoverPassword = async (req, res) => {
     // Actualizar pedido de validación de mail
     // eslint-disable-next-line no-console
     console.log(await mail.getDid());
-    mail = await MailService.validateMail(mail, await mail.getDid());
+    await MailService.validateMail(mail, await mail.getDid());
 
     return ResponseHandler.sendRes(res, Messages.USER.SUCCESS.CHANGED_PASS);
   } catch (err) {
