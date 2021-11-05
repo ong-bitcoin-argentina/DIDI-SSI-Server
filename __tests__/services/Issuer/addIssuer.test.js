@@ -85,7 +85,7 @@ describe('services/Issuer/addIssuer.test.js', () => {
     expect(response.description).toMatch(description);
     expect(response.deleted).toBe(false);
     expect(response.expireOne).not.toBe(null);
-    expect(response.delegationHashes.length).toBeGreaterThan(1);
+    expect(response.delegationHashes.length).toBeGreaterThan(0);
   });
 
   test('Expect addIssuer to let delegate a same public key on diferents blockchains', async () => {
