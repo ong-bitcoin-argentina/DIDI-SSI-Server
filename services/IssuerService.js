@@ -58,8 +58,10 @@ module.exports.addIssuer = async function addIssuer(did, name, description, imag
     return save;
   }
 
+  const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
+
   return Issuer.create({
-    name, did, expireOn, delegationHashes, description, imageUrl,
+    name, did: didWithoutNetwork, expireOn, delegationHashes, description, imageUrl,
   });
 };
 

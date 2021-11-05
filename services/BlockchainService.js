@@ -163,3 +163,8 @@ module.exports.compareDid = function compareDid(did, secondDid) {
   if (!secondDid) throw missingDid;
   return BlockchainManager.compareDid(did, secondDid);
 };
+
+module.exports.removeBlockchainFromDid = function removeBlockchainFromDid(did) {
+  if (!did) throw missingDid;
+  return BlockchainManager.removeBlockchainFromDid(did);
+};
