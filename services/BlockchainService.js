@@ -48,7 +48,6 @@ module.exports.revokeDelegate = async function revokeDelegate(otherDID) {
   if (!otherDID) throw missingOtherDID;
   try {
     const issuer = await IssuerService.getIssuerByDID(otherDID);
-
     if (!issuer) Promise.reject(Messages.ISSUER.ERR.NOT_FOUND);
     await blockchainManager.revokeDelegate(
       { did: SERVER_DID, privateKey: SERVER_PRIVATE_KEY },
@@ -68,7 +67,7 @@ module.exports.revokeDelegate = async function revokeDelegate(otherDID) {
 module.exports.validDelegate = async function validDelegate(issuerDID) {
   if (!issuerDID) throw missingIssuerDid;
   try {
-    return await blockchainManager.validateDelegate(Constants.SERVER_DID, issuerDID);
+    return await blockchainManager.validDelegate(Constants.SERVER_DID, issuerDID);
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
@@ -87,7 +86,7 @@ module.exports.createVerifiableCredential = function createCertificate(
   if (!subjectPayload) throw missingPayload;
   if (!subjectDid) throw missingDid;
   try {
-    return blockchainManager.createCertificate(
+    return blockchainManager.createCredential(
       subjectDid, subjectPayload, expirationDate, issuerDid, issuerPkey,
     );
   } catch (err) {
