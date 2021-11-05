@@ -2,13 +2,19 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { addIssuer } = require('../../../services/IssuerService');
 const { missingDid, missingName, missingDescription } = require('../../../constants/serviceErrors');
-const { revokeDelegate } = require('../../../services/BlockchainService');
+const { removeBlockchainFromDid, compareDid } = require('../../../services/BlockchainService');
 const { data } = require('./constatns');
-const Messages = require('../../../constants/Messages');
 
 describe('services/Issuer/addIssuer.test.js', () => {
   const {
-    did, name, description, imageUrl, secondDid,
+    did,
+    name,
+    description,
+    imageUrl,
+    secondDid,
+    allNetworksDid,
+    rskDid,
+    lacchainDid,
   } = data;
   beforeAll(async () => {
     await mongoose
@@ -20,7 +26,6 @@ describe('services/Issuer/addIssuer.test.js', () => {
       });
   });
   afterAll(async () => {
-    await revokeDelegate(did);
     await mongoose.connection.db.dropCollection('issuers');
     await mongoose.connection.close();
   });
@@ -51,30 +56,47 @@ describe('services/Issuer/addIssuer.test.js', () => {
 
   test('Expect addIssuer to success without image', async () => {
     const response = await addIssuer(did, name, description);
-    expect(response.did).toMatch(did);
+    const didWithoutNetwork = await removeBlockchainFromDid(did);
+    expect(response.did).toMatch(didWithoutNetwork);
     expect(response.name).toMatch(name);
     expect(response.description).toMatch(description);
     expect(response.deleted).toBe(false);
     expect(response.expireOne).not.toBe(null);
-    expect(response.blockHash).not.toBe(null);
+    expect(response.delegationHashes.length).toBeGreaterThan(0);
   });
 
   test('Expect addIssuer to success with image', async () => {
     const response = await addIssuer(secondDid, name, description, imageUrl);
-    expect(response.did).toMatch(secondDid);
+    const didWithoutNetwork = await removeBlockchainFromDid(secondDid);
+    expect(response.did).toMatch(didWithoutNetwork);
     expect(response.name).toMatch(name);
     expect(response.description).toMatch(description);
     expect(response.imageUrl).toBe(imageUrl);
     expect(response.deleted).toBe(false);
     expect(response.expireOne).not.toBe(null);
-    expect(response.blockHash).not.toBe(null);
+    expect(response.delegationHashes.length).toBeGreaterThan(0);
   });
 
-  test('Expect addIssuer to throw error on existent did', async () => {
-    try {
-      await addIssuer(did, name, description);
-    } catch (e) {
-      expect(e).toBe(Messages.ISSUER.ERR.DID_EXISTS);
-    }
+  test('Expect addIssuer to success multiple blockchains', async () => {
+    const response = await addIssuer(allNetworksDid, name, description);
+    const didWithoutNetwork = await removeBlockchainFromDid(allNetworksDid);
+    expect(response.did).toMatch(didWithoutNetwork);
+    expect(response.name).toMatch(name);
+    expect(response.description).toMatch(description);
+    expect(response.deleted).toBe(false);
+    expect(response.expireOne).not.toBe(null);
+    expect(response.delegationHashes.length).toBeGreaterThan(1);
+  });
+
+  test('Expect addIssuer to let delegate a same public key on diferents blockchains', async () => {
+    expect(await compareDid(rskDid, lacchainDid)).toBeTruthy();
+    const firstDelegation = await addIssuer(lacchainDid, name, description);
+    let didWithoutNetwork = await removeBlockchainFromDid(lacchainDid);
+    expect(firstDelegation.did).toBe(didWithoutNetwork);
+    expect(firstDelegation.delegationHashes.length).toBe(1);
+    const secondDelegation = await addIssuer(rskDid, name, description);
+    didWithoutNetwork = await removeBlockchainFromDid(rskDid);
+    expect(firstDelegation.did).toBe(didWithoutNetwork);
+    expect(secondDelegation.delegationHashes.length).toBe(2);
   });
 });
