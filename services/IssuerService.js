@@ -30,7 +30,8 @@ module.exports.addIssuer = async function addIssuer(did, name, description, imag
   if (!description) throw missingDescription;
 
   // Verificar que el issuer no exista
-  const issuer = await Issuer.getByDID(did);
+  const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
+  const issuer = await Issuer.getByDID(didWithoutNetwork);
 
   // Realizar delegacion/nes en la blockchain
   const transactions = await BlockchainService.addDelegate(did);
@@ -56,8 +57,6 @@ module.exports.addIssuer = async function addIssuer(did, name, description, imag
     });
     return issuer.save();
   }
-
-  const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
 
   return Issuer.create({
     name, did: didWithoutNetwork, expireOn, delegationHashes, description, imageUrl,
