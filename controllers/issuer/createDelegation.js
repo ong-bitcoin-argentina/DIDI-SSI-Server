@@ -1,6 +1,5 @@
 const ResponseHandler = require('../../utils/ResponseHandler');
 const IssuerService = require('../../services/IssuerService');
-const Messages = require('../../constants/Messages');
 const Constants = require('../../constants/Constants');
 
 const { CREATE } = Constants.DELEGATE_ACTIONS;
@@ -11,8 +10,6 @@ const createDelegation = async (req, res) => {
   } = req.body;
 
   try {
-    const didExist = await IssuerService.getIssuerByDID(did);
-    if (didExist) throw Messages.ISSUER.ERR.DID_EXISTS;
     const delegateTransaction = await IssuerService.createDelegateTransaction({
       did,
       name,
