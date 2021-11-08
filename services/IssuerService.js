@@ -87,21 +87,35 @@ module.exports.editData = async function editData(did, name, description, imageU
 module.exports.refresh = async function refresh(did) {
   if (!did) throw missingDid;
   // Verificar que el issuer no exista o haya sido borrado
-  const byDIDExist = await Issuer.getByDID(did);
-  if (!byDIDExist || byDIDExist.deleted) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
+  const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
+  const issuer = await Issuer.getByDID(didWithoutNetwork);
+  if (!issuer || issuer.deleted) throw Messages.ISSUER.ERR.DID_NOT_EXISTS;
 
   try {
-    const { transactionHash, ...rest } = await BlockchainService.addDelegate(did);
-    if (Constants.DEBUGG) console.log({ transactionHash, ...rest });
+    // Realizar delegacion/nes en la blockchain
+    const transactions = await BlockchainService.addDelegate(did);
+
+    // Extraer delegaciones exitosas
+    const delegationHashes = transactions.filter(({ status }) => status === 'fulfilled')
+      .map(({ network, value }) => ({ network, transactionHash: value.transactionHash }));
+
+    if (Constants.DEBUGG) console.log(delegationHashes);
+
+    if (delegationHashes.length === 0) throw Messages.ISSUER.ERR.COULDNT_PERSIST;
 
     const expireOn = new Date();
     if (Constants.BLOCKCHAIN.DELEGATE_DURATION) {
       expireOn.setSeconds(expireOn.getSeconds() + Number(Constants.BLOCKCHAIN.DELEGATE_DURATION));
     }
 
-    await byDIDExist.edit({ expireOn, blockHash: transactionHash });
+    issuer.expireOn = expireOn;
+    issuer.delegationHashes.push({
+      $each: delegationHashes,
+      $position: 0,
+    });
+    issuer.save();
 
-    return { ...byDIDExist, expireOn, blockHash: transactionHash };
+    return { ...issuer, expireOn, delegationHashes };
   } catch (err) {
     console.log(err);
     throw err;

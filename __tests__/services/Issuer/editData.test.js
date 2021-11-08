@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { editData, addIssuer } = require('../../../services/IssuerService');
 const { missingDid } = require('../../../constants/serviceErrors');
-const { revokeDelegate } = require('../../../services/BlockchainService');
+const { revokeDelegate, removeBlockchainFromDid } = require('../../../services/BlockchainService');
 const { data } = require('./constatns');
 const Messages = require('../../../constants/Messages');
 
@@ -35,14 +35,16 @@ describe('services/Issuer/editData.test.js', () => {
     });
 
     test('Expect editData to success with name change', async () => {
-      const response = await editData(did, secondName, description);
-      expect(response.did).toMatch(did);
+      const didWithoutNetwork = await removeBlockchainFromDid(did);
+      const response = await editData(didWithoutNetwork, secondName, description);
+      expect(response.did).toMatch(didWithoutNetwork);
       expect(response.name).toMatch(secondName);
     });
 
     test('Expect editData to success with descripcion change', async () => {
-      const response = await editData(did, secondName, secondDescription);
-      expect(response.did).toMatch(did);
+      const didWithoutNetwork = await removeBlockchainFromDid(did);
+      const response = await editData(didWithoutNetwork, secondName, secondDescription);
+      expect(response.did).toMatch(didWithoutNetwork);
       expect(response.description).toMatch(secondDescription);
     });
 
