@@ -47,7 +47,8 @@ module.exports.addDelegate = async function addDelegate(issuerDID) {
 module.exports.revokeDelegate = async function revokeDelegate(otherDID) {
   if (!otherDID) throw missingOtherDID;
   try {
-    const issuer = await IssuerService.getIssuerByDID(otherDID);
+    const didWithoutNetwork = await BlockchainManager.removeBlockchainFromDid(otherDID);
+    const issuer = await IssuerService.getIssuerByDID(didWithoutNetwork);
     if (!issuer) Promise.reject(Messages.ISSUER.ERR.NOT_FOUND);
     await blockchainManager.revokeDelegate(
       { did: SERVER_DID, privateKey: SERVER_PRIVATE_KEY },
