@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { getIssuerByDID, addIssuer } = require('../../../services/IssuerService');
 const { missingDid } = require('../../../constants/serviceErrors');
-const { revokeDelegate } = require('../../../services/BlockchainService');
+const { revokeDelegate, removeBlockchainFromDid } = require('../../../services/BlockchainService');
 const { data } = require('./constatns');
 const Messages = require('../../../constants/Messages');
 
@@ -35,8 +35,9 @@ describe('services/Issuer/getIssuerByDID.test.js', () => {
     });
 
     test('Expect getIssuerByDID to success', async () => {
-      const response = await getIssuerByDID(did);
-      expect(response.did).toBe(did);
+      const didWithoutNetwork = await removeBlockchainFromDid(did);
+      const response = await getIssuerByDID(didWithoutNetwork);
+      expect(response.did).toBe(didWithoutNetwork);
     });
 
     test('Expect getIssuerByDID to throw error on invalid did', async () => {
