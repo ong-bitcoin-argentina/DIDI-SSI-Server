@@ -8,6 +8,7 @@ module.exports = {
   SHAREREQUEST: {
     ERR: {
       CREATE: { code: 'SHARE_REQUEST_ERROR', message: 'Error al crear el Share Request.' },
+      DELETE: { code: 'SHARE_REQUEST_DELETE_ERROR', message: 'Error al eliminar el Share Request.' },
       NOT_FOUND: {
         code: 'SHARE_REQUEST_NOT_FOUND',
         message: 'No se encuentra el Share Request, es probable que haya expirado.',

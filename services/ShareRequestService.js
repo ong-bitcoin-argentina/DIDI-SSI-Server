@@ -3,7 +3,7 @@ const ShareRequest = require('../models/ShareRequest');
 const { getPayload } = require('./TokenService');
 
 const {
-  CREATE, NOT_FOUND, GET, USER_NOT_VALID,
+  CREATE, NOT_FOUND, GET, USER_NOT_VALID, DELETE,
 } = Messages.SHAREREQUEST.ERR;
 
 const {
@@ -17,7 +17,7 @@ module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
   if (!jwt) throw missingJwt;
   try {
     const { aud, iss } = await getPayload(jwt);
-    return await ShareRequest.generate({ aud, iss, jwt });
+    return ShareRequest.generate({ aud, iss, jwt });
   } catch (e) {
     throw CREATE;
   }
@@ -36,7 +36,7 @@ module.exports.getShareRequestById = async function saveShareRequest({ id, userJ
     if (!shareRequest) return Promise.reject(NOT_FOUND);
 
     // Verifico si el aud es el correcto con el token
-    const { iss } = await getPayload(userJWT);
+    const { iss } = await getPayload(await userJWT);
     const { aud, jwt } = shareRequest;
 
     if (iss !== aud) return Promise.reject(USER_NOT_VALID);
@@ -47,4 +47,25 @@ module.exports.getShareRequestById = async function saveShareRequest({ id, userJ
     console.log(e);
     throw GET;
   }
+};
+
+/**
+ * Eliminar un ShareRequest segun su id
+ */
+module.exports.deleteShareRequest = async function deleteShareRequest(id) {
+  if (!id) throw missingId;
+  try {
+    const shareRequest = await ShareRequest.getById(id);
+    if (!shareRequest) return Promise.reject(NOT_FOUND);
+    return shareRequest.delete();
+  } catch (e) {
+    throw DELETE;
+  }
+};
+
+/**
+ *  Devuelve informacion de todos los ShareRequest
+ */
+module.exports.getAll = async function getAll(limit, page, iss, aud) {
+  return ShareRequest.getAll(limit, page, iss, aud);
 };
