@@ -1,13 +1,15 @@
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
-const { getShareRequestById, saveShareRequest } = require('../../../services/ShareRequestService');
+const { getShareRequestById, saveShareRequest, deleteShareRequest } = require('../../../services/ShareRequestService');
 const { MONGO_URL } = require('../../../constants/Constants');
 const {
-  missingId, missingUserJWT,
+  missingId,
 } = require('../../../constants/serviceErrors');
+const Messages = require('../../../constants/Messages');
+
 const { jwt, userJWT } = require('./constant');
 
-describe('__tests__/services/ShareRequest/readShareRequestById.test.js', () => {
+describe('__tests__/services/ShareRequest/deleteShareRequest.test.js', () => {
   let shareRequest;
 
   beforeAll(async () => {
@@ -24,24 +26,21 @@ describe('__tests__/services/ShareRequest/readShareRequestById.test.js', () => {
     await mongoose.connection.db.dropCollection('sharerequests');
     await mongoose.connection.close();
   });
-  test('Expect getShareRequestById to throw on missing id', async () => {
+  test('Expect deleteShareRequest to throw on missing id', async () => {
     try {
-      await getShareRequestById({ id: undefined, userJWT: 'userJWT' });
+      await deleteShareRequest();
     } catch (e) {
       expect(e.code).toMatch(missingId.code);
     }
   });
 
-  test('Expect getShareRequestById to throw on missing userJWT', async () => {
+  test('Expect deleteShareRequest to success', async () => {
+    const { _id: id } = shareRequest;
+    await deleteShareRequest(id);
     try {
-      await getShareRequestById({ id: 'id', userJWT: undefined });
-    } catch (e) {
-      expect(e.code).toMatch(missingUserJWT.code);
+      await getShareRequestById({ id, userJWT: await userJWT });
+    } catch (error) {
+      expect(error.code).toBe(Messages.SHAREREQUEST.ERR.NOT_FOUND.code);
     }
-  });
-
-  test('Expect getShareRequestById to success', async () => {
-    const result = await getShareRequestById({ id: shareRequest._id, userJWT: await userJWT });
-    expect(result).toBe(await jwt);
   });
 });
