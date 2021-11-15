@@ -17,6 +17,11 @@ router.use(BASE_URL, validateAppOrUserJWT);
  *   post:
  *     summary: Guarda un ShareRequest
  *     description: Credencial a compartir por QR
+  *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required:
  *         - userJWT
@@ -59,6 +64,10 @@ router.post(
  *         required: true
  *         schema:
  *           type : string
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -110,6 +119,11 @@ router.post(
  *         schema:
  *           type: string
  *         description: Audiencia
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
@@ -134,6 +148,11 @@ router.get(
  *         required: true
  *         schema:
  *           type : string
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
