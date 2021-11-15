@@ -25,6 +25,8 @@ const AppUserAuthRoutes = require('./routes/AppUserAuthRoutes');
 const AdminRoutes = require('./routes/AdminRoutes');
 const PresentationRoutes = require('./routes/PresentationRoutes');
 const ShareRequestRoutes = require('./routes/ShareRequestRoutes');
+const ServiceRoutes = require('./routes/ServiceRoutes');
+
 const { permanentJob } = require('./jobs/jobs');
 const {
   NAME, VERSION, ENVIRONMENT,
@@ -96,17 +98,6 @@ const apiSpecification = swaggerJsdoc(options);
  */
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(apiSpecification));
 
-/**
- * @openapi
- * /:
- *   get:
- *     description: Bienvenido a DIDI Server!
- *     responses:
- *       200:
- *         description: Returns a mysterious string.
- */
-app.get('/', (_, res) => res.send(`${Messages.INDEX.MSG.HELLO_WORLD} v${VERSION}`));
-
 app.use(bodyParser.json());
 
 // loggear llamadas
@@ -134,7 +125,7 @@ app.use(
     },
   }).single('file'),
 );
-
+app.use(ServiceRoutes);
 app.use(IssuerRoutes);
 app.use(UserRoutes);
 app.use(SmsRoutes);

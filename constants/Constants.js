@@ -8,6 +8,7 @@ const ENABLE_INSECURE_ENDPOINTS = process.env.ENABLE_INSECURE_ENDPOINTS === 'tru
 
 const {
   NAME, ENVIRONMENT, RSA_PRIVATE_KEY, HASH_SALT, ADDRESS, PORT, MOURO_URL, VERSION,
+  AIDI_VERSION,
 } = process.env;
 
 assert.ok(NAME, 'No esta definida la varibale NAME');
@@ -18,6 +19,7 @@ assert.ok(ADDRESS, 'No esta definida la varibale ADDRESS');
 assert.ok(PORT, 'No esta definida la varibale PORT');
 assert.ok(MOURO_URL, 'No esta definida la varibale MOURO_URL');
 assert.ok(VERSION, 'No esta definida la varibale VERSION');
+assert.ok(AIDI_VERSION, 'No esta definida la variable AIDI_VERSION');
 
 // ethr
 const { SERVER_DID, SERVER_PRIVATE_KEY } = process.env;
@@ -135,7 +137,6 @@ module.exports = {
   APP_INSIGTHS_IKEY,
   ENVIRONMENT,
   DISABLE_TELEMETRY_CLIENT,
-  API_SERVER_PRIVATE_KEY: '1.0',
   DEBUGG,
   MONGO_URL: MONGO_URI,
   ADDRESS,
