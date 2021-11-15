@@ -43,3 +43,5 @@ router.get('/networks', (_, res) => {
     networks,
   });
 });
+
+module.exports = router;
