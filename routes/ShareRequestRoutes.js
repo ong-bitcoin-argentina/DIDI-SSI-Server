@@ -3,13 +3,12 @@ const router = require('express').Router();
 const Validator = require('../utils/Validator');
 const Constants = require('../constants/Constants');
 const { validateAppOrUserJWT } = require('../middlewares/ValidateAppOrUserJWT');
+const { validateAuth } = require('../middlewares/ValidateAuth');
 const shareRequest = require('../controllers/shareRequest');
 
 const { IS_STRING } = Constants.VALIDATION_TYPES;
 
 const BASE_URL = '/shareRequest';
-
-router.use(BASE_URL, validateAppOrUserJWT);
 
 /**
  * @openapi
@@ -17,11 +16,6 @@ router.use(BASE_URL, validateAppOrUserJWT);
  *   post:
  *     summary: Guarda un ShareRequest
  *     description: Credencial a compartir por QR
-  *     parameters:
- *       - in: header
- *         name: Authorization
- *         schema:
- *           type: string
  *     requestBody:
  *       required:
  *         - userJWT
@@ -35,7 +29,6 @@ router.use(BASE_URL, validateAppOrUserJWT);
  *                 type: string
  *               jwt:
  *                 type: string
- *
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
@@ -46,6 +39,7 @@ router.use(BASE_URL, validateAppOrUserJWT);
  */
 router.post(
   BASE_URL,
+  validateAppOrUserJWT,
   Validator.validateBody([{ name: 'jwt', validate: [IS_STRING] }]),
   Validator.checkValidationResult,
   Validator.validateParams,
@@ -64,10 +58,6 @@ router.post(
  *         required: true
  *         schema:
  *           type : string
- *       - in: header
- *         name: Authorization
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -87,6 +77,7 @@ router.post(
  */
 router.post(
   `${BASE_URL}/:id`,
+  validateAppOrUserJWT,
   Validator.validateBody([]),
   Validator.checkValidationResult,
   Validator.validateParams,
@@ -134,6 +125,7 @@ router.post(
  */
 router.get(
   `${BASE_URL}/list`,
+  validateAuth,
   shareRequest.readAllShareRequests,
 );
 
@@ -163,6 +155,7 @@ router.get(
  */
 router.delete(
   `${BASE_URL}/:id`,
+  validateAuth,
   Validator.validateParams,
   shareRequest.deleteShareRequestById,
 );

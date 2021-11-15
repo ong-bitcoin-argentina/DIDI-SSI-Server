@@ -56,7 +56,7 @@ ShareRequest.deleteById = async function deleteById(_id) {
   }
 };
 
-ShareRequest.getAll = async function getAll(limit, page, aud, iss) {
+ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid) {
   let totalPages;
   if (limit === 0 || isNaN(limit)) {
     totalPages = 1;
@@ -65,7 +65,12 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss) {
   }
 
   const list = await ShareRequest.find(
-    { ...iss ? { iss } : {}, ...aud ? { aud } : {} },
+    {
+      $or: [
+        { iss: solicitorDid, aud },
+        { iss, aud: solicitorDid },
+      ],
+    },
     { iss: 1, aud: 1 },
   )
     .skip(page > 0 ? ((page - 1) * limit) : 0)

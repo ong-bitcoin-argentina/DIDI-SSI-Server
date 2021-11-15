@@ -2,17 +2,14 @@
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { saveShareRequest, getAll } = require('../../../services/ShareRequestService');
-const { jwt, pagination } = require('./constant');
+const {
+  jwt, pagination, serverDid, aud, jwt2, aud2,
+} = require('./constant');
 
 describe('__tests__/services/ShareRequest/getAll.test.js', () => {
   const { limit, page } = pagination;
-  const saveShareReq = async () => {
-    const cert = await jwt;
-    await saveShareRequest({ jwt: cert });
-  };
-  for (let i = 0; i < 5; i++) {
-    saveShareReq();
-  }
+  const solicitorDid = serverDid;
+
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -21,27 +18,27 @@ describe('__tests__/services/ShareRequest/getAll.test.js', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
+    for (let i = 0; i < 5; i++) {
+      // eslint-disable-next-line no-await-in-loop
+      await saveShareRequest({ jwt: await jwt });
+    }
+    await saveShareRequest({ jwt: await jwt2 });
   });
   afterAll(async () => {
     await mongoose.connection.db.dropCollection('sharerequests');
     await mongoose.connection.close();
   });
 
-  test('Expect getAll to success', async () => {
-    const { list, totalPages } = await getAll();
+  test('Expect getAll to success with aud', async () => {
+    const { list, totalPages } = await getAll(100, 1, aud, undefined, solicitorDid);
     expect(list.length).toBe(5);
     expect(totalPages).toBe(1);
   });
 
-  test('Expect getAll to success passing limit parameter', async () => {
-    const { list, totalPages } = await getAll(limit);
-    expect.arrayContaining(list);
-    expect(totalPages).toBe(5);
-  });
-
-  test('Expect getAll to success passing grater limit and page parameters', async () => {
-    const { list, totalPages } = await getAll(limit + 1, page);
-    expect.arrayContaining(list);
-    expect(totalPages).toBe(3);
+  test('Expect getAll to success with iss', async () => {
+    const iss = serverDid;
+    const { list, totalPages } = await getAll(100, 1, undefined, iss, aud2);
+    expect(list.length).toBe(1);
+    expect(totalPages).toBe(1);
   });
 });

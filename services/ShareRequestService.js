@@ -26,7 +26,7 @@ module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
 /**
  * Obtiene un ShareRequest según id (Devuelve un JWT con las credenciales previamente guardadas)
  */
-module.exports.getShareRequestById = async function saveShareRequest({ id, userJWT }) {
+module.exports.getShareRequestById = async function getShareRequestById({ id, userJWT }) {
   if (!id) throw missingId;
   if (!userJWT) throw missingUserJWT;
   try {
@@ -66,6 +66,6 @@ module.exports.deleteShareRequest = async function deleteShareRequest(id) {
 /**
  *  Devuelve informacion de todos los ShareRequest
  */
-module.exports.getAll = async function getAll(limit, page, iss, aud) {
-  return ShareRequest.getAll(limit, page, iss, aud);
+module.exports.getAll = async function getAll(limit, page, aud, iss, solicitorDid) {
+  return ShareRequest.getAll(limit, page, aud, iss, solicitorDid);
 };
