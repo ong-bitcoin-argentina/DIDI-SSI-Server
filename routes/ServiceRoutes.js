@@ -34,7 +34,7 @@ router.get('/', (_, res) => {
  *         description: Listado de redes.
  */
 router.get('/networks', (_, res) => {
-  const { PROVIDER_CONFIG } = Constants;
+  const { PROVIDER_CONFIG } = Constants.BLOCKCHAIN;
   const networks = PROVIDER_CONFIG.networks.map(({ name, registry }) => ({
     name, registry,
   }));
