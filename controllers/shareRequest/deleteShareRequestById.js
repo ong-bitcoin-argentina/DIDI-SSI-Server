@@ -4,10 +4,10 @@ const ResponseHandler = require('../../utils/ResponseHandler');
 const deleteShareRequestById = async (req, res) => {
   const { id } = req.params;
   try {
-    const { _id } = await deleteShareRequest(id);
-    return ResponseHandler.sendRes(res, _id);
+    const deleted = await deleteShareRequest(id);
+    return ResponseHandler.sendRes(res, deleted);
   } catch (err) {
-    return ResponseHandler.sendErr(res, err);
+    return ResponseHandler.sendErrWithStatus(res, err);
   }
 };
 

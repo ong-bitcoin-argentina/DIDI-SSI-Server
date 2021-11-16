@@ -16,7 +16,7 @@ module.exports = {
       GET: { code: 'SHARE_REQUEST_GET', message: 'El Share Request no puedo ser obtenido.' },
       USER_NOT_VALID: { code: 'USER_NOT_VALID', message: 'El Usuario no tiene permiso para ver este Share Request' },
       PARAM_ERROR: (param) => ({
-        message: `Solo es valido uno de los siguientes parametros ${param}.`,
+        message: `Solo es valido uno de los siguientes parametros: ${param}.`,
         code: 'PARAM_ERROR',
       }),
     },

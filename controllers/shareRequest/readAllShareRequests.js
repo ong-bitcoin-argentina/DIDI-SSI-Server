@@ -19,7 +19,7 @@ const readAllShareRequests = async (req, res) => {
 
     return ResponseHandler.sendRes(res, { list, totalPages });
   } catch (err) {
-    return ResponseHandler.sendErr(res, err);
+    return ResponseHandler.sendErrWithStatus(res, err);
   }
 };
 
