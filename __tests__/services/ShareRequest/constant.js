@@ -7,7 +7,7 @@ const aud2 = 'did:ethr:0xd097adcb17ad8b5a7d18ed84cc8353911f13c043';
 
 const createJwt = async (audience) => {
   const jwt = await createJWT(
-    serverDid, SERVER_PRIVATE_KEY, { sub: audience, aud: audience }, undefined, audience
+    serverDid, SERVER_PRIVATE_KEY, { sub: audience, aud: audience }, undefined, audience,
   );
   return jwt;
 };
@@ -20,15 +20,9 @@ const createUserJwt = async () => {
 };
 const userJWT = createUserJwt();
 
-const pagination = {
-  limit: 1,
-  page: 2,
-};
-
 module.exports = {
   jwt,
   jwt2,
-  pagination,
   userJWT,
   serverDid,
   aud,

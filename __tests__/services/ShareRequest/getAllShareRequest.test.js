@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { saveShareRequest, getAll } = require('../../../services/ShareRequestService');
 const {
-  jwt, pagination, serverDid, aud, jwt2, aud2,
+  jwt, serverDid, aud, jwt2, aud2,
 } = require('./constant');
 
 describe('__tests__/services/ShareRequest/getAll.test.js', () => {
-  const { limit, page } = pagination;
   const solicitorDid = serverDid;
 
   beforeAll(async () => {
