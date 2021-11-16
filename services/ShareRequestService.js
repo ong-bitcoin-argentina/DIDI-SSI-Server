@@ -36,7 +36,7 @@ module.exports.getShareRequestById = async function getShareRequestById({ id, us
     if (!shareRequest) return Promise.reject(NOT_FOUND);
 
     // Verifico si el aud es el correcto con el token
-    const { iss } = await getPayload(await userJWT);
+    const { iss } = await getPayload(userJWT);
     const { aud, jwt } = shareRequest;
 
     if (iss !== aud) return Promise.reject(USER_NOT_VALID);
