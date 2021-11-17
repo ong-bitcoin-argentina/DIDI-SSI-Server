@@ -4,6 +4,8 @@
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
 
+const { Schema } = mongoose;
+
 const IssuerSchema = new mongoose.Schema({
   did: {
     type: String,
@@ -41,6 +43,10 @@ const IssuerSchema = new mongoose.Schema({
     // Para evitar guardar un array vacio, definimos como default: undefined.
     default: undefined,
   },
+  shareRequest: [{
+    type: Schema.Types.ObjectId,
+    ref: 'ShareRequest',
+  }],
   deleted: {
     type: Boolean,
     default: false,
@@ -148,4 +154,12 @@ Issuer.getByDID = async function getByDID(did) {
 
 Issuer.getByName = async function getByName(name) {
   return Issuer.findOne({ name });
+};
+
+Issuer.addShareRequests = async function addShareRequests(ids, did) {
+  return Issuer.findOneAndUpdate(
+    { did },
+    { $push: { shareRequest: { $each: ids } } },
+    { new: true },
+  );
 };

@@ -431,4 +431,43 @@ router.patch(
   issuer.updateIssuerByDid,
 );
 
+/**
+ * @openapi
+ *   /issuer/{did}/shareRequest:
+ *   post:
+ *     summary: Crea un shareRequest asociandolo a un issuer
+ *     parameters:
+ *       - name: Authorization
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type : string
+ *     requestBody:
+ *       required:
+ *         - jwt
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               jwt:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.post(
+  '/issuer/:did/shareRequest',
+  Validator.validateBody([
+    { name: 'jwt', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
+  ]),
+  Validator.validateFile,
+  Validator.checkValidationResult,
+  issuer.addShareRequest,
+);
+
 module.exports = router;

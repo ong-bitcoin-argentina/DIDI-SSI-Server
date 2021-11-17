@@ -191,4 +191,8 @@ module.exports = {
     code: '#service-missingSolicitorDid',
     message: 'Falta el parámetro SOLICITORDID',
   },
+  missingIds: {
+    code: '#service-missingIds',
+    message: 'Falta el parámetro IDS',
+  },
 };

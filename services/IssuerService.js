@@ -19,6 +19,7 @@ const {
   missingCallback,
   missingAction,
   missingDescription,
+  missingIds,
 } = require('../constants/serviceErrors');
 
 /**
@@ -177,6 +178,20 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
     return await DelegateTransaction.create({
       did, name, callbackUrl, token, action, description, imageUrl,
     });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+/**
+ *  Permite manejar autorización para emitir credenciales de un issuer dada una action
+ */
+module.exports.addShareRequests = async function addShareRequests(ids, did) {
+  if (!did) throw missingDid;
+  if (!ids) throw missingIds;
+  try {
+    return await Issuer.addShareRequests(ids, did);
   } catch (err) {
     console.log(err);
     throw err;
