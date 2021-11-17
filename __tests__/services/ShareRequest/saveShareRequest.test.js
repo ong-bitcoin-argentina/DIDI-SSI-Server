@@ -28,10 +28,11 @@ describe('__tests__/services/ShareRequest/saveShareRequest.test.js', () => {
     }
   });
   test('Expect saveShareRequest to success', async () => {
-    const { payload } = await decodeJWT(jwt);
-    const shareRequest = await saveShareRequest({ jwt });
+    const cert = await jwt;
+    const { payload } = await decodeJWT(cert);
+    const shareRequest = await saveShareRequest({ jwt: cert });
     expect(shareRequest.aud).toBe(payload.aud);
     expect(shareRequest.iss).toBe(payload.iss);
-    expect(await Encrypt.decript(shareRequest.jwt)).toBe(jwt);
+    expect(await Encrypt.decript(shareRequest.jwt)).toBe(cert);
   });
 });

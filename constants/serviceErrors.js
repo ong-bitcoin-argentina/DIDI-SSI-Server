@@ -187,4 +187,12 @@ module.exports = {
     code: '#service-missingPayload',
     message: 'Falta el parámetro PAYLOAD',
   },
+  missingSolicitorDid: {
+    code: '#service-missingSolicitorDid',
+    message: 'Falta el parámetro SOLICITORDID',
+  },
+  missingIds: {
+    code: '#service-missingIds',
+    message: 'Falta el parámetro IDS',
+  },
 };

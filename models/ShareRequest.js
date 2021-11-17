@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 const mongoose = require('mongoose');
 const Encrypt = require('./utils/Encryption');
 
@@ -8,7 +9,6 @@ const ShareRequestSchema = new mongoose.Schema({
   },
   aud: {
     type: String,
-    required: true,
   },
   iss: {
     type: String,
@@ -18,7 +18,6 @@ const ShareRequestSchema = new mongoose.Schema({
     type: Date,
     required: true,
     default: Date.now,
-    index: { expires: '60m' },
   },
 });
 
@@ -43,4 +42,38 @@ ShareRequest.getById = async function getById(_id) {
     shareRequest.jwt = jwtDecripted;
   }
   return shareRequest;
+};
+
+ShareRequest.deleteById = async function deleteById(_id) {
+  try {
+    const shareRequest = await ShareRequest.findById(_id);
+    shareRequest.delete();
+    return shareRequest.save();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    return Promise.reject(err);
+  }
+};
+
+ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid) {
+  let totalPages;
+  if (limit === 0 || isNaN(limit)) {
+    totalPages = 1;
+  } else {
+    totalPages = Math.ceil(await ShareRequest.find({}).countDocuments() / limit);
+  }
+
+  const list = await ShareRequest.find(
+    {
+      $or: [
+        { iss: solicitorDid, aud },
+        { iss, aud: solicitorDid },
+      ],
+    },
+    { iss: 1, aud: 1 },
+  )
+    .skip(page > 0 ? ((page - 1) * limit) : 0)
+    .limit(limit);
+  return { list, totalPages };
 };

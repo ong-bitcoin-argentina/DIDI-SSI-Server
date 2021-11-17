@@ -3,11 +3,11 @@ const ShareRequest = require('../models/ShareRequest');
 const { getPayload } = require('./TokenService');
 
 const {
-  CREATE, NOT_FOUND, GET, USER_NOT_VALID,
+  CREATE, NOT_FOUND, GET, USER_NOT_VALID, DELETE,
 } = Messages.SHAREREQUEST.ERR;
 
 const {
-  missingJwt, missingId, missingUserJWT,
+  missingJwt, missingId, missingUserJWT, missingSolicitorDid,
 } = require('../constants/serviceErrors');
 
 /**
@@ -17,7 +17,7 @@ module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
   if (!jwt) throw missingJwt;
   try {
     const { aud, iss } = await getPayload(jwt);
-    return await ShareRequest.generate({ aud, iss, jwt });
+    return ShareRequest.generate({ aud, iss, jwt });
   } catch (e) {
     throw CREATE;
   }
@@ -26,7 +26,7 @@ module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
 /**
  * Obtiene un ShareRequest según id (Devuelve un JWT con las credenciales previamente guardadas)
  */
-module.exports.getShareRequestById = async function saveShareRequest({ id, userJWT }) {
+module.exports.getShareRequestById = async function getShareRequestById({ id, userJWT }) {
   if (!id) throw missingId;
   if (!userJWT) throw missingUserJWT;
   try {
@@ -47,4 +47,26 @@ module.exports.getShareRequestById = async function saveShareRequest({ id, userJ
     console.log(e);
     throw GET;
   }
+};
+
+/**
+ * Eliminar un ShareRequest segun su id
+ */
+module.exports.deleteShareRequest = async function deleteShareRequest(id) {
+  if (!id) throw missingId;
+  try {
+    const shareRequest = await ShareRequest.getById(id);
+    if (!shareRequest) return Promise.reject(NOT_FOUND);
+    return shareRequest.delete();
+  } catch (e) {
+    throw DELETE;
+  }
+};
+
+/**
+ *  Devuelve informacion de todos los ShareRequest
+ */
+module.exports.getAll = async function getAll(limit, page, aud, iss, solicitorDid) {
+  if (!solicitorDid) throw missingSolicitorDid;
+  return ShareRequest.getAll(limit, page, aud, iss, solicitorDid);
 };

@@ -1,4 +1,8 @@
 const { issuers } = require('./issuers');
+const { createJWT } = require('../../../services/BlockchainService');
+const { SERVER_DID, SERVER_PRIVATE_KEY } = require('../../../constants/Constants');
+
+const serverDid = `did:ethr:${SERVER_DID}`;
 
 const data = {
   allNetworksDid: 'did:ethr:0xd98cdaac3f682ca2fb72fbad3090a22462290037',
@@ -19,6 +23,14 @@ const data = {
   },
   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTIxZTY1NjVjYTVlYjAwMzgwZjBkOTUiLCJleHAiOjE2NDMzMDIwNjYsImlhdCI6MTYzMDM0MjA2Nn0.poZ_USLMiABjSdbdnPPFV0VeycWcA8EowAX8jbsypzc',
 };
+
+const createJwt = async (audience) => {
+  const jwt = await createJWT(
+    serverDid, SERVER_PRIVATE_KEY, { sub: audience, aud: audience }, undefined, audience,
+  );
+  return jwt;
+};
+const jwt = createJwt(data.did);
 
 const pagination = {
   limit: 1,
@@ -45,6 +57,7 @@ const failureBody = {
 
 module.exports = {
   data,
+  jwt,
   issuers,
   pagination,
   successResp: {

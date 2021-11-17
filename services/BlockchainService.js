@@ -123,7 +123,7 @@ module.exports.decodeJWT = function decodeJWT(jwt) {
 module.exports.verifyCertificate = function verifyCertificate(jwt) {
   if (!jwt) throw missingJwt;
   try {
-    return blockchainManager.verifyCertificate(jwt);
+    return blockchainManager.verifyCredential(jwt);
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
