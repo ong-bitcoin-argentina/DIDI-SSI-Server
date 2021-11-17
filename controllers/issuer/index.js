@@ -11,6 +11,8 @@ const { updateIssuerByDid } = require('./updateIssuerByDid');
 const { verifyCertificateByJwt } = require('./verifyCertificateByJwt');
 const { readAllIssuers } = require('./readAllIssuers');
 const { readIssuerImagesByDid } = require('./readIssuerImagesByDid');
+const { addShareRequest } = require('./addShareRequest');
+const { removeShareRequest } = require('./removeShareRequest');
 
 module.exports = {
   createCertificateByJwt,
@@ -26,4 +28,6 @@ module.exports = {
   verifyCertificateByJwt,
   readAllIssuers,
   readIssuerImagesByDid,
+  addShareRequest,
+  removeShareRequest,
 };

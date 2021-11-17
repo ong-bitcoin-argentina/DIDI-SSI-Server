@@ -470,4 +470,28 @@ router.post(
   issuer.addShareRequest,
 );
 
+/**
+ * @openapi
+ *   /issuer/{did}/shareRequest/{id}:
+ *   delete:
+ *     summary: Dado un id elimina un shareRequest y lo remueve de la información del issuer
+ *     parameters:
+ *       - name: Authorization
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete(
+  '/issuer/:did/shareRequest',
+  issuer.removeShareRequest,
+);
+
 module.exports = router;

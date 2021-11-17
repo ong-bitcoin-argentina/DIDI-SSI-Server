@@ -20,6 +20,7 @@ const {
   missingAction,
   missingDescription,
   missingIds,
+  missingId,
 } = require('../constants/serviceErrors');
 
 /**
@@ -185,13 +186,27 @@ module.exports.createDelegateTransaction = async function createDelegateTransact
 };
 
 /**
- *  Permite manejar autorización para emitir credenciales de un issuer dada una action
+ *  Permite agregar uno o mas shareRequests a información de un issuer
  */
 module.exports.addShareRequests = async function addShareRequests(ids, did) {
   if (!did) throw missingDid;
   if (!ids) throw missingIds;
   try {
     return await Issuer.addShareRequests(ids, did);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+/**
+ *  Permite eliminar un shareRequest de la información de un issuer
+ */
+module.exports.removeShareRequest = async function removeShareRequest(id, did) {
+  if (!did) throw missingDid;
+  if (!id) throw missingId;
+  try {
+    return Issuer.removeShareRequest(id, did);
   } catch (err) {
     console.log(err);
     throw err;

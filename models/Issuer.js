@@ -163,3 +163,11 @@ Issuer.addShareRequests = async function addShareRequests(ids, did) {
     { new: true },
   );
 };
+
+Issuer.removeShareRequest = async function removeShareRequest(id, did) {
+  return Issuer.findOneAndUpdate(
+    { did },
+    { $pull: { shareRequest: id } },
+    { new: true },
+  );
+};
