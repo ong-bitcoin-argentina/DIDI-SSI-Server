@@ -14,6 +14,13 @@ const issuers = [{
   blockHash: '0xa438525bf181285b4b0f72c478b625c9bf8df2b906ce6365845fcac5f2344ba1',
   __v: 0,
   description: 'Emisor autorizado de QA',
+  shareRequests: [
+    '6197de81135bf478a11db792',
+    '6197de81135bf478a11db794',
+    '6197de81135bf478a11db796',
+    '6197de81135bf478a11db798',
+    '6197de81135bf478a11db79a',
+  ],
   modifiedOn: {
     date: '2021-07-28T14:53:47.792Z',
   },
@@ -33,6 +40,13 @@ const issuers = [{
   blockHash: '0xca6784f52535bb58d07f36b269793796c228151290e80d8124593d56ee05c694',
   __v: 0,
   description: 'Descripcion del didi-server',
+  shareRequests: [
+    '6197de81135bf478a11db792',
+    '6197de81135bf478a11db794',
+    '6197de81135bf478a11db796',
+    '6197de81135bf478a11db798',
+    '6197de81135bf478a11db79a',
+  ],
   modifiedOn: {
     date: '2021-08-03T12:56:49.091Z',
   },
@@ -50,6 +64,13 @@ const issuers = [{
     date: '2024-05-12T14:04:39.408Z',
   },
   blockHash: '0x55773fe7a0a2aa83698c5947df7126bd159917e98e45d9e60194338b88dae18f',
+  shareRequests: [
+    '6197de81135bf478a11db792',
+    '6197de81135bf478a11db794',
+    '6197de81135bf478a11db796',
+    '6197de81135bf478a11db798',
+    '6197de81135bf478a11db79a',
+  ],
   __v: 0,
 }, {
   _id: {
@@ -65,6 +86,13 @@ const issuers = [{
     date: '2024-05-12T14:10:41.445Z',
   },
   blockHash: '0x91bf81980faa1ba47c1f9cacd4b6f4d762cf3178cfbf6d10e6b1179d0933b6f5',
+  shareRequests: [
+    '6197de81135bf478a11db792',
+    '6197de81135bf478a11db794',
+    '6197de81135bf478a11db796',
+    '6197de81135bf478a11db798',
+    '6197de81135bf478a11db79a',
+  ],
   __v: 0,
 }];
 
