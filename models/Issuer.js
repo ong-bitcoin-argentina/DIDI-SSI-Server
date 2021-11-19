@@ -136,7 +136,7 @@ Issuer.getAll = async function getAll(limit, page) {
     deleted: false,
   },
   {
-    did: 1, name: 1, description: 1, imageUrl: 1,
+    did: 1, name: 1, description: 1, imageUrl: 1, shareRequest: 1,
   })
     .collation({
       locale: 'es',
