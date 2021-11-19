@@ -43,7 +43,7 @@ const IssuerSchema = new mongoose.Schema({
     // Para evitar guardar un array vacio, definimos como default: undefined.
     default: undefined,
   },
-  shareRequest: [{
+  shareRequests: [{
     type: Schema.Types.ObjectId,
     ref: 'ShareRequest',
   }],
@@ -136,7 +136,7 @@ Issuer.getAll = async function getAll(limit, page) {
     deleted: false,
   },
   {
-    did: 1, name: 1, description: 1, imageUrl: 1,
+    did: 1, name: 1, description: 1, imageUrl: 1, shareRequests: 1,
   })
     .collation({
       locale: 'es',
@@ -159,7 +159,7 @@ Issuer.getByName = async function getByName(name) {
 Issuer.addShareRequests = async function addShareRequests(ids, did) {
   return Issuer.findOneAndUpdate(
     { did },
-    { $push: { shareRequest: { $each: ids } } },
+    { $push: { shareRequests: { $each: ids } } },
     { new: true },
   );
 };
@@ -167,7 +167,7 @@ Issuer.addShareRequests = async function addShareRequests(ids, did) {
 Issuer.removeShareRequest = async function removeShareRequest(id, did) {
   return Issuer.findOneAndUpdate(
     { did },
-    { $pull: { shareRequest: id } },
+    { $pull: { shareRequests: id } },
     { new: true },
   );
 };

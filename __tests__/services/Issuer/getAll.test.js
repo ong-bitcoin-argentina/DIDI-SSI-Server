@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { getAll } = require('../../../services/IssuerService');
@@ -26,6 +27,12 @@ describe('services/Issuer/getAll.test.js', () => {
     const response = await getAll();
     expect.arrayContaining(response.issuersList);
     expect(response.totalPages).toBe(1);
+    for (let i = 0; i <= response.length; i++) {
+      expect(response[i].toHavePropert('shareRequests'));
+      expect(response[i].toHavePropert('did'));
+      expect(response[i].toHavePropert('name'));
+      expect.arrayContaining(response[i].shareRequests);
+    }
   });
 
   test('Expect getAll to success passing limit parameter', async () => {

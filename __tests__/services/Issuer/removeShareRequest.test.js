@@ -9,7 +9,7 @@ const { jwt, issuers } = require('./constatns');
 describe('__tests__/services/Issuer/removeShareRequest.test.js', () => {
   const ids = [];
   const { did } = issuers[0];
-  let shareRequests;
+  let shareRequestsList;
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -28,7 +28,7 @@ describe('__tests__/services/Issuer/removeShareRequest.test.js', () => {
     const Issuers = await mongoose.connection.db.collection('issuers');
     await Issuers.insertMany(issuers);
     const issuer = await addShareRequests(ids, did);
-    shareRequests = issuer.shareRequest;
+    shareRequestsList = issuer.shareRequests;
   });
   afterAll(async () => {
     await mongoose.connection.db.dropCollection('sharerequests');
@@ -53,10 +53,10 @@ describe('__tests__/services/Issuer/removeShareRequest.test.js', () => {
   });
 
   test('Expect removeShareRequest to success', async () => {
-    const shareRequestToRemove = shareRequests[0];
-    const { shareRequest } = await removeShareRequest(shareRequestToRemove, did);
-    expect(shareRequest.length).toBeLessThan(shareRequests.length);
-    expect(shareRequest.find((id) => id === shareRequestToRemove)).toBeUndefined();
+    const shareRequestToRemove = shareRequestsList[0];
+    const { shareRequests } = await removeShareRequest(shareRequestToRemove, did);
+    expect(shareRequests.length).toBeLessThan(shareRequestsList.length);
+    expect(shareRequests.find((id) => id === shareRequestToRemove)).toBeUndefined();
   });
 
   test('Expect removeShareRequest to fail whith invalid argument passed', async () => {

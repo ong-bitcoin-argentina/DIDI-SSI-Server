@@ -53,14 +53,14 @@ describe('__tests__/services/Issuer/addShareRequests.test.js', () => {
   });
 
   test('Expect addShareRequests to success saving multiple shareRequests ids', async () => {
-    const { shareRequest } = await addShareRequests(ids, did);
-    expect.arrayContaining(shareRequest);
-    expect(shareRequest.length).toBe(5);
+    const { shareRequests } = await addShareRequests(ids, did);
+    expect.arrayContaining(shareRequests);
+    expect(shareRequests.length).toBe(5);
   });
 
   test('Expect addShareRequests to success', async () => {
-    const { shareRequest } = await addShareRequests(id, issuers[1].did);
-    expect.arrayContaining(shareRequest);
-    expect(shareRequest.length).toBe(1);
+    const { shareRequests } = await addShareRequests(id, issuers[1].did);
+    expect.arrayContaining(shareRequests);
+    expect(shareRequests.length).toBe(1);
   });
 });
