@@ -442,6 +442,11 @@ router.patch(
  *         required: true
  *         schema:
  *           type : string
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
  *     requestBody:
  *       required:
  *         - jwt
