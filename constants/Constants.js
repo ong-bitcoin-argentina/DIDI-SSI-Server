@@ -142,6 +142,7 @@ module.exports = {
   ADDRESS,
   PORT,
   VERSION,
+  AIDI_VERSION,
 
   RSA_PRIVATE_KEY,
   HASH_SALT,
