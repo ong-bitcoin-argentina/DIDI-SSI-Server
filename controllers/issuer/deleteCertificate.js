@@ -4,6 +4,7 @@ const ResponseHandler = require('../../utils/ResponseHandler');
 const MouroService = require('../../services/MouroService');
 const CertService = require('../../services/CertService');
 const UserService = require('../../services/UserService');
+const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
 const Constants = require('../../constants/Constants');
 
@@ -23,7 +24,7 @@ const deleteCertificate = async (req, res) => {
     if (!cert) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
     // Validar si el emistor es correcto (autorizado a revocar)
     console.log(`Verifying issuer ${did}`);
-    const valid = cert && (await CertService.verifyIssuer(did));
+    const valid = cert && (await IssuerService.verifyIssuer(did));
     if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
     // Validar que el sujeto este registrado en didi
     console.log(`Verifying subject ${sub}`);

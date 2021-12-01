@@ -3,6 +3,7 @@ const ResponseHandler = require('../../utils/ResponseHandler');
 const MouroService = require('../../services/MouroService');
 const CertService = require('../../services/CertService');
 const UserService = require('../../services/UserService');
+const IssuerService = require('../../services/IssuerService');
 const FirebaseService = require('../../services/FirebaseService');
 const Messages = require('../../constants/Messages');
 
@@ -12,7 +13,7 @@ const createShareRequest = async (req, res) => {
   try {
     // Comprobar que el emisor sea valido
     const decoded = await CertService.decodeCertificate(jwt, Messages.ISSUER.ERR.CERT_IS_INVALID);
-    await CertService.verifyIssuer(decoded.payload.iss);
+    await IssuerService.verifyIssuer(decoded.payload.iss);
     // Crear el pedido
     const shareReq = await CertService.createShareRequest(did, jwt);
     // Mandar el pedido a mouro para ser guardado
