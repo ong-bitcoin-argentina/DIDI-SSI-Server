@@ -1,13 +1,12 @@
 /* eslint-disable no-console */
 const ResponseHandler = require('../../utils/ResponseHandler');
-const CertService = require('../../services/CertService');
 const IssuerService = require('../../services/IssuerService');
 const Messages = require('../../constants/Messages');
 
 const verifyIssuerByDid = async (req, res) => {
   try {
     const { did } = req.params;
-    await CertService.verifyIssuer(did);
+    await IssuerService.verifyIssuer(did);
     const issuer = await IssuerService.getIssuerByDID(did);
     if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
     const { name, expireOn } = issuer;

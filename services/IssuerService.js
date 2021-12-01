@@ -21,7 +21,10 @@ const {
   missingDescription,
   missingIds,
   missingId,
+  missingIssuerDid,
 } = require('../constants/serviceErrors');
+
+const serverDid = `did:ethr:${Constants.SERVER_DID}`;
 
 /**
  *  Crea un nuevo issuer
@@ -211,4 +214,17 @@ module.exports.removeShareRequest = async function removeShareRequest(id, did) {
     console.log(err);
     throw err;
   }
+};
+
+/**
+ * Dado un emisor de un certificado, verifica su validez
+ */
+module.exports.verifyIssuer = async function verifyIssuer(issuerDid) {
+  if (!issuerDid) throw missingIssuerDid;
+  if (await BlockchainService.compareDid(issuerDid, serverDid)) {
+    return Messages.CERTIFICATE.VERIFIED;
+  }
+  const delegated = await BlockchainService.validDelegate(issuerDid);
+  if (delegated) return Messages.CERTIFICATE.VERIFIED;
+  throw Messages.ISSUER.ERR.IS_INVALID;
 };
