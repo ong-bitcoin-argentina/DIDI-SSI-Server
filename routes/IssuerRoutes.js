@@ -158,20 +158,16 @@ router.post(
 
 /**
  * @openapi
- *   /issuer/verify:
- *   post:
+ *   /issuer/{did}/verify:
+ *   get:
  *     summary: Verifica la existencia del emisor según el did.
- *     description: Obtiene y verifica que el código de validación sea correcto.
- *     requestBody:
- *       required:
- *         - did
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               did:
- *                 type: string
+ *     description: Obtiene y verifica que el código de validación sea correct
+ *     parameters:
+ *       - name: did
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type : string
  *     responses:
  *       200:
  *         description: Puede devolver ok o error en algun parametro
@@ -180,9 +176,9 @@ router.post(
  *       500:
  *         description: Error interno del servidor
  */
-router.post(
-  '/issuer/verify',
-  Validator.validateBody([{ name: 'did', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
+router.get(
+  '/issuer/:did/verify',
+  Validator.validateParams,
   halfHourLimiter,
   issuer.verifyIssuerByDid,
 );

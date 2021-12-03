@@ -5,6 +5,7 @@ const Certificate = require('../../models/Certificate');
 const MouroService = require('../../services/MouroService');
 const CertService = require('../../services/CertService');
 const UserService = require('../../services/UserService');
+const IssuerService = require('../../services/IssuerService');
 const FirebaseService = require('../../services/FirebaseService');
 const Messages = require('../../constants/Messages');
 const Constants = require('../../constants/Constants');
@@ -19,7 +20,7 @@ const createCertificateByJwt = async (req, res) => {
     if (!cert || !cert.payload) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.CERT_IS_INVALID);
     // Validar si el emistor es correcto (autorizado a emitir y el mismo que el del certificado)
     console.log(`Verifying issuer ${cert.payload.iss}`);
-    const valid = cert && (await CertService.verifyIssuer(cert.payload.iss));
+    const valid = cert && (await IssuerService.verifyIssuer(cert.payload.iss));
     if (!valid) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
     // Validar sujeto (que este registrado en didi)
     console.log(`Verifying subject ${cert.payload.sub}`);

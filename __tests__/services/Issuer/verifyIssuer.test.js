@@ -1,6 +1,6 @@
-const { verifyIssuer } = require('../../../services/CertService');
+const { verifyIssuer } = require('../../../services/IssuerService');
 const { missingIssuerDid } = require('../../../constants/serviceErrors');
-const { data } = require('./constant');
+const { data } = require('../Cert/constant');
 const Messages = require('../../../constants/Messages');
 const Constants = require('../../../constants/Constants');
 

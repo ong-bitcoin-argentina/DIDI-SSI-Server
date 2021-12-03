@@ -28,7 +28,7 @@ const createCertificateValidation = async (req, res) => {
 
     console.log('Verifying Issuer...');
     const did = cert.payload.iss;
-    await CertService.verifyIssuer(did);
+    await IssuerService.verifyIssuer(did);
     const issuer = await IssuerService.getIssuerByDID(did);
     if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
     console.log('Issuer verified!');
