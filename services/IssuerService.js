@@ -192,7 +192,8 @@ module.exports.addShareRequests = async function addShareRequests(ids, did) {
   if (!did) throw missingDid;
   if (!ids) throw missingIds;
   try {
-    return await Issuer.addShareRequests(ids, did);
+    const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
+    return await Issuer.addShareRequests(ids, didWithoutNetwork);
   } catch (err) {
     console.log(err);
     throw err;
@@ -206,7 +207,8 @@ module.exports.removeShareRequest = async function removeShareRequest(id, did) {
   if (!did) throw missingDid;
   if (!id) throw missingId;
   try {
-    return Issuer.removeShareRequest(id, did);
+    const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
+    return Issuer.removeShareRequest(id, didWithoutNetwork);
   } catch (err) {
     console.log(err);
     throw err;
