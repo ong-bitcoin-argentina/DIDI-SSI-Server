@@ -9,7 +9,7 @@ const readAllShareRequests = async (req, res) => {
     const page = parseInt(req.query.page, 10);
     const { aud, iss } = req.query;
     const jwt = req.header('Authorization');
-    const did = getPayload(jwt).iss;
+    const { iss: did } = await getPayload(jwt);
 
     if (aud && iss) {
       throw Messages.SHAREREQUEST.ERR.PARAM_ERROR('iss, aud');
