@@ -67,8 +67,8 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
   const list = await ShareRequest.find(
     {
       $or: [
-        { iss: solicitorDid || iss },
-        { aud: solicitorDid || aud },
+        { iss: iss || solicitorDid },
+        { aud: aud || solicitorDid },
       ],
     },
     { iss: 1, aud: 1 },
