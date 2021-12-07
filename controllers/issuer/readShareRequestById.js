@@ -8,9 +8,9 @@ const readShareRequestById = async (req, res) => {
 
     const { jwt } = await IssuerService.getShareRequestById(id);
 
-    const shareRequest = await decodeJWT(jwt);
+    const { payload } = await decodeJWT(jwt);
 
-    return ResponseHandler.sendRes(res, shareRequest);
+    return ResponseHandler.sendRes(res, payload);
   } catch (err) {
     return ResponseHandler.sendErr(res, err);
   }
