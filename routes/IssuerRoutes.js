@@ -472,6 +472,30 @@ router.post(
 
 /**
  * @openapi
+ *   /issuer/shareRequest/{id}:
+ *   get:
+ *     summary: Dado un id devuelve la informacion de un ShareRequest
+ *     parameters:
+ *       - name: Authorization
+ *         in: header
+ *         required: true
+ *         schema:
+ *           type : string
+ *     responses:
+ *       200:
+ *         description: Puede devolver ok o error en algun parametro
+ *       401:
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get(
+  '/issuer/shareRequest/:id',
+  issuer.readShareRequestById,
+);
+
+/**
+ * @openapi
  *   /issuer/{did}/shareRequest/{id}:
  *   delete:
  *     summary: Dado un id elimina un shareRequest y lo remueve de la información del issuer
@@ -490,7 +514,7 @@ router.post(
  *         description: Error interno del servidor
  */
 router.delete(
-  '/issuer/:did/shareRequest',
+  '/issuer/:did/shareRequest/:id',
   issuer.removeShareRequest,
 );
 

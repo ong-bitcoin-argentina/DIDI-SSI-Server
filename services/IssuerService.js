@@ -2,6 +2,7 @@
 const fetch = require('node-fetch');
 
 const Issuer = require('../models/Issuer');
+const ShareRequest = require('../models/ShareRequest');
 const DelegateTransaction = require('../models/DelegateTransaction');
 
 const BlockchainService = require('./BlockchainService');
@@ -209,6 +210,19 @@ module.exports.removeShareRequest = async function removeShareRequest(id, did) {
   try {
     const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
     return Issuer.removeShareRequest(id, didWithoutNetwork);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+/**
+ *  Permite agregar uno o mas shareRequests a información de un issuer
+ */
+module.exports.getShareRequestById = async function getShareRequestById(id) {
+  if (!id) throw missingId;
+  try {
+    return ShareRequest.getById(id);
   } catch (err) {
     console.log(err);
     throw err;

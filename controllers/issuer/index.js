@@ -13,6 +13,7 @@ const { readAllIssuers } = require('./readAllIssuers');
 const { readIssuerImagesByDid } = require('./readIssuerImagesByDid');
 const { addShareRequest } = require('./addShareRequest');
 const { removeShareRequest } = require('./removeShareRequest');
+const { readShareRequestById } = require('./readShareRequestById');
 
 module.exports = {
   createCertificateByJwt,
@@ -30,4 +31,5 @@ module.exports = {
   readIssuerImagesByDid,
   addShareRequest,
   removeShareRequest,
+  readShareRequestById,
 };
