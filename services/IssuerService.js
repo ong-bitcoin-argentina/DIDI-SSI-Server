@@ -217,7 +217,7 @@ module.exports.removeShareRequest = async function removeShareRequest(id, did) {
 };
 
 /**
- *  Permite agregar uno o mas shareRequests a información de un issuer
+ *  Permite obtener un ShareRequest a partir de un id
  */
 module.exports.getShareRequestById = async function getShareRequestById(id) {
   if (!id) throw missingId;
