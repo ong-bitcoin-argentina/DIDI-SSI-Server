@@ -8,7 +8,7 @@ const {
 } = Messages.SHAREREQUEST.ERR;
 
 const {
-  missingJwt, missingId, missingUserJWT, missingSolicitorDid,
+  missingJwt, missingId, missingUserJWT,
 } = require('../constants/serviceErrors');
 
 /**
@@ -72,6 +72,5 @@ module.exports.deleteShareRequest = async function deleteShareRequest(id) {
  *  Devuelve informacion de todos los ShareRequest
  */
 module.exports.getAll = async function getAll(limit, page, aud, iss, solicitorDid) {
-  if (!solicitorDid) throw missingSolicitorDid;
   return ShareRequest.getAll(limit, page, aud, iss, solicitorDid);
 };

@@ -4,7 +4,7 @@ const { MONGO_URL } = require('../../../constants/Constants');
 const { saveShareRequest, getAll } = require('../../../services/ShareRequestService');
 const { missingSolicitorDid } = require('../../../constants/serviceErrors');
 const {
-  jwt, serverDid, aud, jwt2, aud2,
+  jwt, serverDid, aud, jwt2,
 } = require('./constant');
 
 describe('__tests__/services/ShareRequest/getAll.test.js', () => {
@@ -38,19 +38,19 @@ describe('__tests__/services/ShareRequest/getAll.test.js', () => {
   });
 
   test('Expect getAll to success with aud', async () => {
-    const { list, totalPages } = await getAll(100, 1, aud, undefined, solicitorDid);
+    const { list, totalPages } = await getAll(100, 1, aud, undefined, undefined);
     expect(list.length).toBe(5);
     expect(totalPages).toBe(1);
   });
 
   test('Expect getAll to success with iss', async () => {
     const iss = serverDid;
-    const { list, totalPages } = await getAll(100, 1, undefined, iss, aud2);
-    expect(list.length).toBe(1);
+    const { list, totalPages } = await getAll(100, 1, undefined, iss, undefined);
+    expect(list.length).toBe(6);
     expect(totalPages).toBe(1);
   });
 
-  test.skip('Expect getAll to success without iss & aud', async () => {
+  test('Expect getAll to success without iss & aud', async () => {
     const { list, totalPages } = await getAll(100, 1, undefined, undefined, solicitorDid);
     expect(list.length).toBe(6);
     expect(totalPages).toBe(1);
