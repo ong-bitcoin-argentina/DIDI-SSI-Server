@@ -12,6 +12,7 @@ const { readUserByDid } = require('./readUserByDid');
 const { updateUserByDid } = require('./updateUserByDid');
 const { createUserImageByDid } = require('./createUserImageByDid');
 const { readUserImageById } = require('./readUserImageById');
+const { verifyUserByToken } = require('./verifyUserToken');
 
 module.exports = {
   createUser,
@@ -28,4 +29,5 @@ module.exports = {
   updateUserByDid,
   createUserImageByDid,
   readUserImageById,
+  verifyUserByToken,
 };

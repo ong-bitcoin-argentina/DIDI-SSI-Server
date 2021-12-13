@@ -344,6 +344,7 @@ module.exports = {
       message: `El token de ${isUser ? 'usuario' : 'aplicación'} es inválido, por favor verificalo.`,
       code: 'INVALID_TOKEN',
     }),
+
   },
   IMAGE: {
     ERR: {
@@ -360,6 +361,7 @@ module.exports = {
         message: 'Hubo un error durante la creación  de la imagen, por favor inténtelo de nuevo más tarde.',
       },
     },
+
   },
   USER: {
     SUCCESS: {
