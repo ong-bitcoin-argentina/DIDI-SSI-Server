@@ -410,9 +410,9 @@ module.exports.verifyUserByToken = async function verifyUserByToken(jwt) {
   if (!jwt) throw missingJwt;
   try {
     const payloadJwt = await getPayload(jwt);
-    const { sub } = payloadJwt;
-    if (!sub) throw missingDid;
-    const user = await User.findOne({ did: sub });
+    const { iss } = payloadJwt;
+    if (!iss) throw missingDid;
+    const user = await User.findOne({ did: iss });
     // @TODO: cambiar por otro mensaje de error
     if (!user) throw Messages.USER.ERR.NOMATCH_USER_DID;
     return user;
