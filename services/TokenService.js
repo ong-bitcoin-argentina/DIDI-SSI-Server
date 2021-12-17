@@ -1,5 +1,3 @@
-// TODO: fix
-// eslint-disable-next-line import/no-extraneous-dependencies
 const BlockchainService = require('./BlockchainService');
 const Messages = require('../constants/Messages');
 const Constants = require('../constants/Constants');

@@ -1,5 +1,6 @@
 const Messages = require('../constants/Messages');
 const ShareRequest = require('../models/ShareRequest');
+const { removeBlockchainFromDid } = require('./BlockchainService');
 const { getPayload } = require('./TokenService');
 
 const {
@@ -7,7 +8,7 @@ const {
 } = Messages.SHAREREQUEST.ERR;
 
 const {
-  missingJwt, missingId, missingUserJWT, missingSolicitorDid,
+  missingJwt, missingId, missingUserJWT,
 } = require('../constants/serviceErrors');
 
 /**
@@ -17,7 +18,11 @@ module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
   if (!jwt) throw missingJwt;
   try {
     const { aud, iss } = await getPayload(jwt);
-    return ShareRequest.generate({ aud, iss, jwt });
+
+    const issWithoutNetwork = await removeBlockchainFromDid(iss);
+    const audWithoutNetwork = await removeBlockchainFromDid(aud);
+
+    return ShareRequest.generate({ aud: audWithoutNetwork, iss: issWithoutNetwork, jwt });
   } catch (e) {
     throw CREATE;
   }
@@ -67,6 +72,5 @@ module.exports.deleteShareRequest = async function deleteShareRequest(id) {
  *  Devuelve informacion de todos los ShareRequest
  */
 module.exports.getAll = async function getAll(limit, page, aud, iss, solicitorDid) {
-  if (!solicitorDid) throw missingSolicitorDid;
   return ShareRequest.getAll(limit, page, aud, iss, solicitorDid);
 };
