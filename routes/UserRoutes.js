@@ -628,4 +628,34 @@ router.get(
   user.readUserImageById,
 );
 
+/**
+ * @openapi
+ *   /user/verifyToken:
+ *   post:
+ *     summary: Verifica y devuelve usuario segùn el token.
+ *     requestBody:
+ *       required:
+ *         - jwt
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               jwt:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Devuelve el usuario correctamente
+ *       401:
+ *         description: Acción no autorizada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.post(
+  '/user/verifyToken',
+  Validator.validateBody([{ name: 'jwt', validate: [IS_STRING] }]),
+  Validator.checkValidationResult,
+  user.verifyUserByToken,
+);
+
 module.exports = router;

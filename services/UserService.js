@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Messages = require('../constants/Messages');
 const PhoneNormalization = require('./utils/PhoneNormalization');
 const Image = require('../models/Image');
+const { getPayload } = require('./TokenService');
 
 const {
   missingDid,
@@ -16,6 +17,7 @@ const {
   missingContentType,
   missingPath,
   missingId,
+  missingJwt,
 } = require('../constants/serviceErrors');
 const { createImage } = require('./utils/imageHandler');
 
@@ -398,5 +400,23 @@ module.exports.getImage = async function getImage(id) {
     // eslint-disable-next-line no-console
     console.log(err);
     return Promise.reject(Messages.IMAGE.ERR.GET);
+  }
+};
+
+/**
+ * Obtener usuario a partir de un token
+ */
+module.exports.verifyUserByToken = async function verifyUserByToken(jwt) {
+  if (!jwt) throw missingJwt;
+  try {
+    const payloadJwt = await getPayload(jwt);
+    const { iss } = payloadJwt;
+    if (!iss) throw missingDid;
+    const user = await User.findOne({ did: iss });
+    if (!user) throw Messages.USER.ERR.NOMATCH_USER_DID;
+    return user;
+  } catch (error) {
+    if (error.message) throw error;
+    else throw Messages.USER.ERR.VALIDATE;
   }
 };
