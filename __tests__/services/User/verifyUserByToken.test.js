@@ -4,7 +4,9 @@ const { MONGO_URL } = require('../../../constants/Constants');
 const { missingJwt, missingDid } = require('../../../constants/serviceErrors');
 const Messages = require('../../../constants/Messages');
 const { verifyUserByToken } = require('../../../services/UserService');
-const { token } = require('../Token/constants');
+const { token, userToken } = require('../Token/constants');
+const { create } = require('../../../services/UserService');
+const { userData } = require('./constant');
 
 describe('services/UserService/verifyUserByToken.test', () => {
   beforeAll(async () => {
@@ -15,9 +17,30 @@ describe('services/UserService/verifyUserByToken.test', () => {
         useUnifiedTopology: true,
         useNewUrlParser: true,
       });
+    const {
+      did,
+      privateKeySeed,
+      userMail,
+      phoneNumber,
+      userPass,
+      firebaseId,
+      name,
+      lastname,
+    } = userData;
+    await create(
+      did,
+      privateKeySeed,
+      userMail,
+      phoneNumber,
+      userPass,
+      firebaseId,
+      name,
+      lastname,
+    );
   });
 
   afterAll(async () => {
+    await mongoose.connection.db.dropCollection('users');
     await mongoose.connection.close();
   });
 
@@ -43,5 +66,11 @@ describe('services/UserService/verifyUserByToken.test', () => {
     } catch (e) {
       expect(e.code).toMatch(Messages.USER.ERR.NOMATCH_USER_DID.code);
     }
+  });
+  test('Expect verifyUserByToken to success', async () => {
+    const jwt = await userToken(userData.did);
+    const { did } = await verifyUserByToken(jwt);
+    expect(did).not.toBe(undefined);
+    expect(did).toMatch(userData.did);
   });
 });

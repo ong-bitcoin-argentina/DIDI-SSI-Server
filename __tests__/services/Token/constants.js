@@ -13,10 +13,19 @@ const createToken = async (key) => {
   return jwt;
 };
 
+const createUserToken = async (key, userDid) => {
+  const issuerDID = userDid;
+  const privateKey = key;
+  const jwt = await BlockchainService.createJWT(issuerDID, privateKey, { hola: 'test' });
+  console.log(`jwt: ${jwt}`);
+  return jwt;
+};
+
 const token = createToken(Constants.SERVER_PRIVATE_KEY);
 const invalidToken = createToken('6553d6a56762fd5072065c68b145b7b024e302015821bd10e416e01a3a99a47d');
 
 module.exports = {
+  userToken: (did) => createUserToken(Constants.SERVER_PRIVATE_KEY, did),
   token,
   invalidToken,
   dataResponse,
