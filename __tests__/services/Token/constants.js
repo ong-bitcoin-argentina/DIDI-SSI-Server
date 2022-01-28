@@ -17,7 +17,6 @@ const createUserToken = async (key, userDid) => {
   const issuerDID = userDid;
   const privateKey = key;
   const jwt = await BlockchainService.createJWT(issuerDID, privateKey, { hola: 'test' });
-  console.log(`jwt: ${jwt}`);
   return jwt;
 };
 

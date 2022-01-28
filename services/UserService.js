@@ -414,7 +414,7 @@ module.exports.verifyUserByToken = async function verifyUserByToken(jwt) {
     if (!iss) throw missingDid;
     const user = await User.findOne({ did: iss });
     if (!user) throw Messages.USER.ERR.NOMATCH_USER_DID;
-    return user;
+    return true;
   } catch (error) {
     if (error.message) throw error;
     else throw Messages.USER.ERR.VALIDATE;
