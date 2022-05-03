@@ -8,7 +8,7 @@ const Messages = require('../../../constants/Messages');
 
 describe('services/Issuer/getIssuerByDID.test.js', () => {
   const {
-    did, name, secondDid, description,
+    did, name, secondDid, description, didWithoutNet,
   } = data;
   beforeAll(async () => {
     await mongoose
@@ -34,9 +34,14 @@ describe('services/Issuer/getIssuerByDID.test.js', () => {
       }
     });
 
-    test('Expect getIssuerByDID to success', async () => {
+    test('Expect getIssuerByDID to success - did with net', async () => {
       const response = await getIssuerByDID(did);
-      expect(response.did).toBe(did);
+      expect(response.did).toBe(didWithoutNet);
+    });
+
+    test('Expect getIssuerByDID to success - did without net', async () => {
+      const response = await getIssuerByDID(didWithoutNet);
+      expect(response.did).toBe(didWithoutNet);
     });
 
     test('Expect getIssuerByDID to throw error on invalid did', async () => {

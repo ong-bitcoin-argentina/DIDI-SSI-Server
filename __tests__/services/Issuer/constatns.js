@@ -7,6 +7,7 @@ const serverDid = `did:ethr:${SERVER_DID}`;
 const data = {
   allNetworksDid: 'did:ethr:0xd98cdaac3f682ca2fb72fbad3090a22462290037',
   did: 'did:ethr:lacchain:0x36f6dc06d34b164aec5421c9071a0d07765d4ee1',
+  didWithoutNet: 'did:ethr:0x36f6dc06d34b164aec5421c9071a0d07765d4ee1',
   lacchainDid: 'did:ethr:rsk:0x36f6dc06d34b164aec5421c9071a0d07765d4ee0',
   rskDid: 'did:ethr:rsk:0x36f6dc06d34b164aec5421c9071a0d07765d4ee0',
   key: '08c5c2d853de11b8a31da6048433f35d3ea966dd9dd558172ef2606a569eec03',
