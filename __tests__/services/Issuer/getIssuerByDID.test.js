@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { getIssuerByDID, addIssuer } = require('../../../services/IssuerService');
 const { missingDid } = require('../../../constants/serviceErrors');
-const { revokeDelegate, removeBlockchainFromDid } = require('../../../services/BlockchainService');
+const { revokeDelegate } = require('../../../services/BlockchainService');
 const { data } = require('./constatns');
 const Messages = require('../../../constants/Messages');
 
 describe('services/Issuer/getIssuerByDID.test.js', () => {
   const {
-    did, name, secondDid, description,
+    did, name, secondDid, description, didWithoutNet,
   } = data;
   beforeAll(async () => {
     await mongoose
@@ -34,10 +34,14 @@ describe('services/Issuer/getIssuerByDID.test.js', () => {
       }
     });
 
-    test('Expect getIssuerByDID to success', async () => {
-      const didWithoutNetwork = await removeBlockchainFromDid(did);
-      const response = await getIssuerByDID(didWithoutNetwork);
-      expect(response.did).toBe(didWithoutNetwork);
+    test('Expect getIssuerByDID to success - did with net', async () => {
+      const response = await getIssuerByDID(did);
+      expect(response.did).toBe(didWithoutNet);
+    });
+
+    test('Expect getIssuerByDID to success - did without net', async () => {
+      const response = await getIssuerByDID(didWithoutNet);
+      expect(response.did).toBe(didWithoutNet);
     });
 
     test('Expect getIssuerByDID to throw error on invalid did', async () => {

@@ -134,7 +134,8 @@ module.exports.refresh = async function refresh(did) {
 module.exports.getIssuerByDID = async function getIssuerByDID(did) {
   if (!did) throw missingDid;
   try {
-    return await Issuer.getByDID(did);
+    const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
+    return await Issuer.getByDID(didWithoutNetwork);
   } catch (err) {
     console.log(err);
     throw err;
