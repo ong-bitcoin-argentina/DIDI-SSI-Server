@@ -19,6 +19,10 @@ module.exports = {
         message: `Solo es valido uno de los siguientes parametros: ${param}.`,
         code: 'PARAM_ERROR',
       }),
+      VALIDATION_ERROR: (errors) => ({
+        message: `El formato del Share Request es invalido: ${errors}.`,
+        code: 'VALIDATION_ERROR',
+      }),
     },
   },
   CERTIFICATE: {
@@ -66,7 +70,7 @@ module.exports = {
       INVALID_USER: {
         code: 'INVALID_USER',
         message:
-          'El usuario y contraseña no coinciden, por favor verifique que estas sean correctas y vuelva a intentarlo.',
+					'El usuario y contraseña no coinciden, por favor verifique que estas sean correctas y vuelva a intentarlo.',
       },
       CREATE: {
         code: 'USER_CREATE',
@@ -97,14 +101,14 @@ module.exports = {
         CREATE: {
           code: 'CERT_CREATE_ERROR',
           message:
-            'No pudo generarse la credencial vinculando el did y el mail, por favor inténtelo de nuevo más tarde.',
+						'No pudo generarse la credencial vinculando el did y el mail, por favor inténtelo de nuevo más tarde.',
         },
       },
       EMAIL_SEND_ERROR: { code: 'EMAIL_SEND_ERROR', message: 'No pudo mandarse el mail.' },
       NO_EMAILCODE_MATCH: {
         code: 'NO_EMAILCODE_MATCH',
         message:
-          'El código de validacion es incorrecto, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli.',
+					'El código de validacion es incorrecto, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli.',
       },
       NO_VALIDATIONS_FOR_EMAIL: {
         code: 'NO_VALIDATIONS',
@@ -117,7 +121,7 @@ module.exports = {
       VALIDATION_EXPIRED: {
         code: 'VALIDATION_EXPIRED',
         message:
-          'El pedido de validacion para ese mail ha expirado, es necesario realizar un nuevo pedido de validacion.',
+					'El pedido de validacion para ese mail ha expirado, es necesario realizar un nuevo pedido de validacion.',
       },
       INVALID_DID: { code: 'INVALID_DID', message: 'El did no se corresponde con ese mail.' },
       CREATE: {
@@ -160,17 +164,17 @@ module.exports = {
       DELETE: {
         code: 'ISSUER_DELETE',
         message:
-          'No se pudo revocar la autorización para emisión de certificados, por favor inténtelo de nuevo más tarde.',
+					'No se pudo revocar la autorización para emisión de certificados, por favor inténtelo de nuevo más tarde.',
       },
       IS_INVALID: {
         code: 'IS_INVALID',
         message:
-          'El emisor no esta autorizado para emitir certificados, por favor contacte a un administrador para obtener dicha autorizacion.',
+					'El emisor no esta autorizado para emitir certificados, por favor contacte a un administrador para obtener dicha autorizacion.',
       },
       CERT_SUB_IS_INVALID: {
         code: 'CERT_SUB_IS_INVALID',
         message:
-          'No pudo encontrarse ningun usuario registrado en ai·di con ese DID, solo pueden emitirse certificados a usuarios registrados.',
+					'No pudo encontrarse ningun usuario registrado en ai·di con ese DID, solo pueden emitirse certificados a usuarios registrados.',
       },
       CERT_IS_INVALID: { code: 'CERT_IS_INVALID', message: 'El certificado es inválido.' },
       ISSUER_IS_INVALID: { code: 'ISSUER_IS_INVALID', message: 'El issuer es inválido.' },
@@ -181,7 +185,7 @@ module.exports = {
       NOT_FOUND: {
         code: 'NOT_FOUND',
         message:
-          'No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas.',
+					'No se encontro registro alguno del certificado, esta operacion esta permitida solo para certificados emitidos por entidades autorizadas.',
       },
       NAME_EXISTS: {
         code: 'NAME_EXISTS',
@@ -245,7 +249,7 @@ module.exports = {
     WEAK_MATCH: {
       code: 'WEAK_MATCH',
       message:
-        'El resultado arrojado por Renaper tiene un bajo grado de precision, por favor inténte sacar mejores fotos.',
+				'El resultado arrojado por Renaper tiene un bajo grado de precision, por favor inténte sacar mejores fotos.',
     },
     SCAN_BAR_CODE: {
       code: 'SCAN_BAR_CODE',
@@ -315,7 +319,7 @@ module.exports = {
       VALIDATION_EXPIRED: {
         code: 'VALIDATION_EXPIRED',
         message:
-          'El pedido de validacion para ese número ha expirado, es necesario realizar un nuevo pedido de validacion.',
+					'El pedido de validacion para ese número ha expirado, es necesario realizar un nuevo pedido de validacion.',
       },
       NO_VALIDATIONS_FOR_NUMBER: {
         code: 'NO_VALIDATIONS',
@@ -324,7 +328,7 @@ module.exports = {
       NO_SMSCODE_MATCH: {
         code: 'NO_SMSCODE_MATCH',
         message:
-          'El código de validacion es incorrecto, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli.',
+					'El código de validacion es incorrecto, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli.',
       },
       CREATE: {
         code: 'VALIDATION_CREATE',
@@ -344,7 +348,6 @@ module.exports = {
       message: `El token de ${isUser ? 'usuario' : 'aplicación'} es inválido, por favor verificalo.`,
       code: 'INVALID_TOKEN',
     }),
-
   },
   IMAGE: {
     ERR: {
@@ -361,7 +364,6 @@ module.exports = {
         message: 'Hubo un error durante la creación  de la imagen, por favor inténtelo de nuevo más tarde.',
       },
     },
-
   },
   USER: {
     SUCCESS: {
@@ -379,7 +381,7 @@ module.exports = {
       INVALID_LOGIN: {
         code: 'INVALID_LOGIN',
         message:
-          'No se encontró ese usuario: email o contraseña incorrecta. (si no recuerda su contraseña, vaya atrás y haga click en recuperar cuenta > No recuerdo la contraseña)',
+					'No se encontró ese usuario: email o contraseña incorrecta. (si no recuerda su contraseña, vaya atrás y haga click en recuperar cuenta > No recuerdo la contraseña)',
       },
       VALIDATE_DID_ERROR: {
         code: 'VALIDATE_DID_ERROR',
@@ -388,12 +390,12 @@ module.exports = {
       USER_ALREADY_EXIST: {
         code: 'USER_ALREADY_EXIST',
         message:
-          "Ese did ya se encuentra asociado a un usuario, si desea utilizar una cuenta ya existente, por favor dirigirse a 'Recuperar Cuenta'.",
+					"Ese did ya se encuentra asociado a un usuario, si desea utilizar una cuenta ya existente, por favor dirigirse a 'Recuperar Cuenta'.",
       },
       INVALID_USER: {
         code: 'INVALID_USER',
         message:
-          'El usuario y contraseña no coinciden, por favor, verifique los valores antes de intentarlo nuevamente.',
+					'El usuario y contraseña no coinciden, por favor, verifique los valores antes de intentarlo nuevamente.',
       },
       INVALID_USER_DID: {
         code: 'INVALID_USER_DID',
@@ -402,27 +404,27 @@ module.exports = {
       INVALID_USER_EMAIL: {
         code: 'INVALID_USER_EMAIL',
         message:
-          'El mail ingresado no corresponde a ese usuario, por favor verifique que sea correcto antes de volver a intentarlo.',
+					'El mail ingresado no corresponde a ese usuario, por favor verifique que sea correcto antes de volver a intentarlo.',
       },
       NOMATCH_USER_DID: {
         code: 'NOMATCH_USER_DID',
         message:
-          'No se encontró ningún usuario con ese did, por favor verifique que sea correcto antes de volver a intentarlo.',
+					'No se encontró ningún usuario con ese did, por favor verifique que sea correcto antes de volver a intentarlo.',
       },
       NOMATCH_USER_EMAIL: {
         code: 'NOMATCH_USER_EMAIL',
         message:
-          'No se encontró ningún usuario con ese mail y contraseña, por favor, verifique los valores antes de intentarlo nuevamente.',
+					'No se encontró ningún usuario con ese mail y contraseña, por favor, verifique los valores antes de intentarlo nuevamente.',
       },
       MAIL_NOT_VALIDATED: {
         code: 'MAIL_NOT_VALIDATED',
         message:
-          'Ese mail no fue validado, en caso de no haber terminado el proceso, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli.',
+					'Ese mail no fue validado, en caso de no haber terminado el proceso, por favor verifique su direccion de correo, un mail con el codigo de validacion deberia encontrarse alli.',
       },
       PHONE_NOT_VALIDATED: {
         code: 'PHONE_NOT_VALIDATED',
         message:
-          'Ese teléfono no fue validado, en caso de no haber terminado el proceso, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli.',
+					'Ese teléfono no fue validado, en caso de no haber terminado el proceso, por favor verifique sus mensajes, un sms con el codigo de validacion deberia encontrarse alli.',
       },
       VALIDATE: {
         code: 'VALIDATE',
@@ -449,7 +451,7 @@ module.exports = {
     PASSWORD_NOT_SAFE: {
       code: 'PASSWORD_NOT_SAFE',
       message:
-        'La contraseña debe tener caracteres en mayuscúlas, minúsculas, números y caracteres especiales, por favor ingrese una mas segura.',
+				'La contraseña debe tener caracteres en mayuscúlas, minúsculas, números y caracteres especiales, por favor ingrese una mas segura.',
     },
     PASSWORD_TOO_SHORT: {
       code: 'PASSWORD_TOO_SHORT',
@@ -509,8 +511,7 @@ module.exports = {
     DATE_FORMAT_INVALID(field) {
       return {
         code: 'PARAMETER_TYPE_ERROR',
-        message:
-          `El campo ${field} es incorrecto, se esperaba una fecha con el siguiente formato: 'aaaa-mm-ddThh:mm:ssZ.' `,
+        message: `El campo ${field} es incorrecto, se esperaba una fecha con el siguiente formato: 'aaaa-mm-ddThh:mm:ssZ.' `,
       };
     },
     LENGTH_INVALID(field, min, max) {
