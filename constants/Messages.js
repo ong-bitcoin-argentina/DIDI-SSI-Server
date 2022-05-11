@@ -23,6 +23,7 @@ module.exports = {
         message: `El formato del Share Request es invalido: ${errors}.`,
         code: 'VALIDATION_ERROR',
       }),
+      INVALID_JWT: { message: 'El formato del JWT es invalido', code: 'INVALID_JWT_ERROR' },
     },
   },
   CERTIFICATE: {
