@@ -26,7 +26,7 @@ const ValidateSchema = async (req, res, next) => {
     const errors = ['El parametro type recibido no esta actualmente soportado'];
     throw ERR.VALIDATION_ERROR(errors);
   } catch (e) {
-    sendErrWithStatus(res, e, 400);
+    return sendErrWithStatus(res, e, 400);
   }
 };
 

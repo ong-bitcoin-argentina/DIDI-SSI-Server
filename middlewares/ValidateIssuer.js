@@ -14,7 +14,7 @@ const ValidateIssuer = async (req, res, next) => {
     if (!isValidDelegate) sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
     next();
   } catch (e) {
-    sendErrWithStatus(res, e, 401);
+    return sendErrWithStatus(res, e, 401);
   }
 };
 
