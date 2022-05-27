@@ -64,8 +64,15 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
   } else {
     totalPages = Math.ceil((await ShareRequest.find({}).countDocuments()) / limit);
   }
-  const issWithoutNetwork = BlockchainService.removeBlockchainFromDid(iss);
-  const didWithoutNetwork = BlockchainService.removeBlockchainFromDid(solicitorDid);
+  let issWithoutNetwork;
+  let didWithoutNetwork;
+  
+  if(!!iss){
+    issWithoutNetwork = BlockchainService.removeBlockchainFromDid(iss);
+  }
+  if(!!solicitorDid){
+    didWithoutNetwork = BlockchainService.removeBlockchainFromDid(solicitorDid);
+  }
 
   const list = await ShareRequest.find(
     {
