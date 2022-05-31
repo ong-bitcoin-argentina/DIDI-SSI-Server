@@ -4,6 +4,10 @@ const Encrypt = require('./utils/Encryption');
 const BlockchainService = require('../services/BlockchainService');
 
 const ShareRequestSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   jwt: {
     type: String,
     required: true,
@@ -82,6 +86,7 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
       iss: 1,
       aud: 1,
       jwt: 1,
+      name: 1,
       createdAt: 1,
     },
   )
@@ -91,10 +96,11 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
   const decryptedList = await Promise.all(
     list.map(async (shareReq) => {
       const {
-        aud, iss, jwt, createdAt,
+        name, aud, iss, jwt, createdAt,
       } = shareReq;
       const decryptedJwt = await Encrypt.decript(jwt);
       return {
+        name,
         aud,
         iss,
         jwt: decryptedJwt,

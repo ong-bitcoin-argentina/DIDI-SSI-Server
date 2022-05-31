@@ -7,9 +7,7 @@ const {
   CREATE, NOT_FOUND, GET, USER_NOT_VALID, DELETE,
 } = Messages.SHAREREQUEST.ERR;
 
-const {
-  missingJwt, missingId, missingUserJWT,
-} = require('../constants/serviceErrors');
+const { missingJwt, missingId, missingUserJWT } = require('../constants/serviceErrors');
 
 /**
  * Guarda un ShareRequest (Credencial a compartir por QR)
@@ -17,12 +15,16 @@ const {
 module.exports.saveShareRequest = async function saveShareRequest({ jwt }) {
   if (!jwt) throw missingJwt;
   try {
-    const { aud, iss } = await getPayload(jwt);
+    const { aud, iss, name } = await getPayload(jwt);
 
     const issWithoutNetwork = await removeBlockchainFromDid(iss);
     const audWithoutNetwork = await removeBlockchainFromDid(aud);
-
-    return ShareRequest.generate({ aud: audWithoutNetwork, iss: issWithoutNetwork, jwt });
+    return ShareRequest.generate({
+      name,
+      aud: audWithoutNetwork,
+      iss: issWithoutNetwork,
+      jwt,
+    });
   } catch (e) {
     throw CREATE;
   }

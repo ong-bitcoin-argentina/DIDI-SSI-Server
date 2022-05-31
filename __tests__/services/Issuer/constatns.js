@@ -12,6 +12,7 @@ const data = {
   rskDid: 'did:ethr:rsk:0x36f6dc06d34b164aec5421c9071a0d07765d4ee0',
   key: '08c5c2d853de11b8a31da6048433f35d3ea966dd9dd558172ef2606a569eec03',
   secondDid: 'did:ethr:lacchain:0x36f6dc06d34b164aec5421c9071a0d07765d4ee2',
+  shareReqName: 'Share Request',
   name: 'Issuer Name',
   secondName: 'Issuer Second Name',
   callbackUrl: 'https://api.issuer.qa.didi.org.ar/register',
@@ -22,12 +23,17 @@ const data = {
     mimetype: 'image/jpeg',
     path: '__tests__/services/User/utils/image.jpg',
   },
-  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTIxZTY1NjVjYTVlYjAwMzgwZjBkOTUiLCJleHAiOjE2NDMzMDIwNjYsImlhdCI6MTYzMDM0MjA2Nn0.poZ_USLMiABjSdbdnPPFV0VeycWcA8EowAX8jbsypzc',
+  token:
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTIxZTY1NjVjYTVlYjAwMzgwZjBkOTUiLCJleHAiOjE2NDMzMDIwNjYsImlhdCI6MTYzMDM0MjA2Nn0.poZ_USLMiABjSdbdnPPFV0VeycWcA8EowAX8jbsypzc',
 };
 
 const createJwt = async (audience) => {
   const jwt = await createJWT(
-    serverDid, SERVER_PRIVATE_KEY, { sub: audience, aud: audience }, undefined, audience,
+    serverDid,
+    SERVER_PRIVATE_KEY,
+    { name: data.shareReqName, sub: audience, aud: audience },
+    undefined,
+    audience,
   );
   return jwt;
 };

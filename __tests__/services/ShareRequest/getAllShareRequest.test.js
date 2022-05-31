@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { saveShareRequest, getAll } = require('../../../services/ShareRequestService');
-const { missingSolicitorDid } = require('../../../constants/serviceErrors');
+const { missingDid } = require('../../../constants/serviceErrors');
 const {
   jwt, serverDid, aud, jwt2,
 } = require('./constant');
@@ -11,13 +11,12 @@ describe('__tests__/services/ShareRequest/getAll.test.js', () => {
   const solicitorDid = serverDid;
 
   beforeAll(async () => {
-    await mongoose
-      .connect(MONGO_URL, {
-        useCreateIndex: true,
-        useFindAndModify: false,
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
-      });
+    await mongoose.connect(MONGO_URL, {
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+    });
     for (let i = 0; i < 5; i++) {
       // eslint-disable-next-line no-await-in-loop
       await saveShareRequest({ jwt: await jwt });
@@ -33,7 +32,7 @@ describe('__tests__/services/ShareRequest/getAll.test.js', () => {
     try {
       await getAll(100, 1, undefined, undefined, undefined);
     } catch (e) {
-      expect(e.code).toMatch(missingSolicitorDid.code);
+      expect(e.code).toMatch(missingDid.code);
     }
   });
 
