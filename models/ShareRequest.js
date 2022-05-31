@@ -66,11 +66,11 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
   }
   let issWithoutNetwork;
   let didWithoutNetwork;
-  
-  if(!!iss){
+
+  if (iss) {
     issWithoutNetwork = BlockchainService.removeBlockchainFromDid(iss);
   }
-  if(!!solicitorDid){
+  if (solicitorDid) {
     didWithoutNetwork = BlockchainService.removeBlockchainFromDid(solicitorDid);
   }
 
@@ -78,16 +78,28 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
     {
       $or: [{ iss: issWithoutNetwork || didWithoutNetwork }, { aud: aud || didWithoutNetwork }],
     },
-    { iss: 1, aud: 1, jwt: 1 },
+    {
+      iss: 1,
+      aud: 1,
+      jwt: 1,
+      createdAt: 1,
+    },
   )
     .skip(page > 0 ? (page - 1) * limit : 0)
     .limit(limit);
 
   const decryptedList = await Promise.all(
     list.map(async (shareReq) => {
-      const { aud, iss, jwt } = shareReq;
+      const {
+        aud, iss, jwt, createdAt,
+      } = shareReq;
       const decryptedJwt = await Encrypt.decript(jwt);
-      return { aud, iss, jwt: decryptedJwt };
+      return {
+        aud,
+        iss,
+        jwt: decryptedJwt,
+        createdAt,
+      };
     }),
   );
   return { list: decryptedList, totalPages };
