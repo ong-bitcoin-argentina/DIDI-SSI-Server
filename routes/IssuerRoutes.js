@@ -5,6 +5,8 @@ const issuer = require('../controllers/issuer');
 const Constants = require('../constants/Constants');
 const Validator = require('../utils/Validator');
 const { halfHourLimiter } = require('../policies/RateLimit');
+const { ValidateSchema } = require('../middlewares/ValidateSchema');
+const { ValidateIssuer } = require('../middlewares/ValidateIssuer');
 
 /**
  * @openapi
@@ -77,6 +79,8 @@ router.post(
   ]),
   Validator.checkValidationResult,
   halfHourLimiter,
+  ValidateIssuer,
+  ValidateSchema,
   issuer.createShareRequest,
 );
 
@@ -176,12 +180,7 @@ router.post(
  *       500:
  *         description: Error interno del servidor
  */
-router.get(
-  '/issuer/:did/verify',
-  Validator.validateParams,
-  halfHourLimiter,
-  issuer.verifyIssuerByDid,
-);
+router.get('/issuer/:did/verify', Validator.validateParams, halfHourLimiter, issuer.verifyIssuerByDid);
 
 /**
  * @openapi
@@ -426,7 +425,6 @@ router.patch(
   Validator.checkValidationResult,
   issuer.updateIssuerByDid,
 );
-
 /**
  * @openapi
  *   /issuer/{did}/shareRequest:
@@ -463,11 +461,11 @@ router.patch(
  */
 router.post(
   '/issuer/:did/shareRequest',
-  Validator.validateBody([
-    { name: 'jwt', validate: [Constants.VALIDATION_TYPES.IS_STRING] },
-  ]),
+  Validator.validateBody([{ name: 'jwt', validate: [Constants.VALIDATION_TYPES.IS_STRING] }]),
   Validator.validateFile,
   Validator.checkValidationResult,
+  ValidateIssuer,
+  ValidateSchema,
   issuer.addShareRequest,
 );
 
@@ -490,10 +488,7 @@ router.post(
  *       500:
  *         description: Error interno del servidor
  */
-router.get(
-  '/issuer/shareRequest/:id',
-  issuer.readShareRequestById,
-);
+router.get('/issuer/shareRequest/:id', issuer.readShareRequestById);
 
 /**
  * @openapi
@@ -514,9 +509,6 @@ router.get(
  *       500:
  *         description: Error interno del servidor
  */
-router.delete(
-  '/issuer/:did/shareRequest/:id',
-  issuer.removeShareRequest,
-);
+router.delete('/issuer/:did/shareRequest/:id', issuer.removeShareRequest);
 
 module.exports = router;
