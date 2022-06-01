@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-globals */
 const mongoose = require('mongoose');
 const Encrypt = require('./utils/Encryption');
+const BlockchainService = require('../services/BlockchainService');
 
 const ShareRequestSchema = new mongoose.Schema({
   jwt: {
@@ -61,19 +62,45 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
   if (limit === 0 || isNaN(limit)) {
     totalPages = 1;
   } else {
-    totalPages = Math.ceil(await ShareRequest.find({}).countDocuments() / limit);
+    totalPages = Math.ceil((await ShareRequest.find({}).countDocuments()) / limit);
+  }
+  let issWithoutNetwork;
+  let didWithoutNetwork;
+
+  if (iss) {
+    issWithoutNetwork = BlockchainService.removeBlockchainFromDid(iss);
+  }
+  if (solicitorDid) {
+    didWithoutNetwork = BlockchainService.removeBlockchainFromDid(solicitorDid);
   }
 
   const list = await ShareRequest.find(
     {
-      $or: [
-        { iss: iss || solicitorDid },
-        { aud: aud || solicitorDid },
-      ],
+      $or: [{ iss: issWithoutNetwork || didWithoutNetwork }, { aud: aud || didWithoutNetwork }],
     },
-    { iss: 1, aud: 1 },
+    {
+      iss: 1,
+      aud: 1,
+      jwt: 1,
+      createdAt: 1,
+    },
   )
-    .skip(page > 0 ? ((page - 1) * limit) : 0)
+    .skip(page > 0 ? (page - 1) * limit : 0)
     .limit(limit);
-  return { list, totalPages };
+
+  const decryptedList = await Promise.all(
+    list.map(async (shareReq) => {
+      const {
+        aud, iss, jwt, createdAt,
+      } = shareReq;
+      const decryptedJwt = await Encrypt.decript(jwt);
+      return {
+        aud,
+        iss,
+        jwt: decryptedJwt,
+        createdAt,
+      };
+    }),
+  );
+  return { list: decryptedList, totalPages };
 };
