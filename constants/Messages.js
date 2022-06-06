@@ -26,6 +26,11 @@ module.exports = {
       INVALID_JWT: { message: 'El formato del JWT es invalido', code: 'INVALID_JWT_ERROR' },
     },
   },
+  SHARERESPONSE: {
+    ERR: {
+      CREATE: { code: 'SHARE_REQUEST_ERROR', message: 'Error al crear el Share Request.' },
+    },
+  },
   CERTIFICATE: {
     ERR: {
       REVOKED: { code: 'CERT_REVOKED', message: 'Error, la credencial fue revocada, es necesario generar una nueva.' },

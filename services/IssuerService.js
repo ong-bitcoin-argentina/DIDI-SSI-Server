@@ -23,7 +23,9 @@ const {
   missingIds,
   missingId,
   missingIssuerDid,
+  missingJwt,
 } = require('../constants/serviceErrors');
+const { ISSUER_URLS, ISSUER_AUTH_TOKEN } = require('../constants/Constants');
 
 const serverDid = `did:ethr:${Constants.SERVER_DID}`;
 
@@ -244,4 +246,23 @@ module.exports.verifyIssuer = async function verifyIssuer(issuerDid) {
   const delegated = await BlockchainService.validDelegate(issuerDid);
   if (delegated) return Messages.CERTIFICATE.VERIFIED;
   throw Messages.ISSUER.ERR.IS_INVALID;
+};
+
+module.exports.addShareResponse = async function addShareResponse(jwt, did) {
+  if (!jwt) throw missingJwt;
+  if (!did) throw missingDid;
+  try {
+    const response = await fetch(`${ISSUER_URLS.SHARE_RESPONSE}/${did}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        token: ISSUER_AUTH_TOKEN,
+      },
+      body: JSON.stringify(jwt),
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
