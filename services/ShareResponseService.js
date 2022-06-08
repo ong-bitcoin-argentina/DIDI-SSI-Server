@@ -11,7 +11,7 @@ module.exports.addShareResponse = async function addShareResponse(jwt, did) {
   if (!did) throw missingDid;
   try {
     const url = `${ISSUER_URLS.SHARE_RESPONSE}/${did}`;
-    const response = await fetch(url, {
+    return fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,7 +19,6 @@ module.exports.addShareResponse = async function addShareResponse(jwt, did) {
       },
       body: JSON.stringify(jwt),
     });
-    return response;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log(error);
