@@ -10,7 +10,8 @@ module.exports.addShareResponse = async function addShareResponse(jwt, did) {
   if (!jwt) throw missingJwt;
   if (!did) throw missingDid;
   try {
-    const response = await fetch(`${ISSUER_URLS.SHARE_RESPONSE}/${did}`, {
+    const url = `${ISSUER_URLS.SHARE_RESPONSE}/${did}`;
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
