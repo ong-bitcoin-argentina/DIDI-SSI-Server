@@ -70,11 +70,6 @@ assert.ok(SEMILLAS_USERNAME, 'No esta definida la varibale SEMILLAS_USERNAME');
 assert.ok(SEMILLAS_PASSWORD, 'No esta definida la varibale SEMILLAS_PASSWORD');
 assert.ok(SEMILLAS_URL, 'No esta definida la varibale SEMILLAS_URL');
 
-// issuer
-const { ISSUER_URL, ISSUER_AUTH_TOKEN } = process.env;
-assert.ok(ISSUER_URL, 'No esta definida la variable ISSUER_URL');
-assert.ok(ISSUER_AUTH_TOKEN, 'No esta definida la variable ISSUER_AUTH_TOKEN');
-
 // Blockchain
 const { BLOCKCHAIN_URL_RSK, BLOCKCHAIN_URL_LAC, BLOCKCHAIN_URL_BFA } = process.env;
 
@@ -256,12 +251,6 @@ module.exports = {
     SHARE_DATA: `${SEMILLAS_URL}/credentials/share`,
     PRESTADORES: `${SEMILLAS_URL}/providers`,
   },
-
-  ISSUER_URL,
-  ISSUER_URLS: {
-    SHARE_RESPONSE: `${ISSUER_URL}/shareResponse`,
-  },
-  ISSUER_AUTH_TOKEN,
 
   MAX_MB: 3,
   STATUS: {

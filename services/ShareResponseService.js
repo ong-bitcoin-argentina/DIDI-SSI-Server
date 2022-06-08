@@ -1,21 +1,22 @@
 const fetch = require('node-fetch');
+const { getPayload } = require('./TokenService');
 
 const {
   missingDid,
   missingJwt,
 } = require('../constants/serviceErrors');
-const { ISSUER_URLS, ISSUER_AUTH_TOKEN } = require('../constants/Constants');
 
 module.exports.addShareResponse = async function addShareResponse(jwt, did) {
   if (!jwt) throw missingJwt;
   if (!did) throw missingDid;
   try {
-    const url = `${ISSUER_URLS.SHARE_RESPONSE}/${did}`;
-    return fetch(url, {
+    const { req } = await getPayload(jwt);
+    const { callback } = await getPayload(req);
+
+    return fetch(callback, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        token: ISSUER_AUTH_TOKEN,
       },
       body: JSON.stringify(jwt),
     });
