@@ -26,6 +26,7 @@ const AdminRoutes = require('./routes/AdminRoutes');
 const PresentationRoutes = require('./routes/PresentationRoutes');
 const ShareRequestRoutes = require('./routes/ShareRequestRoutes');
 const ServiceRoutes = require('./routes/ServiceRoutes');
+const ShareResponseRoutes = require('./routes/ShareResponseRoutes');
 
 const { permanentJob } = require('./jobs/jobs');
 const {
@@ -136,6 +137,7 @@ app.use(AppUserAuthRoutes);
 app.use(AdminRoutes);
 app.use(PresentationRoutes);
 app.use(ShareRequestRoutes);
+app.use(ShareResponseRoutes);
 app.use('*', (req, res) => res.status(404).json({
   status: 'error',
   errorCode: 'INVALID_ROUTE',
