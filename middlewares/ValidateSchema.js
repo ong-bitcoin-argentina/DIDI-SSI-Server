@@ -15,8 +15,8 @@ const ValidateSchema = async (req, res, next) => {
     let validation;
     const { type, aud } = await getPayload(jwt);
     const verified = await BlockchainService.verifyJWT(jwt, aud);
-    if (!verified?.payload) throw ERR.INVALID_JWT;
-    if (!!type && type === 'shareReq') {
+    if (!(verified && verified.payload)) throw ERR.INVALID_JWT;
+    if (type === 'shareReq') {
       validation = validateCredential(shareReqSchema, jwt);
       if (!validation.status && validation.errors.length) {
         throw ERR.VALIDATION_ERROR(validation.errors.map((e) => e.message));
