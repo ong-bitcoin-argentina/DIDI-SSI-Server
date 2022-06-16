@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable no-console */
+const { BlockchainManager } = require('@proyecto-didi/didi-blockchain-manager');
 const ResponseHandler = require('../../utils/ResponseHandler');
 const MouroService = require('../../services/MouroService');
 const CertService = require('../../services/CertService');
@@ -21,8 +22,9 @@ const verifyCertificateByJwt = async (req, res) => {
 
     console.log('Verifying Issuer...');
     const did = cert.payload.iss;
-    await IssuerService.verifyIssuer(did);
-    const issuer = await IssuerService.getIssuerByDID(did);
+    const didWithoutNetwork = BlockchainManager.removeBlockchainFromDid(did);
+    await IssuerService.verifyIssuer(didWithoutNetwork);
+    const issuer = await IssuerService.getIssuerByDID(didWithoutNetwork);
     if (!issuer) return ResponseHandler.sendErr(res, Messages.ISSUER.ERR.ISSUER_IS_INVALID);
     console.log('Issuer verified!');
     cert.issuer = issuer.name;
