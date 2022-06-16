@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const fetch = require('node-fetch');
 
+const { BlockchainManager } = require('@proyecto-didi/didi-blockchain-manager');
 const Issuer = require('../models/Issuer');
 const ShareRequest = require('../models/ShareRequest');
 const DelegateTransaction = require('../models/DelegateTransaction');
@@ -134,6 +135,11 @@ module.exports.refresh = async function refresh(did) {
 module.exports.getIssuerByDID = async function getIssuerByDID(did) {
   if (!did) throw missingDid;
   try {
+    if (BlockchainManager.compareDid(Constants.SERVER_DID, did)) {
+      return {
+        name: Constants.NAME, description: `DIDI Server en ambiente - ${Constants.ENVIRONMENT}`, did, expireOn: '2088-05-27T00:00:00.000+00:00',
+      };
+    }
     const didWithoutNetwork = await BlockchainService.removeBlockchainFromDid(did);
     return await Issuer.getByDID(didWithoutNetwork);
   } catch (err) {
