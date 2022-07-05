@@ -5,10 +5,10 @@ const { getTokenData } = require('../../services/TokenService');
 const Messages = require('../../constants/Messages');
 
 const sendNotification = async (req, res) => {
-  const { token } = req.headers;
+  const { authorization } = req.headers;
   const { title, message } = req.body;
   try {
-    const { payload } = await getTokenData(token);
+    const { payload } = await getTokenData(authorization);
     const { did } = payload;
     // eslint-disable-next-line no-console
     console.log('sending push notification');
