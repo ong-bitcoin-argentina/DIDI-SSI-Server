@@ -219,6 +219,7 @@ module.exports = {
     TYPES: {
       NEW_CERT: 'NEW_CERT',
       SHARE_REQ: 'SHARE_REQ',
+      SHARE_RES: 'SHARE_RES',
       VALIDATION_REQ: 'VALIDATION_REQ',
     },
     VALIDATION_REQ: {
