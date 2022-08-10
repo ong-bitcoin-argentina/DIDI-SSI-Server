@@ -469,9 +469,10 @@ module.exports = {
       };
     },
     EMAIL_FORMAT_INVALID(field) {
+      const modifiedField = field.toLowerCase();
       return {
         code: 'PARAMETER_TYPE_ERROR',
-        message: `El campo ${field} es incorrecto, se esperaba un mail`,
+        message: `${modifiedField[0].toUpperCase()+modifiedField.slice(1)} no valido`,
       };
     },
     IP_FORMAT_INVALID(field) {
