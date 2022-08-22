@@ -26,6 +26,14 @@ module.exports = {
       INVALID_JWT: { message: 'El formato del JWT es invalido', code: 'INVALID_JWT_ERROR' },
     },
   },
+  CREDENTIAL_CATEGORIES: {
+    emailMain: 'Email',
+    mobilePhone: 'Telefono',
+    nationalId: 'Documento de Identidad',
+    legalAddress: 'Dirección Legal',
+    realAddress: 'Dirección Real',
+    livingPlace: 'Vivienda',
+  },
   CERTIFICATE: {
     ERR: {
       REVOKED: { code: 'CERT_REVOKED', message: 'Error, la credencial fue revocada, es necesario generar una nueva.' },
