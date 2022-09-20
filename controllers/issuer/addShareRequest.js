@@ -12,7 +12,7 @@ const addShareRequest = async (req, res) => {
 
     const issuer = await IssuerService.addShareRequests([_id], did);
 
-    return ResponseHandler.sendRes(res, issuer);
+    return ResponseHandler.sendRes(res, { id: _id, issuer });
   } catch (err) {
     return ResponseHandler.sendErr(res, err);
   }
