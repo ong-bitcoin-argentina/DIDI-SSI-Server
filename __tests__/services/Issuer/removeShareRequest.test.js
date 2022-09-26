@@ -33,13 +33,13 @@ describe('__tests__/services/Issuer/removeShareRequest.test.js', () => {
     shareRequestsList = issuer.shareRequests;
   });
   afterAll(async () => {
-    for (let i = 0; i < issuers.length; i++) {
+    for (let issuer of issuers) {
       // eslint-disable-next-line no-await-in-loop, no-underscore-dangle
-      await Issuer.findOneAndDelete({ did: issuers[i].did });
+      await Issuer.findOneAndDelete({ did: issuer.did });
     }
-    for (let i = 0; i < 5; i++) {
+    for (let id of ids) {
       // eslint-disable-next-line no-await-in-loop
-      await ShareRequest.findOneAndDelete({ _id: ids[i] });
+      await ShareRequest.findOneAndDelete({ _id: id });
     }
     await mongoose.connection.close();
   });

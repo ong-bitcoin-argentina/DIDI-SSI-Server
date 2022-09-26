@@ -29,9 +29,9 @@ describe('__tests__/services/Issuer/getShareRequestById.test.js', () => {
     await addShareRequests([_id], did);
   });
   afterAll(async () => {
-    for (let i = 0; i < issuers.length; i++) {
+    for (let issuer of issuers) {
       // eslint-disable-next-line no-await-in-loop, no-underscore-dangle
-      await Issuer.findOneAndDelete({ did: issuers[i].did });
+      await Issuer.findOneAndDelete({ did: issuer.did });
     }
     await ShareRequest.findOneAndDelete({ _id: id });
     await mongoose.connection.close();
