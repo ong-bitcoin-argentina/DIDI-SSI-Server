@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
+const ShareRequest = require('../../../models/ShareRequest');
 const { getShareRequestById, saveShareRequest } = require('../../../services/ShareRequestService');
 const { MONGO_URL } = require('../../../constants/Constants');
 const {
@@ -21,7 +22,7 @@ describe('__tests__/services/ShareRequest/readShareRequestById.test.js', () => {
     shareRequest = await saveShareRequest({ jwt: await jwt });
   });
   afterAll(async () => {
-    await mongoose.connection.db.dropCollection('sharerequests');
+    await ShareRequest.findOneAndDelete({ _id: shareRequest._id });
     await mongoose.connection.close();
   });
   test('Expect getShareRequestById to throw on missing id', async () => {

@@ -19,6 +19,10 @@ const ShareRequestSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     required: true,
@@ -51,9 +55,11 @@ ShareRequest.getById = async function getById(_id) {
 
 ShareRequest.deleteById = async function deleteById(_id) {
   try {
-    const shareRequest = await ShareRequest.findById(_id);
-    shareRequest.delete();
-    return shareRequest.save();
+    const updateQuery = { _id };
+    const updateAction = {
+      $set: { deleted: true },
+    };
+    return ShareRequest.findOneAndUpdate(updateQuery, updateAction);
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
@@ -80,6 +86,7 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
 
   const list = await ShareRequest.find(
     {
+      deleted: false,
       $or: [{ iss: issWithoutNetwork || didWithoutNetwork }, { aud: aud || didWithoutNetwork }],
     },
     {

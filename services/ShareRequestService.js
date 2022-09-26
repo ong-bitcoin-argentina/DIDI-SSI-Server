@@ -64,7 +64,7 @@ module.exports.deleteShareRequest = async function deleteShareRequest(id) {
   try {
     const shareRequest = await ShareRequest.getById(id);
     if (!shareRequest) return Promise.reject(NOT_FOUND);
-    return shareRequest.delete();
+    return ShareRequest.deleteById(id);
   } catch (e) {
     throw DELETE;
   }
