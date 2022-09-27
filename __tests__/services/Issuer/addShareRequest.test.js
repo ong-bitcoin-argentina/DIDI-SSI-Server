@@ -1,5 +1,7 @@
 /* eslint-disable no-plusplus */
 const mongoose = require('mongoose');
+const ShareRequest = require('../../../models/ShareRequest');
+const Issuer = require('../../../models/Issuer');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { addShareRequests } = require('../../../services/IssuerService');
 const { saveShareRequest } = require('../../../services/ShareRequestService');
@@ -31,8 +33,11 @@ describe('__tests__/services/Issuer/addShareRequests.test.js', () => {
     await Issuers.insertMany(issuers);
   });
   afterAll(async () => {
-    await mongoose.connection.db.dropCollection('sharerequests');
-    await mongoose.connection.db.dropCollection('issuers');
+    for (let i = 0; i < 5; i++) {
+      // eslint-disable-next-line no-await-in-loop
+      await ShareRequest.findOneAndDelete({ _id: ids[i] });
+    }
+    await Issuer.findOneAndDelete({ _id: id[0] });
     await mongoose.connection.close();
   });
 

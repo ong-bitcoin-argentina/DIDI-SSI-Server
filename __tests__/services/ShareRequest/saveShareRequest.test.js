@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ShareRequest = require('../../../models/ShareRequest');
 const { decodeJWT } = require('../../../services/BlockchainService');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { saveShareRequest } = require('../../../services/ShareRequestService');
@@ -7,6 +8,7 @@ const { missingJwt } = require('../../../constants/serviceErrors');
 const { jwt } = require('./constant');
 
 describe('__tests__/services/ShareRequest/saveShareRequest.test.js', () => {
+  let shareRequest;
   beforeAll(async () => {
     await mongoose
       .connect(MONGO_URL, {
@@ -17,7 +19,8 @@ describe('__tests__/services/ShareRequest/saveShareRequest.test.js', () => {
       });
   });
   afterAll(async () => {
-    await mongoose.connection.db.dropCollection('sharerequests');
+    // eslint-disable-next-line no-underscore-dangle
+    await ShareRequest.findOneAndDelete({ _id: shareRequest._id });
     await mongoose.connection.close();
   });
   test('Expect saveShareRequest to throw on missing jwt', async () => {
@@ -30,7 +33,7 @@ describe('__tests__/services/ShareRequest/saveShareRequest.test.js', () => {
   test('Expect saveShareRequest to success', async () => {
     const cert = await jwt;
     const { payload } = await decodeJWT(cert);
-    const shareRequest = await saveShareRequest({ jwt: cert });
+    shareRequest = await saveShareRequest({ jwt: cert });
     expect(shareRequest.aud).toBe(payload.aud);
     expect(shareRequest.iss).toBe(payload.iss);
     expect(await Encrypt.decript(shareRequest.jwt)).toBe(cert);

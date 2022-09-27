@@ -1,5 +1,6 @@
 /* eslint-disable no-plusplus */
 const mongoose = require('mongoose');
+const ShareRequest = require('../../../models/ShareRequest');
 const { MONGO_URL } = require('../../../constants/Constants');
 const { saveShareRequest, getAll } = require('../../../services/ShareRequestService');
 const { missingDid } = require('../../../constants/serviceErrors');
@@ -9,6 +10,7 @@ const {
 
 describe('__tests__/services/ShareRequest/getAll.test.js', () => {
   const solicitorDid = serverDid;
+  const ids = [];
 
   beforeAll(async () => {
     await mongoose.connect(MONGO_URL, {
@@ -19,12 +21,16 @@ describe('__tests__/services/ShareRequest/getAll.test.js', () => {
     });
     for (let i = 0; i < 5; i++) {
       // eslint-disable-next-line no-await-in-loop
-      await saveShareRequest({ jwt: await jwt });
+      const { _id } = await saveShareRequest({ jwt: await jwt });
+      ids.push(_id);
     }
     await saveShareRequest({ jwt: await jwt2 });
   });
   afterAll(async () => {
-    await mongoose.connection.db.dropCollection('sharerequests');
+    for (let i = 0; i < 5; i++) {
+      // eslint-disable-next-line no-await-in-loop
+      await ShareRequest.findOneAndDelete({ _id: ids[i] });
+    }
     await mongoose.connection.close();
   });
 

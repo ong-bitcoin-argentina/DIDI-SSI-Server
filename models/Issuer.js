@@ -124,27 +124,48 @@ module.exports = Issuer;
 
 Issuer.getAll = async function getAll(limit, page) {
   let totalPages;
+  const aggregateDef = [
+    {
+      $lookup: {
+        from: 'sharerequests',
+        localField: 'shareRequests',
+        foreignField: '_id',
+        as: 'result',
+      },
+    },
+    {
+      $match: {
+        result: {
+          $exists: true,
+          $not: {
+            $size: 0,
+          },
+        },
+      },
+    },
+    {
+      $sort: { name: 1 },
+    },
+  ];
+
   if (limit === 0 || isNaN(limit)) {
     totalPages = 1;
   } else {
-    totalPages = Math.ceil(await Issuer.find({
-      deleted: false,
-    }).countDocuments() / limit);
+    const registers = await Issuer.aggregate(aggregateDef);
+    totalPages = Math.ceil(registers.length / limit);
   }
 
-  const issuersList = await Issuer.find({
-    deleted: false,
-  },
-  {
-    did: 1, name: 1, description: 1, imageUrl: 1, shareRequests: 1,
-  })
-    .collation({
-      locale: 'es',
-      caseFirst: 'off',
-    })
-    .sort({ name: 1 })
+  const issuersList = await Issuer.aggregate(aggregateDef).collation({
+    locale: 'es',
+    caseFirst: 'off',
+  }).sort({ name: 1 })
     .skip(page > 0 ? ((page - 1) * limit) : 0)
     .limit(limit);
+  issuersList.forEach((issuer) => {
+    // eslint-disable-next-line no-param-reassign
+    issuer.shareRequests = [];
+    issuer.result.forEach((presentation) => issuer.shareRequests.push(presentation._id));
+  });
   return { issuersList, totalPages };
 };
 

@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
+const ShareRequest = require('../../../models/ShareRequest');
 const { getShareRequestById, saveShareRequest, deleteShareRequest } = require('../../../services/ShareRequestService');
 const { MONGO_URL } = require('../../../constants/Constants');
 const {
@@ -23,7 +24,7 @@ describe('__tests__/services/ShareRequest/deleteShareRequest.test.js', () => {
     shareRequest = await saveShareRequest({ jwt: await jwt });
   });
   afterAll(async () => {
-    await mongoose.connection.db.dropCollection('sharerequests');
+    await ShareRequest.findOneAndDelete({ jwt: shareRequest.jwt });
     await mongoose.connection.close();
   });
   test('Expect deleteShareRequest to throw on missing id', async () => {
@@ -38,7 +39,7 @@ describe('__tests__/services/ShareRequest/deleteShareRequest.test.js', () => {
     const { _id: id } = shareRequest;
     await deleteShareRequest(id);
     try {
-      await getShareRequestById({ id, userJWT: await userJWT });
+      await getShareRequestById({ id, userJWT: await userJWT, deleted: false });
     } catch (error) {
       expect(error.code).toBe(Messages.SHAREREQUEST.ERR.NOT_FOUND.code);
     }
