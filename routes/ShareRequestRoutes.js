@@ -5,6 +5,8 @@ const Constants = require('../constants/Constants');
 const { validateAppOrUserJWT } = require('../middlewares/ValidateAppOrUserJWT');
 const { validateAuth } = require('../middlewares/ValidateAuth');
 const shareRequest = require('../controllers/shareRequest');
+const { ValidateSchema } = require('../middlewares/ValidateSchema');
+const { ValidateIssuer } = require('../middlewares/ValidateIssuer');
 
 const { IS_STRING } = Constants.VALIDATION_TYPES;
 
@@ -43,6 +45,8 @@ router.post(
   Validator.validateBody([{ name: 'jwt', validate: [IS_STRING] }]),
   Validator.checkValidationResult,
   Validator.validateParams,
+  ValidateIssuer,
+  ValidateSchema,
   shareRequest.createShareRequest,
 );
 
@@ -123,11 +127,7 @@ router.post(
  *       500:
  *         description: Error interno del servidor
  */
-router.get(
-  `${BASE_URL}/list`,
-  validateAuth,
-  shareRequest.readAllShareRequests,
-);
+router.get(`${BASE_URL}/list`, validateAuth, shareRequest.readAllShareRequests);
 
 /**
  * @openapi
@@ -153,11 +153,6 @@ router.get(
  *       500:
  *         description: Error interno del servidor
  */
-router.delete(
-  `${BASE_URL}/:id`,
-  validateAuth,
-  Validator.validateParams,
-  shareRequest.deleteShareRequestById,
-);
+router.delete(`${BASE_URL}/:id`, validateAuth, Validator.validateParams, shareRequest.deleteShareRequestById);
 
 module.exports = router;

@@ -1,8 +1,13 @@
 /* eslint-disable no-restricted-globals */
 const mongoose = require('mongoose');
 const Encrypt = require('./utils/Encryption');
+const BlockchainService = require('../services/BlockchainService');
 
 const ShareRequestSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   jwt: {
     type: String,
     required: true,
@@ -13,6 +18,10 @@ const ShareRequestSchema = new mongoose.Schema({
   iss: {
     type: String,
     required: true,
+  },
+  deleted: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,
@@ -46,9 +55,11 @@ ShareRequest.getById = async function getById(_id) {
 
 ShareRequest.deleteById = async function deleteById(_id) {
   try {
-    const shareRequest = await ShareRequest.findById(_id);
-    shareRequest.delete();
-    return shareRequest.save();
+    const updateQuery = { _id };
+    const updateAction = {
+      $set: { deleted: true },
+    };
+    return ShareRequest.findOneAndUpdate(updateQuery, updateAction);
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
@@ -61,19 +72,48 @@ ShareRequest.getAll = async function getAll(limit, page, aud, iss, solicitorDid)
   if (limit === 0 || isNaN(limit)) {
     totalPages = 1;
   } else {
-    totalPages = Math.ceil(await ShareRequest.find({}).countDocuments() / limit);
+    totalPages = Math.ceil((await ShareRequest.find({}).countDocuments()) / limit);
+  }
+  let issWithoutNetwork;
+  let didWithoutNetwork;
+
+  if (iss) {
+    issWithoutNetwork = BlockchainService.removeBlockchainFromDid(iss);
+  }
+  if (solicitorDid) {
+    didWithoutNetwork = BlockchainService.removeBlockchainFromDid(solicitorDid);
   }
 
   const list = await ShareRequest.find(
     {
-      $or: [
-        { iss: iss || solicitorDid },
-        { aud: aud || solicitorDid },
-      ],
+      deleted: false,
+      $or: [{ iss: issWithoutNetwork || didWithoutNetwork }, { aud: aud || didWithoutNetwork }],
     },
-    { iss: 1, aud: 1 },
+    {
+      iss: 1,
+      aud: 1,
+      jwt: 1,
+      name: 1,
+      createdAt: 1,
+    },
   )
-    .skip(page > 0 ? ((page - 1) * limit) : 0)
+    .skip(page > 0 ? (page - 1) * limit : 0)
     .limit(limit);
-  return { list, totalPages };
+
+  const decryptedList = await Promise.all(
+    list.map(async (shareReq) => {
+      const {
+        name, aud, iss, jwt, createdAt,
+      } = shareReq;
+      const decryptedJwt = await Encrypt.decript(jwt);
+      return {
+        name,
+        aud,
+        iss,
+        jwt: decryptedJwt,
+        createdAt,
+      };
+    }),
+  );
+  return { list: decryptedList, totalPages };
 };
